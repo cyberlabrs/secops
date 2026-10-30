@@ -1,0 +1,245 @@
+[
+  {
+    "obj": "1.3",
+    "q": "A team is drawing a DFD for an LLM assistant and labels the model output as “trusted, because our system generates it.” Documents sent by customers also go into the context. What is the mistake?",
+    "options": [
+      "The model output should be labeled secret, not trusted",
+      "Customer documents should not be drawn on the DFD",
+      "Trust propagates through the model: the output is as trusted as the least trusted input in the context, so here it is untrusted",
+      "The LLM process should be labeled as a trust boundary that cleans data"
+    ],
+    "answer": 2,
+    "explain": "The model does not “clean” input: if untrusted content enters the context, the output carries its influence. That is why output is treated as untrusted data (boundary B). Customer documents are exactly boundary C, which should be drawn."
+  },
+  {
+    "obj": "1.3",
+    "q": "At the workshop nobody drew the log platform to which the application sends full prompts and responses. Why is this an important omission?",
+    "options": [
+      "Logs often contain personal data and secrets, and the log platform has a wider access circle than the application, so it is a flow through which information can leak",
+      "Logs affect the quality of the model's answers",
+      "The log platform is part of the vendor's model",
+      "Logs should never be kept, so there is no point in drawing them"
+    ],
+    "answer": 0,
+    "explain": "Telemetry is a data flow like any other and is often forgotten. Prompts and responses in logs carry sensitive data, and access to the log platform is usually broader. Logs are still needed (repudiation, IR), so they should be drawn and protected, not abolished."
+  },
+  {
+    "obj": "1.3",
+    "q": "Which combination of agent capabilities makes up the “lethal trifecta”?",
+    "options": [
+      "A large model, a long context and a low temperature",
+      "Internet access, GPU and memory",
+      "Multiple agents, memory and RAG",
+      "Access to private data, exposure to untrusted content and the ability to communicate externally"
+    ],
+    "answer": 3,
+    "explain": "The lethal trifecta (Simon Willison) is the combination of private data, untrusted content and an outbound channel. Then indirect prompt injection can lead to data exfiltration. The defense is removing at least one of the three capabilities for a given flow."
+  },
+  {
+    "obj": "1.3",
+    "q": "An agent reads incoming emails (untrusted input), has access to a CRM with customer data and can send email. What does the Agents Rule of Two recommend?",
+    "options": [
+      "Nothing, the rule only applies to agents with memory",
+      "The agent has all three properties (A, B, C), so it must not operate autonomously: it needs human confirmation or another reliable validation, separation of components or a new session",
+      "It is enough to add to the system prompt that it must not send data outside",
+      "Replace the model with a larger one because it is more resistant to injection"
+    ],
+    "answer": 1,
+    "explain": "The Rule of Two says an agent in a session should have at most two of three properties (untrusted input, access to sensitive data, state change/external communication). When all three are needed, oversight or a redesign is required. A prompt instruction and a larger model are not reliable controls."
+  },
+  {
+    "obj": "1.3",
+    "q": "How should a threat be recorded in a threat model for an AI system?",
+    "options": [
+      "As an abuse case: actor, boundary, precondition, consequence, mapping to OWASP/ATLAS and controls",
+      "As the exact attack text the red team used",
+      "Only as an OWASP label, e.g., “LLM01”",
+      "As a CVSS score without a description"
+    ],
+    "answer": 0,
+    "explain": "An abuse case describes conditions and consequences that stay the same even when specific techniques change, and it leads directly to controls. A concrete payload quickly goes stale and is not needed for the decision. A label or score alone doesn't say what needs to be done."
+  },
+  {
+    "obj": "1.3",
+    "q": "Two agents use the same model and the same knowledge base. The first has a tool only for reading tickets, the second a tool for issuing refunds. What determines the difference in risk the most?",
+    "options": [
+      "The size of the system prompt",
+      "The number of users who use the agent",
+      "Boundary D (actions): the consequence of a successful manipulation is completely different",
+      "The model's temperature"
+    ],
+    "answer": 2,
+    "explain": "In AI systems, impact is determined mostly by the actions the system can perform. The same model and the same likelihood of manipulation yield completely different risk depending on whether the tool only reads or triggers a financial transaction."
+  },
+  {
+    "obj": "1.3",
+    "q": "The only control for the threat “the agent sends internal data outside” is the sentence in the system prompt “never send data outside the company.” How should it be recorded in the register?",
+    "options": [
+      "As closed, because a control exists",
+      "As an accepted risk, because the vendor's model is secure",
+      "As low likelihood, because models mostly follow instructions",
+      "As effectively uncontrolled (open) until an architectural or deterministic control is introduced"
+    ],
+    "answer": 3,
+    "explain": "A prompt instruction is probabilistic and can be bypassed. A high-impact threat needs a control that doesn't depend on the model: a recipient allowlist, user confirmation, removing the tool."
+  },
+  {
+    "obj": "1.3",
+    "q": "What is the correct order of control strength, from strongest to weakest, when choosing a response to a high-impact threat?",
+    "options": [
+      "Guardrail model → prompt instruction → allowlist → privilege separation",
+      "Architectural (separation, removing tools) → deterministic checks in code → probabilistic classifiers",
+      "Probabilistic classifiers → architectural → deterministic",
+      "All controls are equally strong if they are documented"
+    ],
+    "answer": 1,
+    "explain": "Architectural controls remove the capability, deterministic checks in code enforce it reliably, and probabilistic filters reduce likelihood but can be bypassed. That is why filters are an additional layer, not the only control."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match the example AI system threat with the STRIDE category.",
+    "options": [
+      "There is no record of which retrieval and which prompt led to an agent action",
+      "An agent with a service account's permissions performs an action the user is not allowed to",
+      "A poisoned document in the RAG corpus changes the answers",
+      "The agent enters a loop of tool calls and exhausts the quota"
+    ],
+    "targets": ["Tampering", "Denial of service", "Repudiation", "Elevation of privilege", "Spoofing"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Missing traces is repudiation, an action beyond the user's permissions is elevation of privilege, modifying the corpus is tampering, and exhausting quotas is denial of service. Spoofing is a distractor."
+  },
+  {
+    "obj": "1.3",
+    "q": "The assistant needs to email a customer. The design proposes that the model extract the recipient address from the ticket text. Which design change reduces risk the most?",
+    "options": [
+      "Add a filter that looks for suspicious words in the ticket",
+      "Increase the context window so the model understands the ticket better",
+      "Take the address from the customer record in the ticketing system, not from the model, with a review before sending",
+      "Log all sent emails"
+    ],
+    "answer": 2,
+    "explain": "When a high-impact parameter (the recipient) comes from a trusted source instead of the model, an entire class of risk disappears. A filter is probabilistic, logging is only detective, and a larger context doesn't affect the risk."
+  },
+  {
+    "obj": "1.3",
+    "q": "Which of the following events does NOT necessarily require a review of the agent's threat model?",
+    "options": [
+      "Adding a tool for deleting records",
+      "A new document source in the RAG index",
+      "Switching to another vendor's model",
+      "Changing the color of a button in the user interface"
+    ],
+    "answer": 3,
+    "explain": "New tools, new data sources and a change of model or vendor change flows and boundaries, so they are review triggers. A cosmetic UI change doesn't change data flows or permissions."
+  },
+  {
+    "obj": "1.3",
+    "q": "A team wants its threat model not to go stale. What is the most effective mechanism?",
+    "options": [
+      "Keep the threat model as code in the repo and have CI require an update to it when tools, data sources or model configuration change",
+      "Hold a workshop once a year",
+      "Send a PDF to all developers",
+      "Make the model vendor responsible for maintaining it"
+    ],
+    "answer": 0,
+    "explain": "A threat model as code goes through review together with changes, and a CI rule tied to key files (tools, sources, model) automatically prompts a review. An annual workshop is too slow for agents and RAG, which change quickly."
+  },
+  {
+    "obj": "1.3",
+    "q": "How do OWASP and ATLAS fit with STRIDE when threat modeling an AI system?",
+    "options": [
+      "They replace STRIDE because STRIDE is outdated",
+      "STRIDE provides structure by elements and boundaries, while OWASP and ATLAS provide concrete AI threats that would otherwise be missed",
+      "They are used only after an incident",
+      "OWASP is used for training, and ATLAS only for serving"
+    ],
+    "answer": 1,
+    "explain": "STRIDE is generic and gives a systematic walkthrough, while the AI lists add specific threats (indirect injection, corpus poisoning, tool misuse). Neither list replaces the other."
+  },
+  {
+    "obj": "1.3",
+    "q": "An organization fine-tunes a model on a CI runner that has access to production secrets, and it downloads the base model from a public hub. Which DFD boundary is most critical for this flow?",
+    "options": [
+      "Boundary E (supply chain): an external artifact is loaded into an environment with secrets",
+      "Boundary A (user → application)",
+      "Boundary B (model output → UI)",
+      "None, because the pipeline is not part of the application"
+    ],
+    "answer": 0,
+    "explain": "Loading an external artifact into an environment with production secrets is a classic supply chain issue (LLM03, AML.T0010). Controls: approved sources, safe formats, an isolated runner without production secrets, signatures. The pipeline is part of the system and gets drawn."
+  },
+  {
+    "obj": "1.3",
+    "q": "Assessing the likelihood of indirect prompt injection for an assistant that summarizes emails from anyone. Which approach is correct?",
+    "options": [
+      "Low, until the red team proves exploitation",
+      "It depends on the size of the model",
+      "High as soon as boundary C (untrusted content in the context) exists; treat it as an assumption",
+      "Zero, if the vendor's model has built-in protections"
+    ],
+    "answer": 2,
+    "explain": "When anyone can inject content into the context, the attacker needs neither an account nor special knowledge. That is why likelihood is treated as high, and controls are chosen based on impact. Vendor protections reduce the risk but don't eliminate it."
+  },
+  {
+    "obj": "1.3",
+    "q": "An agent uses long-term memory and combines data from the HR and finance systems to answer managers. Which additional perspective is most useful alongside STRIDE?",
+    "options": [
+      "Only checking latency",
+      "Privacy questions (e.g., LINDDUN): purpose, data linking, retention, transparency",
+      "A model accuracy benchmark",
+      "Checking library licenses"
+    ],
+    "answer": 1,
+    "explain": "STRIDE reduces leakage to a single letter. When an agent links personal data from multiple sources and remembers it, questions about purpose, linking, retention and transparency reveal risks that STRIDE doesn't highlight."
+  },
+  {
+    "obj": "1.3",
+    "q": "A chatbot without tools or RAG, with public access. Which threats take priority in the model?",
+    "options": [
+      "Tool misuse and agent privilege escalation",
+      "RAG corpus poisoning",
+      "Forged messages between agents",
+      "Improper output handling, system prompt leakage, jailbreak and unbounded consumption"
+    ],
+    "answer": 3,
+    "explain": "Without tools, RAG or multiple agents, boundaries A and B remain: output that gets rendered, a prompt that can leak, attempts to bypass restrictions and the cost of public access. The other threats require components the system doesn't have."
+  },
+  {
+    "obj": "1.3",
+    "type": "order",
+    "q": "Order the threat modeling activities according to the “four questions” approach.",
+    "options": [
+      "Decide on controls, owners and deadlines, or accept the risk",
+      "Use tests and red teaming to verify that controls work, and update the model",
+      "Draw a DFD with AI trust boundaries and assets",
+      "Go through STRIDE, OWASP and ATLAS by elements and boundaries"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "What are we working on (DFD) → what can go wrong (STRIDE/OWASP/ATLAS) → what are we going to do (controls) → did we do a good job (verification and update)."
+  },
+  {
+    "obj": "1.3",
+    "q": "An agent that summarizes public news publishes summaries to a public channel. It has no access to internal data. How does the Rule of Two assess it?",
+    "options": [
+      "It has A (untrusted input) and C (external communication), but not B, so under this rule it is acceptable without additional oversight",
+      "It has all three properties and must have confirmation for every post",
+      "The rule does not apply to public data",
+      "It has only B, so it is completely risk-free"
+    ],
+    "answer": 0,
+    "explain": "Without access to sensitive data (B), the agent has two of the three properties. That doesn't mean zero risk (e.g., reputational harm), but under the rule mandatory oversight of every action is not required."
+  },
+  {
+    "obj": "1.3",
+    "q": "Who should take part in a threat modeling workshop for a RAG assistant over documents containing personal data?",
+    "options": [
+      "Only SecOps, to keep the process fast",
+      "Only the model vendor",
+      "The product owner, the orchestrator developer, someone who knows the data, SecOps and, when needed, the DPO/a lawyer",
+      "Only the data science team"
+    ],
+    "answer": 2,
+    "explain": "A threat model requires knowledge of the product, the code, the data and security; when personal data is involved, also of legal obligations. No single team sees all the flows and decisions on its own."
+  }
+]

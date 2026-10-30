@@ -1,0 +1,256 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Task: on node01 something is listening on TCP port 1234; find the process. Which command immediately shows both the process name and the PID?",
+    "options": [
+      "ss -tlpn | grep 1234",
+      "systemctl list-units --type=service | grep 1234",
+      "iptables -L INPUT -n | grep 1234",
+      "ps aux | grep 1234"
+    ],
+    "answer": 0,
+    "explain": "ss with -p shows the process holding the socket (users:((\"name\",pid=...))). systemctl knows nothing about ports, iptables shows rules not processes, and ps aux looks for the number 1234 in command line text, not the port."
+  },
+  {
+    "obj": "3.1",
+    "q": "ss shows that port 1234 is held by a process with pid=2211. You need to remove the package that installed it. What is the correct order of tools?",
+    "options": [
+      "lsof -p 2211, then apt remove on the process name",
+      "ls -l /proc/2211/exe to get the path, then dpkg -S <path> to get the package name",
+      "systemctl status 2211, then rm on the unit file",
+      "dpkg -l | grep 2211"
+    ],
+    "answer": 1,
+    "explain": "/proc/<pid>/exe shows the real binary, and dpkg -S tells which package owns that file. The process name doesn't have to be the package name, and dpkg -l knows nothing about PIDs."
+  },
+  {
+    "obj": "3.1",
+    "q": "You ran systemctl stop vsftpd on controlplane. After a node reboot, port 21 is open again. What did you miss?",
+    "options": [
+      "systemctl daemon-reload",
+      "systemctl reload vsftpd",
+      "systemctl disable vsftpd (or disable --now from the start)",
+      "systemctl restart kubelet"
+    ],
+    "answer": 2,
+    "explain": "stop only stops the current process; an enabled service starts again at boot. daemon-reload only re-reads unit files, and reload signals the service to reload its configuration."
+  },
+  {
+    "obj": "3.1",
+    "q": "The task requires that the apache2 service must not be started either manually or as a dependency of another service. Which command guarantees that?",
+    "options": [
+      "systemctl disable apache2",
+      "systemctl stop apache2",
+      "systemctl kill apache2",
+      "systemctl mask apache2"
+    ],
+    "answer": 3,
+    "explain": "mask links the unit to /dev/null so systemd can't start it, either manually or as a dependency. disable only removes the automatic start at boot, and stop and kill act only on the current process."
+  },
+  {
+    "obj": "3.1",
+    "q": "On node01 you run apt purge -y nfs-common and apt's removal list also shows the kubelet package. What do you do?",
+    "options": [
+      "Abort and don't remove anything that pulls in kubelet; remove only what the task asks without breaking the node",
+      "Continue; kubelet is reinstalled automatically with kubeadm upgrade node",
+      "Continue, then run apt-mark hold kubelet afterwards",
+      "Use apt purge --force-yes to skip dependencies"
+    ],
+    "answer": 0,
+    "explain": "Removing the kubelet breaks the node (NotReady) and fails other tasks. kubeadm upgrade node doesn't install packages, apt-mark hold doesn't bring back a removed package, and forcing just hides the problem."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which tool does NOT help you determine which process is listening on a port on the node?",
+    "options": [
+      "lsof -i :8080",
+      "netstat -tlpn",
+      "ss -tlpn",
+      "aa-status"
+    ],
+    "answer": 3,
+    "explain": "aa-status shows AppArmor profiles and the processes confined by them, not network sockets. lsof -i, netstat -tlpn and ss -tlpn all show processes listening on ports."
+  },
+  {
+    "obj": "3.1",
+    "q": "A team is choosing an OS for new worker nodes with the goal of the smallest attack surface. Which choice best meets the goal?",
+    "options": [
+      "Ubuntu Desktop with all development tools for easier debugging",
+      "Bottlerocket or Flatcar: a minimal, immutable OS intended only for containers",
+      "Any OS, because containers are isolated from the host",
+      "CentOS with SELinux disabled for compatibility"
+    ],
+    "answer": 1,
+    "explain": "Container-focused OSes have a read-only or immutable system, without a package manager or unnecessary services. Containers share the kernel with the host, so the host OS matters, and disabling SELinux and development tools increase the attack surface."
+  },
+  {
+    "obj": "3.2",
+    "q": "/etc/sudoers.d/dev contains: dev ALL=(ALL) NOPASSWD: ALL. Task: dev may only restart nginx. What is the correct content and check?",
+    "options": [
+      "dev ALL=(root) /usr/bin/systemctl restart nginx, then visudo -c",
+      "dev ALL=(ALL) ALL, then systemctl restart sudo",
+      "%dev ALL=(ALL) NOPASSWD: /usr/bin/systemctl, then sshd -t",
+      "Add dev to the docker group instead of sudo"
+    ],
+    "answer": 0,
+    "explain": "The rule restricts dev to one command as root, and visudo -c checks the syntax of the sudoers files. ALL ALL keeps full access, the whole systemctl allows other actions too, and the docker group is equivalent to root access."
+  },
+  {
+    "obj": "3.2",
+    "q": "On controlplane you run awk -F: '$3 == 0 {print $1}' /etc/passwd and get two lines: root and backup. What does that mean?",
+    "options": [
+      "Normal state; the backup user needs UID 0 to read files",
+      "backup is a system account used by the kubelet",
+      "The backup user has UID 0, i.e. full root rights; the account should be removed or given a regular UID",
+      "Only the first account with UID 0 gets root rights"
+    ],
+    "answer": 2,
+    "explain": "The kernel looks at the UID, not the name: every account with UID 0 is root. No account other than root should have UID 0; the kubelet runs as root, not as a separate account."
+  },
+  {
+    "obj": "3.2",
+    "q": "The user ops was removed from the team. You ran usermod -L ops, but ops can still log in via SSH to node01. Why?",
+    "options": [
+      "usermod -L requires restarting the sshd service",
+      "usermod -L locks only the password; login with an SSH key from ~ops/.ssh/authorized_keys still works",
+      "The lock takes effect only after a reboot",
+      "SSH doesn't check /etc/shadow"
+    ],
+    "answer": 1,
+    "explain": "-L adds ! in front of the password hash in /etc/shadow, which blocks only the password. For a complete block, set the shell to nologin, remove authorized_keys or delete the user."
+  },
+  {
+    "obj": "3.2",
+    "q": "You set PasswordAuthentication no in /etc/ssh/sshd_config and ran systemctl reload ssh, but sshd -T still shows passwordauthentication yes. What is the most likely cause?",
+    "options": [
+      "A restart is needed instead of reload",
+      "The option is written PasswordAuth no",
+      "The option applies only to the root user",
+      "A file in /etc/ssh/sshd_config.d/ (e.g. 50-cloud-init.conf) sets yes, and sshd uses the first value it reads"
+    ],
+    "answer": 3,
+    "explain": "The Include directive at the top of sshd_config loads sshd_config.d/*.conf before the rest of the file, and for most options sshd takes the first value. sshd -T reads the files from disk so reload isn't the cause, and the option name is correct."
+  },
+  {
+    "obj": "3.2",
+    "q": "Task: root must not be able to log in over SSH in any way. Which option and order are correct?",
+    "options": [
+      "PermitRootLogin prohibit-password, then systemctl reload ssh",
+      "PasswordAuthentication no, then systemctl restart ssh",
+      "PermitRootLogin no, then sshd -t, then systemctl reload ssh",
+      "DenyUsers root, then visudo -c"
+    ],
+    "answer": 2,
+    "explain": "PermitRootLogin no forbids any root login; prohibit-password still allows a key. PasswordAuthentication affects all users and doesn't block keys, and visudo -c checks sudoers, not sshd."
+  },
+  {
+    "obj": "3.2",
+    "q": "A Pod in an EKS cluster is compromised. With curl http://169.254.169.254/... the attacker obtained the credentials of the node's IAM role, which has AdministratorAccess. Which TWO measures directly reduce this risk? (Choose TWO.)",
+    "options": [
+      "Reduce the node role to minimal permissions, and give applications roles per ServiceAccount (IRSA / Pod Identity)",
+      "Disable --anonymous-auth on kube-apiserver",
+      "Block Pods from accessing the metadata service (IMDSv2 with hop limit 1 or a NetworkPolicy egress deny to 169.254.169.254/32)",
+      "Set PermitRootLogin no on the nodes",
+      "Enable the NodeRestriction admission plugin"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "The attack uses the metadata service and an overly broad node role: closing access to the metadata service and a minimal role address both parts. Anonymous API access, SSH and NodeRestriction concern other attack paths."
+  },
+  {
+    "obj": "3.3",
+    "q": "On node01 you want ufw with default deny incoming. What MUST you add before ufw enable so you don't lose access to the node and the node stays Ready?",
+    "options": [
+      "ufw allow 22/tcp and an allow for 10250/tcp from the control plane",
+      "ufw allow 2379/tcp",
+      "ufw allow 30000:32767/tcp",
+      "ufw default allow incoming"
+    ],
+    "answer": 0,
+    "explain": "Without an SSH rule you cut your own connection, and the control plane must reach the kubelet on 10250 (exec, logs, metrics). etcd isn't on a worker node, the NodePort range is needed only if you use it, and allow incoming defeats the purpose."
+  },
+  {
+    "obj": "3.3",
+    "q": "To \"clean up\" the firewall on node01 you run iptables -F. What is the most likely consequence?",
+    "options": [
+      "Nothing, kube-proxy rules are in nftables so iptables doesn't touch them",
+      "Only the ufw rules are deleted",
+      "The kube-proxy and CNI rules (KUBE-* chains) are deleted too, so Service traffic and Pod networking stop working until the rules are restored",
+      "The node is drained automatically"
+    ],
+    "answer": 2,
+    "explain": "kube-proxy and the CNI keep their rules in the same tables; a flush deletes them. Kubernetes doesn't drain the node because of it, and the rules aren't limited to ufw."
+  },
+  {
+    "obj": "3.3",
+    "q": "Match the port with the component it belongs to on a kubeadm cluster.",
+    "type": "match",
+    "options": [
+      "6443/TCP",
+      "2379/TCP",
+      "10250/TCP",
+      "10259/TCP",
+      "30000-32767"
+    ],
+    "targets": [
+      "kube-scheduler",
+      "NodePort Services",
+      "etcd client API",
+      "kubelet API",
+      "kube-apiserver",
+      "kube-proxy (10256)"
+    ],
+    "answer": [
+      4,
+      2,
+      3,
+      0,
+      1
+    ],
+    "explain": "According to the Ports and Protocols page: 6443 API server, 2379-2380 etcd, 10250 kubelet, 10259 kube-scheduler, 10257 kube-controller-manager, and 30000-32767 is the default NodePort range. kube-proxy health is on 10256."
+  },
+  {
+    "obj": "3.3",
+    "q": "On controlplane, ss -tlpn shows etcd on <node-IP>:2379. Who alone should be able to connect to that port from outside?",
+    "options": [
+      "All worker nodes, because the kubelet reads state from etcd",
+      "Administrators from their laptops, for etcdctl backups",
+      "Pods in the kube-system namespace",
+      "kube-apiserver (and the other etcd members on 2380); block everything else with a firewall or security group"
+    ],
+    "answer": 3,
+    "explain": "Only the API server talks to etcd; kubelets and Pods go through the API server. Backups are done locally on the control plane node with certificates, not over the network from a laptop."
+  },
+  {
+    "obj": "3.3",
+    "q": "Task: an application is exposed as a Service of type LoadBalancer, but it may be accessed only from the office network 203.0.113.0/24. Which field solves this at the Kubernetes level?",
+    "options": [
+      "spec.externalTrafficPolicy: Local",
+      "spec.loadBalancerSourceRanges: [203.0.113.0/24]",
+      "spec.sessionAffinity: ClientIP",
+      "metadata.annotations: allow-cidr=203.0.113.0/24"
+    ],
+    "answer": 1,
+    "explain": "loadBalancerSourceRanges restricts the source addresses the load balancer lets through (support depends on the cloud provider). externalTrafficPolicy preserves the source IP and selects nodes, sessionAffinity pins a client to a Pod, and a generic allow-cidr annotation doesn't exist."
+  },
+  {
+    "obj": "3.3",
+    "q": "Order the steps to restrict access to the kubelet (10250) on node01 to the control plane IP 10.0.0.10 only, using iptables.",
+    "type": "order",
+    "options": [
+      "iptables -I INPUT 2 -p tcp --dport 10250 -j DROP",
+      "Verify from controlplane: kubectl logs or exec on a Pod on node01 works, and from another address the connection fails",
+      "iptables -L INPUT -n --line-numbers to see the existing rules",
+      "iptables -I INPUT 1 -p tcp --dport 10250 -s 10.0.0.10 -j ACCEPT"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      1
+    ],
+    "explain": "First review the existing rules, then insert the ACCEPT for the control plane in first position and the DROP for everyone else right after it, then test. If the DROP comes before the ACCEPT, the control plane also loses access to the kubelet."
+  }
+]

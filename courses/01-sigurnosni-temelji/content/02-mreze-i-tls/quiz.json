@@ -1,0 +1,76 @@
+[
+  {
+    "q": "U izlazu 'ss -tulpn' vidiš 0.0.0.0:6379 (Redis). Šta to znači?",
+    "options": ["Redis je ugašen", "Redis sluša na svim interfejsima i dostupan je svakome ko dođe do servera mrežom", "Redis sluša samo lokalno", "Redis koristi TLS"],
+    "answer": 1,
+    "explain": "0.0.0.0 znači svi IPv4 interfejsi. Za servis koji koriste samo lokalne aplikacije treba 127.0.0.1, ili barem firewall/security grupa koja ograničava pristup."
+  },
+  {
+    "q": "nmap prikazuje port kao 'filtered'. Šta je najvjerovatnije?",
+    "options": ["Servis radi i prihvata konekcije", "Host je odgovorio RST, ništa ne sluša", "Nema odgovora: paket je vjerovatno odbacio firewall", "Port koristi UDP"],
+    "answer": 2,
+    "explain": "open = neko sluša, closed = host je odgovorio RST, filtered = odgovora nema ili je ICMP 'unreachable', tipično zbog firewalla."
+  },
+  {
+    "q": "Šta forward secrecy u TLS-u štiti?",
+    "options": ["Štiti od isteka certifikata", "Ranije snimljen saobraćaj ostaje zaštićen čak i ako kasnije procuri privatni ključ servera", "Sprečava MITM bez certifikata", "Ubrzava handshake"],
+    "answer": 1,
+    "explain": "Uz (EC)DHE ključevi sesije su privremeni i ne izvode se iz dugoročnog ključa servera, pa krađa tog ključa ne otključava prošle sesije."
+  },
+  {
+    "q": "curl javlja 'unable to get local issuer certificate', a browser otvara sajt bez greške. Najčešći uzrok?",
+    "options": ["Certifikat je istekao", "Server ne šalje intermediate certifikat u lancu", "Pogrešno ime hosta", "TLS 1.3 nije podržan"],
+    "answer": 1,
+    "explain": "Browseri često sami dopune nedostajući intermediate (keš, AIA preuzimanje), a curl i biblioteke u aplikacijama ne. Server treba slati punu lanac bez root-a."
+  },
+  {
+    "q": "Na osnovu čega klijent provjerava da certifikat pripada hostu na koji se spaja?",
+    "options": ["Polje Issuer", "Subject Alternative Name (SAN)", "Serijski broj", "Polje Organization"],
+    "answer": 1,
+    "explain": "Moderni klijenti porede ime hosta sa SAN poljem. Oslanjanje na CN je zastarjelo i browseri ga ignorišu."
+  },
+  {
+    "q": "Koje verzije TLS-a su prihvatljive po aktuelnim preporukama (Mozilla intermediate, NIST)? (više odgovora)",
+    "options": ["SSLv3", "TLS 1.0", "TLS 1.2", "TLS 1.3"],
+    "answer": [2, 3],
+    "explain": "TLS 1.0 i 1.1 su formalno zastarjeli (RFC 8996), a SSL je davno probijen. Danas se koriste TLS 1.2 i 1.3."
+  },
+  {
+    "q": "Šta je glavna ideja zero trust modela?",
+    "options": ["Ne vjeruj nikome, pa blokiraj sav saobraćaj", "Lokacija na mreži ne daje povjerenje; svaki zahtjev se provjerava po identitetu, uređaju i kontekstu", "Zamijeni firewall VPN-om", "Koristi samo cloud servise"],
+    "answer": 1,
+    "explain": "Zero trust (NIST SP 800-207) ne znači 'sve blokiraj', već da se povjerenje ne izvodi iz toga što je neko 'unutra'. Provjera je kontinuirana i po zahtjevu."
+  },
+  {
+    "q": "Zašto je kontrola IZLAZNOG (egress) saobraćaja važna?",
+    "options": ["Smanjuje troškove", "Malver mora komunicirati sa C2 serverom i iznositi podatke, a ograničen izlaz to otežava i čini vidljivim", "Ubrzava DNS", "Nije važna ako je ulaz zaštićen"],
+    "answer": 1,
+    "explain": "Ako server baze ne smije otvarati konekcije prema internetu, kompromitacija teže prelazi u exfiltraciju i C2. Neočekivan izlazni saobraćaj je i dobar signal za detekciju."
+  },
+  {
+    "q": "Šta je najbolji početni režim pri uvođenju WAF-a ispred postojeće aplikacije?",
+    "options": ["Odmah block mode za sva pravila", "Detection/count mode, analiza lažnih pozitiva, pa postepeno block", "Isključiti OWASP CRS", "WAF samo na staging okruženju"],
+    "answer": 1,
+    "explain": "Direktan block lako polomi legitimne zahtjeve. Prvo posmatraj, podesi izuzetke, pa blokiraj."
+  },
+  {
+    "q": "Koji znak u DNS logovima upućuje na DNS tunelovanje?",
+    "options": ["Upiti za google.com", "Mnogo upita s dugim, nasumičnim poddomenima prema jednom domenu", "TTL od 300 sekundi", "AAAA zapisi"],
+    "answer": 1,
+    "explain": "Tunelovanje kodira podatke u ime poddomena, pa vidiš duga imena visoke entropije i neuobičajeno velik broj upita ka istom domenu."
+  },
+  {
+    "q": "U Kubernetesu pod nema nijednu NetworkPolicy. Kakav saobraćaj je dozvoljen?",
+    "options": ["Nijedan", "Samo unutar namespacea", "Sav ulazni i izlazni saobraćaj", "Samo DNS"],
+    "answer": 2,
+    "explain": "Podrazumijevano je sve dozvoljeno. Tek kad politika 'izabere' pod, za njega važi deny osim onoga što politike dozvoljavaju. Zato je default-deny politika po namespaceu dobra praksa."
+  },
+  {
+    "type": "spot",
+    "q": "nginx konfiguracija treba da odgovara Mozilla „intermediate“ profilu iz lekcije. Klikni red koji ga krši.",
+    "lang": "text",
+    "snippet": "server {\n    listen 443 ssl;\n    server_name shop.example.com;\n    ssl_certificate     /etc/ssl/shop/fullchain.pem;\n    ssl_certificate_key /etc/ssl/shop/privkey.pem;\n    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;\n    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-CHACHA20-POLY1305;\n    ssl_prefer_server_ciphers off;\n    add_header Strict-Transport-Security \"max-age=63072000\" always;\n    location / {\n        proxy_pass http://127.0.0.1:8080;\n    }\n}",
+    "answer": [5],
+    "explain": "ssl_protocols uključuje TLSv1 i TLSv1.1, koji su zastarjeli i isključeni u intermediate profilu. Ispravno je ssl_protocols TLSv1.2 TLSv1.3;. Šifre su ECDHE sa AEAD (AES-GCM, ChaCha20-Poly1305), pa imaju forward secrecy, HSTS je postavljen, a proxy_pass na localhost je uobičajeno terminiranje TLS-a na istom hostu."
+  }
+]

@@ -1,0 +1,236 @@
+[
+  {
+    "obj": "3.3",
+    "q": "Deployment web has Pods labeled app=frontend and a container that listens on 8080. You created a Service with kubectl create service clusterip web --tcp=80:8080. kubectl get endpointslices -l kubernetes.io/service-name=web shows no addresses. What is the cause?",
+    "options": [
+      "The Service has selector app=web, while the Pods have the label app=frontend",
+      "targetPort 8080 does not match the Service port 80",
+      "A ClusterIP Service does not create an EndpointSlice, a NodePort is needed",
+      "The EndpointSlice is created only when the first client sends a request"
+    ],
+    "answer": 0,
+    "explain": "kubectl create service sets the selector app=<service name>, so it does not find Pods with app=frontend. Different port and targetPort are normal, and an EndpointSlice is created immediately for every Service type with a selector, regardless of traffic."
+  },
+  {
+    "obj": "3.3",
+    "q": "You need to expose Deployment api as a NodePort Service exactly on port 30080 (Service on port 80, container on 8080), with the selector copied from the Deployment. What is the fastest correct procedure?",
+    "options": [
+      "kubectl expose deployment api --type=NodePort --port=80 --target-port=8080 --node-port=30080",
+      "kubectl create service nodeport api --tcp=80:8080 --node-port=30080 and nothing else",
+      "kubectl expose deployment api --type=NodePort --port=80 --target-port=8080 --dry-run=client -o yaml > s.yaml, add nodePort: 30080 and kubectl apply -f s.yaml",
+      "kubectl expose deployment api --port=30080 --target-port=8080"
+    ],
+    "answer": 2,
+    "explain": "kubectl expose has no --node-port flag, but it copies the selector from the Deployment; the nodePort is added to the generated YAML. kubectl create service nodeport has --node-port, but it sets the selector app=api, which may not match the Pods, and --port=30080 changes the Service port, not the nodePort."
+  },
+  {
+    "obj": "3.3",
+    "q": "Service db has a correct selector and an EndpointSlice with three addresses, but all of them have ready: false. The Pods are Running. What is the most likely reason the Service does not respond?",
+    "options": [
+      "kube-proxy is not running on the nodes",
+      "The Pods' readiness probe fails, so no traffic is sent to them",
+      "The Service must have sessionAffinity: ClientIP",
+      "targetPort is given as a port name instead of a number"
+    ],
+    "answer": 1,
+    "explain": "A Pod that is Running but not Ready stays in the EndpointSlice with ready: false, and kube-proxy does not use it. The state of kube-proxy does not affect the ready field, and a named targetPort is perfectly valid."
+  },
+  {
+    "obj": "3.3",
+    "q": "Service web of type NodePort has nodePort 30080 and externalTrafficPolicy: Local. The only Pod runs on node01. curl node01:30080 works, and curl controlplane:30080 returns no response. What is true?",
+    "options": [
+      "A NodePort opens only on the node where the Pod runs",
+      "kube-proxy on the controlplane node is not running and needs a restart",
+      "A taint on the controlplane node blocks NodePort traffic",
+      "This is expected: with the Local policy a node without a local Pod does not forward traffic; to forward, switch back to Cluster"
+    ],
+    "answer": 3,
+    "explain": "externalTrafficPolicy: Local sends traffic only to local Ready Pods and preserves the client source IP, so a node without a Pod does not respond. A NodePort normally opens on all nodes, and a taint affects Pod scheduling, not networking."
+  },
+  {
+    "obj": "3.3",
+    "q": "An application in the cluster needs to reach a PostgreSQL database at 192.168.10.50:5432 outside the cluster through the name ext-db. You created a Service ext-db without a selector with port 5432 (name: pg). What else is needed?",
+    "options": [
+      "An EndpointSlice with the label kubernetes.io/service-name: ext-db, addressType IPv4, port pg/5432 and address 192.168.10.50",
+      "Add spec.externalIPs: [192.168.10.50] to the Service",
+      "Change the Service type to LoadBalancer with loadBalancerIP 192.168.10.50",
+      "Nothing, the EndpointSlice controller will find the address via DNS"
+    ],
+    "answer": 0,
+    "explain": "For a Service without a selector you write the endpoints yourself, and the EndpointSlice is tied to the Service by the kubernetes.io/service-name label. externalIPs and LoadBalancer are for traffic coming into the cluster, and the controller does not create endpoints when there is no selector."
+  },
+  {
+    "obj": "3.3",
+    "q": "You ran kubectl get svc and see that a LoadBalancer Service in the lab (a kubeadm cluster without a cloud provider and without MetalLB) has EXTERNAL-IP <pending>. Is the Service still reachable from outside?",
+    "options": [
+      "No, the Service is completely non-functional until it gets an EXTERNAL-IP",
+      "Yes, via <node IP>:<nodePort>, because a LoadBalancer Service includes a NodePort and a ClusterIP",
+      "Yes, but only via the ClusterIP from any machine on the network",
+      "No, you first have to fill in status.loadBalancer.ingress manually"
+    ],
+    "answer": 1,
+    "explain": "LoadBalancer builds on NodePort, so the nodePort works on all nodes even without an external balancer. The ClusterIP is reachable only from inside the cluster, and the status field is filled in by a controller, not the user."
+  },
+  {
+    "obj": "3.1",
+    "q": "Pod a on the controlplane node cannot reach Pod b (10.244.1.7) on node01, while Pods on the same node can talk to each other. There is no NetworkPolicy. What do you check first?",
+    "options": [
+      "Whether the Service for Pod b has a correct selector",
+      "The CoreDNS logs in kube-system",
+      "Whether the CNI Pod (kindnet) is running on both nodes: kubectl -n kube-system get pods -o wide, then the logs of the CNI Pod on node01",
+      "Whether kube-proxy is in ipvs mode"
+    ],
+    "answer": 2,
+    "explain": "Pod-to-Pod traffic directly to an IP does not go through a Service, kube-proxy or DNS; routes between nodes are set up by the CNI plugin. If the CNI is not working on one node, it is exactly the cross-node connections that fail."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which command most quickly shows the Pod IP range assigned to each node?",
+    "options": [
+      "kubectl get nodes -o custom-columns=NAME:.metadata.name,CIDR:.spec.podCIDR",
+      "kubectl get svc -A -o wide",
+      "kubectl -n kube-system get cm kube-proxy -o yaml",
+      "kubectl describe node | grep InternalIP"
+    ],
+    "answer": 0,
+    "explain": "kube-controller-manager writes the assigned subrange into each node's .spec.podCIDR. Services show ClusterIP addresses, and InternalIP is the address of the node itself, not the Pod range."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which statement about the Kubernetes network model is TRUE?",
+    "options": [
+      "Pods on different nodes communicate via NAT on the node's IP address",
+      "Containers in the same Pod have different IP addresses and communicate through a Service",
+      "kube-proxy assigns IP addresses to Pods",
+      "Every Pod has its own IP address and reaches every other Pod without NAT; the CNI plugin implements this"
+    ],
+    "answer": 3,
+    "explain": "The model requires one IP per Pod and Pod-to-Pod communication without NAT, and the CNI plugin implements it. Containers in a Pod share a network namespace (same IP, localhost), and kube-proxy only programs rules for Services."
+  },
+  {
+    "obj": "3.3",
+    "q": "What is the status of the kube-proxy modes in Kubernetes 1.35?",
+    "options": [
+      "nftables is the default, iptables was removed",
+      "iptables is the default, nftables is GA (since 1.33), ipvs is deprecated",
+      "ipvs is the default, nftables is alpha",
+      "All three modes are deprecated in favor of an eBPF mode"
+    ],
+    "answer": 1,
+    "explain": "In 1.35 the default mode on Linux is still iptables, nftables has been stable since 1.33 (kernel 5.13+), and ipvs is marked deprecated in 1.35. Changing the default mode to nftables has only been announced for a future version."
+  },
+  {
+    "obj": "3.6",
+    "q": "A Pod in namespace dev needs to reach Service db in namespace prod. Which name will work with the default resolv.conf?",
+    "options": [
+      "db",
+      "db.svc.cluster.local",
+      "db.prod",
+      "prod.db.cluster.local"
+    ],
+    "answer": 2,
+    "explain": "The search list contains svc.cluster.local, so db.prod is completed to db.prod.svc.cluster.local. Just db would resolve in namespace dev, and db.svc.cluster.local and prod.db.cluster.local are not a valid name structure."
+  },
+  {
+    "obj": "3.6",
+    "q": "After editing the coredns ConfigMap, all coredns Pods are in CrashLoopBackOff, and the logs say a loop was detected (Loop … detected). What is the most likely cause?",
+    "options": [
+      "The forward plugin sends queries to a resolver that sends them back to CoreDNS (e.g. the upstream is the kube-dns address itself or 127.0.0.53 on the node)",
+      "The kube-dns Service has no endpoints",
+      "ndots in the Pods is set to 5",
+      "The cache plugin has a TTL that is too short"
+    ],
+    "answer": 0,
+    "explain": "The loop plugin stops CoreDNS when it detects that a query travels back to it, which is typical of a wrong forward target. A Service without endpoints and ndots do not crash the CoreDNS Pods, and the cache TTL does not create a loop."
+  },
+  {
+    "obj": "3.6",
+    "q": "A Pod uses hostNetwork: true, and the application in it must resolve Service names like web.default.svc.cluster.local. Which dnsPolicy should be set?",
+    "options": [
+      "Default",
+      "ClusterFirst",
+      "None without dnsConfig",
+      "ClusterFirstWithHostNet"
+    ],
+    "answer": 3,
+    "explain": "A Pod on the node network with ClusterFirst effectively gets the node's DNS; ClusterFirstWithHostNet points it to CoreDNS. Default explicitly uses the node's resolv.conf, and None requires a dnsConfig with servers."
+  },
+  {
+    "obj": "3.6",
+    "q": "From a Pod, every query for api.github.com first produces several failed queries (api.github.com.default.svc.cluster.local, etc.). Why?",
+    "options": [
+      "CoreDNS has no forward plugin",
+      "options ndots:5: a name with fewer than 5 dots is first tried with all search domains",
+      "The Pod has dnsPolicy: Default",
+      "The kube-dns Service is headless"
+    ],
+    "answer": 1,
+    "explain": "With ndots:5 the resolver appends the search domains to names with fewer than 5 dots and only then sends the name as is; a trailing dot bypasses this. Without the forward plugin external names would not work at all, and dnsPolicy: Default does not use the cluster search domains."
+  },
+  {
+    "obj": "3.6",
+    "q": "What is the name of the Service through which Pods in a kubeadm cluster send DNS queries to CoreDNS, and where is the CoreDNS configuration?",
+    "options": [
+      "Service coredns in kube-system; configuration in /etc/coredns/Corefile on the controlplane node",
+      "Service kube-dns in the default namespace; configuration in the kubelet config.yaml",
+      "Service kube-dns in kube-system; configuration in the coredns ConfigMap (key Corefile)",
+      "Service dns in kube-public; configuration in the coredns Secret"
+    ],
+    "answer": 2,
+    "explain": "The Deployment is called coredns, but for compatibility the Service is called kube-dns in kube-system, and the Corefile is in the coredns ConfigMap. The kubelet configuration contains only the clusterDNS address that the kubelet writes into Pods."
+  },
+  {
+    "obj": "3.6",
+    "q": "Put the troubleshooting steps for when Pods cannot resolve Service names in order.",
+    "type": "order",
+    "options": [
+      "Look at the CoreDNS Pods and logs: kubectl -n kube-system get pods -l k8s-app=kube-dns and logs",
+      "From a one-off busybox Pod run nslookup kubernetes.default",
+      "Review the Corefile in the coredns ConfigMap",
+      "Check the kube-dns Service and its EndpointSlice"
+    ],
+    "answer": [1, 0, 3, 2],
+    "explain": "First confirm the symptom from a Pod, then check whether CoreDNS is running, then whether the kube-dns Service has endpoints, and finally the configuration. That way you go from the client to the server and do not change the configuration before you know the problem is there."
+  },
+  {
+    "obj": "3.3",
+    "q": "Match each Service type with its behavior.",
+    "type": "match",
+    "options": ["ClusterIP", "NodePort", "ExternalName", "Headless (clusterIP: None)"],
+    "targets": [
+      "DNS returns a CNAME to an external name, with no proxy",
+      "DNS returns the IP addresses of individual Pods, no virtual IP",
+      "A virtual IP reachable only from inside the cluster",
+      "A port from the 30000-32767 range opened on every node",
+      "An external balancer assigned by the cloud provider"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "ClusterIP is an internal virtual IP, NodePort adds a port on all nodes, ExternalName is just a CNAME, and a headless Service returns Pod IPs. The external balancer describes LoadBalancer, which is not in the list."
+  },
+  {
+    "obj": "3.6",
+    "q": "You must write to /root/pod-dns.txt the DNS name of the Pod with IP 10.244.1.7 in namespace web, with the default Corefile (pods insecure). Which name is correct?",
+    "options": [
+      "10.244.1.7.web.svc.cluster.local",
+      "pod-10-244-1-7.web.cluster.local",
+      "10-244-1-7.web.svc.cluster.local",
+      "10-244-1-7.web.pod.cluster.local"
+    ],
+    "answer": 3,
+    "explain": "A Pod A record has the form IP-with-dashes.namespace.pod.cluster.local. The svc domain is for Services and Pods behind headless Services, and the dots in an IP address would create a wrong name hierarchy."
+  },
+  {
+    "obj": "3.3",
+    "q": "curl http://web.shop from another pod returns connection refused. Based on the output, what is the cause?",
+    "lang": "bash",
+    "snippet": "$ kubectl -n shop get svc web -o wide\nNAME   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE   SELECTOR\nweb    ClusterIP   10.96.41.207   <none>        80/TCP    12m   app=web,tier=frontend\n$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=web\nNAME        ADDRESSTYPE   PORTS     ENDPOINTS   AGE\nweb-7kq2d   IPv4          <unset>   <unset>     12m\n$ kubectl -n shop get pods --show-labels\nNAME                  READY   STATUS    RESTARTS   AGE   LABELS\nweb-5d8f7c9b6-2xkqp   1/1     Running   0          12m   app=web,pod-template-hash=5d8f7c9b6\nweb-5d8f7c9b6-9mzt4   1/1     Running   0          12m   app=web,pod-template-hash=5d8f7c9b6",
+    "options": [
+      "CoreDNS does not resolve the name web.shop",
+      "The pods are not Ready, so they are not in the EndpointSlice",
+      "The Service selector also requires tier=frontend, which the pods don't have, so the Service has no endpoints",
+      "The Service targetPort is wrong"
+    ],
+    "answer": 2,
+    "explain": "The EndpointSlice is empty (ENDPOINTS <unset>), while the pods are 1/1 Running and Ready. The selector app=web,tier=frontend requires both labels, but the pods only have app=web. Fix: align the Service selector (kubectl edit svc web) or add the label to the Deployment's pod template. DNS works, because without a name there would be no connection attempt at all; a wrong targetPort would still produce endpoints, just with the wrong port."
+  }
+]

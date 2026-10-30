@@ -1,0 +1,6 @@
+# lokalni registry radi preko HTTP-a
+registry:
+  insecure: true
+image:
+  source:
+    - remote

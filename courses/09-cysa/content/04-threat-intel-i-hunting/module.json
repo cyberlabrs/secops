@@ -1,0 +1,11 @@
+{
+  "title": "Threat intelligence i threat hunting",
+  "title_en": "Threat Intelligence and Threat Hunting",
+  "summary": "Akteri (APT, insider), TTP-ovi, ATT&CK heat mape i Pyramid of Pain, kvalitet intela, OSINT i dijeljenje (STIX/TAXII, TLP), životni ciklus IoC-a, threat hunting zasnovan na hipotezi, STRIDE, threat mapping i cyber deception.",
+  "summary_en": "Actors (APT, insider), TTPs, ATT&CK heat maps and the Pyramid of Pain, intel quality, OSINT and sharing (STIX/TAXII, TLP), the IoC lifecycle, hypothesis-driven threat hunting, STRIDE, threat mapping and cyber deception.",
+  "minutes": 60,
+  "domain": 1,
+  "objectives": [
+    "1.4"
+  ]
+}

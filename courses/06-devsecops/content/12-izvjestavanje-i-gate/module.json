@@ -1,0 +1,12 @@
+{
+  "title": "Izvještavanje, quality gate i upravljanje nalazima",
+  "summary": "Objedinjavanje nalaza svih skenera (SARIF, izvještaji u merge requestu, DefectDojo), quality gate, trijaža uz EPSS i CISA KEV, prihvatanje rizika sa rokom, SLA i metrike poput MTTR-a i escape ratea.",
+  "minutes": 60,
+  "domain": 6,
+  "objectives": [
+    "6.2",
+    "6.3"
+  ],
+  "title_en": "Reporting, quality gates and findings management",
+  "summary_en": "Aggregating findings from all scanners (SARIF, merge request reports, DefectDojo), quality gates, triage with EPSS and CISA KEV, risk acceptance with an expiry, SLAs and metrics such as MTTR and escape rate."
+}

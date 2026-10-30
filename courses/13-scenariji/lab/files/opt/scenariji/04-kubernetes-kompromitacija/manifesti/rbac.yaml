@@ -1,0 +1,90 @@
+# RBAC za namespace shop i ono što ga dotiče (izvoz iz git repoa platform-config, 2026-10-21)
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: storefront
+  namespace: shop
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: newsletter
+  namespace: shop
+---
+# "privremeno" od 2025-03: kopija ops-debug uloge da bi storefront čitao svoj ConfigMap
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: storefront-ops
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "pods/exec", "services", "configmaps", "secrets", "namespaces"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: storefront-ops
+subjects:
+  - kind: ServiceAccount
+    name: storefront
+    namespace: shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: storefront-ops
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: newsletter-config
+  namespace: shop
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["newsletter-templates"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: newsletter-config
+  namespace: shop
+subjects:
+  - kind: ServiceAccount
+    name: newsletter
+    namespace: shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: newsletter-config
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: shop-devs
+  namespace: shop
+subjects:
+  - kind: Group
+    name: oidc:shop-devs
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus

@@ -1,0 +1,292 @@
+[
+  {
+    "obj": "5.3",
+    "q": "A company uses Amazon RDS for PostgreSQL. The security team requires the master password to be stored in AWS Secrets Manager and rotated every 30 days. The team does not want to maintain any custom rotation code. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Enable the managed master user password on the RDS instance (--manage-master-user-password) and configure the rotation schedule",
+      "Create a secret in Secrets Manager and write your own four-step rotation Lambda function",
+      "Store the password as a SecureString in Parameter Store and rotate it with an EventBridge rule that invokes a Lambda function",
+      "Generate the password in CodePipeline on every deployment and write it to RDS through CloudFormation"
+    ],
+    "answer": 0,
+    "explain": "Managed rotation means RDS itself creates the secret in Secrets Manager and rotates it without a Lambda function that you maintain. Your own Lambda function and Parameter Store solutions work, but they require code and maintenance."
+  },
+  {
+    "obj": "5.3",
+    "q": "An application keeps connections to an Aurora MySQL database open for hours and caches credentials. After rotation was introduced in Secrets Manager, some requests fail with an authentication error on every rotation until the application is restarted. How can the problem be solved while keeping rotation?",
+    "options": [
+      "Increase the rotation interval from 30 to 90 days",
+      "Switch to the alternating users rotation strategy with a superuser secret that manages the other user",
+      "Disable rotation and instead use IAM database authentication for administrators only",
+      "Move the secret to Parameter Store and read it on every query"
+    ],
+    "answer": 1,
+    "explain": "With the alternating users strategy, the previous credentials remain valid until the next rotation, so cached credentials keep working. A longer interval only reduces how often the problem occurs, and disabling rotation does not meet the requirement."
+  },
+  {
+    "obj": "5.3",
+    "q": "A secret rotation Lambda function runs in private VPC subnets without a NAT gateway so that it can reach the RDS database. Rotation fails with a timeout error in the createSecret step. What is the MOST LIKELY fix?",
+    "options": [
+      "Increase the Lambda function's memory and timeout",
+      "Add a resource policy to the secret that allows the Lambda service",
+      "Create an interface VPC endpoint for Secrets Manager in that VPC",
+      "Change the secret's KMS key to the AWS managed key aws/secretsmanager"
+    ],
+    "answer": 2,
+    "explain": "A Lambda function in a private subnet without NAT cannot reach the Secrets Manager API, so createSecret cannot call the service; an interface VPC endpoint solves this. The timeout and the KMS key are not the cause, and a resource policy does not solve network reachability."
+  },
+  {
+    "obj": "5.3",
+    "q": "A secret in account A (111111111111) must be readable by a role in account B (222222222222). The secret is encrypted with the AWS managed key aws/secretsmanager. The resource policy on the secret and the IAM policy in account B are configured correctly, but the call still fails. What should be done?",
+    "options": [
+      "Add account B to the key policy of the aws/secretsmanager key",
+      "Enable replication of the secret to account B's Region",
+      "Create a grant on the aws/secretsmanager key for the role from account B",
+      "Re-encrypt the secret with a customer managed KMS key whose key policy allows account B kms:Decrypt"
+    ],
+    "answer": 3,
+    "explain": "The key policy of an AWS managed key cannot be changed, so such a key does not support cross-account access to a secret. You need a customer managed key with a key policy that allows account B; replication does not change the account."
+  },
+  {
+    "obj": "5.3",
+    "q": "A team needs to store 200 configuration values hierarchically by environment (/app/prod/…), about ten of which are sensitive. Rotation is not needed, and the goal is the LOWEST cost. Which solution meets the requirements?",
+    "options": [
+      "Systems Manager Parameter Store, with SecureString parameters for the sensitive values",
+      "AWS Secrets Manager for all values",
+      "An S3 bucket with SSE-KMS and a JSON file per environment",
+      "A DynamoDB table with client-side encryption"
+    ],
+    "answer": 0,
+    "explain": "Parameter Store is built for hierarchical configuration, and SecureString encrypts sensitive values with a KMS key with no separate charge in the standard tier. Secrets Manager is charged per secret and brings rotation, which is not needed here."
+  },
+  {
+    "obj": "5.3",
+    "q": "An application runs active-passive in eu-central-1 and eu-west-1. Database credentials are stored in Secrets Manager in eu-central-1 with rotation. After a failover, the application in eu-west-1 must read the same credentials locally. Which solution meets the requirement with the LEAST effort?",
+    "options": [
+      "Create a second secret in eu-west-1 and copy the value with a Lambda function after each rotation",
+      "Replicate the secret to eu-west-1 with the Secrets Manager replication feature",
+      "Keep a copy in Parameter Store in eu-west-1",
+      "The application in eu-west-1 should read the secret cross-Region from eu-central-1"
+    ],
+    "answer": 1,
+    "explain": "A secret replica is automatically synchronized with the primary, including rotated values, and is read locally in the other Region. Manual copying adds code, and cross-Region reading does not work if the primary Region is unavailable."
+  },
+  {
+    "obj": "5.3",
+    "q": "The security team requires that the data-pipeline role may decrypt data with a KMS key only when the request comes through Amazon S3, not when the role calls kms:Decrypt directly from the CLI. Which condition should be added to the key policy?",
+    "options": [
+      "aws:SourceIp with the VPC range",
+      "kms:CallerAccount with the account ID",
+      "kms:ViaService with the value s3.<region>.amazonaws.com",
+      "aws:PrincipalOrgID with the organization ID"
+    ],
+    "answer": 2,
+    "explain": "kms:ViaService allows use of the key only for requests that the named service sends on the principal's behalf. SourceIp, CallerAccount, and PrincipalOrgID do not distinguish a direct call from a call through S3."
+  },
+  {
+    "obj": "5.3",
+    "q": "A new KMS key was created through CloudFormation with a key policy that grants rights only to the KeyAdmin role. The account administrator has the AdministratorAccess IAM policy but cannot use the key for encryption. What is the cause?",
+    "options": [
+      "AdministratorAccess does not include kms:* actions",
+      "The key is in the Pending import state",
+      "An organization SCP blocks all KMS actions",
+      "The key policy has no statement that enables IAM policies (the account's root principal), so IAM policies have no effect"
+    ],
+    "answer": 3,
+    "explain": "IAM policies for KMS work only if the key policy enables them with a statement for the account's root principal. Without it, only the principals explicitly named in the key policy have access, regardless of AdministratorAccess."
+  },
+  {
+    "obj": "5.3",
+    "q": "Compliance requires annual rotation of the material of the KMS keys that protect S3 and EBS data. Applications must not change the key ARN, and the data must not be re-encrypted. The keys are symmetric customer managed keys generated by KMS. What should be done?",
+    "options": [
+      "Enable automatic key rotation on the keys (365-day period)",
+      "Create a new key every year and move the alias",
+      "Re-encrypt all objects with a new key every year using S3 Batch Operations",
+      "Switch to AWS managed keys"
+    ],
+    "answer": 0,
+    "explain": "Automatic rotation changes only the material; the key ID and ARN stay the same, and the old material remains for decrypting existing data. A new key with an alias changes the ARN, and re-encryption is not necessary."
+  },
+  {
+    "obj": "5.3",
+    "q": "An engineer mistakenly scheduled the deletion of a customer managed KMS key that protects a production RDS database, and this was noticed the next day. What can be done?",
+    "options": [
+      "The key was deleted immediately; the data can be restored only from snapshots encrypted with another key",
+      "If the waiting period (7–30 days) is still in progress, the deletion can be canceled with CancelKeyDeletion and the key re-enabled",
+      "AWS Support can restore a deleted key within 90 days",
+      "The same key material must be imported again into a new key"
+    ],
+    "answer": 1,
+    "explain": "Deleting a KMS key always has a waiting period of 7 to 30 days during which it can be canceled; after cancellation the key must be re-enabled. After the period expires, the key is permanently unrecoverable."
+  },
+  {
+    "obj": "5.3",
+    "q": "A DynamoDB global table in us-east-1 and eu-west-1 contains attributes encrypted client-side with a KMS key. The application in eu-west-1 must decrypt the data locally even when us-east-1 is unavailable. Which solution meets the requirement?",
+    "options": [
+      "Use the same single-Region key from us-east-1 cross-Region",
+      "Create an independent key in eu-west-1 and re-encrypt the data during replication",
+      "Use a multi-Region primary key in us-east-1 and a replica key in eu-west-1",
+      "Use the DynamoDB AWS owned key"
+    ],
+    "answer": 2,
+    "explain": "Multi-Region keys share the same material and key ID, so the replica in eu-west-1 decrypts ciphertext created in us-east-1 without calling that Region. A single-Region key depends on us-east-1, and an independent key requires re-encryption."
+  },
+  {
+    "obj": "5.3",
+    "q": "A regulator requires that the key material be generated in the company's on-premises HSM, that the copy outside AWS be the original source, and that the company can at any moment immediately make the key unusable in AWS and later restore it without data loss. AWS services (S3, EBS) must keep using the key normally. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "An external key store (XKS) connected to the on-premises HSM",
+      "An AWS CloudHSM cluster without KMS integration",
+      "Client-side encryption with an on-premises key before sending to S3",
+      "A KMS key with imported key material; when needed, DeleteImportedKeyMaterial and later re-import the same material"
+    ],
+    "answer": 3,
+    "explain": "You generate imported material (BYOK) yourself, keep the original, and can delete it immediately and then re-import the same material. XKS also meets the requirements, but it needs a proxy and constant availability of the on-premises system, which is much more effort; CloudHSM without KMS does not work with SSE-KMS."
+  },
+  {
+    "obj": "5.3",
+    "q": "A bank must prove that the key material protecting its data in AWS never leaves its external key manager and that all cryptographic operations with that key are performed outside AWS. The data is in S3 and EBS. Which solution meets the requirement?",
+    "options": [
+      "A KMS external key store (XKS) with an XKS proxy to the external key manager",
+      "A KMS key with imported key material that expires every 30 days",
+      "An AWS CloudHSM key store",
+      "A multi-Region KMS key with a replica in the bank's Region"
+    ],
+    "answer": 0,
+    "explain": "XKS (hold your own key) performs operations in the external key manager, and the material is never in AWS. Imported material is a copy in KMS, and a CloudHSM key store keeps the material in HSMs inside AWS."
+  },
+  {
+    "obj": "5.3",
+    "q": "A company must keep its KMS keys in single-tenant HSMs under its own control, but wants S3, EBS, and RDS to keep using the keys through the standard KMS integration. Which solution meets the requirement?",
+    "options": [
+      "An AWS CloudHSM cluster and the PKCS#11 library in the applications",
+      "An AWS KMS custom key store of type AWS CloudHSM, with a cluster of at least two HSMs in different AZs",
+      "A KMS key with imported key material",
+      "AWS owned keys with rotation enabled"
+    ],
+    "answer": 1,
+    "explain": "A CloudHSM key store provides KMS keys whose material is in your single-tenant CloudHSM cluster, and services use them like any other KMS key. CloudHSM alone without KMS has no SSE-KMS integration, and imported material is still in the multi-tenant KMS HSMs."
+  },
+  {
+    "obj": "5.3",
+    "q": "A KMS key with imported key material has an expiration date for the material. The team wants to be warned 14 days before expiration so it can re-import the material in time. What is the SIMPLEST solution?",
+    "options": [
+      "An AWS Config rule that checks the key policy",
+      "A daily cron job on EC2 that calls describe-key and sends an email",
+      "A CloudWatch alarm on the KMS metric for the time until imported key material expiration, with an SNS notification",
+      "A GuardDuty finding for KMS"
+    ],
+    "answer": 2,
+    "explain": "KMS publishes a CloudWatch metric for the time remaining until imported material expires, so an alarm with a 14-day threshold meets the requirement with no code. A cron job on EC2 works but requires maintenance, and Config and GuardDuty do not track material expiration."
+  },
+  {
+    "obj": "5.3",
+    "q": "A payments application writes requests to CloudWatch Logs that sometimes contain card numbers and email addresses. Developers must read the logs but must not see that data; the security team must be able to see the originals. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "Amazon Macie on the log group",
+      "A subscription filter to a Lambda function that removes the data and writes to a new log group",
+      "Encrypt the log group with a KMS key that developers cannot access",
+      "A CloudWatch Logs data protection policy with managed data identifiers, with logs:Unmask allowed only for the security role"
+    ],
+    "answer": 3,
+    "explain": "A data protection policy masks sensitive data at ingestion on all outputs, and only principals with logs:Unmask see the original. Macie does not mask logs, the Lambda solution requires code, and a KMS key would deny developers the entire log."
+  },
+  {
+    "obj": "5.3",
+    "q": "After a CloudWatch Logs data protection policy was enabled on a log group, an auditor notices that card numbers from last month are still visible in Logs Insights. What is the explanation?",
+    "options": [
+      "The policy masks only data ingested after it was enabled; old events remain unmasked",
+      "Logs Insights does not honor data protection policies",
+      "A log group policy does not work until an account-level policy is also enabled",
+      "The auditor has the logs:Unmask permission through AdministratorAccess, so they see everything"
+    ],
+    "answer": 0,
+    "explain": "Masking happens at ingestion, so events ingested before the policy are not masked. Logs Insights is a masked output, and a log group policy works on its own."
+  },
+  {
+    "obj": "5.3",
+    "q": "A web application behind an Amazon CloudFront distribution with an ALB origin in eu-central-1 needs HTTPS with a custom domain. The team requested an ACM certificate in eu-central-1 but cannot select it in the CloudFront settings. What should be done?",
+    "options": [
+      "Export the certificate from eu-central-1 and import it into CloudFront",
+      "Request an ACM certificate for the same domain in us-east-1 and use it on the CloudFront distribution",
+      "Use an AWS Private CA certificate",
+      "Move the ALB to us-east-1"
+    ],
+    "answer": 1,
+    "explain": "CloudFront uses only ACM certificates from us-east-1, regardless of the origin's Region. Public ACM certificates for this purpose are not transferred between Regions, and a private certificate would not be trusted by browsers."
+  },
+  {
+    "obj": "5.3",
+    "q": "A company has 60 accounts in AWS Organizations. Internal microservices need private TLS certificates for mTLS, from one CA managed by the security team, with automatic renewal. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Run your own CA (OpenSSL) on EC2 in the security account and distribute certificates through S3",
+      "Create an AWS Private CA in every account",
+      "Create an AWS Private CA in the security account, share it with the organization through AWS RAM, and issue certificates through ACM in the application accounts",
+      "Use public ACM certificates with DNS validation for internal domains"
+    ],
+    "answer": 2,
+    "explain": "A central Private CA shared through RAM lets every account issue certificates through ACM, which renews them automatically. A CA in every account increases cost and management, and your own CA on EC2 is the most effort."
+  },
+  {
+    "obj": "5.3",
+    "q": "Containers on Amazon EKS live for a few hours and need client certificates. The team does not want to maintain CRL or OCSP infrastructure and wants a lower CA cost. Which two steps meet the requirements? (Choose TWO.)",
+    "options": [
+      "Create an AWS Private CA in short-lived certificate mode as the last CA in the hierarchy",
+      "Issue certificates valid for up to 7 days and renew them automatically in the containers",
+      "Issue certificates through ACM from that CA so that they renew automatically",
+      "Enable OCSP on the root CA",
+      "Use a general-purpose CA with a certificate validity of 13 months"
+    ],
+    "answer": [0, 1],
+    "explain": "Short-lived mode is cheaper and issues certificates of up to 7 days, so revocation is not needed. ACM cannot issue certificates from a short-lived CA, and OCSP and long-lived certificates are exactly what the team wants to avoid."
+  },
+  {
+    "obj": "5.3",
+    "type": "order",
+    "q": "Put the steps for creating a KMS key with imported material (BYOK) in the correct order.",
+    "options": [
+      "Import the encrypted material with the import token and set the expiration model",
+      "Create a KMS key without material (origin EXTERNAL)",
+      "Encrypt your own key material with the public wrapping key",
+      "Download the public wrapping key and import token (GetParametersForImport)",
+      "Create a CloudWatch alarm for material expiration"
+    ],
+    "answer": [1, 3, 2, 0, 4],
+    "explain": "First the key is created without material, then the wrapping key and token are downloaded, the material is encrypted locally and imported. An expiration alarm makes sense only once material with an expiration date exists."
+  },
+  {
+    "obj": "5.3",
+    "type": "order",
+    "q": "Put the steps of Lambda rotation of a secret in AWS Secrets Manager in order.",
+    "options": [
+      "testSecret: verify that the new value works on the database",
+      "finishSecret: move the AWSCURRENT label to the new version",
+      "createSecret: generate a new value as AWSPENDING",
+      "setSecret: set the new value in the database"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Rotation goes createSecret, setSecret, testSecret, finishSecret. Only after a successful test does the new version get AWSCURRENT, and the old one becomes AWSPREVIOUS."
+  },
+  {
+    "obj": "5.3",
+    "type": "match",
+    "q": "Match the requirement with the BEST solution.",
+    "options": [
+      "Key material must never be in AWS",
+      "Immediately make the key unusable and later restore it with the same material",
+      "A single-tenant HSM, but with SSE-KMS integration with AWS services",
+      "Decrypt the same ciphertext in two Regions without calling the other Region",
+      "A role may use the key only through Amazon EBS"
+    ],
+    "targets": [
+      "kms:ViaService condition",
+      "Multi-Region key",
+      "Imported key material",
+      "External key store (XKS)",
+      "CloudHSM key store",
+      "AWS owned key"
+    ],
+    "answer": [3, 2, 4, 1, 0],
+    "explain": "XKS keeps the material outside AWS; imported material can be deleted and re-imported; a CloudHSM key store provides a single-tenant HSM with KMS integration; a multi-Region key shares material between Regions; kms:ViaService restricts use to a service. An AWS owned key matches nothing here."
+  }
+]

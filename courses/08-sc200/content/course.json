@@ -1,0 +1,48 @@
+{
+  "code": "SC-200",
+  "badge": "SC-200",
+  "order": 8,
+  "title": "Microsoft Security Operations Analyst (SC-200)",
+  "subtitle": "Trening za SC-200 po ciljevima ispita od 21. 10. 2026: Microsoft Sentinel (SIEM, data lake, analytics, automatizacija), Defender XDR i Defender for Endpoint, Purview istrage i threat hunting u KQL-u, sa KQL labovima nad Microsoftovim primjerima podataka, bez interneta.",
+  "lab": {
+    "image": "kurs-sc200-lab:1",
+    "caps": [],
+    "memoryMB": 1536,
+    "setupTimeout": 120
+  },
+  "exam": {
+    "size": 50,
+    "minutes": 100,
+    "pass": 700,
+    "scaleMin": 100,
+    "scaleMax": 1000,
+    "note": "Pravi SC-200 ima oko 40–60 pitanja (višestruki izbor, studije slučaja, drag-and-drop), traje 100 minuta, prolaz je 700/1000; certifikat važi godinu dana i obnavlja se besplatnom online procjenom. KQL se na ispitu čita i dopunjava, ne izvršava.",
+    "note_en": "The real SC-200 has about 40–60 questions (multiple choice, case studies, drag-and-drop), lasts 100 minutes, and the passing score is 700/1000; the certification is valid for one year and is renewed through a free online assessment. On the exam, KQL is read and completed, not executed.",
+    "domains": [
+      { "n": 1, "name": "Manage a security operations environment", "weight": 42 },
+      { "n": 2, "name": "Respond to security incidents", "weight": 38 },
+      { "n": 3, "name": "Perform threat hunting", "weight": 20 }
+    ]
+  },
+  "objectives": [
+    { "id": "1.1", "en": "Configure automation for Microsoft Defender XDR and Microsoft Sentinel", "bs": "Konfiguracija automatizacije za Defender XDR i Sentinel" },
+    { "id": "1.2", "en": "Configure the Microsoft Sentinel SIEM and platform", "bs": "Konfiguracija Sentinel SIEM-a i platforme" },
+    { "id": "1.3", "en": "Ingest data into the Microsoft Sentinel SIEM and platform", "bs": "Unos podataka u Sentinel SIEM i platformu" },
+    { "id": "1.4", "en": "Configure detections", "bs": "Konfiguracija detekcija" },
+    { "id": "2.1", "en": "Respond to alerts and incidents in Microsoft Defender XDR", "bs": "Odgovor na alarme i incidente u Defender XDR-u" },
+    { "id": "2.2", "en": "Respond to alerts and incidents in Microsoft Defender for Endpoint", "bs": "Odgovor na alarme i incidente u Defender for Endpointu" },
+    { "id": "2.3", "en": "Investigate Microsoft 365 activities to identify threats", "bs": "Istraga Microsoft 365 aktivnosti" },
+    { "id": "3.1", "en": "Detect threats by using Microsoft Defender XDR (KQL, advanced hunting, hunting graphs)", "bs": "Otkrivanje prijetnji u Defender XDR-u (KQL, advanced hunting, grafovi)" },
+    { "id": "3.2", "en": "Detect threats by using the Microsoft Sentinel platform (hunting queries, data lake KQL jobs, summary rules, notebooks)", "bs": "Otkrivanje prijetnji u Sentinel platformi (hunting upiti, data lake KQL jobovi, summary rules, notebooks)" }
+  ],
+  "sources": [
+    { "title": "SC-200 study guide (skills measured)", "url": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/sc-200" },
+    { "title": "Microsoft Sentinel dokumentacija", "url": "https://learn.microsoft.com/en-us/azure/sentinel/", "title_en": "Microsoft Sentinel documentation" },
+    { "title": "Microsoft Defender XDR dokumentacija", "url": "https://learn.microsoft.com/en-us/defender-xdr/", "title_en": "Microsoft Defender XDR documentation" },
+    { "title": "KQL referenca", "url": "https://learn.microsoft.com/en-us/kusto/query/", "title_en": "KQL reference" },
+    { "title": "Azure-Sentinel GitHub (primjeri podataka, MIT)", "url": "https://github.com/Azure/Azure-Sentinel", "title_en": "Azure-Sentinel GitHub (sample data, MIT)" },
+    { "title": "Kusto-Loco (lokql, KQL engine za lab)", "url": "https://github.com/NeilMacMullen/kusto-loco", "title_en": "Kusto-Loco (lokql, KQL engine for the lab)" }
+  ],
+  "title_en": "Microsoft Security Operations Analyst (SC-200)",
+  "subtitle_en": "SC-200 training aligned with the exam objectives as of 21 Oct 2026: Microsoft Sentinel (SIEM, data lake, analytics, automation), Defender XDR and Defender for Endpoint, Purview investigations and threat hunting in KQL, with offline KQL labs over Microsoft sample data."
+}

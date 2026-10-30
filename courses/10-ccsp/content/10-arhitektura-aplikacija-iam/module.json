@@ -1,0 +1,12 @@
+{
+  "title": "Arhitektura cloud aplikacija i IAM",
+  "summary": "Dopunske komponente (WAF, DAM, XML firewall, API gateway, load balancer), kriptografija i sandboxing u cloud aplikacijama, mikroservisi, kontejneri i Kubernetes, te dizajn IAM-a: IdP, federacija (SAML, OAuth, OIDC), SSO, MFA, CASB i upravljanje tajnama, ključevima i certifikatima.",
+  "minutes": 75,
+  "domain": 4,
+  "objectives": [
+    "4.6",
+    "4.7"
+  ],
+  "title_en": "Cloud application architecture and IAM",
+  "summary_en": "Supplemental components (WAF, DAM, XML firewall, API gateway, load balancer), cryptography and sandboxing in cloud applications, microservices, containers, and Kubernetes, and IAM design: IdP, federation (SAML, OAuth, OIDC), SSO, MFA, CASB, and secrets, key, and certificate management."
+}

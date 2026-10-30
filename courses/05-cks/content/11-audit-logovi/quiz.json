@@ -1,0 +1,228 @@
+[
+  {
+    "obj": "6.5",
+    "q": "Audit Policy ima ova pravila redom: (1) level: Metadata bez filtera, (2) level: RequestResponse za resources pods u namespaceu prod. Na kom nivou se loguje kubectl -n prod delete pod web?",
+    "options": [
+      "Metadata, jer prvo pravilo koje se poklopi određuje nivo",
+      "RequestResponse, jer je specifičnije pravilo jače",
+      "RequestResponse, jer se uzima najviši nivo od svih poklopljenih pravila",
+      "Nijedan, jer se pravila međusobno isključuju"
+    ],
+    "answer": 0,
+    "explain": "Pravila se porede redom i prvo poklapanje pobjeđuje; pravilo bez filtera poklapa sve. Specifičnost i 'najviši nivo' ne igraju ulogu, pa catch-all mora ići na kraj."
+  },
+  {
+    "obj": "6.5",
+    "q": "Zadatak kaže: 'Secrets loguj tako da se vidi ko im je pristupio, ali sadržaj Secreta nikad ne smije završiti u logu.' Koji nivo biraš?",
+    "options": [
+      "Request",
+      "Metadata",
+      "RequestResponse sa omitStages: [ResponseComplete]",
+      "None"
+    ],
+    "answer": 1,
+    "explain": "Metadata bilježi korisnika, verb, objekat i rezultat bez tijela. Request bi upisao vrijednost kod create/update, RequestResponse kod get, a None ne bi zabilježio ni ko je pristupio."
+  },
+  {
+    "obj": "6.5",
+    "q": "Audit log je ogroman i skoro svaki zahtjev ima dva zapisa: jedan bez responseStatus i jedan sa njim. Šta dodaješ u Policy?",
+    "options": [
+      "omitStages: [ResponseComplete]",
+      "level: None za verbs [get]",
+      "omitStages: [RequestReceived]",
+      "--audit-log-maxsize=1"
+    ],
+    "answer": 2,
+    "explain": "Događaj u fazi RequestReceived nastaje prije obrade i nema rezultat; izostavljanjem ostaje samo ResponseComplete. Izostavljanje ResponseComplete bi bacilo baš zapise sa rezultatom, a maxsize samo rotira fajl."
+  },
+  {
+    "obj": "6.5",
+    "q": "Dodao si --audit-policy-file=/etc/kubernetes/audit/policy.yaml i --audit-log-path=/var/log/kubernetes/audit/audit.log u kube-apiserver.yaml. Nakon dva minuta kubectl vraća 'connection refused', a crictl logs za kube-apiserver kaže da policy fajl ne postoji, iako ls na čvoru pokazuje fajl. Šta je uzrok?",
+    "options": [
+      "Policy fajl ima pogrešne dozvole na hostu",
+      "Treba restartovati kubelet sa systemctl restart kubelet",
+      "Flag --audit-log-path mora biti naveden prije --audit-policy-file",
+      "Nedostaju hostPath volumen i volumeMount za policy fajl u manifestu"
+    ],
+    "answer": 3,
+    "explain": "API server radi u kontejneru i vidi samo montirane putanje. Fajl postoji na hostu, ali ne i u kontejneru. Kubelet sam primjećuje izmjenu manifesta, a redoslijed flagova nije bitan."
+  },
+  {
+    "obj": "6.5",
+    "q": "Zadatak: čuvaj najviše 5 starih audit fajlova, svaki rotiraj na 100 MB i briši fajlove starije od 30 dana. Koji skup flagova je ispravan?",
+    "options": [
+      "--audit-log-maxbackup=5 --audit-log-maxsize=100 --audit-log-maxage=30",
+      "--audit-log-maxbackup=30 --audit-log-maxsize=100 --audit-log-maxage=5",
+      "--audit-log-maxbackup=5 --audit-log-maxsize=100M --audit-log-maxage=30d",
+      "--audit-log-maxfiles=5 --audit-log-maxsize=100 --audit-log-maxage=30"
+    ],
+    "answer": 0,
+    "explain": "maxbackup je broj fajlova, maxsize je u megabajtima, maxage u danima, sve kao cijeli brojevi bez jedinica. Flag --audit-log-maxfiles ne postoji, a druga opcija zamjenjuje broj fajlova i dane."
+  },
+  {
+    "obj": "6.5",
+    "q": "Montirao si log direktorij ovako: volumeMount mountPath: /var/log/kubernetes/audit/, readOnly: true; volumen hostPath path: /var/log/kubernetes/audit/, type: DirectoryOrCreate. Šta će se desiti?",
+    "options": [
+      "Sve radi, readOnly se odnosi samo na host",
+      "API server ne može da piše audit log jer je mount samo za čitanje",
+      "kubelet odbija manifest jer DirectoryOrCreate ne podržava readOnly",
+      "Log se piše na stdout umjesto u fajl"
+    ],
+    "answer": 1,
+    "explain": "readOnly: true čini mount nepromjenljivim unutar kontejnera, pa API server ne može da kreira ni dopiše audit.log. Kombinacija sa DirectoryOrCreate je sintaksno dozvoljena, a log ne prelazi automatski na stdout."
+  },
+  {
+    "obj": "6.5",
+    "q": "Pravilo glasi: level: RequestResponse, resources: [{group: \"\", resources: [\"pods\"]}]. U logu nema nijednog zapisa o kubectl exec u Podove. Zašto?",
+    "options": [
+      "exec ide preko kubeleta i API server ga ne vidi",
+      "exec je non-resource URL i treba ga dodati u nonResourceURLs",
+      "exec je podresurs pods/exec, koji resources: [\"pods\"] ne obuhvata",
+      "RequestResponse ne podržava verb create"
+    ],
+    "answer": 2,
+    "explain": "kubectl exec je create nad podresursom pods/exec; 'pods' ne uključuje podresurse, pa treba 'pods/exec' ili 'pods/*'. Zahtjev ide preko API servera i jeste resource zahtjev."
+  },
+  {
+    "obj": "6.5",
+    "q": "Želiš da isključiš šum: ne loguj čitanje events objekata, ali loguj njihovo kreiranje. Koje pravilo, postavljeno na vrh liste, to radi?",
+    "options": [
+      "level: None, resources: [{group: \"\", resources: [\"events\"]}]",
+      "level: Metadata, resources: [{group: \"\", resources: [\"events\"]}], verbs: [create]",
+      "level: None, nonResourceURLs: [\"/api/v1/events*\"]",
+      "level: None, resources: [{group: \"\", resources: [\"events\"]}], verbs: [get, list, watch]"
+    ],
+    "answer": 3,
+    "explain": "None sa verbs get/list/watch utišava samo čitanje, a create pada na kasnija pravila. Bez verbs bi se utišalo i kreiranje, events nisu non-resource URL, a Metadata za create ne utišava čitanje."
+  },
+  {
+    "obj": "6.5",
+    "q": "Koja jq komanda pronalazi ko je obrisao Secret db-pass u namespaceu prod?",
+    "options": [
+      "jq 'select(.verb==\"delete\" and .objectRef.resource==\"secrets\" and .objectRef.namespace==\"prod\" and .objectRef.name==\"db-pass\") | .user.username' audit.log",
+      "jq '.items[] | select(.kind==\"Secret\" and .metadata.name==\"db-pass\") | .user' audit.log",
+      "jq 'select(.method==\"DELETE\" and .path==\"/secrets/db-pass\") | .username' audit.log",
+      "jq 'select(.objectRef.kind==\"Secret\" and .verb==\"remove\") | .user.username' audit.log"
+    ],
+    "answer": 0,
+    "explain": "Audit log je JSON Lines sa poljima verb, objectRef.resource/namespace/name i user.username. Nema niza items, polja method/path, objectRef.kind ni verba remove."
+  },
+  {
+    "obj": "6.5",
+    "q": "Tražiš ko je pročitao Secret api-token u namespaceu prod. Filter verb==\"get\" and objectRef.name==\"api-token\" ne vraća ništa, ali sumnjaš na ServiceAccount backup. Šta je najvjerovatnije propušteno?",
+    "options": [
+      "Audit log ne bilježi zahtjeve ServiceAccounta",
+      "Čitanje preko list: objectRef.name je tada prazan, pa ga filter po imenu ne hvata",
+      "Secret je pročitan preko etcd, pa nema zapisa",
+      "get nad Secretima se loguje samo na nivou RequestResponse"
+    ],
+    "answer": 1,
+    "explain": "kubectl get secrets (list) vraća sve Secrete u namespaceu, a događaj nema ime objekta. ServiceAccounti se loguju kao system:serviceaccount:<ns>:<ime>, a Metadata nivo bilježi i get."
+  },
+  {
+    "obj": "6.5",
+    "q": "U audit događaju vidiš user.username: system:serviceaccount:prod:backup, verb: delete, objectRef.resource: secrets, responseStatus.code: 403. Šta se desilo?",
+    "options": [
+      "ServiceAccount je uspješno obrisao Secret",
+      "Secret nije postojao",
+      "ServiceAccount backup iz namespacea prod je pokušao brisanje, ali ga je autorizacija odbila",
+      "API server je odbio zahtjev zbog ImagePolicyWebhooka"
+    ],
+    "answer": 2,
+    "explain": "403 Forbidden znači da RBAC nije dozvolio akciju; uspjeh bi bio 200, nepostojeći objekat 404. Pokušaj je i dalje važan trag: neko koristi token tog ServiceAccounta za radnje koje mu ne pripadaju."
+  },
+  {
+    "obj": "6.5",
+    "q": "Nakon izmjene manifesta kube-apiservera, crictl ps -a ne pokazuje nijedan kube-apiserver kontejner, ni ugašen. Gdje prvo gledaš?",
+    "options": [
+      "kubectl -n kube-system logs kube-apiserver-controlplane",
+      "/var/log/kubernetes/audit/audit.log",
+      "systemctl status kube-apiserver",
+      "journalctl -u kubelet, jer kubelet nije uspio ni da napravi Pod (parsiranje manifesta ili montiranje)"
+    ],
+    "answer": 3,
+    "explain": "Ako kontejner uopšte ne postoji, problem je prije starta: kubelet ne može da parsira manifest ili montira volumen, i to piše u njegovom journalu. kubectl ne radi bez API servera, a kube-apiserver nije systemd servis u kubeadm klasteru."
+  },
+  {
+    "obj": "6.5",
+    "q": "Koja kombinacija hostPath tipova je ispravna za audit konfiguraciju u static Pod manifestu?",
+    "options": [
+      "Policy: type File (readOnly); log: type DirectoryOrCreate za direktorij (upisiv)",
+      "Policy: type DirectoryOrCreate; log: type File za audit.log",
+      "Policy: type FileOrCreate; log: type File (readOnly)",
+      "Oba: type Directory za /etc/kubernetes"
+    ],
+    "answer": 0,
+    "explain": "Policy fajl mora postojati, pa je File odgovarajući i mount je samo za čitanje. Za log se montira direktorij koji se kreira ako ne postoji, jer audit.log i rotirani fajlovi nastaju u radu. File za nepostojeći log fajl ruši start Poda."
+  },
+  {
+    "obj": "6.5",
+    "q": "Koje DVIJE situacije sprečavaju da se kube-apiserver podigne nakon uključivanja auditinga? (Izaberi DVA.)",
+    "options": [
+      "Policy fajl ima apiVersion: audit.k8s.io/v1 i samo jedno pravilo level: Metadata",
+      "Policy fajl ima rules: [] (nijedno pravilo)",
+      "--audit-log-path pokazuje na putanju čiji direktorij nije montiran",
+      "Policy ne sadrži omitStages",
+      "--audit-log-maxbackup nije naveden"
+    ],
+    "answer": [1, 2],
+    "explain": "Policy bez pravila je nevažeći, a log na nemontiranoj putanji API server ne može da otvori. Policy sa jednim Metadata pravilom je ispravan, a omitStages i maxbackup su opcioni."
+  },
+  {
+    "obj": "6.5",
+    "q": "Napravio si kopiju manifesta komandom cp kube-apiserver.yaml kube-apiserver.yaml.bak u direktoriju /etc/kubernetes/manifests/. Zašto je to loše?",
+    "options": [
+      "Kubelet ne čita fajlove sa ekstenzijom .bak, pa nema problema",
+      "Kopija zauzima previše mjesta na disku",
+      "Kubelet razmatra fajlove u tom direktoriju kao static Pod manifeste, pa kopija može izazvati konflikt sa originalom",
+      "kubeadm upgrade će prepisati kopiju"
+    ],
+    "answer": 2,
+    "explain": "Kubelet pokušava da pokrene manifeste iz staticPodPath, a dva manifesta za isti Pod na istom portu se sudaraju. Kopiju uvijek drži van direktorija manifests (npr. /root)."
+  },
+  {
+    "obj": "6.5",
+    "type": "order",
+    "q": "Poredaj korake uključivanja audit logovanja na kubeadm controlplaneu.",
+    "options": [
+      "Dodaj flagove --audit-policy-file i --audit-log-path (i maxage/maxbackup/maxsize) u manifest",
+      "Napravi kopiju kube-apiserver.yaml van /etc/kubernetes/manifests",
+      "Sačekaj da kube-apiserver bude Running i provjeri tail audit.log | jq",
+      "Napiši Policy fajl u /etc/kubernetes/audit/policy.yaml",
+      "Dodaj hostPath volumene i volumeMounts za policy fajl i log direktorij"
+    ],
+    "answer": [1, 3, 0, 4, 2],
+    "explain": "Prvo rezervna kopija, zatim Policy fajl koji mora postojati prije starta, pa izmjene manifesta (flagovi i volumeni u istoj sesiji uređivanja) i na kraju provjera da API server radi i da log nastaje."
+  },
+  {
+    "obj": "6.5",
+    "type": "match",
+    "q": "Upari polje audit događaja sa pitanjem na koje odgovara u istrazi.",
+    "options": [
+      "user.username",
+      "objectRef",
+      "responseStatus.code",
+      "sourceIPs"
+    ],
+    "targets": [
+      "Da li je zahtjev uspio ili je odbijen",
+      "Sa koje adrese je zahtjev poslat",
+      "Ko je poslao zahtjev",
+      "Kojim alatom je zahtjev poslat",
+      "Nad kojim resursom, u kom namespaceu i nad kojim objektom"
+    ],
+    "answer": [2, 4, 0, 1],
+    "explain": "username je identitet, objectRef opisuje objekat, responseStatus.code rezultat, a sourceIPs adresu klijenta. Alat (kubectl, curl) je u polju userAgent, koje ovdje nije ponuđeno."
+  },
+  {
+    "type": "spot",
+    "obj": "6.5",
+    "q": "Zahtjev: Secreti se bilježe samo na nivou Metadata (nikad sadržaj), kubectl exec sa punim detaljima, sve ostalo Metadata. U audit logu ipak vidiš sadržaj Secreta. Klikni red koji je uzrok.",
+    "snippet": "apiVersion: audit.k8s.io/v1\nkind: Policy\nrules:\n- level: None\n  resources:\n  - group: \"\"\n    resources: [\"events\"]\n- level: RequestResponse\n  resources:\n  - group: \"\"\n    resources: [\"secrets\", \"pods/exec\"]\n- level: Metadata\n  resources:\n  - group: \"\"\n    resources: [\"secrets\"]\n- level: Metadata",
+    "lang": "yaml",
+    "answer": [
+      10
+    ],
+    "explain": "Pravila se porede redom i prvo koje se poklopi određuje nivo. Pravilo RequestResponse u listi resursa ima i secrets, pa svaki zahtjev nad Secretima dobija pun zapis sa sadržajem, a kasnije pravilo Metadata za secrets se nikad ne primijeni. Ispravka: iz tog reda ukloni \"secrets\" (ostaje [\"pods/exec\"]) ili pravilo Metadata za secrets premjesti iznad pravila RequestResponse."
+  }
+]

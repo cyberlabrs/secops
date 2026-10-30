@@ -1,0 +1,308 @@
+[
+  {
+    "obj": "3.3",
+    "q": "A forensic investigator created a disk image of a compromised laptop. How can they BEST prove that the analyzed copy has not been altered compared to the original?",
+    "options": [
+      "Compare file sizes in bytes",
+      "Compare the SHA-256 hash of the original and the copy recorded at collection",
+      "Write the analyst's name in the ticket",
+      "Store the copy on an encrypted disk"
+    ],
+    "answer": 1,
+    "explain": "Data integrity validation is done with a cryptographic hash: the same hash means identical content. Size doesn't guarantee integrity, a name in the ticket is part of the chain of custody, and encryption protects confidentiality, it doesn't prove the data is unchanged."
+  },
+  {
+    "obj": "3.3",
+    "q": "Evidence was challenged in court because no one can explain where the disk was and who had access to it between two dates. What was violated?",
+    "options": [
+      "Legal hold",
+      "Order of volatility",
+      "Data retention policy",
+      "Chain of custody"
+    ],
+    "answer": 3,
+    "explain": "The chain of custody documents every handover of evidence (who, when, where, why). A gap in the chain allows the evidence to be challenged. Legal hold is a prohibition on deletion, and order of volatility is the collection order."
+  },
+  {
+    "obj": "3.3",
+    "q": "The legal team expects a lawsuit from a former employee and asks that their emails and access logs be preserved, even though the policy deletes emails after 90 days. What should be applied?",
+    "options": [
+      "A legal hold on the mailbox and relevant logs",
+      "A chain of custody form",
+      "Reimaging the workstation",
+      "Reducing retention to 30 days"
+    ],
+    "answer": 0,
+    "explain": "A legal hold suspends the regular deletion of data relevant to anticipated or ongoing legal proceedings. Chain of custody tracks physical handling of evidence, and a reimage would destroy the data."
+  },
+  {
+    "obj": "3.3",
+    "q": "Management wants an inexpensive exercise in which executives, the legal team, and PR walk through a ransomware scenario and verify the communication plan, without impacting production. What is the BEST choice?",
+    "options": [
+      "Full-scale simulation with a red team",
+      "Penetration test",
+      "Tabletop exercise",
+      "Disaster recovery failover test"
+    ],
+    "answer": 2,
+    "explain": "A tabletop is a discussion of a scenario: inexpensive, it involves management and reveals gaps in plans and communication. Simulations and pentests test technical controls and are more expensive; a DR failover tests system recovery."
+  },
+  {
+    "obj": "3.3",
+    "q": "SOC analysts spend a lot of time looking up the owner, location, and business criticality of the host for every alert. Which activity would help the MOST?",
+    "options": [
+      "Increasing log retention",
+      "Reducing the number of log sources",
+      "Log enrichment with data from the CMDB/asset inventory in the SIEM",
+      "Introducing a legal hold"
+    ],
+    "answer": 2,
+    "explain": "Augmentation/enrichment automatically adds context (owner, criticality, PII) to the event, which speeds up triage and prioritization. Retention and the number of sources don't add context."
+  },
+  {
+    "obj": "3.3",
+    "q": "While correlating events, an analyst sees that a successful login on a server happened \"before\" the failed attempts from the firewall, although logically it's the other way around. What is the MOST LIKELY cause?",
+    "options": [
+      "The systems are not time-synchronized (NTP) or use different time zones",
+      "The firewall is compromised",
+      "The SIEM rule has too high a threshold",
+      "The attacker deleted the logs"
+    ],
+    "answer": 0,
+    "explain": "Reliable correlation and timelines require NTP and normalization to UTC. Different clocks or time zones produce the wrong order. The other options don't explain a systematic time shift."
+  },
+  {
+    "obj": "3.3",
+    "q": "Two confirmed incidents are open at the same time: adware on an intern's laptop and active exfiltration from the customer database server (PII). Which incident should be prioritized and why?",
+    "options": [
+      "The laptop, because it was reported first",
+      "The laptop, because adware is easier to remove",
+      "Both with the same priority, in ticket order",
+      "The customer database server, because of the greater information impact and the active attack"
+    ],
+    "answer": 3,
+    "explain": "Priority is determined by severity, impact (information impact: privacy breach), and asset criticality, plus whether the attack is ongoing. Report order or ease of resolution are not prioritization criteria."
+  },
+  {
+    "obj": "3.3",
+    "q": "An analyst combines mail gateway logs, Sysmon, and proxy logs in UTC to determine the first compromised host and the initial vector. Which technique are they applying?",
+    "options": [
+      "Legal hold",
+      "Establishment of a timeline",
+      "Release from isolation",
+      "Corrective action development"
+    ],
+    "answer": 1,
+    "explain": "A chronological sequence of events from multiple sources is a timeline; it is used to determine patient zero, the vector, dwell time, and scope. The other options are other phases or legal measures."
+  },
+  {
+    "obj": "3.3",
+    "q": "EDR detected a Cobalt Strike beacon on a workstation. The team needs to collect memory for analysis, but also prevent further spread. What should be done FIRST?",
+    "options": [
+      "Isolate the host from the network via EDR, leaving it powered on",
+      "Shut down the computer with the power button",
+      "Immediately reimage the host",
+      "Delete the beacon with antivirus and return it to the user"
+    ],
+    "answer": 0,
+    "explain": "EDR isolation cuts off communication with C2 and lateral movement, and the host stays on so that RAM is preserved. Shutting down loses volatile evidence, reimaging destroys evidence, and just deleting doesn't confirm the scope."
+  },
+  {
+    "obj": "3.3",
+    "q": "A web server was cleaned and patched after a compromise. What MUST precede returning the server from isolation to production?",
+    "options": [
+      "Publishing a press release",
+      "Verification of remediation (rescan, no IoCs) and approval from the IR lead and the system owner",
+      "A completed lessons learned meeting",
+      "Deleting all logs from the server to save space"
+    ],
+    "answer": 1,
+    "explain": "Release from isolation requires the criteria to be met: eradication and patch confirmed (verification), credentials changed, approval. Lessons learned comes later, and logs are kept as evidence."
+  },
+  {
+    "obj": "3.3",
+    "q": "The timeline shows that the attacker first accessed the file server on October 3, and the ransomware was launched on October 10. From which backup should the data be restored?",
+    "options": [
+      "From the latest backup from October 9",
+      "From the oldest available backup",
+      "From the October 10 backup after decryption",
+      "From the last clean backup made before October 3, with integrity verification"
+    ],
+    "answer": 3,
+    "explain": "A backup taken after the first access may contain a backdoor or altered files. The last known clean backup before the compromise is chosen (minimal data loss with safety), with integrity verification."
+  },
+  {
+    "obj": "3.3",
+    "q": "A Tier 1 analyst confirmed that an account belonging to a member of the Domain Admins group is compromised. What is the BEST next step according to the IR plan?",
+    "options": [
+      "Close the alert because the account is already locked",
+      "Contact the media personally",
+      "Escalate the incident to Tier 2/the IR lead according to the defined escalation criteria",
+      "Wait for the next shift to take over the case"
+    ],
+    "answer": 2,
+    "explain": "A privileged account is a typical escalation trigger defined in the IR plan. Tier 1 doesn't close such an incident, doesn't communicate with the media (that's PR), and doesn't wait."
+  },
+  {
+    "obj": "3.3",
+    "q": "An attacker used a service account in the domain and there are indications of a Golden Ticket attack. Which remediation step is MOST important for permanently evicting the attacker?",
+    "options": [
+      "Reinstall antivirus on all workstations",
+      "Change the password only for the user who opened the phishing email",
+      "Restart all domain controllers",
+      "Reset the krbtgt account password twice and rotate the compromised service accounts"
+    ],
+    "answer": 3,
+    "explain": "A Golden Ticket is signed with the krbtgt key, so krbtgt is reset twice (because of password history). The service accounts the attacker used must be rotated. A restart or AV doesn't invalidate stolen keys."
+  },
+  {
+    "obj": "3.3",
+    "q": "The team must communicate during an incident, and there is evidence that the attacker is reading corporate email. What is the BEST solution according to the communication plan?",
+    "options": [
+      "Keep using email with S/MIME encryption",
+      "Communicate through comments in SIEM tickets",
+      "Use a pre-arranged out-of-band channel (separate tenant, phone)",
+      "Postpone all communication until eradication is complete"
+    ],
+    "answer": 2,
+    "explain": "If the primary channel is compromised, the plan provides for out-of-band communication. S/MIME doesn't help if the attacker controls the mailbox or the domain; tickets may also be visible; postponing communication breaks coordination."
+  },
+  {
+    "obj": "3.3",
+    "q": "After an incident, RCA showed that ransomware entered through a macro because the GPO blocking macros was not applied to the Finance OU. Which corrective action BEST addresses the root cause?",
+    "options": [
+      "Reimage the user's laptop",
+      "Apply the macro-blocking policy to all OUs and introduce a GPO review on OU changes, with an owner and a deadline",
+      "Send the user additional training",
+      "Add the hash of this sample to the blocklist"
+    ],
+    "answer": 1,
+    "explain": "A corrective action must remove the cause (the missing control and change process) and be measurable, with an owner and a deadline. Reimage and hash blocking only block this symptom, and training one person doesn't fix the control."
+  },
+  {
+    "obj": "3.3",
+    "q": "An \"impossible travel\" alert was confirmed for the CFO. The team changed the password, but the attacker is still reading the mailbox. What was MOST LIKELY missed?",
+    "options": [
+      "Revoking existing sessions and refresh tokens (revoke sessions)",
+      "Enabling a legal hold",
+      "GeoIP enrichment of the alert",
+      "Updating the IR plan"
+    ],
+    "answer": 0,
+    "explain": "A stolen session token (e.g., AiTM phishing) remains valid even after a password change until it is revoked. Isolating an identity includes disabling it, revoking sessions/tokens, and removing the attacker's MFA device."
+  },
+  {
+    "obj": "3.3",
+    "q": "Which TWO items should a chain of custody form entry contain? Select TWO.",
+    "options": [
+      "The name of the person releasing and the person receiving the evidence",
+      "An estimate of the incident's costs",
+      "The date and time of each handover",
+      "A list of all employees in the department"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "The chain of custody records who released and received the evidence, when, where, and why, along with a description and hash of the evidence. Costs and a list of employees don't belong in that record."
+  },
+  {
+    "obj": "3.3",
+    "q": "Which TWO activities are examples of log augmentation/enrichment? Select TWO.",
+    "options": [
+      "Deleting duplicate events to save space",
+      "Adding GeoIP location and reputation to the source IP address",
+      "Compressing archived logs",
+      "Adding the user's department and role from the IdP"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "Enrichment adds context to an event: GeoIP and threat intel reputation, user and asset data. Deduplication and compression are volume management, not enrichment."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "A beacon has been confirmed on a laptop. Put the response steps in order.",
+    "options": [
+      "Reimage the host and reset credentials",
+      "Triage and confirmation of a true positive alert",
+      "Release from isolation with enhanced monitoring",
+      "Collect memory and a triage package with a hash",
+      "EDR isolation of the host",
+      "RCA and corrective actions",
+      "Verification (scan, no IoCs)"
+    ],
+    "answer": [
+      1,
+      4,
+      3,
+      0,
+      6,
+      2,
+      5
+    ],
+    "explain": "First triage, then isolation to stop the spread (the host stays on), collection of volatile evidence before cleanup, remediation, verification, return to the network, and finally RCA with corrective actions."
+  },
+  {
+    "obj": "3.3",
+    "type": "match",
+    "q": "Match each situation with the evidence collection term.",
+    "options": [
+      "The legal team suspends deletion of logs older than 90 days",
+      "A form with signatures at every handover of the disk",
+      "The SHA-256 of the original and the copy match",
+      "RAM is captured before the host is shut down",
+      "Analysis is performed only on the forensic copy, the original is in the safe"
+    ],
+    "targets": [
+      "Chain of custody",
+      "Data integrity validation",
+      "Preservation",
+      "Legal hold"
+    ],
+    "answer": [
+      3,
+      0,
+      1,
+      2,
+      2
+    ],
+    "explain": "Suspended deletion is a legal hold. Documented handovers are the chain of custody. Matching hashes is integrity validation. Capturing RAM according to the order of volatility and keeping the original in its original state are preservation."
+  },
+  {
+    "obj": "3.3",
+    "type": "match",
+    "q": "Match each term with its description.",
+    "options": [
+      "Steps for responding to phishing with an attachment",
+      "Who notifies the regulator, media, and customers, and through which channel",
+      "A scenario discussion with management",
+      "Technical procedure for isolating a host in the EDR console"
+    ],
+    "targets": [
+      "Incident response plan",
+      "Communication plan",
+      "Playbook",
+      "Runbook",
+      "Tabletop"
+    ],
+    "answer": [
+      2,
+      1,
+      4,
+      3
+    ],
+    "explain": "Playbook = steps for an incident type. Communication plan = who talks to whom and through which channel. Tabletop = discussion-based exercise. Runbook = detailed technical procedure for a single operation. The IR plan is a broader organizational document (extra option)."
+  },
+  {
+    "obj": "3.3",
+    "type": "spot",
+    "q": "This is the chain of custody form for a disk from an incident that may end up in court. Mark the lines that put the admissibility of the evidence at risk.",
+    "snippet": "Evidence #: IR-2026-057-E01   Description: SSD 1 TB, serial S5GXNF0T..., from HR-LT-12\nImage: HR-LT-12.E01 (FTK Imager, hardware write blocker)\nSHA-256 (image, at acquisition): 4b7d1e...90c3\nDate/time (UTC)      Released by       Received by       Purpose              Location\n2026-10-20 08:40     D. Marić (IT)     S. Lukić (IR)     Collection           Office 2.04\n2026-10-20 10:15     S. Lukić (IR)     Evidence (safe)   Storage              Forensics safe #1\n2026-10-21 14:20     Evidence (safe)   (unsigned)        (not stated)         (unknown)\n2026-10-22 09:00     Evidence (safe)   N. Đurić (DFIR)   Analysis on original Forensics lab\n2026-10-22 09:05     SHA-256 verified before analysis: 4b7d1e...90c3 (OK)",
+    "lang": "text",
+    "answer": [6, 7],
+    "explain": "Line 7: the evidence left the safe without a signature, recipient, purpose or location, so there is a gap in the chain of custody; the defense can argue the disk was altered. Every handover must record who, to whom, when, why and where, with a signature. Line 8: analysis is done on the original; the correct practice is to make a working copy, confirm its hash matches the original and analyze the copy, keeping the original untouched. The acquisition hash, write blocker and hash verification (lines 2, 3 and 9) are correct practice."
+  }
+]

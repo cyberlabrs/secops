@@ -1,0 +1,10 @@
+[Unit]
+Description=Falco: runtime security (modern eBPF)
+After=containerd.service
+
+[Service]
+ExecStart=/usr/bin/falco -o engine.kind=modern_ebpf
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

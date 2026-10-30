@@ -1,0 +1,304 @@
+[
+  {
+    "obj": "3.8",
+    "q": "A company is choosing a floor for a new server room in a ten-story office building with an underground garage. Which choice is BEST?",
+    "options": [
+      "The basement, because it is the hardest to access from outside",
+      "The central part of a middle floor, without windows or exterior walls",
+      "The top floor, for easier cooling",
+      "The ground floor next to the entrance, for quick technician access"
+    ],
+    "answer": 1,
+    "explain": "The basement is exposed to flooding, the top floor to roof leaks and weather, and the ground floor next to the entrance to unauthorized access. A central location on a middle floor without windows provides the most layers of protection."
+  },
+  {
+    "obj": "3.8",
+    "q": "An architect proposes low hedges, office windows facing the parking lot and good pathway lighting, so that employees naturally see what is happening around the building. Which CPTED principle is applied?",
+    "options": [
+      "Territorial reinforcement",
+      "Natural access control",
+      "Natural surveillance",
+      "Maintenance"
+    ],
+    "answer": 2,
+    "explain": "Natural surveillance maximizes visibility, so a potential attacker knows they may be noticed. Natural access control guides movement, and territorial reinforcement marks the boundary of private space."
+  },
+  {
+    "obj": "3.8",
+    "q": "Pentesters entered a locked server room by lifting drop-ceiling tiles from the adjacent hallway. Which design flaw MOST LIKELY enabled the entry?",
+    "options": [
+      "The server room walls did not extend from the structural floor to the structural slab (true floor to true ceiling)",
+      "The lack of a CCTV camera in the hallway",
+      "A card lock instead of biometrics",
+      "Insufficient lighting in the hallway"
+    ],
+    "answer": 0,
+    "explain": "If a wall ends at the drop ceiling, the space above allows the door to be bypassed. Cameras and lighting help with detection and deterrence, but do not close the physical path."
+  },
+  {
+    "obj": "3.8",
+    "q": "A company is choosing a location for a new data center. What is BEST from a security perspective?",
+    "options": [
+      "A conspicuous building with the company logo for reputation",
+      "A location next to an airport for proximity to users",
+      "A building shared with other tenants for lower costs",
+      "An inconspicuous building outside flood and seismic zones, with multiple independent power sources and telecom routes"
+    ],
+    "answer": 3,
+    "explain": "A data center should be inconspicuous, outside zones of natural risk and with redundant infrastructure. A logo attracts attention, an airport carries risks, and a shared building introduces common access and ventilation risks."
+  },
+  {
+    "obj": "3.8",
+    "q": "A facility's security design includes reinforced doors and multiple barriers around the vault. What is the PRIMARY goal of these controls in the layered model?",
+    "options": [
+      "Deter",
+      "Delay, so that detection and response arrive before the attacker reaches the target",
+      "Recover",
+      "Detect"
+    ],
+    "answer": 1,
+    "explain": "Barriers and reinforced doors slow the attacker down. The design is successful when the delay time is greater than the time needed for detection and response by guards or police."
+  },
+  {
+    "obj": "3.8",
+    "q": "Management is asking for the MOST COST-EFFECTIVE measure to deter thefts from the employee parking lot, where incidents happen at night. What is the BEST first step?",
+    "options": [
+      "Biometric control at the parking entrance",
+      "Hiring additional guards in three shifts",
+      "Even lighting without dark zones",
+      "A 2.4 m fence with barbed wire and PIDAS sensors"
+    ],
+    "answer": 2,
+    "explain": "Lighting is a cheap and effective deterrent and supports the natural surveillance principle. The other options are considerably more expensive and may come later if the risk justifies it."
+  },
+  {
+    "obj": "3.9",
+    "q": "A data center where operators work continuously needs a fire suppression system that does not damage equipment. Which choice is BEST?",
+    "options": [
+      "A CO₂ system with automatic triggering and no delay",
+      "Halon 1301",
+      "Deluge sprinklers",
+      "A clean agent (e.g., FM-200 or Novec 1230) with an alarm, delay and abort button"
+    ],
+    "answer": 3,
+    "explain": "Clean agents are safe for people at designed concentrations and leave no residue. CO₂ is lethal to occupants, halon is banned for new installations, and deluge floods the equipment."
+  },
+  {
+    "obj": "3.9",
+    "q": "A data center uses water-based suppression and wants to reduce the risk of damage from an accidentally broken sprinkler head. Which type of system is MOST appropriate?",
+    "options": [
+      "Pre-action",
+      "Wet pipe",
+      "Deluge",
+      "Dry pipe without detectors"
+    ],
+    "answer": 0,
+    "explain": "Pre-action requires two events: a detector fills the pipes with water, and water is released only when a head bursts from heat. This reduces the risk of accidental leaks and gives time for manual extinguishing. Wet pipe keeps water in the pipes at all times."
+  },
+  {
+    "obj": "3.9",
+    "q": "After the HVAC system was replaced, the relative humidity in the server room dropped to 15%, and the servers occasionally reset on their own. What is the MOST LIKELY cause?",
+    "options": [
+      "Condensation on components",
+      "Static electricity due to low humidity",
+      "Corrosion of contacts",
+      "Negative pressure in the room"
+    ],
+    "answer": 1,
+    "explain": "Low humidity favors static discharge, which damages or resets equipment. Condensation and corrosion are consequences of excessive humidity."
+  },
+  {
+    "obj": "3.9",
+    "q": "Momentary voltage drops lasting a few seconds cause server restarts, while no prolonged outages have been recorded. What is the MOST appropriate control?",
+    "options": [
+      "A diesel generator without a UPS",
+      "Surge protector",
+      "An additional PDU",
+      "UPS (preferably online/double-conversion)"
+    ],
+    "answer": 3,
+    "explain": "A sag (momentary low voltage) is bridged by a UPS, and an online UPS also provides the cleanest power. A generator needs time to start, a surge protector protects against overvoltage, and a PDU only distributes power."
+  },
+  {
+    "obj": "3.9",
+    "q": "A room for storing digital evidence for internal investigations should be designed so that the evidence is admissible in court. Which control is MOST important?",
+    "options": [
+      "A record of every access to and retrieval of evidence, with strictly limited access, to preserve the chain of custody",
+      "Positive pressure in the room",
+      "Pre-action sprinklers",
+      "Placement next to the server room for faster analysis"
+    ],
+    "answer": 0,
+    "explain": "Admissibility of evidence depends on a documented chain of custody: who had access, when and why. The other controls protect the room but do not prove the integrity of the evidence."
+  },
+  {
+    "obj": "3.9",
+    "q": "Out of courtesy, employees hold the entrance door to a restricted zone for colleagues and strangers. Which technical control BEST prevents this problem?",
+    "options": [
+      "A longer retention period for CCTV recordings",
+      "Posting warning signs",
+      "A mantrap (access control vestibule) or a turnstile that lets one person through",
+      "A mechanical lock with a key"
+    ],
+    "answer": 2,
+    "explain": "A mantrap and a turnstile physically prevent tailgating and piggybacking. CCTV is a detective control, signs are deterrent, and a keyed lock does not solve letting other people through."
+  },
+  {
+    "obj": "3.9",
+    "q": "A floor wiring closet (IDF) is shared with storage for cleaning supplies and is not locked. What is the GREATEST risk?",
+    "options": [
+      "Overheating due to chemicals",
+      "Unauthorized physical access to network equipment, connecting devices or eavesdropping",
+      "Excessively fast wear of UPS batteries",
+      "Loss of the equipment warranty"
+    ],
+    "answer": 1,
+    "explain": "Uncontrolled access to an IDF allows unauthorized devices to be connected, sabotage or eavesdropping. An IDF should be dedicated, locked, with access records and monitoring."
+  },
+  {
+    "obj": "3.9",
+    "q": "A fire has broken out in an energized electrical distribution cabinet. Which agent is MOST appropriate for the handheld extinguisher next to the cabinet?",
+    "options": [
+      "Water",
+      "Water-based foam",
+      "Wet chemical (class K)",
+      "CO₂ or a clean agent"
+    ],
+    "answer": 3,
+    "explain": "Energized electrical equipment is class C (US): non-conductive agents such as CO₂ or clean agents are used. Water and foam conduct electricity, and wet chemical is for cooking oils."
+  },
+  {
+    "obj": "3.10",
+    "q": "A new system project enters the testing phase, and only then does the security team receive the documentation and discover architectural flaws. What is the BEST lesson for future projects?",
+    "options": [
+      "Define security requirements from the stakeholder needs and requirements analysis phase, with threat modeling in design",
+      "Extend the testing phase",
+      "Hire more penetration testers",
+      "Shift responsibility for security to the vendor"
+    ],
+    "answer": 0,
+    "explain": "Security is cheapest and most effective when built in at the beginning of the life cycle. Late testing uncovers problems when fixes are expensive, and responsibility cannot be transferred to the vendor."
+  },
+  {
+    "obj": "3.10",
+    "q": "A team checks whether the implemented system meets every requirement from the specification, going through the requirements traceability matrix and tests. Which activity is being performed?",
+    "options": [
+      "Validation",
+      "Accreditation",
+      "Verification",
+      "Transition"
+    ],
+    "answer": 2,
+    "explain": "Verification checks that the system was built according to the specification (building the system right). Validation checks that the system meets real user needs (building the right system), and accreditation is the decision to accept risk."
+  },
+  {
+    "obj": "3.10",
+    "q": "End users in the pilot phase determine that the system, although fully compliant with the specification, does not support their actual work process. Which activity uncovered the problem?",
+    "options": [
+      "Verification",
+      "Validation",
+      "Integration",
+      "Requirements traceability"
+    ],
+    "answer": 1,
+    "explain": "Validation compares the system with real user and mission needs in the real environment. Compliance with the specification is verification; the problem here was in the requirements themselves."
+  },
+  {
+    "obj": "3.10",
+    "q": "Before releasing a system to production, which of the following MUST be done in the transition/deployment phase?",
+    "options": [
+      "Keep test accounts for easier troubleshooting",
+      "Copy production personal data into the test environment",
+      "Disable logging for performance",
+      "Remove development and test accounts, debug functions and test data, and obtain formal authorization to operate"
+    ],
+    "answer": 3,
+    "explain": "Leftover test accounts, debug code and maintenance hooks are common attack paths. Formal authorization (ATO) confirms that residual risk has been accepted. The other options increase risk."
+  },
+  {
+    "obj": "3.10",
+    "q": "A system has been in production for three years. In the meantime, an integration with a new partner was added and the cloud provider was changed, and the last risk assessment was done before go-live. Which principle from the 2027 outline has been neglected?",
+    "options": [
+      "Continuous security review: risk reassessment and continuous monitoring upon significant changes",
+      "Requirements analysis",
+      "Secure disposal",
+      "Stakeholder needs"
+    ],
+    "answer": 0,
+    "explain": "Security is reviewed throughout the entire life cycle, and significant changes require a security impact analysis and often reauthorization. A one-time assessment at go-live becomes outdated."
+  },
+  {
+    "obj": "3.10",
+    "q": "An organization is retiring an old HR system and moving to SaaS. Which step is MOST important to perform BEFORE sanitizing the old system's disks?",
+    "options": [
+      "Sell the servers to recover part of the cost",
+      "Remove the system from the CMDB",
+      "Determine which data is subject to retention obligations or legal hold and archive or migrate it with integrity verification",
+      "Disable monitoring"
+    ],
+    "answer": 2,
+    "explain": "Sanitization is irreversible, so data required by law or litigation must be preserved first. Selling and updating the CMDB come after sanitization and verification."
+  },
+  {
+    "obj": "3.10",
+    "q": "Which document BEST proves that every security requirement has been implemented and tested, and that there is no functionality without a corresponding requirement?",
+    "options": [
+      "Business impact analysis",
+      "Requirements traceability matrix",
+      "Certificate of destruction",
+      "Acceptable use policy"
+    ],
+    "answer": 1,
+    "explain": "The RTM links each requirement to design, implementation and test in both directions. The BIA serves business continuity, the certificate of destruction asset retirement, and the AUP user behavior."
+  },
+  {
+    "obj": "3.10",
+    "q": "A critical banking system is being replaced with a new one. Management wants the LOWEST risk of business disruption during the switchover. Which transition approach is MOST appropriate?",
+    "options": [
+      "A big-bang switchover over the weekend without a fallback plan",
+      "Shutting down the old system before testing the new one",
+      "Releasing the new system without user training",
+      "Parallel operation of the old and new systems with comparison of results and a rollback plan"
+    ],
+    "answer": 3,
+    "explain": "Parallel operation is more expensive, but the least risky for critical systems: errors are detected by comparison, and the old system remains available. A big-bang without rollback carries the greatest risk."
+  },
+  {
+    "obj": "3.9",
+    "type": "match",
+    "q": "Match each power problem with its description.",
+    "options": [
+      "Brownout",
+      "Spike",
+      "Blackout",
+      "Sag",
+      "Surge"
+    ],
+    "targets": [
+      "Prolonged complete loss",
+      "Momentary low voltage",
+      "Prolonged low voltage",
+      "Momentary high voltage",
+      "Prolonged high voltage"
+    ],
+    "answer": [2, 3, 0, 1, 4],
+    "explain": "A brownout is a prolonged and a sag a momentary voltage drop; a spike is a momentary and a surge a prolonged increase; a blackout is a prolonged complete loss (a momentary one is a fault)."
+  },
+  {
+    "obj": "3.10",
+    "type": "order",
+    "q": "Order the system life cycle processes (ISO/IEC/IEEE 15288, NIST SP 800-160) from first to last.",
+    "options": [
+      "Verification and validation",
+      "Requirements analysis",
+      "Retirement / secure disposal",
+      "Secure architectural design",
+      "Stakeholder needs and requirements",
+      "Operations and maintenance",
+      "Development / implementation",
+      "Transition / deployment"
+    ],
+    "answer": [4, 1, 3, 6, 0, 7, 5, 2],
+    "explain": "Stakeholder needs, requirements analysis, secure design, implementation (with integration), verification and validation, transition, operations and maintenance, then secure disposal. Continuous security review runs through all phases."
+  }
+]

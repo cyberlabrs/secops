@@ -1,0 +1,245 @@
+[
+  {
+    "obj": "1.4",
+    "q": "Klaster je na v1.35.0. Tim želi odmah na v1.37.2 jer je to najnovija verzija. Šta je ispravan put sa kubeadm-om?",
+    "options": [
+      "kubeadm upgrade apply v1.37.2 na controlplane, pa kubelet na svim čvorovima",
+      "Prvo kompletna nadogradnja na 1.36.x, pa zatim na 1.37.2",
+      "Prvo kubelet na svim čvorovima na 1.37.2, pa kontrolna ravan",
+      "kubeadm upgrade apply v1.37.2 --force"
+    ],
+    "answer": 1,
+    "explain": "Preskakanje minor verzija nije podržano, pa se ide 1.35 → 1.36 → 1.37. Kubelet ne smije biti noviji od API servera, a `--force` ne čini nepodržan skok sigurnim."
+  },
+  {
+    "obj": "1.4",
+    "q": "Na controlplane pokrećeš `apt-get install -y kubeadm='1.36.5-1.1'` i dobijaš `E: Held packages were changed and -y was used without --allow-change-held-packages`. Šta si preskočio?",
+    "options": [
+      "apt-get update",
+      "kubeadm upgrade plan",
+      "apt-mark unhold kubeadm",
+      "kubectl drain controlplane"
+    ],
+    "answer": 2,
+    "explain": "Paketi su zaključani sa `apt-mark hold`, pa ih treba otključati prije instalacije i ponovo zaključati poslije. `apt-get update` osvježava listu paketa, a `upgrade plan` i `drain` ne utiču na apt."
+  },
+  {
+    "obj": "1.4",
+    "q": "Na node01 si instalirao kubelet 1.36.5 i uradio `uncordon`, ali `kubectl get nodes` i dalje pokazuje v1.35.0 za node01. Šta nedostaje?",
+    "options": [
+      "kubeadm upgrade apply v1.36.5 na node01",
+      "kubectl rollout restart daemonset kube-proxy -n kube-system",
+      "kubeadm certs renew all na node01",
+      "systemctl daemon-reload i systemctl restart kubelet na node01"
+    ],
+    "answer": 3,
+    "explain": "Novi binarni fajl se koristi tek kad se kubelet restartuje, a verziju čvora javlja upravo kubelet. `upgrade apply` se radi samo na prvom control plane čvoru, a kube-proxy i certifikati ne mijenjaju verziju kubeleta."
+  },
+  {
+    "obj": "1.4",
+    "q": "Imaš HA klaster sa tri control plane čvora. cp1 je nadograđen sa `kubeadm upgrade apply v1.36.5`. Koju kubeadm komandu pokrećeš na cp2 nakon nadogradnje paketa kubeadm?",
+    "options": [
+      "kubeadm upgrade node",
+      "kubeadm upgrade apply v1.36.5",
+      "kubeadm upgrade plan",
+      "kubeadm join --control-plane"
+    ],
+    "answer": 0,
+    "explain": "Na ostalim control plane čvorovima i workerima koristi se `kubeadm upgrade node`, koji nadograđuje lokalne manifeste i kubelet konfiguraciju. `apply` se pokreće samo jednom, `plan` nije potreban, a cp2 je već u klasteru."
+  },
+  {
+    "obj": "1.4",
+    "q": "API server je na v1.36. Koja verzija kubeleta na workeru NIJE podržana po version skew politici?",
+    "options": [
+      "1.34",
+      "1.33",
+      "1.37",
+      "1.35"
+    ],
+    "answer": 2,
+    "explain": "Kubelet ne smije biti noviji od kube-apiservera, a smije biti do tri minor verzije stariji (1.33–1.36). Zato je 1.37 jedina nepodržana opcija."
+  },
+  {
+    "obj": "1.4",
+    "q": "`kubectl drain node01 --ignore-daemonsets` staje sa porukom `cannot delete Pods with local storage`. Koji flag dodaješ i šta je posljedica?",
+    "options": [
+      "--force; Pod bez kontrolera se briše",
+      "--delete-emptydir-data; podaci u emptyDir volumenima tih Podova se gube",
+      "--disable-eviction; zaobilazi PodDisruptionBudget",
+      "--grace-period=0; Pod se odmah gasi bez gubitka podataka"
+    ],
+    "answer": 1,
+    "explain": "Poruka se odnosi na emptyDir volumene, koje drain ne briše bez `--delete-emptydir-data`. `--force` je za Podove bez kontrolera, a `--disable-eviction` i `--grace-period` ne rješavaju lokalne podatke."
+  },
+  {
+    "obj": "1.4",
+    "q": "Drain čvora node01 ponavlja poruku `Cannot evict pod as it would violate the pod's disruption budget`. Deployment `api` ima 2 replike, obje na node01, a PDB ima `minAvailable: 2`. Šta je razlog?",
+    "options": [
+      "Drain ne podržava Deploymente sa više replika",
+      "Nedostaje flag --ignore-daemonsets",
+      "Čvor nije prethodno cordon-ovan",
+      "Eviction bi spustio broj dostupnih replika ispod minAvailable, pa ga API odbija dok se uslov ne ispuni"
+    ],
+    "answer": 3,
+    "explain": "Drain koristi Eviction API koji poštuje PodDisruptionBudget; sa minAvailable jednakim broju replika nijedan Pod se ne smije izbaciti. Rješenje je skaliranje ili izmjena PDB-a. Drain sam radi cordon, a DaemonSet flag nije u vezi sa PDB-om."
+  },
+  {
+    "obj": "1.4",
+    "q": "Zadatak: napravi snapshot etcd-a u /opt/etcd-backup.db. Koja komanda je ispravna na kubeadm controlplane čvoru?",
+    "options": [
+      "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /opt/etcd-backup.db",
+      "etcdutl --data-dir /var/lib/etcd snapshot save /opt/etcd-backup.db",
+      "etcdctl --endpoints=http://127.0.0.1:2379 snapshot save /opt/etcd-backup.db",
+      "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/ca.crt --cert=/etc/kubernetes/pki/apiserver.crt --key=/etc/kubernetes/pki/apiserver.key snapshot save /opt/etcd-backup.db"
+    ],
+    "answer": 0,
+    "explain": "etcd sluša na HTTPS i traži klijentski certifikat potpisan etcd CA-om iz /etc/kubernetes/pki/etcd/. `etcdutl` nema `snapshot save`, http ne radi, a CA klastera i certifikat API servera nisu potpisani etcd CA-om."
+  },
+  {
+    "obj": "1.4",
+    "q": "Na etcd 3.6 pokrećeš `etcdctl snapshot restore /opt/etcd-backup.db --data-dir /var/lib/etcd-restore` i komanda ne postoji. Šta koristiš?",
+    "options": [
+      "ETCDCTL_API=3 etcdctl snapshot restore ...",
+      "etcdctl member restore --from-snapshot /opt/etcd-backup.db",
+      "etcdutl --data-dir /var/lib/etcd-restore snapshot restore /opt/etcd-backup.db",
+      "kubeadm init phase etcd local --snapshot /opt/etcd-backup.db"
+    ],
+    "answer": 2,
+    "explain": "U etcd 3.6 restore i status su uklonjeni iz etcdctl i rade se sa etcdutl, koji radi direktno nad fajlovima. ETCDCTL_API ne vraća uklonjenu komandu, a `member restore` i kubeadm `--snapshot` ne postoje."
+  },
+  {
+    "obj": "1.4",
+    "q": "Uradio si `etcdutl --data-dir /var/lib/etcd-restore snapshot restore /opt/etcd-backup.db`. Šta mijenjaš u /etc/kubernetes/manifests/etcd.yaml da etcd koristi vraćene podatke?",
+    "options": [
+      "Samo flag --data-dir=/var/lib/etcd-restore",
+      "Samo volumeMounts.mountPath za etcd-data",
+      "Flag --initial-cluster-state=existing",
+      "hostPath.path volumena etcd-data na /var/lib/etcd-restore"
+    ],
+    "answer": 3,
+    "explain": "Unutar kontejnera etcd i dalje koristi /var/lib/etcd, a hostPath odlučuje koji direktorij hosta je tamo montiran. Promjena samo --data-dir ili samo mountPath razdvaja putanje pa etcd kreće sa praznom bazom; initial-cluster-state ne bira direktorij."
+  },
+  {
+    "obj": "1.4",
+    "q": "Pokrećeš `etcdutl --data-dir /var/lib/etcd snapshot restore /opt/etcd-backup.db` i dobijaš grešku da data-dir nije prazan. Šta je ispravno rješenje?",
+    "options": [
+      "Dodati ETCDCTL_API=3 ispred komande",
+      "Uraditi restore u novi direktorij (npr. /var/lib/etcd-restore) i usmjeriti hostPath etcd-data na njega",
+      "Ponoviti snapshot save sa ispravnim certifikatima",
+      "Restartovati kube-apiserver pa ponoviti istu komandu"
+    ],
+    "answer": 1,
+    "explain": "etcdutl odbija da piše u postojeći direktorij sa podacima, a /var/lib/etcd koristi živi etcd. Restore se radi u novi direktorij koji se zatim montira kroz hostPath. ETCDCTL_API ne utiče na etcdutl, a certifikati i API server nemaju veze sa ovom greškom."
+  },
+  {
+    "obj": "1.4",
+    "q": "Poredaj korake restore-a etcd-a na kubeadm klasteru sa jednim control plane čvorom.",
+    "type": "order",
+    "options": [
+      "Izmijeni hostPath volumena etcd-data u /etc/kubernetes/manifests/etcd.yaml",
+      "Pomjeri kube-apiserver.yaml iz /etc/kubernetes/manifests da zaustaviš API server",
+      "Vrati kube-apiserver.yaml i provjeri kubectl get pods -A",
+      "etcdutl --data-dir /var/lib/etcd-restore snapshot restore /opt/etcd-backup.db"
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      2
+    ],
+    "explain": "Dokumentacija traži da API serveri ne rade za vrijeme restore-a. Zatim se podaci vrate u novi direktorij, etcd se preusmjeri na njega i tek onda se API server ponovo pokreće."
+  },
+  {
+    "obj": "1.4",
+    "q": "Poredaj korake nadogradnje worker čvora node01 sa 1.35 na 1.36.5 (kontrolna ravan je već nadograđena).",
+    "type": "order",
+    "options": [
+      "Na node01: apt-mark unhold kubelet kubectl, instaliraj 1.36.5-1.1, apt-mark hold",
+      "Sa controlplane: kubectl uncordon node01",
+      "Na node01: nadogradi paket kubeadm i pokreni kubeadm upgrade node",
+      "Sa controlplane: kubectl drain node01 --ignore-daemonsets",
+      "Na node01: systemctl daemon-reload i systemctl restart kubelet"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      4,
+      1
+    ],
+    "explain": "Prvo kubeadm i `upgrade node` (nadogradi kubelet konfiguraciju), zatim drain, pa paketi kubelet/kubectl i restart kubeleta, i na kraju uncordon."
+  },
+  {
+    "obj": "1.4",
+    "q": "Upari zadatak sa komandom koja ga najbrže rješava.",
+    "type": "match",
+    "options": [
+      "Pregled isteka svih certifikata koje upravlja kubeadm",
+      "Obnova svih certifikata kontrolne ravni",
+      "Tačan datum isteka certifikata API servera",
+      "Provjera snapshot fajla etcd-a"
+    ],
+    "targets": [
+      "kubeadm certs renew all",
+      "etcdutl --write-out=table snapshot status /opt/etcd-backup.db",
+      "kubeadm certs check-expiration",
+      "openssl x509 -in /etc/kubernetes/pki/apiserver.crt -noout -enddate",
+      "kubeadm token list"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1
+    ],
+    "explain": "check-expiration daje pregled, renew all obnavlja, openssl -enddate daje tačan datum za jedan fajl, a etcdutl snapshot status provjerava backup. `token list` prikazuje bootstrap tokene i nije u vezi sa certifikatima."
+  },
+  {
+    "obj": "1.4",
+    "q": "Uradio si `kubeadm certs renew all`, ali `openssl s_client -connect 127.0.0.1:6443` i dalje vraća stari certifikat sa starim datumom isteka. Šta nedostaje?",
+    "options": [
+      "Restart static Podova kontrolne ravni (privremeno izmjestiti manifeste iz /etc/kubernetes/manifests i vratiti ih)",
+      "kubectl -n kube-system delete pod kube-apiserver-controlplane",
+      "kubeadm certs renew ca",
+      "systemctl restart containerd"
+    ],
+    "answer": 0,
+    "explain": "Komponente ne učitavaju nove certifikate automatski, pa API server treba restartovati preko manifesta. Brisanje mirror Poda ne restartuje static Pod, CA se ne obnavlja sa `certs renew`, a restart containerd-a nije preporučen postupak."
+  },
+  {
+    "obj": "1.4",
+    "q": "Nakon obnove certifikata, `kubectl` na controlplane javlja `x509: certificate has expired or is not yet valid`, a `kubectl --kubeconfig /etc/kubernetes/admin.conf get nodes` radi. Šta radiš?",
+    "options": [
+      "kubeadm certs renew admin.conf još jednom",
+      "systemctl restart kubelet",
+      "Kopiraš /etc/kubernetes/admin.conf u ~/.kube/config",
+      "Obrišeš /etc/kubernetes/pki/ca.crt"
+    ],
+    "answer": 2,
+    "explain": "~/.kube/config je stara kopija sa isteklim klijentskim certifikatom, dok je admin.conf već obnovljen. Ponovna obnova i restart kubeleta ne mijenjaju tvoju kopiju, a brisanje CA ruši klaster."
+  },
+  {
+    "obj": "1.4",
+    "q": "Koja tvrdnja o `kubeadm upgrade apply v1.36.5` je tačna?",
+    "options": [
+      "Nadograđuje i CNI plugin instaliran u klasteru",
+      "Nadograđuje kubelet na svim čvorovima",
+      "Mora se pokrenuti na svakom control plane čvoru",
+      "Automatski obnavlja certifikate kojima upravlja kubeadm, osim uz --certificate-renewal=false"
+    ],
+    "answer": 3,
+    "explain": "Nadogradnja kontrolne ravni obnavlja kubeadm certifikate, pa klasteri koji se nadograđuju svake godine ne dočekaju istek. CNI i kubelet se nadograđuju posebno, a `apply` se pokreće samo na prvom control plane čvoru."
+  },
+  {
+    "obj": "1.4",
+    "q": "Zadatak: ukloni sve aplikacijske Podove sa node01 za održavanje i spriječi raspoređivanje novih, ali ne briši DaemonSet Podove. Na node01 radi i jedan goli Pod `debug` (bez kontrolera) koji smiješ izgubiti. Koja komanda?",
+    "options": [
+      "kubectl cordon node01",
+      "kubectl drain node01 --ignore-daemonsets --force",
+      "kubectl taint node node01 maintenance=true:NoSchedule",
+      "kubectl delete pods --field-selector spec.nodeName=node01 --all-namespaces"
+    ],
+    "answer": 1,
+    "explain": "Drain radi cordon i evikciju, `--ignore-daemonsets` ostavlja DaemonSet Podove, a `--force` dozvoljava brisanje golog Poda. cordon i NoSchedule taint ne uklanjaju postojeće Podove, a brisanje svih Podova briše i DaemonSet Podove i ne sprečava raspoređivanje."
+  }
+]

@@ -1,0 +1,200 @@
+[
+  {
+    "obj": "6.1",
+    "q": "A DAST job with a ZAP automation plan (spider + passiveScan-wait + report) passes green, even though the report contains a High alert. What is missing from the plan?",
+    "options": [
+      "An exitStatus job with e.g. errorLevel: High, which turns findings into an exit code",
+      "env.parameters.failOnError: true",
+      "An activeScan job, because passive alerts never affect the exit code",
+      "The -silent flag in the zap.sh command"
+    ],
+    "answer": 0,
+    "explain": "Without an exitStatus job the plan's exit code depends on errors and warnings of the jobs themselves, not on alerts. failOnError stops the plan when a job breaks, activeScan adds attacks but doesn't create a gate, and -silent only prevents unannounced requests to the internet."
+  },
+  {
+    "obj": "6.1",
+    "q": "An active ZAP scan against kurs-shop reports SQL injection on /products, but nothing for /ping, even though app.py has subprocess with shell=True. The spider was started from http://127.0.0.1:8080. What is the most likely reason?",
+    "options": [
+      "Rule 90020 is disabled by default in ZAP 2.17",
+      "Command injection can only be found by SAST, not DAST",
+      "/ping is not linked from any page, so the spider didn't find it and the active scan didn't test it",
+      "Flask returns 404 for requests that come through a proxy"
+    ],
+    "answer": 2,
+    "explain": "DAST tests only URLs in the site tree; the home page links only to /products. /ping needs to be added through a requestor job, an OpenAPI definition or an additional URL. Rule 90020 (Remote OS Command Injection) is an active rule DAST uses, and Flask doesn't distinguish requests coming through a proxy."
+  },
+  {
+    "obj": "6.1",
+    "q": "The team wants DAST on every merge request, but it must not take longer than a couple of minutes and must not send attacks. Which type of scan do you choose?",
+    "options": [
+      "Full scan with -m 2",
+      "API scan with -f openapi",
+      "Full scan with maxScanDurationInMins: 2",
+      "Baseline: spider and passive rules only"
+    ],
+    "answer": 3,
+    "explain": "Baseline only collects pages with the spider and analyzes them passively, without attacks, so it is fast and safe for an MR. Full scan and API scan run an active scan (attacks) by default; -m limits only the spider, and limiting the duration of an active scan doesn't change the fact that it sends attacks."
+  },
+  {
+    "obj": "6.1",
+    "q": "kurs-shop gets an OpenAPI definition openapi.yaml. Which job in the ZAP automation plan imports it so the active scan tests all endpoints?",
+    "options": [
+      "type: spider with url: openapi.yaml",
+      "type: openapi with parameters.apiFile and targetUrl",
+      "type: requestor with url: openapi.yaml",
+      "type: passiveScan-config with rules: openapi"
+    ],
+    "answer": 1,
+    "explain": "The openapi job imports the definition (apiFile or apiUrl), and targetUrl redirects the requests to the test environment. The spider would just fetch the YAML file, requestor sends a single request, and passiveScan-config tunes the passive rules."
+  },
+  {
+    "obj": "6.1",
+    "q": "zap-baseline.py in the pipeline never fails, even though the report has 14 warnings. Command: zap-baseline.py -t $URL -I -J zap.json. What needs to change so that a missing X-Content-Type-Options fails the build?",
+    "options": [
+      "Remove -J, because the JSON report suppresses the exit code",
+      "Add -a to include alpha rules",
+      "Add -c zap-rules.tsv in which rule 10021 is set to FAIL",
+      "Add -m 10 so the spider runs longer"
+    ],
+    "answer": 2,
+    "explain": "Without a config file all findings are WARN, and -I prevents warnings from producing an error; FAIL for 10021 gives exit code 1. -J only writes the report, and alpha rules and a longer spider don't change how findings are treated."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Match the ZAP rule to its ID.",
+    "options": [
+      "Remote OS Command Injection",
+      "Cookie No HttpOnly Flag",
+      "Content Security Policy (CSP) Header Not Set",
+      "X-Content-Type-Options Header Missing",
+      "SQL Injection"
+    ],
+    "targets": ["10021", "40018", "10010", "90020", "10038", "10020"],
+    "answer": [3, 2, 4, 0, 1],
+    "explain": "90020 is Remote OS Command Injection, 10010 a cookie without HttpOnly, 10038 missing CSP, 10021 missing X-Content-Type-Options, 40018 SQL Injection. 10020 is Missing Anti-clickjacking Header and is a distractor here."
+  },
+  {
+    "obj": "6.1",
+    "q": "Rule 10038 (CSP not set) is reported for JSON responses on /products and /health, where CSP has no effect. The team uses the automation framework. Which exception is correct?",
+    "options": [
+      "passiveScan-config with rules: - id: 10038, threshold: Off",
+      "alertFilter with ruleId: 10038, newRisk: \"False Positive\", a URL regex for /products and /health and a comment with the reason and expiry",
+      "env.contexts.excludePaths for /products and /health",
+      "exitStatus with warnLevel: High"
+    ],
+    "answer": 1,
+    "explain": "An alertFilter narrowed to the URLs suppresses only the false positives, and the rule still works for HTML pages. threshold: Off disables the rule everywhere, excludePaths removes those endpoints from all scanning (including the active SQLi test), and warnLevel: High weakens the gate for all rules."
+  },
+  {
+    "obj": "6.1",
+    "q": "A DAST job passed without a single finding. The job log says: curl: (7) Failed to connect to 127.0.0.1 port 8080. What is the lesson?",
+    "options": [
+      "Before scanning, wait for the application to respond on /health and fail the job if it doesn't; an empty report without a reachable target doesn't mean a secure application",
+      "Port 8080 is blocked for ZAP; port 80 should be used",
+      "Add failOnWarning: true, and ZAP will report on its own that the target is unreachable",
+      "Switch to a full scan, which starts the application by itself"
+    ],
+    "answer": 0,
+    "explain": "If the application isn't up, the scanner has nothing to find and the job passes falsely; a reachability check before scanning prevents this. The port isn't the problem, failOnWarning refers to warnings of the plan's jobs, and no ZAP scan starts the application."
+  },
+  {
+    "obj": "6.1",
+    "q": "The active scan in the nightly pipeline sometimes runs for 6 hours and blocks the runner. What do you add to the activeScan job in the plan?",
+    "options": [
+      "maxDuration: 30 in the spider job",
+      "maxDuration: 30 in the passiveScan-wait job",
+      "defaultThreshold: High in policyDefinition",
+      "maxScanDurationInMins and maxRuleDurationInMins in parameters"
+    ],
+    "answer": 3,
+    "explain": "These two parameters limit the total duration of the active scan and the duration of each rule (default 0 = no limit). Limiting the spider and the passive wait doesn't affect the active scan, and a higher threshold reduces the number of reported findings, not the number of attacks sent."
+  },
+  {
+    "obj": "6.1",
+    "type": "order",
+    "q": "Order the jobs in a ZAP automation plan for an active scan of kurs-shop so that the report is complete and the build fails on a High finding.",
+    "options": [
+      "report (sarif-json)",
+      "activeScan",
+      "spider",
+      "exitStatus",
+      "passiveScan-wait",
+      "alertFilter (known false positives)"
+    ],
+    "answer": [5, 2, 4, 1, 0, 3],
+    "explain": "False positive filters go first so they apply when alerts are raised; the spider discovers URLs, the passive scanner is allowed to process everything, then the active scan attacks; the report is written once all alerts are in, and exitStatus at the end turns the result into an exit code."
+  },
+  {
+    "obj": "6.1",
+    "q": "In .gitlab-ci.yml the DAST job has allow_failure: exit_codes: [2], and the plan has exitStatus with errorLevel: High and warnLevel: Medium. What happens if ZAP finds only Medium alerts?",
+    "options": [
+      "The job fails and blocks the pipeline",
+      "The job passes green because Medium is not in errorLevel",
+      "The job fails with exit code 2, but is marked as an allowed failure (yellow) and the pipeline continues",
+      "ZAP returns exit code 3 because there are no High alerts"
+    ],
+    "answer": 2,
+    "explain": "warnLevel: Medium yields warnExitValue (2 by default), and exit_codes: [2] treats that code as an allowed failure. High would give 1 and block the pipeline. Code 3 is for other errors in the packaged scripts."
+  },
+  {
+    "obj": "6.1",
+    "q": "The security team proposes running the nightly full scan directly against production kurs-shop, \"because that's what an attacker sees\". What is the main argument against it?",
+    "options": [
+      "An active scan sends real attacks: it can write garbage into the database, trigger destructive actions and take the service down; it belongs on a test environment, with authorization",
+      "ZAP doesn't support HTTPS, and production uses TLS",
+      "Results from production cannot be exported to SARIF",
+      "Production has CSP, so the passive rules don't work"
+    ],
+    "answer": 0,
+    "explain": "A full scan modifies parameters and sends attacks (SQLi, command injection), so against production it puts data and availability at risk and requires explicit authorization. ZAP works with HTTPS, the report format doesn't depend on the target, and passive rules work regardless of CSP."
+  },
+  {
+    "obj": "6.1",
+    "q": "A DAST job needs to send results to GitLab SARIF ingestion and DefectDojo, and leave a readable report for the developer. Which report jobs go in the plan?",
+    "options": [
+      "A single report with template: modern, because it contains all formats",
+      "A report with template: sarif-json and a report with template: traditional-html (and traditional-json if needed)",
+      "A report with template: sarif and reportFile: zap.html",
+      "exitStatus with reportFormat: sarif"
+    ],
+    "answer": 1,
+    "explain": "Each report job writes one format, so SARIF and HTML need two jobs with the sarif-json and traditional-html templates. modern is HTML only, the template is called sarif-json (not sarif), and exitStatus has no report parameter."
+  },
+  {
+    "obj": "6.1",
+    "q": "The DAST account in the test environment is an administrator. After an active scan all test users have been deleted. What should change in the plan?",
+    "options": [
+      "Lower defaultStrength to Low",
+      "Remove users from env so the scan runs without logging in",
+      "Set failOnError: false",
+      "Add destructive paths (e.g. .*/admin/delete.*, .*/logout.*) to the context's excludePaths or scan as a regular user"
+    ],
+    "answer": 3,
+    "explain": "The active scan invokes every action it finds, so destructive paths are excluded from scope or an account without those rights is used. A lower strength still sends delete requests, a scan without login loses coverage, and failOnError doesn't affect what gets invoked."
+  },
+  {
+    "obj": "6.1",
+    "q": "The pipeline for an API service uses zap-api-scan.py -t openapi.yaml -f openapi. On an MR it takes too long; the team wants only passive checks on the MR and the full scan nightly. Which flag do you add for the MR?",
+    "options": [
+      "-I",
+      "-S",
+      "-m 1",
+      "-j"
+    ],
+    "answer": 1,
+    "explain": "-S (safe mode) skips the active scan and runs only the baseline (passive). -I only ignores warnings in the exit code, -m limits the spider, and -j enables the AJAX spider in the other scripts."
+  },
+  {
+    "obj": "6.1",
+    "q": "For a GitLab Ultimate project a colleague proposes including Security/DAST.gitlab-ci.yml instead of a custom ZAP job, \"because it's the same ZAP\". What is correct?",
+    "options": [
+      "That's right; the template runs zap-baseline.py from the ZAP Docker image",
+      "The template works only for API scanning",
+      "Since GitLab 17.0 the template uses GitLab's browser-based DAST analyzer, not the old ZAP proxy-based one; configuration (e.g. DAST_TARGET_URL) and rules differ from a ZAP plan",
+      "The template is available on all tiers and doesn't require Ultimate"
+    ],
+    "answer": 2,
+    "explain": "The ZAP-based proxy analyzer was removed in 17.0; GitLab's DAST is now its own browser-based analyzer, so a ZAP plan and rule IDs are not directly transferable. The template is not API-only, and DAST is an Ultimate tier feature."
+  }
+]

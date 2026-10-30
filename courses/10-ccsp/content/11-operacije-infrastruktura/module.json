@@ -1,0 +1,13 @@
+{
+  "title": "Operacije: infrastruktura i operativne kontrole",
+  "summary": "Izgradnja i rad cloud infrastrukture: HSM i TPM, secure by default, management plane, hipervizori i virtuelni hardver, udaljeni pristup, mrežne kontrole, hardening, patching, dostupnost klastera, monitoring i backup, plus operativni standardi (NIST, ISO 27001 i 20000-1, ITIL, COBIT, COSO, CIS, HIPAA).",
+  "minutes": 90,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.2",
+    "5.3"
+  ],
+  "title_en": "Operations: infrastructure and operational controls",
+  "summary_en": "Building and operating cloud infrastructure: HSM and TPM, secure by default, the management plane, hypervisors and virtual hardware, remote access, network controls, hardening, patching, cluster availability, monitoring and backup, plus operational standards (NIST, ISO 27001 and 20000-1, ITIL, COBIT, COSO, CIS, HIPAA)."
+}

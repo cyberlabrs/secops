@@ -1,0 +1,12 @@
+{
+  "title": "Governance: EU AI Act, NIST AI RMF, ISO/IEC 42001",
+  "summary": "EU AI Act sa izmjenama iz AI Omnibusa (uloge, nivoi rizika, zahtjevi i rokovi), NIST AI RMF i Generative AI profil, ISO/IEC 42001 te upravljanje AI-jem u organizaciji: politike, inventar i shadow AI, intake i procjena rizika, AI dobavljači i dokazi za audit.",
+  "minutes": 75,
+  "domain": 6,
+  "objectives": [
+    "6.1",
+    "6.2"
+  ],
+  "title_en": "Governance: EU AI Act, NIST AI RMF, ISO/IEC 42001",
+  "summary_en": "The EU AI Act with the AI Omnibus amendments (roles, risk levels, requirements and deadlines), the NIST AI RMF and Generative AI Profile, ISO/IEC 42001, and AI governance in the organization: policies, inventory and shadow AI, intake and risk assessment, AI vendors and audit evidence."
+}

@@ -1,0 +1,283 @@
+[
+  {
+    "obj": "3.1",
+    "q": "An analyst in the Microsoft Defender portal needs to find which process on workstations with Microsoft Defender for Endpoint launched powershell.exe with the -EncodedCommand parameter. Which table should be used?",
+    "options": [
+      "DeviceEvents",
+      "SecurityEvent",
+      "DeviceProcessEvents",
+      "DeviceImageLoadEvents"
+    ],
+    "answer": 2,
+    "explain": "Process creation with the command line and the parent process (InitiatingProcess*) on devices with MDE is in DeviceProcessEvents. SecurityEvent (4688) is for servers that send the Windows Security log via AMA, DeviceImageLoadEvents covers DLL loads, and DeviceEvents contains various other events (ASR, USB, exploit protection)."
+  },
+  {
+    "obj": "3.1",
+    "q": "You need to determine which users clicked a malicious URL from a phishing campaign that went through Safe Links. Which table should be used in advanced hunting?",
+    "options": [
+      "UrlClickEvents",
+      "EmailUrlInfo",
+      "DeviceNetworkEvents",
+      "CloudAppEvents"
+    ],
+    "answer": 0,
+    "explain": "UrlClickEvents records clicks on URLs protected by Safe Links (Defender for Office 365). EmailUrlInfo tells you which emails CONTAIN a URL, but not who clicked. DeviceNetworkEvents would show connections from the device, but does not link the click to the email."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have the query:\n\nSecurityEvent\n| where EventID == 4625\n| summarize count() by Account\n| where ??? > 20\n\nWhich column name should replace ??? for the query to work?",
+    "options": [
+      "count",
+      "Count",
+      "count()",
+      "count_"
+    ],
+    "answer": 3,
+    "explain": "When the count() aggregation has no alias, KQL names the column count_. Better practice is to give it a name: summarize Failed = count() by Account."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which condition returns true for the value FileName = \"mimikatz.exe\"?",
+    "options": [
+      "FileName has \"katz\"",
+      "FileName contains \"katz\"",
+      "FileName == \"MIMIKATZ.EXE\"",
+      "FileName has_cs \"Mimikatz\""
+    ],
+    "answer": 1,
+    "explain": "contains looks for a substring regardless of letter case, so it finds \"katz\". has looks for a whole term (the terms are mimikatz and exe), so \"katz\" is not a match. == is case-sensitive, and has_cs \"Mimikatz\" does not match the lowercase letters in the value."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have a Microsoft Sentinel workspace connected to the Defender portal. You need a chart of the number of failed Windows sign-ins per hour for the last 7 days. How should you complete the query?\n\nSecurityEvent\n| where TimeGenerated > ago(7d) and EventID == 4625\n| [1]\n| [2]",
+    "options": [
+      "[1] summarize count() by bin(TimeGenerated, 1h)  [2] render timechart",
+      "[1] summarize count() by bin(TimeGenerated, 7d)  [2] render timechart",
+      "[1] top 168 by TimeGenerated  [2] render columnchart",
+      "[1] summarize count() by TimeGenerated  [2] render piechart"
+    ],
+    "answer": 0,
+    "explain": "bin(TimeGenerated, 1h) groups events into hourly steps, and render timechart plots a value over time. A 7-day step produces a single bar, top only takes rows without counting, and grouping by the raw TimeGenerated creates a group for every point in time."
+  },
+  {
+    "obj": "3.1",
+    "q": "A hunting query in the Defender portal needs to look at DeviceNetworkEvents data that is 75 days old. The workspace is connected and the table has default settings. What is the SIMPLEST solution for future investigations?",
+    "options": [
+      "Increase Data retention in Settings > Endpoints > Advanced features.",
+      "Run the query with the time picker set to a Custom range of 90 days.",
+      "Use the search operator instead of where, because search searches the archive.",
+      "In Microsoft Sentinel > Configuration > Tables, increase the analytics retention for DeviceNetworkEvents above 30 days."
+    ],
+    "answer": 3,
+    "explain": "Native Defender XDR data is available in advanced hunting for 30 days. To keep it available longer, the table is brought into the Sentinel workspace by raising its analytics retention (up to 90 days with no additional storage cost, but with ingestion costs). The time picker cannot search data that is not there, and search does not search the archive."
+  },
+  {
+    "obj": "3.1",
+    "q": "A query in advanced hunting returns a message saying that the results are partial. The query returns about 40,000 rows with a large number of columns, including AdditionalFields. What is the MOST LIKELY cause?",
+    "options": [
+      "The 10,000-row limit was exceeded.",
+      "The 2-minute timeout was exceeded.",
+      "The 64 MB result size limit was exceeded.",
+      "The tenant has used 100% of its CPU quota."
+    ],
+    "answer": 2,
+    "explain": "The row limit is 100,000, so 40,000 rows is not a problem. There is also a 64 MB limit on the total result size, which is affected by the number of columns and the length of the fields; in that case the portal returns as much as fits and reports a partial result. The fix is to project only the columns you need. The timeout is 10 minutes, and an exhausted CPU quota blocks the query rather than returning a partial result."
+  },
+  {
+    "obj": "3.1",
+    "q": "You need to find IP addresses that, in the last 24 hours, had failed sign-ins against more than 15 DIFFERENT accounts (password spray). What should you enter?\n\nSecurityEvent\n| where TimeGenerated > ago(1d) and EventID == 4625\n| summarize AccountCount = ??? by IpAddress\n| where AccountCount > 15",
+    "options": [
+      "count()",
+      "dcount(Account)",
+      "make_list(Account)",
+      "countif(Account != \"\")"
+    ],
+    "answer": 1,
+    "explain": "dcount(Account) counts distinct accounts per IP address, which is the hallmark of a password spray. count() counts all attempts (even 16 attempts against the same account would pass), make_list returns an array rather than a number, and countif counts rows with a non-empty account."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have the query:\n\nDeviceProcessEvents\n| where Timestamp > ago(1d)\n| project Timestamp, DeviceName, FileName\n| where AccountName == \"svc_backup\"\n\nWhat happens when the query runs?",
+    "options": [
+      "It returns processes launched by svc_backup.",
+      "It returns all processes, and the condition on AccountName is ignored.",
+      "It returns an empty result without an error.",
+      "The query reports an error because the AccountName column does not exist after project."
+    ],
+    "answer": 3,
+    "explain": "project keeps only the listed columns, so AccountName does not exist after it and the query fails with an unknown-column error. The filter should be placed before project, or AccountName should be added to project."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Arrange the operators of an efficient hunting query from first to last.",
+    "options": [
+      "| summarize Times = count() by DeviceName, FileName",
+      "| where FileName in~ (\"powershell.exe\", \"pwsh.exe\")",
+      "| render columnchart",
+      "DeviceProcessEvents",
+      "| where Timestamp > ago(7d)"
+    ],
+    "answer": [
+      3,
+      4,
+      1,
+      0,
+      2
+    ],
+    "explain": "The query starts with the table, followed by the time filter (data is partitioned by time), then the other filters, the aggregation and finally render, which must always be last."
+  },
+  {
+    "obj": "3.1",
+    "q": "A query searches command lines with where ProcessCommandLine contains \"Invoke-Mimikatz\" over 30 days of data and frequently exceeds the CPU quota. Which TWO changes reduce resource consumption without losing relevant results? (Choose TWO.)",
+    "options": [
+      "Replace contains with has, because a whole term is being searched.",
+      "Add extend Cmd = tolower(ProcessCommandLine) and filter on Cmd.",
+      "Add a time filter on Timestamp as the first operator after the table.",
+      "Replace the query with search \"Invoke-Mimikatz\"."
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "has uses the term index and is faster than contains when you are looking for a whole word, and an early time filter discards most of the data. A computed column with tolower cannot be filtered via the index and consumes CPU, and search without listed tables searches the entire schema."
+  },
+  {
+    "obj": "3.1",
+    "q": "How many columns does the result of the following query have?\n\nStormEvents\n| summarize Damage = sum(DamageProperty), Events = count() by State, EventType",
+    "options": [
+      "2",
+      "3",
+      "4",
+      "All columns of the StormEvents table plus 2 new ones"
+    ],
+    "answer": 2,
+    "explain": "The result of summarize contains only the by columns (State, EventType) and the aggregations (Damage, Events), so 4 columns. The other columns of the table disappear."
+  },
+  {
+    "obj": "3.1",
+    "q": "You are investigating a suspicion that an attacker added an account to the Domain Admins group in the on-premises Active Directory monitored by Microsoft Defender for Identity. Which table should be used?",
+    "options": [
+      "AuditLogs",
+      "IdentityDirectoryEvents",
+      "IdentityLogonEvents",
+      "DeviceRegistryEvents"
+    ],
+    "answer": 1,
+    "explain": "AD changes (group membership, password and attribute changes) seen by Defender for Identity are in IdentityDirectoryEvents. AuditLogs is for changes in Microsoft Entra ID, and IdentityLogonEvents contains sign-ins."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Match each investigation question with the MOST APPROPRIATE table.",
+    "options": [
+      "Who deleted a Key Vault in the Azure portal?",
+      "Which emails carried an attachment with the given SHA256?",
+      "Who changed an application's owner in Microsoft Entra?",
+      "Which device connected to the C2 server's IP address?",
+      "Which Linux servers are sending sshd messages about failed sign-ins?"
+    ],
+    "targets": [
+      "Syslog",
+      "AzureActivity",
+      "DeviceNetworkEvents",
+      "EmailAttachmentInfo",
+      "AuditLogs",
+      "SigninLogs"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      2,
+      0
+    ],
+    "explain": "Operations on Azure resources are in AzureActivity, attachments in EmailAttachmentInfo, changes to objects in Entra ID in AuditLogs, connections from devices in DeviceNetworkEvents, and Linux sshd messages arrive in Syslog. SigninLogs are user sign-ins, not object changes."
+  },
+  {
+    "obj": "3.1",
+    "q": "You need to find processes launched from Microsoft Office applications regardless of how the file name is written (upper/lower case). Which condition is correct?",
+    "options": [
+      "where InitiatingProcessFileName in~ (\"winword.exe\", \"excel.exe\")",
+      "where InitiatingProcessFileName in (\"winword.exe\", \"excel.exe\")",
+      "where InitiatingProcessFileName == \"winword.exe\" or \"excel.exe\"",
+      "where InitiatingProcessFileName has_all (\"winword.exe\", \"excel.exe\")"
+    ],
+    "answer": 0,
+    "explain": "in~ compares against a list of values regardless of letter case. in is case-sensitive, the expression with or \"excel.exe\" is not a valid KQL condition, and has_all requires the value to contain all terms at the same time."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have the query:\n\nSecurityEvent\n| where TimeGenerated > ago(1d)\n| where EventID == 4625\n| summarize C = count() by Account, bin(TimeGenerated, 1h)\n| where C > 50\n| summarize Hours = count() by Account\n\nWhat does the Hours column represent?",
+    "options": [
+      "The number of hours in which the account had more than 50 failed sign-ins.",
+      "The total number of failed sign-ins for the account in the last 24 hours.",
+      "The number of hours from the account's first to its last failed sign-in.",
+      "The number of accounts with more than 50 failed sign-ins per hour."
+    ],
+    "answer": 0,
+    "explain": "The first summarize creates a row per account and hour, where keeps only account-hours with more than 50 failures, and the second summarize counts those rows per account. So Hours is the number of hours with more than 50 failed sign-ins."
+  },
+  {
+    "obj": "3.1",
+    "q": "You wrote a query in advanced hunting with the filter where Timestamp > ago(3d), and the time range picker above the editor is set to 30 days. Which period does the query search?",
+    "options": [
+      "30 days, because the picker takes precedence.",
+      "3 days, because the filter in the query takes precedence.",
+      "The intersection: 3 days, but only if the picker is set to Custom.",
+      "The query reports an error because of conflicting time ranges."
+    ],
+    "answer": 1,
+    "explain": "When a query contains its own time filter, that filter applies, and the picker shows that the time is set in the query. That is why it is good practice to always keep the time filter in the query itself."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which TWO statements about time in advanced hunting are true? (Choose TWO.)",
+    "options": [
+      "All data is stored in UTC and queries should be written in UTC.",
+      "Defender XDR tables use the Timestamp column, and Sentinel tables use TimeGenerated.",
+      "The now() function returns the local time configured in the portal.",
+      "Gaps in summarize ... by bin() are automatically filled with zeros."
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explain": "Advanced hunting works in UTC, and the portal only displays results in the selected time zone. Native XDR tables have Timestamp, and Sentinel tables have TimeGenerated. now() is UTC, and summarize does not create rows for intervals with no data (make-series is used for that)."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have the AzureFirewall table. You need to find source IP addresses that attempted connections to more than 20 different destination ports and were blocked, sorted from the highest number of ports. Which query does that?",
+    "options": [
+      "AzureFirewall | where Action == \"Deny\" | top 20 by DestinationPort | sort by SourceIp",
+      "AzureFirewall | where Action == \"Deny\" | summarize Ports = count() by SourceIp, DestinationPort | where Ports > 20",
+      "AzureFirewall | summarize Ports = dcount(DestinationPort) by SourceIp | where Ports > 20 | where Action == \"Deny\"",
+      "AzureFirewall | where Action == \"Deny\" | summarize Ports = dcount(DestinationPort) by SourceIp | where Ports > 20 | sort by Ports desc"
+    ],
+    "answer": 3,
+    "explain": "You first filter the blocked connections, then count distinct ports per source (dcount), filter the groups and sort. The third query filters on Action after summarize, when that column no longer exists. The second counts attempts per source-port pair, not the number of ports."
+  },
+  {
+    "obj": "3.1",
+    "q": "You want an advanced hunting query that finds suspicious processes launched from Office applications to automatically generate alerts every hour. What should you do?",
+    "options": [
+      "Save the query as a shared query and configure a schedule for it.",
+      "Create a workbook with that query and turn on auto refresh every 1 hour.",
+      "From advanced hunting, select Create detection rule and define the frequency and entities.",
+      "Add the query to Microsoft Sentinel > Threat management > Hunting and mark it as a bookmark."
+    ],
+    "answer": 2,
+    "explain": "A hunting query is turned into a custom detection rule (Create detection rule), which runs on a schedule and generates alerts. A shared query has no schedule, a workbook only displays data, and hunting queries and bookmarks do not generate alerts automatically."
+  },
+  {
+    "type": "spot",
+    "obj": "3.1",
+    "q": "This advanced hunting query returns a semantic error (a column cannot be resolved). Click the line that causes it.",
+    "snippet": "DeviceLogonEvents\n| where Timestamp > ago(1d)\n| where ActionType == \"LogonFailed\"\n| summarize Failures = count() by DeviceName, bin(Timestamp, 1h)\n| where Failures > 50\n| project Timestamp, DeviceName, AccountName, Failures\n| sort by Failures desc",
+    "lang": "kql",
+    "answer": [
+      5
+    ],
+    "explain": "After summarize only the by columns (DeviceName and Timestamp as a bin) and the aggregate Failures remain. AccountName no longer exists, so project fails. Fix: add AccountName to by (summarize Failures = count() by DeviceName, AccountName, bin(Timestamp, 1h)) or remove it from project."
+  }
+]

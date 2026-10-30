@@ -1,0 +1,11 @@
+{
+  "title": "DAST sa OWASP ZAP-om",
+  "summary": "Dinamičko testiranje pokrenute aplikacije OWASP ZAP-om u pipelineu: baseline, full i API skeniranje, automation framework plan, pravila po ID-u, lažni pozitivi i pragovi za pad builda.",
+  "minutes": 60,
+  "domain": 6,
+  "objectives": [
+    "6.1"
+  ],
+  "title_en": "DAST with OWASP ZAP",
+  "summary_en": "Dynamic testing of the running application with OWASP ZAP in the pipeline: baseline, full and API scans, an automation framework plan, rules by ID, false positives and build-failure thresholds."
+}

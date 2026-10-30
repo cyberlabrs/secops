@@ -1,0 +1,11 @@
+{
+  "title": "Policy as code: OPA, Conftest i Kyverno",
+  "summary": "Vlastita pravila kao kod: Rego v1 sa OPA i Conftestom, Kyverno ValidatingPolicy i CLI (apply, test), ista politika u pipelineu i u klasteru.",
+  "minutes": 75,
+  "domain": 4,
+  "objectives": [
+    "4.4"
+  ],
+  "title_en": "Policy as code: OPA, Conftest and Kyverno",
+  "summary_en": "Your own rules as code: Rego v1 with OPA and Conftest, Kyverno ValidatingPolicy and the CLI (apply, test), the same policy in the pipeline and in the cluster."
+}

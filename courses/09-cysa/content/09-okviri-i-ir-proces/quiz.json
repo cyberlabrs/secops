@@ -1,0 +1,300 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Analitičar u izvještaju o incidentu navodi: grupa FIN-X (napadač), loader sa makroom (alat), domen cdn-upd4te.example i IP 203.0.113.45 (C2), računovodstvo firme (meta). Koji okvir analitičar NAJVJEROVATNIJE koristi?",
+    "options": [
+      "Cyber Kill Chain",
+      "Diamond Model of Intrusion Analysis",
+      "OWASP Web Security Testing Guide",
+      "NIST CSF 2.0 Govern funkcija"
+    ],
+    "answer": 1,
+    "explain": "Četiri elementa (adversary, capability, infrastructure, victim) su vrhovi Diamond modela. Kill Chain opisuje faze, a ne te četiri uloge; OWASP WSTG je metodologija testiranja web aplikacija; Govern je funkcija upravljanja rizikom."
+  },
+  {
+    "obj": "3.1",
+    "q": "Zaposleni je otvorio Word prilog iz phishing emaila i omogućio makro, koji je pokrenuo PowerShell. U kojoj fazi Cyber Kill Chaina je pokretanje makroa?",
+    "options": [
+      "Delivery",
+      "Installation",
+      "Weaponization",
+      "Exploitation"
+    ],
+    "answer": 3,
+    "explain": "Slanje emaila sa prilogom je Delivery, a izvršavanje makroa (iskorištavanje korisnika ili ranjivosti) je Exploitation. Installation slijedi kad se uspostavi persistence (servis, scheduled task). Weaponization je pravljenje dokumenta kod napadača."
+  },
+  {
+    "obj": "3.1",
+    "q": "U kojoj fazi Cyber Kill Chaina organizacija-žrtva ima NAJMANJE direktne vidljivosti?",
+    "options": [
+      "Weaponization",
+      "Reconnaissance",
+      "Delivery",
+      "Command and Control"
+    ],
+    "answer": 0,
+    "explain": "Weaponization (spajanje exploita i payloada) se dešava na infrastrukturi napadača i branilac je ne vidi; može je samo naslutiti iz threat intel-a. Recon ponekad ostavlja tragove skeniranja, a Delivery i C2 se vide u email i mrežnim logovima."
+  },
+  {
+    "obj": "3.1",
+    "q": "SOC menadžer želi da utvrdi koje ponašanje napadača postojeća SIEM pravila NE pokrivaju, kako bi planirao nove detekcije. Šta je NAJBOLJI pristup?",
+    "options": [
+      "Poredati alarme po fazama Cyber Kill Chaina i brojati ih",
+      "Popuniti Diamond model za svaki alarm iz prošlog mjeseca",
+      "Mapirati postojeća pravila na MITRE ATT&CK tehnike u ATT&CK Navigatoru i uraditi gap analizu",
+      "Pokrenuti OSSTMM test perimetra"
+    ],
+    "answer": 2,
+    "explain": "ATT&CK sa ID-evima tehnika omogućava mjerenje pokrivenosti detekcija: tehnike bez pravila su rupe. Kill Chain je previše grub (7 faza), Diamond analizira pojedinačne događaje, a OSSTMM je metodologija testiranja."
+  },
+  {
+    "obj": "3.1",
+    "q": "U MITRE ATT&CK-u, šta predstavlja oznaka T1059.001?",
+    "options": [
+      "Taktiku Execution",
+      "Proceduru konkretne APT grupe",
+      "Sub-technique (PowerShell) tehnike Command and Scripting Interpreter",
+      "Mitigaciju za skriptne jezike"
+    ],
+    "answer": 2,
+    "explain": "ID sa tačkom je sub-tehnika: T1059 je tehnika Command and Scripting Interpreter, a .001 PowerShell. Taktike imaju TA prefiks (TA0002 Execution), mitigacije M prefiks, a procedure su opisi kako je grupa koristila tehniku."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koja tvrdnja NAJBOLJE opisuje razliku između taktike i tehnike u MITRE ATT&CK-u?",
+    "options": [
+      "Taktika je cilj napadača (zašto), a tehnika način na koji ga postiže (kako)",
+      "Taktika je konkretan alat, a tehnika grupa napadača",
+      "Taktika se odnosi samo na cloud, a tehnika na endpoint",
+      "Taktike su linearne faze kao u Kill Chainu, a tehnike nisu povezane sa taktikama"
+    ],
+    "answer": 0,
+    "explain": "Tactic = zašto (npr. Persistence), technique = kako (npr. Scheduled Task). Procedure je konkretna implementacija grupe. ATT&CK nije linearan i jedna tehnika može pripadati više taktika."
+  },
+  {
+    "obj": "3.1",
+    "q": "Analitičar ima samo jednu C2 IP adresu iz threat intel izvještaja. Pretražuje EDR mrežne konekcije i passive DNS da pronađe druge domene napadača i druge zaražene hostove. Kako se ova tehnika zove u kontekstu Diamond modela?",
+    "options": [
+      "Weaponization",
+      "Lateral movement",
+      "Sandboxing",
+      "Pivoting sa vrha Infrastructure na ostale vrhove"
+    ],
+    "answer": 3,
+    "explain": "Diamond model je posebno koristan za pivoting: iz poznatog vrha (infrastruktura) otkrivaš ostale (druge žrtve, alate, napadača). Lateral movement je napadačka taktika, a sandboxing je dinamička analiza uzorka."
+  },
+  {
+    "obj": "3.1",
+    "q": "Kritika Cyber Kill Chaina koju analitičari NAJČEŠĆE navode je:",
+    "options": [
+      "Ima previše faza da bi bio koristan menadžmentu",
+      "Fokusiran je na perimetar i malver, pa slabo opisuje insajdere i napade sa ukradenim kredencijalima",
+      "Ne može se koristiti za phishing napade",
+      "Zahtijeva plaćenu licencu Lockheed Martina"
+    ],
+    "answer": 1,
+    "explain": "Kill Chain je linearan i orijentisan na upad spolja i instalaciju malvera. Napadi bez malvera (validni nalozi, cloud API) i insajderi se teško uklapaju; zato se koristi uz ATT&CK ili Unified Kill Chain."
+  },
+  {
+    "obj": "3.1",
+    "q": "Tim želi da testira da li SIEM detektuje tehnike koje koristi ransomware grupa aktivna u njihovoj industriji, kontrolisano izvodeći te tehnike u test okruženju. Kako se ovaj pristup zove?",
+    "options": [
+      "Adversary emulation zasnovana na ATT&CK profilu grupe",
+      "Diamond activity thread",
+      "OWASP Top 10 procjena",
+      "Vulnerability scan sa autentikacijom"
+    ],
+    "answer": 0,
+    "explain": "Emulacija napadača (npr. Atomic Red Team, CALDERA) koristi ATT&CK tehnike poznate grupe da provjeri detekcije: threat-informed defense. Ostale opcije ne testiraju detekciju ponašanja."
+  },
+  {
+    "obj": "3.2",
+    "q": "EDR je potvrdio aktivnu ransomware enkripciju na jednom file serveru. Šta incident responder treba da uradi PRVO?",
+    "options": [
+      "Reimageovati server",
+      "Mrežno izolovati server da se spriječi širenje",
+      "Vratiti podatke iz posljednjeg backupa",
+      "Napisati lessons learned izvještaj"
+    ],
+    "answer": 1,
+    "explain": "Nakon potvrde (analiza) slijedi containment: izolacija zaustavlja širenje i čuva volatilne dokaze. Reimage je eradication, restore je recovery, a lessons learned je post-incident."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tokom koje faze IR procesa tim kreira playbookove, definiše uloge i održava tabletop vježbe?",
+    "options": [
+      "Analysis",
+      "Post-incident",
+      "Recovery",
+      "Preparation"
+    ],
+    "answer": 3,
+    "explain": "Planovi, playbookovi, uloge, alati i trening su priprema. Post-incident faza može ažurirati playbookove na osnovu lekcija, ali kreiranje i uvježbavanje unaprijed je Preparation."
+  },
+  {
+    "obj": "3.2",
+    "q": "Analitičar je utvrdio da je alarm true positive, da su pogođena tri hosta i da su ugroženi finansijski podaci, pa je incidentu dodijelio visoku ozbiljnost. Koja faza se upravo završila?",
+    "options": [
+      "Detection",
+      "Containment",
+      "Analysis",
+      "Eradication"
+    ],
+    "answer": 2,
+    "explain": "Validacija alarma, određivanje obima, uticaja i ozbiljnosti su Analysis. Detection je uočavanje mogućeg incidenta, a containment i eradication slijede nakon analize."
+  },
+  {
+    "obj": "3.2",
+    "q": "Nakon reimagea kompromitovanog web servera, tim vraća aplikaciju iz čistog backupa, provjerava hash-eve fajlova i uvodi pojačan monitoring prije puštanja u produkciju. Koja je ovo faza?",
+    "options": [
+      "Eradication",
+      "Containment",
+      "Preparation",
+      "Recovery"
+    ],
+    "answer": 3,
+    "explain": "Vraćanje servisa u rad uz provjeru integriteta i pojačan nadzor je Recovery. Reimage (uklanjanje uzroka) je bio Eradication."
+  },
+  {
+    "obj": "3.2",
+    "q": "NIST SP 800-61 Rev. 3 (2025) mapira IR aktivnosti na funkcije kog okvira?",
+    "options": [
+      "NIST SP 800-53 Rev. 5 kontrolne porodice",
+      "ISO/IEC 27035",
+      "NIST Cybersecurity Framework (CSF) 2.0",
+      "MITRE ATT&CK taktike"
+    ],
+    "answer": 2,
+    "explain": "Rev. 3 zamjenjuje Rev. 2 i organizuje preporuke kroz šest CSF 2.0 funkcija: Govern, Identify, Protect, Detect, Respond, Recover, sa Improvement kategorijom (ID.IM) za kontinuirano unapređenje."
+  },
+  {
+    "obj": "3.2",
+    "q": "Prema NIST SP 800-61r3, koje CSF 2.0 funkcije odgovaraju staroj fazi Preparation?",
+    "options": [
+      "Detect i Respond",
+      "Govern, Identify i Protect",
+      "Respond i Recover",
+      "Samo Identify (Improvement)"
+    ],
+    "answer": 1,
+    "explain": "Rev. 3 Preparation mapira na Govern, Identify (sve kategorije) i Protect: šire aktivnosti upravljanja rizikom koje podržavaju IR. Detect, Respond i Recover su sam odgovor na incident."
+  },
+  {
+    "obj": "3.2",
+    "q": "Napadač je uklonjen, ali tri sedmice kasnije isti malver se pojavljuje na istim hostovima. Šta je NAJVJEROVATNIJE propušteno?",
+    "options": [
+      "Eradication nije uklonio sve persistence mehanizme ili iskorištenu ranjivost",
+      "Detection faza je bila prespora",
+      "Communication plan nije uključio PR tim",
+      "Tabletop vježba nije održana"
+    ],
+    "answer": 0,
+    "explain": "Ponovna infekcija istih sistema ukazuje da uzrok nije uklonjen: preostali scheduled task, nalog, web shell ili nezakrpljena ranjivost. To je zadatak eradication faze, a RCA treba da potvrdi uzrok."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koje DVIJE tvrdnje tačno opisuju MITRE ATT&CK? Izaberi DVA.",
+    "options": [
+      "Zasnovan je na opaženom ponašanju napadača u stvarnim napadima",
+      "Ima tačno sedam linearnih faza",
+      "Jedna tehnika može pripadati više taktika",
+      "Opisuje samo Windows okruženja"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "ATT&CK je baza znanja iz stvarnih napada, i tehnika poput Scheduled Task pripada Execution, Persistence i Privilege Escalation. Sedam linearnih faza je Kill Chain, a ATT&CK pokriva Windows, Linux, macOS, cloud, kontejnere, mrežu, mobile i ICS."
+  },
+  {
+    "obj": "3.2",
+    "q": "Koje DVIJE aktivnosti pripadaju fazi Containment? Izaberi DVA.",
+    "options": [
+      "Ažuriranje IR plana nakon incidenta",
+      "Blokiranje C2 domena na DNS-u i proxyju",
+      "Restore baze iz backupa",
+      "Onemogućavanje kompromitovanog naloga"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "Blokiranje C2 komunikacije i onemogućavanje naloga sprečavaju napadača da nastavi i širi se, što je containment. Ažuriranje plana je post-incident, a restore je recovery."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Poredaj faze Cyber Kill Chaina od prve do posljednje.",
+    "options": [
+      "Installation",
+      "Delivery",
+      "Actions on Objectives",
+      "Reconnaissance",
+      "Command and Control",
+      "Exploitation",
+      "Weaponization"
+    ],
+    "answer": [
+      3,
+      6,
+      1,
+      5,
+      0,
+      4,
+      2
+    ],
+    "explain": "Reconnaissance → Weaponization → Delivery → Exploitation → Installation → Command and Control → Actions on Objectives."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Upari element incidenta sa vrhom Diamond modela.",
+    "options": [
+      "C2 domen cdn-upd4te.example",
+      "Ransomware afilijat koji iznajmljuje RaaS",
+      "Laptop u računovodstvu",
+      "Loader sa makroom i Cobalt Strike beacon",
+      "Kompromitovani email server partnera koji šalje phishing",
+      "Finansijski direktor kome je ciljano poslat email"
+    ],
+    "targets": [
+      "Adversary",
+      "Capability",
+      "Infrastructure",
+      "Victim"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1,
+      2,
+      3
+    ],
+    "explain": "Domeni i serveri preko kojih se isporučuje i upravlja su Infrastructure. Akter (afilijat) je Adversary. Alati i malver su Capability. Meta (osoba ili sistem) je Victim."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Poredaj faze procesa odgovora na incident iz CS0-004 ciljeva.",
+    "options": [
+      "Containment",
+      "Post-incident",
+      "Detection",
+      "Recovery",
+      "Preparation",
+      "Eradication",
+      "Analysis"
+    ],
+    "answer": [
+      4,
+      2,
+      6,
+      0,
+      5,
+      3,
+      1
+    ],
+    "explain": "Preparation → Detection → Analysis → Containment → Eradication → Recovery → Post-incident, a lekcije iz post-incident faze vraćaju se u pripremu."
+  }
+]

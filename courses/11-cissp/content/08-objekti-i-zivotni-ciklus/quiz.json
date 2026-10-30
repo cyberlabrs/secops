@@ -1,0 +1,304 @@
+[
+  {
+    "obj": "3.8",
+    "q": "Firma bira sprat za novu server sobu u poslovnoj zgradi od deset spratova sa podzemnom garažom. Koji izbor je NAJBOLJI?",
+    "options": [
+      "Podrum, jer je najteže dostupan spolja",
+      "Centralni dio srednjeg sprata, bez prozora i spoljnih zidova",
+      "Posljednji sprat, zbog lakšeg hlađenja",
+      "Prizemlje pored ulaza, radi brzog pristupa tehničara"
+    ],
+    "answer": 1,
+    "explain": "Podrum je izložen poplavi, posljednji sprat curenju sa krova i vremenskim uslovima, a prizemlje pored ulaza neovlaštenom pristupu. Centralna lokacija na srednjem spratu bez prozora daje najviše slojeva zaštite."
+  },
+  {
+    "obj": "3.8",
+    "q": "Arhitekta predlaže niske žive ograde, prozore kancelarija okrenute prema parkingu i dobru rasvjetu staza, tako da zaposleni prirodno vide šta se dešava oko zgrade. Koji CPTED princip je primijenjen?",
+    "options": [
+      "Territorial reinforcement",
+      "Natural access control",
+      "Natural surveillance",
+      "Maintenance"
+    ],
+    "answer": 2,
+    "explain": "Natural surveillance maksimizuje vidljivost, pa potencijalni napadač zna da može biti primijećen. Natural access control usmjerava kretanje, a territorial reinforcement označava granicu privatnog prostora."
+  },
+  {
+    "obj": "3.8",
+    "q": "Pentesteri su ušli u zaključanu server sobu podizanjem ploča spuštenog plafona iz susjednog hodnika. Koji propust u dizajnu je NAJVJEROVATNIJE omogućio ulaz?",
+    "options": [
+      "Zidovi server sobe nisu išli od konstrukcijskog poda do konstrukcijske ploče (true floor to true ceiling)",
+      "Nedostatak CCTV kamere u hodniku",
+      "Brava sa karticom umjesto biometrije",
+      "Nedovoljna rasvjeta u hodniku"
+    ],
+    "answer": 0,
+    "explain": "Ako zid završava na spuštenom plafonu, prostor iznad omogućava zaobilaženje vrata. Kamere i rasvjeta pomažu detekciji i odvraćanju, ali ne zatvaraju fizički put."
+  },
+  {
+    "obj": "3.8",
+    "q": "Firma bira lokaciju za novi data centar. Šta je sa sigurnosnog aspekta NAJBOLJE?",
+    "options": [
+      "Upadljiva zgrada sa logom firme radi reputacije",
+      "Lokacija pored aerodroma radi blizine korisnika",
+      "Zgrada dijeljena sa drugim zakupcima radi nižih troškova",
+      "Neupadljiva zgrada van plavnih i seizmičkih zona, sa više nezavisnih izvora napajanja i telekom trasa"
+    ],
+    "answer": 3,
+    "explain": "Data centar treba biti neupadljiv, van zona prirodnih rizika i sa redundantnom infrastrukturom. Logo privlači pažnju, aerodrom nosi rizike, a dijeljena zgrada uvodi zajedničke rizike pristupa i ventilacije."
+  },
+  {
+    "obj": "3.8",
+    "q": "Sigurnosni dizajn objekta predviđa ojačana vrata i višestruke barijere oko trezora. Koji je PRIMARNI cilj tih kontrola u modelu slojeva?",
+    "options": [
+      "Deter",
+      "Delay, da bi detekcija i reakcija stigle prije nego napadač dođe do cilja",
+      "Recover",
+      "Detect"
+    ],
+    "answer": 1,
+    "explain": "Barijere i ojačana vrata usporavaju napadača. Dizajn je uspješan kada je vrijeme kašnjenja veće od vremena potrebnog za otkrivanje i reakciju čuvara ili policije."
+  },
+  {
+    "obj": "3.8",
+    "q": "Uprava traži NAJISPLATIVIJU mjeru za odvraćanje krađa sa parkinga zaposlenih, gdje se incidenti dešavaju noću. Šta je NAJBOLJI prvi korak?",
+    "options": [
+      "Biometrijska kontrola na ulazu u parking",
+      "Zapošljavanje dodatnih čuvara u tri smjene",
+      "Ravnomjerna rasvjeta bez tamnih zona",
+      "Ograda od 2,4 m sa bodljikavom žicom i PIDAS senzorima"
+    ],
+    "answer": 2,
+    "explain": "Rasvjeta je jeftina i efikasna mjera odvraćanja i podrška natural surveillance principu. Ostale opcije su znatno skuplje i mogu doći kasnije ako rizik to opravda."
+  },
+  {
+    "obj": "3.9",
+    "q": "Data centar u kojem stalno rade operateri treba sistem za gašenje požara koji ne oštećuje opremu. Koji izbor je NAJBOLJI?",
+    "options": [
+      "CO₂ sistem sa automatskim okidanjem bez odgode",
+      "Halon 1301",
+      "Deluge sprinkleri",
+      "Čisti agens (npr. FM-200 ili Novec 1230) uz alarm, odgodu i abort taster"
+    ],
+    "answer": 3,
+    "explain": "Čisti agensi su bezbjedni za ljude u projektovanim koncentracijama i ne ostavljaju ostatak. CO₂ je smrtonosan za prisutne, halon je zabranjen za nove instalacije, a deluge potapa opremu."
+  },
+  {
+    "obj": "3.9",
+    "q": "Data centar koristi vodeni sistem gašenja i želi smanjiti rizik od štete zbog slučajno oštećene sprinkler glave. Koji tip sistema je NAJPRIKLADNIJI?",
+    "options": [
+      "Pre-action",
+      "Wet pipe",
+      "Deluge",
+      "Dry pipe bez detektora"
+    ],
+    "answer": 0,
+    "explain": "Pre-action traži dva događaja: detektor puni cijevi vodom, a voda izlazi tek kada glava pukne od toplote. To smanjuje rizik slučajnog curenja i daje vrijeme za ručno gašenje. Wet pipe stalno drži vodu u cijevima."
+  },
+  {
+    "obj": "3.9",
+    "q": "Nakon zamjene HVAC sistema relativna vlažnost u server sobi pala je na 15%, a serveri se povremeno sami resetuju. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Kondenzacija na komponentama",
+      "Statički elektricitet zbog niske vlažnosti",
+      "Korozija kontakata",
+      "Negativan pritisak u prostoriji"
+    ],
+    "answer": 1,
+    "explain": "Niska vlažnost pogoduje statičkom pražnjenju koje oštećuje ili resetuje opremu. Kondenzacija i korozija su posljedice previsoke vlažnosti."
+  },
+  {
+    "obj": "3.9",
+    "q": "Kratkotrajni padovi napona u trajanju od nekoliko sekundi izazivaju restarte servera, dok dugotrajni nestanci nisu zabilježeni. Šta je NAJPRIKLADNIJA kontrola?",
+    "options": [
+      "Dizel generator bez UPS-a",
+      "Surge protector",
+      "Dodatni PDU",
+      "UPS (po mogućnosti online/double-conversion)"
+    ],
+    "answer": 3,
+    "explain": "Sag (kratkotrajan pad napona) premošćuje UPS, a online UPS daje i najčistije napajanje. Generatoru treba vrijeme da se pokrene, surge protector štiti od prenapona, a PDU samo raspoređuje napajanje."
+  },
+  {
+    "obj": "3.9",
+    "q": "Prostorija za čuvanje digitalnih dokaza za interne istrage treba biti dizajnirana tako da dokazi budu prihvatljivi na sudu. Koja kontrola je NAJVAŽNIJA?",
+    "options": [
+      "Evidencija svakog pristupa i preuzimanja dokaza uz strogo ograničen pristup, radi očuvanja chain of custody",
+      "Pozitivan pritisak u prostoriji",
+      "Pre-action sprinkleri",
+      "Smještaj pored server sobe radi brže analize"
+    ],
+    "answer": 0,
+    "explain": "Prihvatljivost dokaza zavisi od dokumentovanog lanca nadzora: ko je, kada i zašto imao pristup. Ostale kontrole štite prostoriju, ali ne dokazuju integritet dokaza."
+  },
+  {
+    "obj": "3.9",
+    "q": "Zaposleni iz ljubaznosti drže vrata ulaza u ograničenu zonu kolegama i nepoznatim osobama. Koja tehnička kontrola NAJBOLJE sprečava ovaj problem?",
+    "options": [
+      "Duži period čuvanja CCTV snimaka",
+      "Postavljanje znakova upozorenja",
+      "Mantrap (access control vestibule) ili turnstile koji propušta jednu osobu",
+      "Mehanička brava sa ključem"
+    ],
+    "answer": 2,
+    "explain": "Mantrap i turnstile fizički sprečavaju tailgating i piggybacking. CCTV je detektivna kontrola, znakovi su odvraćajući, a brava sa ključem ne rješava propuštanje drugih osoba."
+  },
+  {
+    "obj": "3.9",
+    "q": "Razvodni ormar (IDF) na spratu dijeli se sa spremištem za sredstva za čišćenje i nije zaključan. Šta je NAJVEĆI rizik?",
+    "options": [
+      "Pregrijavanje zbog hemikalija",
+      "Neovlašten fizički pristup mrežnoj opremi, priključenje uređaja ili prisluškivanje",
+      "Prebrzo trošenje UPS baterija",
+      "Gubitak garancije za opremu"
+    ],
+    "answer": 1,
+    "explain": "Nekontrolisan pristup IDF-u omogućava priključenje neovlaštenih uređaja, sabotažu ili prisluškivanje. IDF treba biti namjenski, zaključan, sa evidencijom pristupa i nadzorom."
+  },
+  {
+    "obj": "3.9",
+    "q": "Požar je izbio u električnom razvodnom ormaru pod naponom. Koje sredstvo je NAJPRIKLADNIJE za ručni aparat pored ormara?",
+    "options": [
+      "Voda",
+      "Pjena na bazi vode",
+      "Mokra hemikalija (klasa K)",
+      "CO₂ ili čisti agens"
+    ],
+    "answer": 3,
+    "explain": "Električna oprema pod naponom je klasa C (SAD): koriste se nekonduktivna sredstva kao CO₂ ili čisti agensi. Voda i pjena provode struju, a mokra hemikalija je za kuhinjska ulja."
+  },
+  {
+    "obj": "3.10",
+    "q": "Projekat novog sistema ulazi u fazu testiranja, a sigurnosni tim tek tada dobija dokumentaciju i otkriva arhitektonske propuste. Šta je NAJBOLJA lekcija za buduće projekte?",
+    "options": [
+      "Sigurnosne zahtjeve definisati od faze potreba zainteresovanih strana i analize zahtjeva, uz threat modeling u dizajnu",
+      "Produžiti fazu testiranja",
+      "Zaposliti više penetracionih testera",
+      "Prebaciti odgovornost za sigurnost na dobavljača"
+    ],
+    "answer": 0,
+    "explain": "Sigurnost je najjeftinija i najefikasnija kada se ugradi na početku životnog ciklusa. Kasno testiranje otkriva probleme kada su ispravke skupe, a odgovornost se ne može prenijeti na dobavljača."
+  },
+  {
+    "obj": "3.10",
+    "q": "Tim provjerava da li implementirani sistem ispunjava svaki zahtjev iz specifikacije, prolazeći kroz requirements traceability matrix i testove. Koja aktivnost se izvodi?",
+    "options": [
+      "Validation",
+      "Accreditation",
+      "Verification",
+      "Transition"
+    ],
+    "answer": 2,
+    "explain": "Verifikacija provjerava da je sistem izgrađen prema specifikaciji (building the system right). Validacija provjerava da sistem zadovoljava stvarne potrebe korisnika (building the right system), a akreditacija je odluka o prihvatanju rizika."
+  },
+  {
+    "obj": "3.10",
+    "q": "Krajnji korisnici u pilot fazi utvrđuju da sistem, iako potpuno usklađen sa specifikacijom, ne podržava njihov stvarni radni proces. Koja aktivnost je otkrila problem?",
+    "options": [
+      "Verification",
+      "Validation",
+      "Integration",
+      "Requirements traceability"
+    ],
+    "answer": 1,
+    "explain": "Validacija poredi sistem sa stvarnim potrebama korisnika i misije u realnom okruženju. Usklađenost sa specifikacijom je verifikacija; problem je ovdje bio u samim zahtjevima."
+  },
+  {
+    "obj": "3.10",
+    "q": "Prije puštanja sistema u produkciju, šta od navedenog MORA biti urađeno u fazi transition/deployment?",
+    "options": [
+      "Zadržati testne naloge radi lakšeg rješavanja problema",
+      "Kopirati produkcijske lične podatke u testno okruženje",
+      "Isključiti logovanje radi performansi",
+      "Ukloniti razvojne i testne naloge, debug funkcije i testne podatke, i pribaviti formalnu autorizaciju za rad"
+    ],
+    "answer": 3,
+    "explain": "Ostavljeni testni nalozi, debug kod i maintenance hookovi su česti putevi napada. Formalna autorizacija (ATO) potvrđuje da je rezidualni rizik prihvaćen. Ostale opcije povećavaju rizik."
+  },
+  {
+    "obj": "3.10",
+    "q": "Sistem je u produkciji tri godine. U međuvremenu je dodata integracija sa novim partnerom i promijenjen je cloud provajder, a posljednja procjena rizika urađena je prije puštanja u rad. Koji princip iz outlinea iz 2027. je zanemaren?",
+    "options": [
+      "Continuous security review: ponovna procjena rizika i kontinuirani monitoring pri značajnim promjenama",
+      "Requirements analysis",
+      "Secure disposal",
+      "Stakeholder needs"
+    ],
+    "answer": 0,
+    "explain": "Sigurnost se provjerava kroz cijeli životni ciklus, a značajne promjene traže analizu sigurnosnog uticaja i često ponovnu autorizaciju. Jednokratna procjena pri puštanju u rad zastarijeva."
+  },
+  {
+    "obj": "3.10",
+    "q": "Organizacija povlači stari HR sistem i prelazi na SaaS. Koji korak je NAJVAŽNIJE uraditi PRIJE sanitizacije diskova starog sistema?",
+    "options": [
+      "Prodati servere da bi se povratio dio troška",
+      "Ukloniti sistem iz CMDB-a",
+      "Utvrditi koji podaci podliježu retention obavezama ili legal holdu i arhivirati ih ili migrirati uz provjeru integriteta",
+      "Isključiti monitoring"
+    ],
+    "answer": 2,
+    "explain": "Sanitizacija je nepovratna, pa prvo treba sačuvati podatke koje zakon ili spor zahtijevaju. Prodaja i ažuriranje CMDB-a dolaze nakon sanitizacije i verifikacije."
+  },
+  {
+    "obj": "3.10",
+    "q": "Koji dokument NAJBOLJE dokazuje da je svaki sigurnosni zahtjev implementiran i testiran, i da ne postoji funkcionalnost bez odgovarajućeg zahtjeva?",
+    "options": [
+      "Business impact analysis",
+      "Requirements traceability matrix",
+      "Certificate of destruction",
+      "Acceptable use policy"
+    ],
+    "answer": 1,
+    "explain": "RTM povezuje svaki zahtjev sa dizajnom, implementacijom i testom u oba smjera. BIA služi kontinuitetu poslovanja, certifikat uništenja povlačenju imovine, a AUP ponašanju korisnika."
+  },
+  {
+    "obj": "3.10",
+    "q": "Kritičan bankarski sistem se zamjenjuje novim. Uprava želi NAJMANJI rizik od prekida poslovanja pri prelasku. Koji pristup tranziciji je NAJPRIKLADNIJI?",
+    "options": [
+      "Big-bang prelazak preko vikenda bez povratnog plana",
+      "Gašenje starog sistema prije testiranja novog",
+      "Puštanje novog sistema bez obuke korisnika",
+      "Paralelni rad starog i novog sistema uz poređenje rezultata i plan za povratak (rollback)"
+    ],
+    "answer": 3,
+    "explain": "Paralelni rad je skuplji, ali najmanje rizičan za kritične sisteme: greške se otkrivaju poređenjem, a stari sistem ostaje dostupan. Big-bang bez rollbacka nosi najveći rizik."
+  },
+  {
+    "obj": "3.9",
+    "type": "match",
+    "q": "Upari problem sa napajanjem sa njegovim opisom.",
+    "options": [
+      "Brownout",
+      "Spike",
+      "Blackout",
+      "Sag",
+      "Surge"
+    ],
+    "targets": [
+      "Dugotrajan potpuni nestanak",
+      "Kratkotrajan pad napona",
+      "Dugotrajan pad napona",
+      "Kratkotrajan visok napon",
+      "Dugotrajan povišen napon"
+    ],
+    "answer": [2, 3, 0, 1, 4],
+    "explain": "Brownout je dugotrajan, a sag kratkotrajan pad napona; spike je kratkotrajan, a surge dugotrajan porast; blackout je dugotrajan potpuni nestanak (kratkotrajan je fault)."
+  },
+  {
+    "obj": "3.10",
+    "type": "order",
+    "q": "Poredaj procese životnog ciklusa sistema (ISO/IEC/IEEE 15288, NIST SP 800-160) od prvog do posljednjeg.",
+    "options": [
+      "Verification and validation",
+      "Requirements analysis",
+      "Retirement / secure disposal",
+      "Secure architectural design",
+      "Stakeholder needs and requirements",
+      "Operations and maintenance",
+      "Development / implementation",
+      "Transition / deployment"
+    ],
+    "answer": [4, 1, 3, 6, 0, 7, 5, 2],
+    "explain": "Potrebe zainteresovanih strana, analiza zahtjeva, siguran dizajn, implementacija (sa integracijom), verifikacija i validacija, tranzicija, operacije i održavanje, pa sigurno povlačenje. Continuous security review teče kroz sve faze."
+  }
+]

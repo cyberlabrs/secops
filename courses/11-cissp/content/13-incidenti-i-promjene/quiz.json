@@ -1,0 +1,344 @@
+[
+  {
+    "obj": "7.6",
+    "q": "Analitičar u SOC-u vidi SIEM alarm o 40 neuspjelih prijava na VPN sa jedne IP adrese u minuti, nakon čega nema uspješne prijave. Kako ovo NAJTAČNIJE klasifikovati?",
+    "options": [
+      "Kao alarm (alert) koji treba trijažom provjeriti prije nego što se proglasi incidentom.",
+      "Kao sigurnosni incident koji zahtijeva aktiviranje CSIRT-a.",
+      "Kao povredu podataka (breach) koju treba prijaviti regulatoru.",
+      "Kao lažno pozitivan rezultat koji treba ignorisati."
+    ],
+    "answer": 0,
+    "explain": "Alarm je obavještenje alata da je događaj možda sumnjiv. Bez uspješne prijave nema dokaza o ugrožavanju CIA, pa se prvo radi trijaža. Breach traži potvrđeno otkrivanje podataka, a ignorisanje bez provjere nije profesionalno."
+  },
+  {
+    "obj": "7.6",
+    "q": "EDR javlja da proces na serveru u toku masovno šifruje dijeljene foldere. Šta incident response tim treba uraditi PRVO nakon potvrde alarma?",
+    "options": [
+      "Isključiti napajanje servera.",
+      "Restaurirati foldere iz backupa.",
+      "Pokrenuti root cause analizu da se utvrdi ulazna tačka.",
+      "Izolovati server sa mreže, ostavljajući ga upaljenog."
+    ],
+    "answer": 3,
+    "explain": "Containment (mitigation) zaustavlja širenje, a mrežna izolacija čuva memoriju kao dokaz. Gašenje uništava volatilne dokaze; restauracija i RCA dolaze kasnije (recovery, remediation)."
+  },
+  {
+    "obj": "7.6",
+    "q": "Nakon ransomware incidenta tim je restaurirao servere iz nepromjenjivih backupa, a zatim zakrpio VPN uređaj preko kojeg je napadač ušao i uveo MFA. Kako se zove ovaj DRUGI korak?",
+    "options": [
+      "Recovery",
+      "Remediation",
+      "Mitigation",
+      "Detection"
+    ],
+    "answer": 1,
+    "explain": "Remediation uklanja korijenski uzrok da se incident ne ponovi. Recovery je restauracija iz backupa, mitigation ograničava štetu dok traje incident."
+  },
+  {
+    "obj": "7.6",
+    "q": "Koji je PRIMARNI cilj lessons learned sastanka nakon incidenta?",
+    "options": [
+      "Unaprijediti procese, kontrole i IR plan kako se incident ne bi ponovio.",
+      "Utvrditi koji je zaposleni odgovoran i predložiti disciplinsku mjeru.",
+      "Pripremiti dokaze za krivični postupak.",
+      "Izračunati tačan finansijski gubitak za osiguravača."
+    ],
+    "answer": 0,
+    "explain": "Lessons learned je blameless pregled usmjeren na poboljšanje. Dokazi, disciplinski postupci i proračun štete su odvojene aktivnosti."
+  },
+  {
+    "obj": "7.6",
+    "q": "Tokom incidenta tehnički tim je utvrdio da su podaci klijenata vjerovatno iznijeti. Ko treba da donese odluku o obavještavanju regulatora i javnosti?",
+    "options": [
+      "Voditelj SOC-a, jer najbolje razumije tehničke detalje.",
+      "CISO samostalno, bez uključivanja drugih funkcija.",
+      "Viši menadžment uz savjet pravne službe, prema IR i komunikacionom planu.",
+      "Analitičar koji je otkrio incident, kako bi se poštovao rok od 72 sata."
+    ],
+    "answer": 2,
+    "explain": "Obavještavanje ima pravne i reputacione posljedice, pa odluku donosi viši menadžment uz pravnu službu. Tehnički tim daje činjenice, a rokovi se poštuju kroz unaprijed definisan proces."
+  },
+  {
+    "obj": "7.6",
+    "q": "Incident je prošao haotično: niko nije znao ko smije izolovati produkcijske servere niti koga zvati iz pravne službe. Šta bi NAJVIŠE pomoglo u budućnosti?",
+    "options": [
+      "Kupovina XDR platforme sa automatskim odgovorom.",
+      "Angažovanje vanjskog forenzičkog tima nakon svakog incidenta.",
+      "Povećanje broja SIEM pravila.",
+      "Odobren IR plan sa definisanim ulogama, ovlaštenjima i kontaktima, uz redovne vježbe."
+    ],
+    "answer": 3,
+    "explain": "Problem je u pripremi (preparation): uloge, ovlaštenja i kontakti. Alati ne rješavaju nedostatak procesa i ovlaštenja."
+  },
+  {
+    "obj": "7.6",
+    "type": "order",
+    "q": "Poredaj korake incident managementa prema ISC2 CBK, od prvog do posljednjeg.",
+    "options": [
+      "Recovery",
+      "Detection",
+      "Lessons learned",
+      "Mitigation",
+      "Reporting",
+      "Response",
+      "Remediation"
+    ],
+    "answer": [
+      1,
+      5,
+      3,
+      4,
+      0,
+      6,
+      2
+    ],
+    "explain": "ISC2 redoslijed: Detection, Response, Mitigation, Reporting, Recovery, Remediation, Lessons learned. Izvještavanje u praksi teče kroz cijeli incident, a priprema je preduslov koji nije u listi."
+  },
+  {
+    "obj": "7.7",
+    "q": "Organizacija želi da blokira SQL injection napade na staru web aplikaciju dok razvojni tim ne prepravi kod. Koja kontrola je NAJPRIKLADNIJA kao privremena mjera?",
+    "options": [
+      "Web application firewall (WAF) sa pravilima za SQL injection.",
+      "Stateful mrežni firewall koji dozvoljava samo port 443.",
+      "Network IDS na SPAN portu.",
+      "Antivirus na web serveru."
+    ],
+    "answer": 0,
+    "explain": "WAF analizira HTTP zahtjeve na sloju 7 i služi kao kompenzaciona kontrola (virtual patch). Stateful firewall ne vidi sadržaj, IDS samo alarmira, a antivirus ne štiti od SQLi."
+  },
+  {
+    "obj": "7.7",
+    "q": "Sigurnosni tim postavlja IPS inline ispred kritične platne aplikacije čija je dostupnost poslovno najvažnija. Kako treba konfigurisati ponašanje uređaja u slučaju kvara?",
+    "options": [
+      "Fail-closed, jer sigurnost uvijek ima prednost nad dostupnošću.",
+      "Fail-secure, tako da sav saobraćaj ide u karantin.",
+      "Fail-open, uz kompenzacione kontrole i alarm o kvaru, jer je dostupnost prioritet.",
+      "Bez posebne konfiguracije, jer IPS nikad ne prekida saobraćaj."
+    ],
+    "answer": 2,
+    "explain": "Izbor fail-open ili fail-closed je poslovna odluka zasnovana na riziku. Kada je dostupnost poslovno najvažnija, fail-open uz alarm i druge slojeve zaštite je opravdan. Inline IPS pri kvaru može prekinuti saobraćaj."
+  },
+  {
+    "obj": "7.7",
+    "q": "Koji ishod IDS-a predstavlja NAJVEĆI rizik za organizaciju?",
+    "options": [
+      "False positive",
+      "True negative",
+      "False negative",
+      "True positive"
+    ],
+    "answer": 2,
+    "explain": "False negative znači da napad prolazi bez alarma. False positive troši vrijeme analitičara, ali napad nije propušten."
+  },
+  {
+    "obj": "7.7",
+    "q": "Honeypot izložen na internetu ima ranjiv SSH servis bez ikakvog reklamiranja. Drugi honeypot ima javni baner koji nudi besplatan piratski softver kako bi privukao posjetioce. Šta je TAČNO?",
+    "options": [
+      "Prvi je enticement, a drugi može biti entrapment.",
+      "Oba su entrapment i neprihvatljiva.",
+      "Oba su enticement i potpuno prihvatljiva.",
+      "Prvi je entrapment jer servis namjerno sadrži ranjivost."
+    ],
+    "answer": 0,
+    "explain": "Enticement pruža cilj napadaču koji je već namjeravao napad. Aktivno navođenje osoba koje nisu imale namjeru da počine djelo je entrapment, što može učiniti dokaze neprihvatljivim."
+  },
+  {
+    "obj": "7.7",
+    "q": "Fabrika ima ICS radne stanice čiji se softver mijenja jednom godišnje i koje ne mogu dobiti nove potpise antivirusa. Koja kontrola NAJBOLJE štiti od nepoznatog malwarea?",
+    "options": [
+      "Denylist poznatih malicioznih fajlova.",
+      "Application allowlisting zasnovan na hashu ili potpisu izdavača.",
+      "Anti-malware sa ažuriranjem potpisa jednom mjesečno preko USB-a.",
+      "Honeypot u ICS mreži."
+    ],
+    "answer": 1,
+    "explain": "Allowlisting (default deny) je najefikasniji za statične sisteme i štiti od nepoznatog koda. Denylist i potpisi ne vide nepoznat malware, a honeypot je detektivna, ne preventivna kontrola."
+  },
+  {
+    "obj": "7.7",
+    "q": "Po čemu se EDR PRVENSTVENO razlikuje od tradicionalnog anti-malware rješenja?",
+    "options": [
+      "Koristi isključivo potpise poznatog malwarea.",
+      "Korelira događaje sa e-maila, mreže, identiteta i clouda u jednoj platformi.",
+      "Radi samo na mrežnom perimetru.",
+      "Prikuplja telemetriju ponašanja na endpointu i omogućava istragu i odgovor, npr. izolaciju hosta."
+    ],
+    "answer": 3,
+    "explain": "EDR prati ponašanje i pruža odgovor na endpointu. Korelacija više slojeva je XDR, a potpisi su odlika klasičnog anti-malwarea."
+  },
+  {
+    "obj": "7.7",
+    "q": "Organizacija angažuje MSSP za SOC 24/7. Nakon breacha regulator pita ko je odgovoran za zaštitu podataka klijenata. Koji je NAJTAČNIJI odgovor?",
+    "options": [
+      "MSSP, jer je preuzeo sigurnosne operacije.",
+      "Organizacija, kao vlasnik podataka; MSSP odgovara samo prema ugovoru.",
+      "Odgovornost je podijeljena popola po zakonu.",
+      "Proizvođač SIEM-a koji je MSSP koristio."
+    ],
+    "answer": 1,
+    "explain": "Izvršenje se može prenijeti, odgovornost ne. Organizacija ostaje odgovorna i treba ugovor, SLA i right to audit."
+  },
+  {
+    "obj": "7.7",
+    "q": "Kompanija planira uvesti AI alat koji automatski blokira naloge na osnovu anomalija ponašanja. Šta je NAJVAŽNIJE uzeti u obzir prije uvođenja?",
+    "options": [
+      "Da li alat koristi najnoviji jezički model.",
+      "Rizik lažnih odluka i potrebu za ljudskim nadzorom nad akcijama sa velikim uticajem.",
+      "Da li alat može zamijeniti sve analitičare SOC-a.",
+      "Da li alat ima više pravila od postojećeg SIEM-a."
+    ],
+    "answer": 1,
+    "explain": "ML alati imaju false positive i podložni su adversarial napadima, pa akcije sa velikim uticajem traže human in the loop i podešavanje. Zamjena ljudi i broj pravila nisu pravi kriteriji."
+  },
+  {
+    "obj": "7.7",
+    "type": "match",
+    "q": "Upari opis sa kontrolom.",
+    "options": [
+      "Izvršava nepoznat prilog u izolovanom okruženju i posmatra ponašanje.",
+      "Inline uređaj koji blokira saobraćaj koji odgovara potpisu napada.",
+      "Lažni zapis u bazi čija upotreba okida alarm.",
+      "Korelira telemetriju sa endpointa, e-maila, mreže i identiteta.",
+      "Preusmjerava saobraćaj kroz centar provajdera koji uklanja volumetrijski napad."
+    ],
+    "targets": [
+      "IDS",
+      "IPS",
+      "Sandbox",
+      "XDR",
+      "Honeytoken",
+      "DDoS scrubbing"
+    ],
+    "answer": [
+      2,
+      1,
+      4,
+      3,
+      5
+    ],
+    "explain": "Sandbox detonira nepoznat kod, IPS je inline i blokira (IDS samo alarmira i ovdje je distraktor), honeytoken je lažni podatak, XDR korelira više slojeva, a DDoS scrubbing čisti saobraćaj kod provajdera."
+  },
+  {
+    "obj": "7.8",
+    "q": "Skener je pronašao dvije ranjivosti: CVSS 9.8 na izolovanom testnom serveru i CVSS 7.5 na internet-izloženom VPN uređaju koji je na CISA KEV listi. Šta treba prioritetno rješavati?",
+    "options": [
+      "Ranjivost na testnom serveru, jer ima veći CVSS skor.",
+      "Obje istovremeno, jer CVSS veći od 7 uvijek znači isti prioritet.",
+      "Ranjivost na VPN uređaju, jer se aktivno eksploatiše i sistem je izložen.",
+      "Nijednu dok proizvođač ne objavi service pack."
+    ],
+    "answer": 2,
+    "explain": "Prioritizacija uzima u obzir vjerovatnoću (KEV, EPSS), izloženost i kritičnost, ne samo CVSS. Rizik je vjerovatnoća puta uticaj."
+  },
+  {
+    "obj": "7.8",
+    "q": "Proizvođač je objavio kritičnu zakrpu za bazu podataka. Nema dokaza aktivne eksploatacije. Šta je NAJBOLJI sljedeći korak?",
+    "options": [
+      "Odmah primijeniti zakrpu na sve produkcijske servere.",
+      "Sačekati sljedeći godišnji prozor održavanja.",
+      "Primijeniti zakrpu samo ako je skener prijavi kao kritičnu.",
+      "Testirati zakrpu u okruženju koje odgovara produkciji i podnijeti zahtjev za promjenu."
+    ],
+    "answer": 3,
+    "explain": "Zakrpe se testiraju i primjenjuju kroz change management. Hitna primjena bez testa nosi rizik po dostupnost, a odlaganje za godinu dana ostavlja kritičnu ranjivost."
+  },
+  {
+    "obj": "7.8",
+    "q": "Medicinski uređaj radi na nepodržanom operativnom sistemu i proizvođač ne dozvoljava zakrpe. Šta je NAJPRIKLADNIJI pristup?",
+    "options": [
+      "Instalirati neslužbene zakrpe operativnog sistema.",
+      "Isključiti uređaj iz upotrebe bez konsultacija sa poslovanjem.",
+      "Segmentirati uređaj, primijeniti kompenzacione kontrole i dokumentovati izuzetak koji odobrava vlasnik rizika.",
+      "Ignorisati ranjivost jer proizvođač snosi odgovornost."
+    ],
+    "answer": 2,
+    "explain": "Kad zakrpa nije moguća, koriste se kompenzacione kontrole (segmentacija, virtual patching, monitoring), a preostali rizik formalno prihvata vlasnik. Neslužbene zakrpe mogu ugroziti bezbjednost pacijenata i podršku."
+  },
+  {
+    "obj": "7.8",
+    "q": "Šta je PRVI preduslov efikasnog vulnerability management programa?",
+    "options": [
+      "Tačan i ažuran inventar imovine.",
+      "Penetraciono testiranje svih sistema.",
+      "Kupovina automatskog alata za zakrpe.",
+      "Bug bounty program."
+    ],
+    "answer": 0,
+    "explain": "Ne može se skenirati ni zakrpiti ono za šta organizacija ne zna. Inventar (CMDB, discovery) je prvi korak."
+  },
+  {
+    "obj": "7.8",
+    "q": "Nakon primjene zakrpa tim je ažurirao tiket i zatvorio ga. Koji korak je izostao?",
+    "options": [
+      "Procjena ranjivosti CVSS skorom.",
+      "Obavještavanje proizvođača o primjeni.",
+      "Lessons learned sastanak.",
+      "Verifikacija ponovnim skeniranjem da je ranjivost zaista otklonjena."
+    ],
+    "answer": 3,
+    "explain": "Zatvaranje bez verifikacije ostavlja mogućnost da zakrpa nije primijenjena ili nije uspjela. Ponovno skeniranje potvrđuje otklanjanje."
+  },
+  {
+    "obj": "7.9",
+    "q": "Administrator je tokom noći bez zahtjeva za promjenu izmijenio firewall pravilo kako bi riješio problem korisnika. Problem je riješen i nema negativnih posljedica. Kako to NAJBOLJE okarakterisati?",
+    "options": [
+      "Kao prihvatljivu praksu jer je problem riješen.",
+      "Kao neovlaštenu promjenu koju treba evidentirati, revidirati i eskalirati, bez obzira na ishod.",
+      "Kao standardnu promjenu koja ne traži dokumentaciju.",
+      "Kao hitnu promjenu koju nije potrebno naknadno dokumentovati."
+    ],
+    "answer": 1,
+    "explain": "Promjene mimo procesa narušavaju baseline i auditabilnost. Čak i hitne promjene se dokumentuju i revidiraju naknadno."
+  },
+  {
+    "obj": "7.9",
+    "q": "Tokom aktivne eksploatacije zero-daya potrebno je odmah primijeniti zakrpu na produkciji. Kako ovo treba obraditi u change managementu?",
+    "options": [
+      "Primijeniti bez ikakvog zapisa jer je u pitanju incident.",
+      "Kao hitnu promjenu odobrenu od ECAB-a ili ovlaštene osobe, sa naknadnom dokumentacijom i pregledom.",
+      "Kao normalnu promjenu na sljedećoj sjednici CAB-a.",
+      "Kao standardnu promjenu jer su zakrpe uvijek unaprijed odobrene."
+    ],
+    "answer": 1,
+    "explain": "Emergency change ide skraćenim postupkom, ali ne mimo procesa. Čekanje na redovni CAB ostavlja sistem izložen."
+  },
+  {
+    "obj": "7.9",
+    "q": "Šta MORA postojati prije nego što CAB odobri promjenu na kritičnom sistemu?",
+    "options": [
+      "Plan povratka (backout/rollback) i procjena uticaja, uključujući sigurnosni.",
+      "Potpis proizvođača softvera.",
+      "Rezultat penetracionog testa nakon promjene.",
+      "Odobrenje svih krajnjih korisnika sistema."
+    ],
+    "answer": 0,
+    "explain": "Analiza uticaja i backout plan su dio RFC-a prije odobrenja. Pentest nakon promjene ne može biti preduslov odobrenja."
+  },
+  {
+    "obj": "7.9",
+    "q": "DevOps tim isporučuje promjene više puta dnevno kroz CI/CD pipeline. Auditor tvrdi da organizacija nema change management jer CAB ne odobrava svaku isporuku. Koji je NAJBOLJI odgovor sigurnosnog menadžera?",
+    "options": [
+      "Uvesti sjednicu CAB-a za svaki commit kako bi se zadovoljio auditor.",
+      "Isključiti produkcijske isporuke iz change managementa jer su automatizovane.",
+      "Pokazati da su kontrole ugrađene u pipeline: obavezan peer review, automatski testovi i sigurnosni skeneri, audit trail i separation of duties.",
+      "Zabraniti CI/CD i vratiti se na kvartalna izdanja."
+    ],
+    "answer": 2,
+    "explain": "Change management u DevOpsu je automatizovan: pull request sa pregledom je odobrenje, quality gates su testiranje, a repozitorij daje audit trail. CAB za svaki commit je nepraktičan, a isključenje iz procesa ili zabrana CI/CD nisu odgovori koji služe poslovanju."
+  },
+  {
+    "obj": "7.9",
+    "q": "Tokom noći FIM je prijavio izmjenu konfiguracije na produkcijskom web serveru. Na osnovu ovih zapisa, šta je ISPRAVAN sljedeći korak?",
+    "snippet": "2026-10-27 02:41:13 UTC  FIM     web-prod-02  /etc/nginx/conf.d/app.conf MODIFIED sha256 1f9a..->7c42..\n2026-10-27 02:41:13 UTC  auditd  web-prod-02  user=ops-admin (sudo) vim /etc/nginx/conf.d/app.conf\n2026-10-27 02:43:50 UTC  syslog  web-prod-02  systemctl reload nginx (user=ops-admin)\nITSM pretraga: CI=web-prod-02, period 2026-10-26 .. 2026-10-28\n  CHG-4471  \"Rotacija TLS certifikata\"  status=Odobren  prozor=2026-10-29 22:00-23:00\n  (nema drugih zapisa o promjenama ni incidentima)",
+    "lang": "log",
+    "options": [
+      "Tretirati to kao neovlaštenu promjenu i potencijalni incident: uporediti fajl sa baseline-om, utvrditi ko je i zašto mijenjao, vratiti odobreno stanje kroz proces i eskalirati",
+      "Zatvoriti alarm, jer je promjenu napravio legitiman administratorski nalog",
+      "Naknadno pripojiti izmjenu zahtjevu CHG-4471, jer se odnosi na isti server",
+      "Odmah reinstalirati server iz zlatnog image-a, bez dalje analize"
+    ],
+    "answer": 0,
+    "explain": "Izmjena u 02:41 nema odobren RFC: CHG-4471 je za drugu promjenu i drugi prozor. Promjena bez odobrenja je kršenje change managementa i potencijalni incident dok se ne dokaže suprotno, jer nalog ops-admin može biti kompromitovan. Treba uporediti sa baseline-om, kroz audit trag i razgovor utvrditi okolnosti, vratiti odobreno stanje kroz proces i eskalirati. Legitiman nalog ne znači legitimnu promjenu, pripajanje tuđem RFC-u falsifikuje evidenciju, a reinstalacija bez analize uništava dokaze i ne otkriva uzrok."
+  }
+]

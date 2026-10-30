@@ -1,0 +1,236 @@
+[
+  {
+    "obj": "4.3",
+    "q": "Task: create a RuntimeClass gvisor that uses the containerd handler runsc. Which manifest is correct?",
+    "options": [
+      "apiVersion: node.k8s.io/v1, kind: RuntimeClass, metadata.name: gvisor, handler: runsc",
+      "apiVersion: v1, kind: RuntimeClass, metadata.name: gvisor, spec.handler: runsc",
+      "apiVersion: node.k8s.io/v1, kind: RuntimeClass, metadata.name: runsc, runtimeHandler: gvisor",
+      "apiVersion: node.k8s.io/v1, kind: RuntimeClass, metadata.name: gvisor, metadata.namespace: default, handler: runsc"
+    ],
+    "answer": 0,
+    "explain": "RuntimeClass is in the node.k8s.io/v1 group, the handler field is at the top of the object (there is no spec) and must match the runtime name in the containerd configuration. The object isn't namespaced, and a runtimeHandler field doesn't exist."
+  },
+  {
+    "obj": "4.3",
+    "q": "The Deployment untrusted needs to run in gVisor through the RuntimeClass gvisor. Where do you add the field?",
+    "options": [
+      "spec.runtimeClassName in the Deployment",
+      "spec.template.metadata.annotations: runtimeclass: gvisor",
+      "spec.template.spec.runtimeClassName: gvisor",
+      "spec.template.spec.containers[].runtimeClassName: gvisor"
+    ],
+    "answer": 2,
+    "explain": "runtimeClassName is a PodSpec field, so in a Deployment it goes into spec.template.spec. It isn't a container field or a Deployment field, and an annotation has no effect."
+  },
+  {
+    "obj": "4.3",
+    "q": "A Pod with runtimeClassName: gvisor is in the ContainerCreating state on node02, and the event says: failed to get sandbox runtime: no runtime for \"runsc\" is configured. On node01 the same Pod works. What is the best permanent fix?",
+    "options": [
+      "Change the handler in the RuntimeClass to runc",
+      "Add scheduling.nodeSelector to the RuntimeClass with a label that only nodes with runsc installed have",
+      "Delete the Pod so the scheduler tries again",
+      "Add runtimeClassName to the kube-scheduler configuration too"
+    ],
+    "answer": 1,
+    "explain": "runsc exists only on some nodes, so the RuntimeClass should steer Pods to them via scheduling.nodeSelector (it is merged with the Pod's nodeSelector). A runc handler removes the sandbox, and deleting again may land on node02 again."
+  },
+  {
+    "obj": "4.3",
+    "q": "What is the fastest way to prove that the Pod sandboxed really runs in gVisor?",
+    "options": [
+      "kubectl get pod sandboxed -o wide shows a column RUNTIME=gvisor",
+      "kubectl exec sandboxed -- cat /etc/os-release shows gVisor",
+      "kubectl logs sandboxed contains the word runsc",
+      "kubectl exec sandboxed -- dmesg shows messages like Starting gVisor..., and uname -r differs from the node's kernel"
+    ],
+    "answer": 3,
+    "explain": "gVisor has its own emulated kernel log that starts with Starting gVisor and reports its own kernel version. -o wide has no runtime column, os-release comes from the image, and logs are the application's output."
+  },
+  {
+    "obj": "4.3",
+    "q": "Team B gets a dedicated node node01. You set the taint tenant=team-b:NoSchedule on node01 and added a toleration to team B's Pods. Some of team B's Pods still end up on other nodes. What is missing?",
+    "options": [
+      "A nodeSelector or nodeAffinity for the label tenant=team-b on team B's Pods (and that label on node01)",
+      "The NoExecute effect instead of NoSchedule",
+      "A PriorityClass for team B's Pods",
+      "A ResourceQuota in the team-b namespace"
+    ],
+    "answer": 0,
+    "explain": "A taint only repels Pods without a toleration; a toleration allows, but doesn't push the Pod onto that node. Attraction requires a nodeSelector/affinity. NoExecute would only evict other teams' existing Pods."
+  },
+  {
+    "obj": "4.3",
+    "q": "The team-b namespace has a ResourceQuota with requests.cpu=4. kubectl run test --image=nginx returns: failed quota: team-b: must specify requests.cpu. Which change is best so developers don't have to write requests every time?",
+    "options": [
+      "Delete the ResourceQuota",
+      "Add a LimitRange with a CPU defaultRequest to the team-b namespace",
+      "Add a PriorityClass with globalDefault: true",
+      "Set a --default-requests flag on kube-scheduler"
+    ],
+    "answer": 1,
+    "explain": "A LimitRange fills in default requests/limits at admission, so the quota can be accounted for. Deleting the quota removes the DoS protection, a PriorityClass doesn't affect requests, and no such scheduler flag exists."
+  },
+  {
+    "obj": "4.3",
+    "q": "A customer hosts untrusted user code and fears a Linux kernel vulnerability that allows a container escape. Which measure directly reduces that risk?",
+    "options": [
+      "A NetworkPolicy default deny in the user's namespace",
+      "A ResourceQuota with a Pod count limit",
+      "Running Pods through a RuntimeClass with a gVisor or Kata handler",
+      "A separate namespace and RBAC per user"
+    ],
+    "answer": 2,
+    "explain": "A sandbox runtime separates the application from the host kernel (gVisor with a user-space kernel, Kata with a lightweight VM). Namespaces, RBAC, quotas and NetworkPolicy don't change the fact that all containers share the node's kernel."
+  },
+  {
+    "obj": "4.3",
+    "type": "match",
+    "q": "Match the isolation mechanism with the risk it primarily mitigates.",
+    "options": [
+      "ResourceQuota/LimitRange",
+      "NetworkPolicy default deny",
+      "RBAC Role per namespace",
+      "RuntimeClass with runsc"
+    ],
+    "targets": [
+      "Team A reads and deletes team B's Deployments through the API",
+      "A container escape through a host kernel vulnerability",
+      "Encrypting traffic between nodes",
+      "One tenant consumes all of the cluster's memory and CPU",
+      "Team A's Pod opens a connection to team B's database"
+    ],
+    "answer": [3, 4, 0, 1],
+    "explain": "Quotas protect against resource exhaustion, NetworkPolicy against network access between tenants, RBAC against access to API objects, and a sandbox against escapes through the kernel. Encrypting traffic is a job for Cilium or a service mesh."
+  },
+  {
+    "obj": "4.3",
+    "type": "order",
+    "q": "Order the steps to move the Deployment web to gVisor on a cluster where runsc has just been installed on node01.",
+    "options": [
+      "Add spec.template.spec.runtimeClassName: gvisor to the Deployment web",
+      "In /etc/containerd/config.toml on node01 add the runsc runtime (runtime_type io.containerd.runsc.v1) and restart containerd",
+      "Verify with kubectl exec into a new Pod: dmesg shows Starting gVisor",
+      "Create a RuntimeClass gvisor with handler: runsc"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "The handler must exist on the node before the RuntimeClass references it, and a Pod can start only once the RuntimeClass exists. Changing the template triggers a rolling update, so the check is done on a new Pod."
+  },
+  {
+    "obj": "4.4",
+    "q": "The cluster uses Cilium as the CNI. How do you enable WireGuard transparent encryption of traffic between Pods?",
+    "options": [
+      "kubectl label ns --all cilium.io/encryption=wireguard",
+      "A PeerAuthentication with mtls.mode: STRICT in kube-system",
+      "--set wireguard.enabled=true in the kube-proxy configuration",
+      "helm upgrade cilium cilium/cilium -n kube-system --reuse-values --set encryption.enabled=true --set encryption.type=wireguard"
+    ],
+    "answer": 3,
+    "explain": "Cilium encryption is enabled with the Helm values encryption.enabled and encryption.type (wireguard or ipsec). PeerAuthentication is an Istio resource, and namespace labels and kube-proxy don't control Cilium encryption."
+  },
+  {
+    "obj": "4.4",
+    "q": "You enabled Cilium WireGuard encryption. Which command confirms it is active on the agent?",
+    "options": [
+      "kubectl -n kube-system exec ds/cilium -- cilium-dbg status | grep Encryption",
+      "kubectl get networkpolicy -A",
+      "kubectl -n kube-system logs ds/kube-proxy | grep wireguard",
+      "istioctl proxy-status"
+    ],
+    "answer": 0,
+    "explain": "The Cilium agent status shows an Encryption line with Wireguard, the cilium_wg0 interface and the number of peers. The Cilium CLI also has cilium encryption status. NetworkPolicy, kube-proxy and istioctl have nothing to do with Cilium encryption."
+  },
+  {
+    "obj": "4.4",
+    "q": "The payments namespace is in the Istio mesh (sidecar injection). Task: workloads in payments may accept only mTLS traffic. Which manifest?",
+    "options": [
+      "apiVersion: security.istio.io/v1, kind: PeerAuthentication, metadata: {name: default, namespace: payments}, spec: {mtls: {mode: PERMISSIVE}}",
+      "apiVersion: networking.k8s.io/v1, kind: NetworkPolicy, metadata.namespace: payments, spec.tls: STRICT",
+      "apiVersion: security.istio.io/v1, kind: PeerAuthentication, metadata: {name: default, namespace: payments}, spec: {mtls: {mode: STRICT}}",
+      "apiVersion: security.istio.io/v1, kind: AuthorizationPolicy, metadata.namespace: payments, spec.mtls: STRICT"
+    ],
+    "answer": 2,
+    "explain": "A PeerAuthentication without a selector in a namespace applies to all workloads, and STRICT accepts only mTLS. PERMISSIVE also accepts plain text, NetworkPolicy has no TLS field, and AuthorizationPolicy is for authorization, not for the mTLS mode."
+  },
+  {
+    "obj": "4.4",
+    "q": "After a PeerAuthentication STRICT in payments, curl from a Pod in the legacy namespace (without a sidecar) to api.payments returns code 000 and exit code 56, while from payments it works. What does that mean?",
+    "options": [
+      "The api service has the wrong port",
+      "The policy works correctly: a client without a proxy can't establish mTLS and is rejected",
+      "CoreDNS doesn't resolve the name from another namespace",
+      "A NetworkPolicy in payments blocks legacy"
+    ],
+    "answer": 1,
+    "explain": "In STRICT mode the server accepts only mTLS, so plain HTTP from a client without a sidecar fails at the connection level (exit 56, reset). A DNS error would give a different code (6), and a wrong port would fail from payments too."
+  },
+  {
+    "obj": "4.4",
+    "q": "You want STRICT mTLS for the whole mesh with one policy. Where and how do you create it?",
+    "options": [
+      "A PeerAuthentication default without a selector in the mesh's root namespace (istio-system by default)",
+      "A PeerAuthentication default with the selector app: '*' in the default namespace",
+      "A PeerAuthentication in every namespace, because a mesh-wide policy doesn't exist",
+      "A ClusterPeerAuthentication object without a namespace"
+    ],
+    "answer": 0,
+    "explain": "A policy in the root namespace without a selector applies to the whole mesh, and namespace and workload policies can override it. A selector in the root namespace would narrow it, and ClusterPeerAuthentication doesn't exist."
+  },
+  {
+    "obj": "4.4",
+    "q": "A Pod in the shop namespace (label istio-injection=enabled) has READY 1/1 and its traffic isn't encrypted. The other Pods have 2/2. What is the most likely cause?",
+    "options": [
+      "The PeerAuthentication is in PERMISSIVE mode",
+      "Cilium WireGuard isn't enabled",
+      "The Pod was created before the label was set and wasn't restarted, so it has no istio-proxy sidecar",
+      "The Pod uses the RuntimeClass gvisor"
+    ],
+    "answer": 2,
+    "explain": "The sidecar is injected when the Pod is created, so existing Pods must be restarted (kubectl rollout restart). PERMISSIVE doesn't remove the sidecar, Cilium isn't part of Istio, and RuntimeClass doesn't affect injection."
+  },
+  {
+    "obj": "4.4",
+    "q": "Differences between Cilium WireGuard and Istio mTLS. Which statements are true? (Choose TWO.)",
+    "options": [
+      "Istio mTLS provides a per-workload identity (ServiceAccount) and enables AuthorizationPolicy based on that identity",
+      "Cilium WireGuard requires a sidecar in every Pod",
+      "Cilium WireGuard encrypts traffic between nodes without changing applications and without a proxy in the Pod",
+      "Istio STRICT mode replaces the need for NetworkPolicy",
+      "Cilium WireGuard requires a PeerAuthentication in every namespace"
+    ],
+    "answer": [0, 2],
+    "explain": "Cilium encrypts at the node level through a tunnel without a sidecar, and Istio does mTLS between proxies with workload identity. Encryption doesn't restrict who talks to whom, so NetworkPolicy is still needed; PeerAuthentication is an Istio resource."
+  },
+  {
+    "obj": "4.4",
+    "type": "match",
+    "q": "Match the Istio mtls.mode with the server's behavior.",
+    "options": [
+      "STRICT",
+      "PERMISSIVE",
+      "UNSET",
+      "DISABLE"
+    ],
+    "targets": [
+      "Accepts both mTLS and plain text",
+      "Inherits from the namespace or mesh; without a parent, behaves as PERMISSIVE",
+      "Encrypts only traffic to external services",
+      "No mTLS; ambient doesn't support it",
+      "Accepts only mTLS"
+    ],
+    "answer": [4, 0, 1, 3],
+    "explain": "STRICT rejects plain text, PERMISSIVE accepts both, UNSET inherits, and DISABLE turns off mTLS. Egress to external services isn't configured through PeerAuthentication."
+  },
+  {
+    "obj": "4.4",
+    "q": "A team wants Cilium IPsec instead of WireGuard. What must exist before the agent can encrypt?",
+    "options": [
+      "A PeerAuthentication STRICT in kube-system",
+      "A RuntimeClass with the handler ipsec",
+      "The label encryption=ipsec on every node",
+      "The Secret cilium-ipsec-keys in the kube-system namespace with a key, together with encryption.type=ipsec"
+    ],
+    "answer": 3,
+    "explain": "IPsec in Cilium uses keys from the cilium-ipsec-keys Secret, which you create and rotate yourself; WireGuard generates keys automatically. The other options mix up Istio, RuntimeClass and nonexistent labels."
+  }
+]

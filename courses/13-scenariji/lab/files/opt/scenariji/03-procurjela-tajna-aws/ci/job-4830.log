@@ -1,0 +1,21 @@
+# Job #4830 (export-probni) | pipeline #1941 | main | 2026-10-13T07:12:55Z | https://gitlab.kvadrat.ba/izvjestaji/izvjestaji-servis/-/jobs/4830
+Running with gitlab-runner 17.4.0 (b92ee590)
+  on kvadrat-shared-runner-02 t3_Xk9pQw, system ID: s_6b1f2e9a7c3d
+Preparing the "docker" executor
+Using Docker executor with image python:3.12-slim ...
+Pulling docker image python:3.12-slim ...
+Using docker image sha256:4f1c2e8d9a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d for python:3.12-slim
+Preparing environment
+Running on runner-t3xk9pqw-project-57-concurrent-0 via kvadrat-ci-02...
+Getting source from Git repository
+Fetching changes with git depth set to 20...
+Initialized empty Git repository in /builds/izvjestaji/izvjestaji-servis/.git/
+Created fresh repository.
+Checking out 347a8940 as detached HEAD (ref is main)...
+Skipping Git submodules setup
+Executing "step_script" stage of the job script
+$ pip install -q -r requirements.txt
+$ python -m app.export --datum 2026-10-12
+25102 redova
+Cleaning up project directory and file based variables
+Job succeeded

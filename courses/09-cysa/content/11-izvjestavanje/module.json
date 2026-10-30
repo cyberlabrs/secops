@@ -1,0 +1,12 @@
+{
+  "title": "Izvještavanje i komunikacija",
+  "title_en": "Reporting and communication",
+  "summary": "Izvještavanje o ranjivostima (scorecard, action plan, inhibitori remedijacije, SLA i trendovi) i o incidentima (eskalacija, communication plan, executive summary, AAR, handover), uz SOC metrike MTTD, MTTR i FP stopu.",
+  "summary_en": "Vulnerability reporting (scorecards, action plans, inhibitors to remediation, SLAs, and trends) and incident reporting (escalation, communication plan, executive summary, AAR, handover), along with SOC metrics MTTD, MTTR, and FP rate.",
+  "minutes": 60,
+  "domain": 4,
+  "objectives": [
+    "4.1",
+    "4.2"
+  ]
+}

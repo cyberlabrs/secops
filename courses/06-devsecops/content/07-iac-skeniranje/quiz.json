@@ -1,0 +1,253 @@
+[
+  {
+    "obj": "4.1",
+    "q": "U pipeline ste dodali job sa komandom `trivy config --severity HIGH,CRITICAL infra/`. U logu se vide HIGH nalazi za `aws_security_group.web`, ali job je zelen. Zašto?",
+    "options": [
+      "Nedostaje `--scanners misconfig`, pa Trivy samo ispisuje nalaze bez ocjene",
+      "`trivy config` ne podržava Terraform bez `--tf-vars`",
+      "Bez `--exit-code 1` Trivy vraća 0 i kad pronađe nalaze",
+      "`--severity` filtrira samo prikaz, a za gate treba `--ignore-unfixed`"
+    ],
+    "answer": 2,
+    "explain": "Trivy podrazumijevano završava sa exit 0; gate dobijaš tek sa `--exit-code 1`, a `--severity` određuje koji nalazi se računaju. `--scanners misconfig` treba za `trivy fs`/`image`, ne za `trivy config`, a `--ignore-unfixed` se odnosi na ranjivosti, ne na konfiguraciju."
+  },
+  {
+    "obj": "4.1",
+    "q": "Checkov na `infra/` prijavljuje 9 nalaza. Želite da izvještaj i dalje prikazuje sve, ali da build pada samo zbog SSH-a prema internetu (`CKV_AWS_24`) i javne baze (`CKV_AWS_17`). Koja komanda?",
+    "options": [
+      "checkov -d infra --hard-fail-on CKV_AWS_24,CKV_AWS_17",
+      "checkov -d infra --check CKV_AWS_24,CKV_AWS_17",
+      "checkov -d infra --soft-fail --check CKV_AWS_24,CKV_AWS_17",
+      "checkov -d infra --skip-check CKV_AWS_18,CKV_AWS_260,CKV_AWS_16"
+    ],
+    "answer": 0,
+    "explain": "`--hard-fail-on` daje exit 1 samo za navedene provjere, a ostali pali nalazi ostaju u izvještaju kao implicitni soft-fail. `--check` izvršava samo te dvije provjere i sakriva ostale nalaze, `--soft-fail` nikad ne ruši build, a `--skip-check` uklanja provjere iz izvještaja."
+  },
+  {
+    "obj": "4.1",
+    "q": "Developer je na vrh `infra/main.tf`, iznad bloka `provider \"aws\"`, dodao `#checkov:skip=CKV_AWS_24:Bastion privremeno, SEC-150`. Checkov i dalje prijavljuje FAILED za `aws_security_group.web`. Šta je uzrok?",
+    "options": [
+      "Između `#` i `checkov` mora biti razmak",
+      "Komentar mora biti unutar bloka resursa na koji se izuzeće odnosi",
+      "Checkov ne podržava inline izuzeća u Terraformu, samo `--skip-check`",
+      "Razlog poslije dvotačke ne smije sadržati zarez"
+    ],
+    "answer": 1,
+    "explain": "Checkov inline skip važi za resurs u čijem se bloku nalazi, pa komentar treba staviti unutar `resource \"aws_security_group\" \"web\" { ... }`. Format `#checkov:skip=ID:razlog` je ispravan, a inline izuzeća u Terraformu su podržana."
+  },
+  {
+    "obj": "4.1",
+    "q": "Checkov prijavljuje `CKV_K8S_16` (privilegovan kontejner) za DaemonSet `node-exporter`, koji legitimno treba privilegije. Ista provjera mora ostati aktivna za sve ostale workloade. Šta je ispravno izuzeće?",
+    "options": [
+      "`skip-check: [CKV_K8S_16]` u `.checkov.yaml` sa komentarom",
+      "Unos `KSV-0017` u `.trivyignore`",
+      "`--soft-fail-on CKV_K8S_16` u CI jobu",
+      "Anotacija `checkov.io/skip1: CKV_K8S_16=Metrike čvora; SEC-120` na DaemonSetu"
+    ],
+    "answer": 3,
+    "explain": "Za Kubernetes manifeste Checkov izuzeće čita iz anotacije `checkov.io/skipN` na samom resursu, pa važi samo za taj DaemonSet. Globalni `skip-check` i `--soft-fail-on` bi oslabili provjeru za sve workloade, a `.trivyignore` Checkov ne čita."
+  },
+  {
+    "obj": "4.1",
+    "q": "Tim je prihvatio rizik SSH pravila u `aws_security_group.web` do kraja godine i koristi Trivy kao gate. Koji komentar iznad resursa to ispravno izražava?",
+    "options": [
+      "#trivy:ignore:AWS-0107:exp:2026-12-31",
+      "#trivy:ignore:AWS-0107 expired_at=2026-12-31",
+      "# nosec AWS-0107 until 2026-12-31",
+      "#checkov:skip=AWS-0107:2026-12-31"
+    ],
+    "answer": 0,
+    "explain": "Trivy inline ignore ima oblik `trivy:ignore:<ID>` i opcioni rok `:exp:yyyy-mm-dd`; poslije tog datuma nalaz se vraća. `expired_at` je polje u `.trivyignore.yaml`, ne u komentaru, `nosec` je sintaksa drugih alata, a `checkov:skip` čita samo Checkov."
+  },
+  {
+    "obj": "4.1",
+    "q": "Trivy prijavljuje `DS-0002` (nema `USER` u Dockerfileu). Developer dodaje `#trivy:ignore:DS-0002` iznad linije `FROM`, ali nalaz ostaje. Šta treba uraditi da izuzeće proradi?",
+    "options": [
+      "Koristiti dugi ID `docker-least-privilege-user` umjesto `DS-0002`",
+      "Dodati rok `:exp:` jer Trivy bez roka ignoriše komentar",
+      "Upisati izuzeće u `.trivyignore.yaml` (`id`, `paths`, `statement`) i proslijediti ga sa `--ignorefile`",
+      "Prebaciti komentar na kraj Dockerfilea"
+    ],
+    "answer": 2,
+    "explain": "Inline ignore radi samo za nalaze vezane za postojeći resurs ili instrukciju; nalaz koji nastaje zbog odsustva nečega (nema `USER`) mora ići u ignore fajl. Dugi ID je ispravan alias, ali ne rješava problem, a rok nije obavezan."
+  },
+  {
+    "obj": "4.1",
+    "q": "U korijen repoa ste dodali `.trivyignore.yaml` sa unosom `misconfigurations: [{id: AWS-0107, statement: ..., expired_at: 2026-12-31}]`. Job `trivy config --exit-code 1 infra/` i dalje pada na `AWS-0107`. Zašto?",
+    "options": [
+      "Polje se zove `expires`, ne `expired_at`",
+      "YAML ignore fajl Trivy čita samo kad je naveden sa `--ignorefile`",
+      "`trivy config` ne podržava ignore fajlove, samo inline komentare",
+      "Fajl mora biti u direktoriju `infra/` pored `.tf` fajlova"
+    ],
+    "answer": 1,
+    "explain": "Automatski se čita samo obični `.trivyignore`; eksperimentalni YAML format treba eksplicitno `--ignorefile .trivyignore.yaml`. Polja `id`, `statement` i `expired_at` su ispravna."
+  },
+  {
+    "obj": "4.1",
+    "q": "Checkov u labu radi bez platforme i API ključa. Tim je postavio `checkov -d infra --hard-fail-on HIGH,CRITICAL`, ali job je uvijek zelen iako `CKV_AWS_17` pada. Zašto?",
+    "options": [
+      "`--hard-fail-on` prima samo ID-ove provjera, ne ozbiljnosti",
+      "Treba dodati `--soft-fail=false`",
+      "`CKV_AWS_17` je LOW provjera",
+      "Ugrađene provjere bez platforme nemaju ozbiljnost, pa nijedan nalaz ne ispunjava prag, a ostali se tretiraju kao soft-fail"
+    ],
+    "answer": 3,
+    "explain": "Severity za ugrađene Checkov provjere dolazi sa platforme; bez nje nalaz nema ozbiljnost i ne pogađa prag `HIGH`. Kad je zadat samo `--hard-fail-on`, svi ostali nalazi su implicitno soft-fail. Bez platforme gate gradiš po ID-ovima ili vlastitim provjerama sa `severity`."
+  },
+  {
+    "obj": "4.1",
+    "q": "Uvodite Checkov u stari Terraform repo sa 120 nalaza. Tim traži da build odmah pada samo za NOVE nalaze, a stari dug se rješava planski. Šta radite?",
+    "options": [
+      "`checkov -d infra --create-baseline`, commitujete `.checkov.baseline`, a u CI-ju `--baseline infra/.checkov.baseline`",
+      "Trajno `--soft-fail` dok tim ne popravi sve nalaze",
+      "`--skip-check` sa listom svih ID-ova koji trenutno padaju",
+      "`--compact --quiet` da log bude kraći"
+    ],
+    "answer": 0,
+    "explain": "Baseline bilježi postojeće nalaze, pa izvještaj i exit kod uključuju samo nove. Trajni soft-fail ne blokira ništa, a `--skip-check` isključuje provjere i za buduće nove resurse. `--compact` i `--quiet` samo mijenjaju prikaz."
+  },
+  {
+    "obj": "4.1",
+    "q": "Job `iac-checkov` pada, ali u MR-u nema SARIF izvještaja:\n\n```yaml\niac-checkov:\n  stage: iac\n  needs: []\n  script:\n    - checkov -d infra -o cli -o sarif --output-file-path console,checkov.sarif\n  artifacts:\n    paths: [checkov.sarif]\n```\n\nŠta nedostaje?",
+    "options": [
+      "`allow_failure: true`",
+      "`expose_as: checkov`",
+      "`when: always` pod `artifacts`",
+      "`needs: [build]`"
+    ],
+    "answer": 2,
+    "explain": "Artefakti se podrazumijevano čuvaju samo za uspješan job; `artifacts:when: always` čuva izvještaj i kad job padne. `allow_failure` bi ugasio gate, a `expose_as` samo dodaje link u MR."
+  },
+  {
+    "obj": "4.1",
+    "q": "Napisali ste YAML provjeru `CKV2_KURS_1` u `policies/checkov/rds_deletion_protection.yaml`. Komanda `checkov -d infra` ne prijavljuje ništa za `aws_db_instance.shop` bez `deletion_protection`. Šta je najvjerovatnije uzrok?",
+    "options": [
+      "YAML provjere moraju biti u fajlu `.checkov.yaml`",
+      "Direktorij sa provjerom nije učitan sa `--external-checks-dir policies/checkov`",
+      "YAML provjere rade samo nad Terraform planom",
+      "Treba dodati `--framework yaml`"
+    ],
+    "answer": 1,
+    "explain": "Vlastite provjere (YAML i Python) Checkov učitava tek sa `--external-checks-dir` (ili istoimenim ključem u konfiguraciji). `.checkov.yaml` je konfiguracija pokretanja, a YAML provjere rade i nad `.tf` fajlovima."
+  },
+  {
+    "obj": "4.1",
+    "q": "Python provjera u `policies/checkov/sg_no_admin_ports.py` ima klasu `NoAdminPortsFromInternet(BaseResourceCheck)` sa ispravnim `__init__` i `scan_resource_conf`. Checkov učita direktorij, ali provjera se nikad ne izvrši. Šta nedostaje?",
+    "options": [
+      "Dekorator `@checkov.register` iznad klase",
+      "Povratna vrijednost `True`/`False` umjesto `CheckResult`",
+      "Fajl mora imati ekstenziju `.checkov.py`",
+      "Instanca na kraju modula, npr. `check = NoAdminPortsFromInternet()`"
+    ],
+    "answer": 3,
+    "explain": "Provjera se registruje kad se napravi instanca klase; bez linije `check = ...()` Checkov učita fajl, ali provjeru ne pokrene. `scan_resource_conf` vraća `CheckResult.PASSED`/`FAILED`, a dekorator ni posebna ekstenzija ne postoje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Firma uvodi pravilo: svaka `aws_db_instance` mora imati `deletion_protection = true`, ozbiljnost HIGH, a nalaz mora ući u gate. Tim ne zna Rego, a Checkov radi bez platforme. Šta je najbrže rješenje?",
+    "options": [
+      "Checkov YAML provjera (`cond_type: attribute`, `operator: equals`) sa `severity: HIGH` u metadata",
+      "Trivy Rego provjera u paketu `user.kurs` sa `--check-namespaces user`",
+      "hadolint pravilo u `.hadolint.yaml`",
+      "Trivy `--severity HIGH,CRITICAL` nad ugrađenom provjerom `AWS-0177`"
+    ],
+    "answer": 0,
+    "explain": "Checkov YAML provjera se piše bez Rega, a severity zadat u njenom metadata važi i bez platforme. Rego provjera bi radila, ali tim ne zna Rego. hadolint ne čita Terraform, a ugrađena `AWS-0177` je MEDIUM pa je filter `HIGH,CRITICAL` izbacuje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Napisali ste Trivy provjeru `policies/trivy/rds.rego` sa `package user.kurs.rds_deletion_protection` i METADATA blokom. Komanda `trivy config --config-check policies/trivy infra/` daje samo ugrađene nalaze. Šta nedostaje?",
+    "options": [
+      "Paket mora počinjati sa `builtin.`",
+      "Provjera mora biti u `.yaml` fajlu",
+      "`--check-namespaces user`, jer Trivy bez toga evaluira samo ugrađeni namespace",
+      "`trivy config` ne podržava vlastite provjere; treba `trivy fs`"
+    ],
+    "answer": 2,
+    "explain": "Trivy podrazumijevano izvršava samo `builtin.*` pakete; vlastiti prefiks paketa mora se navesti sa `--check-namespaces` (alias `--namespaces`). `builtin.` je rezervisan za ugrađene provjere."
+  },
+  {
+    "obj": "4.1",
+    "q": "U `infra/main.tf` piše `publicly_accessible = var.db_public`, a vrijednost `true` dolazi iz `prod.tfvars` koji pipeline generiše tek u deploy fazi. Checkov nad `.tf` fajlovima ovo ne prijavljuje. Kako pouzdano uhvatiti problem prije `apply`?",
+    "options": [
+      "Dodati `--download-external-modules true`",
+      "Skenirati JSON plan: `terraform show -json tfplan > tfplan.json`, pa `checkov -f tfplan.json --framework terraform_plan` ili `trivy config tfplan.json`",
+      "Dodati `--skip-path prod.tfvars`",
+      "Pokrenuti Checkov sa `--compact`"
+    ],
+    "answer": 1,
+    "explain": "Plan sadrži stvarne, izračunate vrijednosti varijabli, pa skener vidi `publicly_accessible = true`. Preuzimanje modula ne rješava vrijednosti iz tfvars koji se tek generišu, a `--skip-path` i `--compact` ne utiču na vrijednosti."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Poredaj korake uvođenja Checkova kao gatea u postojeći repo, tako da developeri ne budu blokirani preko noći.",
+    "options": [
+      "Uključi gate: `checkov -d infra --baseline infra/.checkov.baseline` bez `--soft-fail`",
+      "Pokreni `checkov` sa `--soft-fail` i SARIF izvještajem da tim vidi nalaze",
+      "Svaki sprint popravi dio starih nalaza i ukloni ih iz baseline-a",
+      "Napravi `.checkov.baseline` sa `--create-baseline` i commituj ga"
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      2
+    ],
+    "explain": "Prvo izvještajni režim (vidljivost bez blokiranja), zatim snimak postojećeg duga, pa gate samo za nove nalaze, i na kraju planirano smanjivanje baseline-a."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari mehanizam izuzeća sa njegovim ponašanjem.",
+    "options": [
+      "`#checkov:skip=CKV_AWS_260:razlog` unutar resursa",
+      "`checkov.io/skip1: CKV_K8S_16=razlog`",
+      "`#trivy:ignore:AWS-0107:exp:2026-12-31`",
+      "`--soft-fail-on CKV_AWS_260`"
+    ],
+    "targets": [
+      "Anotacija na Kubernetes resursu",
+      "Inline izuzeće sa rokom iznad Terraform resursa",
+      "Nalaz ostaje FAILED u izvještaju, ali ne ruši build",
+      "Inline izuzeće jednog Terraform resursa, u izvještaju kao SKIPPED",
+      "Globalno isključenje provjere, nalaz se ne prikazuje"
+    ],
+    "answer": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "explain": "Checkov inline skip i anotacija važe za jedan resurs i vidljivi su kao SKIPPED; Trivy komentar ima rok `exp:`; `--soft-fail-on` prikazuje nalaz, ali ne ruši build. Globalno isključenje opisuje `skip-check`, koji ovdje nije ponuđen."
+  },
+  {
+    "obj": "4.1",
+    "q": "HTTP 80 prema `0.0.0.0/0` u `aws_security_group.web` je namjeran (javni web iza ALB-a). Koja DVA pristupa sprječavaju da ovaj nalaz ruši Checkov gate, a odluka ostaje vidljiva i obrazložena? (Izaberi DVA.)",
+    "options": [
+      "`#checkov:skip=CKV_AWS_260:Javni web iza ALB-a; SEC-118` unutar resursa",
+      "`--skip-check CKV_AWS_260` u CI komandi, bez komentara",
+      "`--soft-fail` za cijeli job",
+      "`--soft-fail-on CKV_AWS_260` uz komentar sa razlogom i tiketom u `.gitlab-ci.yml`",
+      "Ukloniti ingress pravilo iz Terraforma i dodati ga ručno u AWS konzoli"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "Inline skip sa razlogom prolazi code review i u izvještaju je SKIPPED; `--soft-fail-on` ostavlja nalaz vidljiv kao FAILED, a ne ruši build. Skip bez komentara sakriva odluku, `--soft-fail` gasi cijeli gate, a ručna izmjena u konzoli stvara drift i zaobilazi kontrolu."
+  },
+  {
+    "type": "spot",
+    "obj": "4.1",
+    "q": "Checkov na ovom Terraformu javlja dva nalaza: bucket može postati javan i SSH je otvoren. Označi redove koji ih izazivaju.",
+    "snippet": "resource \"aws_s3_bucket_public_access_block\" \"artifacts\" {\n  bucket                  = aws_s3_bucket.artifacts.id\n  block_public_acls       = true\n  block_public_policy     = false\n  ignore_public_acls      = true\n  restrict_public_buckets = true\n}\n\nresource \"aws_security_group_rule\" \"ssh_in\" {\n  type              = \"ingress\"\n  from_port         = 22\n  to_port           = 22\n  protocol          = \"tcp\"\n  cidr_blocks       = [\"0.0.0.0/0\"]\n  security_group_id = aws_security_group.app.id\n}",
+    "lang": "hcl",
+    "answer": [
+      3,
+      13
+    ],
+    "explain": "block_public_policy = false dozvoljava da se na bucket stavi bucket policy koja ga čini javnim; sve četiri postavke public access blocka treba da budu true. cidr_blocks 0.0.0.0/0 na portu 22 otvara SSH cijelom internetu; ograniči ga na VPN ili bastion opseg (npr. 10.20.0.0/16) ili koristi SSM Session Manager bez otvorenog porta. Ako je izuzetak zaista potreban, ide inline skip sa obrazloženjem, a ne gašenje provjere za cijeli projekat."
+  }
+]

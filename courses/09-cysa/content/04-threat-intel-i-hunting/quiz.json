@@ -1,0 +1,271 @@
+[
+  {
+    "obj": "1.4",
+    "q": "Istraga je pokazala da je napadač bio prisutan u mreži 11 mjeseci, koristio prilagođeni malver i LOTL tehnike i ciljao isključivo dokumentaciju o istraživanju i razvoju. Koji tip aktera je MOST likely?",
+    "options": [
+      "Hacktivista",
+      "Unskilled attacker",
+      "APT",
+      "Nenamjerni insajder"
+    ],
+    "answer": 2,
+    "explain": "Dugotrajno prikriveno prisustvo, prilagođeni alati i jasan špijunski cilj su obilježja APT-a. Hacktivisti teže publicitetu, unskilled napadači koriste javne alate i prave buku, a nenamjerni insajder ne gradi perzistenciju."
+  },
+  {
+    "obj": "1.4",
+    "q": "SOC je blokirao hash malvera iz izvještaja, ali napadač se vratio za dva dana sa novom verzijom. Koja vrsta detekcije bi napadaču nanijela NAJVIŠE „bola“ prema Pyramid of Pain?",
+    "options": [
+      "Blokada novog hash-a",
+      "Blokada IP adrese C2 servera",
+      "Blokada C2 domena",
+      "Detekcija ponašanja: Office proces pokreće PowerShell koji preuzima sadržaj sa interneta"
+    ],
+    "answer": 3,
+    "explain": "Vrh piramide su TTP-ovi: detekcija ponašanja tjera napadača da promijeni način rada, što je skupo. Hash je na dnu (trivijalno se mijenja), a IP adrese i domeni su takođe jeftini za zamjenu."
+  },
+  {
+    "obj": "1.4",
+    "q": "Tim želi vizuelno uporediti tehnike koje koriste grupe relevantne za njihov sektor sa tehnikama koje postojeće detekcije pokrivaju, da odredi prioritete za hunt. Šta je BEST?",
+    "options": [
+      "ATT&CK heat mapa sa slojevima prijetnje i pokrivenosti",
+      "Cyber Kill Chain dijagram",
+      "Lista IoC-a iz OTX-a",
+      "CVSS kalkulator"
+    ],
+    "answer": 0,
+    "explain": "Heat mapa u ATT&CK Navigatoru može prikazati sloj upotrebe tehnika od strane aktera i sloj pokrivenosti detekcijama; razlika su prioriteti. Kill Chain je previše grub, lista IoC-a ne prikazuje tehnike, a CVSS ocjenjuje ranjivosti."
+  },
+  {
+    "obj": "1.4",
+    "q": "Firewall je počeo blokirati legitiman CDN saobraćaj nakon uvoza feeda sa IP adresama. Ispostavilo se da su adrese bile zlonamjerne prije 18 mjeseci. Koji faktor kvaliteta intela je problem?",
+    "options": [
+      "Relevance",
+      "Timeliness",
+      "Attribution",
+      "Confidentiality"
+    ],
+    "answer": 1,
+    "explain": "Zastarjeli IoC-i više ne odražavaju stvarnost: IP adrese se recikliraju, posebno kod cloud i CDN provajdera. To je problem pravovremenosti, a rješenje je istek (aging) indikatora i provjera izvora."
+  },
+  {
+    "obj": "1.4",
+    "q": "Bolnica dobija besplatan feed sa IoC-ima napada na industrijske PLC uređaje u naftnoj industriji. Bolnica nema OT okruženje. Koji faktor povjerenja je NAJSLABIJI?",
+    "options": [
+      "Accuracy",
+      "Timeliness",
+      "Relevance",
+      "Completeness"
+    ],
+    "answer": 2,
+    "explain": "Intel može biti tačan i svjež, ali ako se ne odnosi na tehnologiju, sektor ili region organizacije, nije relevantan i samo dodaje šum."
+  },
+  {
+    "obj": "1.4",
+    "q": "Koja DVA izvora su primjeri OSINT-a? (Izaberi DVA.)",
+    "options": [
+      "Javni CISA savjeti i KEV katalog",
+      "Plaćeni feed komercijalnog provajdera pod NDA",
+      "Certificate transparency logovi",
+      "Interni EDR alarmi"
+    ],
+    "answer": [0, 2],
+    "explain": "OSINT su javno dostupni izvori, poput CISA objava i CT logova u kojima se vide novi certifikati za sumnjive domene. Komercijalni feed pod NDA je closed-source, a EDR alarmi su interni izvor."
+  },
+  {
+    "obj": "1.4",
+    "q": "Nekoliko banaka želi automatski razmjenjivati strukturisane indikatore preko HTTPS API-ja. Koja kombinacija standarda je BEST?",
+    "options": [
+      "Syslog i SNMP",
+      "SAML i OAuth",
+      "CVSS i EPSS",
+      "STIX za format i TAXII za prenos"
+    ],
+    "answer": 3,
+    "explain": "STIX 2.1 definiše format objekata intela (indicator, threat-actor, relationship), a TAXII 2.1 je protokol za njihovu razmjenu. Ostali parovi služe za logovanje, identitet ili ocjenu ranjivosti."
+  },
+  {
+    "obj": "1.4",
+    "q": "Izvještaj je označen TLP:AMBER+STRICT. S kim ga analitičar smije podijeliti?",
+    "options": [
+      "Samo unutar svoje organizacije",
+      "Sa cijelom sektorskom zajednicom",
+      "Javno na blogu",
+      "Sa klijentima organizacije bez ograničenja"
+    ],
+    "answer": 0,
+    "explain": "TLP:AMBER+STRICT ograničava dijeljenje samo na organizaciju primaoca. TLP:AMBER dozvoljava i klijente po principu need-to-know, TLP:GREEN zajednicu, a TLP:CLEAR javno objavljivanje."
+  },
+  {
+    "obj": "1.4",
+    "q": "Koji od ovih indikatora je behavioral, a ne atomic?",
+    "options": [
+      "Domen update-check.example.net",
+      "IP adresa 198.51.100.23",
+      "Excel pokreće cmd.exe koji kreira zakazani zadatak i zatim se javlja ka novoregistrovanom domenu",
+      "E-mail adresa pošiljaoca phishing poruke"
+    ],
+    "answer": 2,
+    "explain": "Behavioral indikator opisuje kombinaciju ponašanja kroz više koraka i dugotrajniji je. Domen, IP adresa i e-mail adresa su atomic indikatori: ne mogu se dalje razložiti i napadač ih lako mijenja."
+  },
+  {
+    "obj": "1.4",
+    "q": "CISA objavljuje IoC-e kampanje sa danas. Šta analitičar treba uraditi sa njima da bi utvrdio da li je organizacija VEĆ bila pogođena?",
+    "options": [
+      "Dodati ih samo na firewall blok listu",
+      "Retro-hunt kroz istorijske logove (DNS, proxy, EDR) za period kampanje",
+      "Proslijediti ih upravi kao strateški izvještaj",
+      "Sačekati alarm iz SIEM-a"
+    ],
+    "answer": 1,
+    "explain": "Blokada štiti od budućih konekcija, ali ne otkriva prošlu kompromitaciju. Retro-hunt pretražuje istorijske podatke za period kampanje. Zato je retencija logova važna i za threat intel."
+  },
+  {
+    "obj": "1.4",
+    "q": "Nije bilo nijednog alarma, ali nakon izvještaja o grupi koja koristi WMI perzistenciju, tim formuliše pretpostavku i pretražuje WMI event subscription zapise na svim serverima. Kako se ova aktivnost zove?",
+    "options": [
+      "Incident response",
+      "Vulnerability scanning",
+      "Penetration testing",
+      "Hypothesis-driven threat hunting"
+    ],
+    "answer": 3,
+    "explain": "Proaktivna potraga bez alarma, zasnovana na pretpostavci izvedenoj iz intela, je threat hunting vođen hipotezom. Incident response počinje potvrđenim incidentom, skeniranje traži ranjivosti, a pentest simulira napad."
+  },
+  {
+    "obj": "1.4",
+    "q": "Threat hunt je otkrio do tada nepoznatu tehniku perzistencije na dva servera. Pored eskalacije incidenta, šta je NAJVAŽNIJI trajni ishod hunta?",
+    "options": [
+      "Pretvoriti nalaz u automatsku detekciju i ažurirati pokrivenost",
+      "Izbrisati logove korištene u huntu da se uštedi prostor",
+      "Ponoviti isti hunt ručno svake sedmice",
+      "Promijeniti SIEM proizvođača"
+    ],
+    "answer": 0,
+    "explain": "Hunt treba da ostavi trajnu vrijednost: novo pravilo koje automatski hvata istu tehniku, uz ažuriranu heat mapu. Ručno ponavljanje ne skalira, a brisanje logova uništava dokaze."
+  },
+  {
+    "obj": "1.4",
+    "q": "Tokom threat modelinga aplikacije za plaćanje tim primjećuje da korisnik može poreći da je inicirao transfer jer se akcije ne bilježe. Koja STRIDE kategorija je u pitanju?",
+    "options": [
+      "Spoofing",
+      "Tampering",
+      "Repudiation",
+      "Elevation of privilege"
+    ],
+    "answer": 2,
+    "explain": "Repudiation znači da korisnik može poreći akciju jer nema pouzdanog dokaza. Kontrole su zaštićeni audit logovi i digitalni potpisi. Spoofing je lažno predstavljanje, tampering izmjena podataka, a elevation of privilege sticanje većih prava."
+  },
+  {
+    "obj": "1.4",
+    "q": "Napadač je izmijenio iznos u zahtjevu između klijenta i API-ja jer komunikacija nije zaštićena integritetom. Koju STRIDE kategoriju to predstavlja?",
+    "options": [
+      "Information disclosure",
+      "Tampering",
+      "Denial of service",
+      "Repudiation"
+    ],
+    "answer": 1,
+    "explain": "Neovlaštena izmjena podataka u prenosu ili mirovanju narušava integritet i spada u Tampering. Zaštita su TLS, potpisi zahtjeva (HMAC) i provjera integriteta na serveru."
+  },
+  {
+    "obj": "1.4",
+    "q": "SOC želi detekciju lateral movementa i krađe kredencijala sa minimalno lažno pozitivnih alarma. Koja kontrola to NAJBOLJE postiže?",
+    "options": [
+      "Smanjenje praga za neuspjele prijave na 3",
+      "Honeytoken nalozi i lažni kredencijali koje legitimni korisnici nikad ne koriste",
+      "Blokiranje svih SMB konekcija",
+      "Dodatni AV potpisi"
+    ],
+    "answer": 1,
+    "explain": "Honeytoken ne koristi nijedan legitiman proces, pa svaki pokušaj upotrebe gotovo sigurno znači napad. Niži prag povećava lažne alarme, blokada SMB-a ruši poslovanje, a AV potpisi ne vide zloupotrebu kredencijala."
+  },
+  {
+    "obj": "1.4",
+    "q": "Inženjer u administrativnoj službi daje otkaz. U posljednje dvije sedmice preuzeo je 15 puta više dokumenata nego inače, uključujući foldere kojima ranije nije pristupao, i koristi lični cloud storage. Koji tip prijetnje je MOST likely?",
+    "options": [
+      "Zlonamjerni insajder",
+      "APT",
+      "Hacktivista",
+      "Nenamjerni insajder"
+    ],
+    "answer": 0,
+    "explain": "Masovno preuzimanje van uobičajenog obrasca, pristup novim folderima i prenos u lični cloud pred odlazak su klasični indikatori zlonamjernog insajdera. Istraga se vodi uz HR i pravnu službu, a podršku daju UEBA i DLP."
+  },
+  {
+    "obj": "1.4",
+    "q": "Analitičar tvrdi da je napad izvela određena državna grupa jer je u kodu pronađen komentar na njihovom jeziku. Zašto je ovaj zaključak OPASAN?",
+    "options": [
+      "Jezik u kodu se uvijek automatski prevodi",
+      "Atribucija nikad nije moguća",
+      "ATT&CK ne sadrži državne grupe",
+      "Artefakti se mogu namjerno podmetnuti (false flag), pa atribucija traži više nezavisnih dokaza"
+    ],
+    "answer": 3,
+    "explain": "Napadači podmeću lažne tragove (jezik, vremenske zone, tuđe alate) da zavaraju istražitelje. Pouzdana atribucija kombinuje TTP-ove, infrastrukturu, alate i ciljeve, i i dalje nosi neizvjesnost."
+  },
+  {
+    "obj": "1.4",
+    "q": "Tim želi da zna koje tehnike relevantnih aktera pogađaju njihove kritične sisteme i koje kontrole ih pokrivaju, povezujući threat model, inventar i ATT&CK. Kako se ova aktivnost zove?",
+    "options": [
+      "Threat mapping",
+      "Penetration testing",
+      "Vulnerability scanning",
+      "Tabletop vježba"
+    ],
+    "answer": 0,
+    "explain": "Threat mapping povezuje prijetnje sa imovinom i kontrolama i pokazuje rupe u pokrivenosti. Pentest i skeniranje aktivno testiraju sisteme, a tabletop je vježba odgovora na incident."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Poredaj korake životnog ciklusa threat intelligence-a ispravnim redoslijedom.",
+    "options": [
+      "Analysis",
+      "Dissemination",
+      "Planning and direction (requirements)",
+      "Feedback",
+      "Collection",
+      "Processing"
+    ],
+    "answer": [2, 4, 5, 0, 1, 3],
+    "explain": "Prvo se definišu zahtjevi (šta trebamo znati), zatim se prikuplja, obrađuje (normalizacija, deduplikacija) i analizira, rezultat se distribuira pravim korisnicima, a povratna informacija vraća proces na nove zahtjeve."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Upari svaki opis sa pojmom iz threat intela ili huntinga.",
+    "options": [
+      "Lažni fajl „plate_2026.xlsx“ na share-u koji alarmira kada se otvori",
+      "Komercijalni feed dostupan samo pretplatnicima",
+      "Hash, IP adrese i domeni su na dnu, a TTP-ovi na vrhu",
+      "Svakom IoC-u dodijeljen valid_until i confidence u STIX objektu",
+      "Uprava dobija izvještaj o trendovima ransomwarea u sektoru",
+      "Lažno predstavljanje servisa bez mTLS-a"
+    ],
+    "targets": [
+      "Strategic intelligence",
+      "Pyramid of Pain",
+      "Cyber deception",
+      "Closed-source intelligence",
+      "Spoofing (STRIDE)",
+      "Timeliness i accuracy"
+    ],
+    "answer": [2, 3, 1, 5, 0, 4],
+    "explain": "Lažni fajl je deception (honeyfile), plaćeni feed je closed-source, raspored od hash-a do TTP-a je Pyramid of Pain, istek i povjerenje IoC-a odražavaju timeliness i accuracy, izvještaj za upravu je strateški intel, a lažno predstavljanje je Spoofing."
+  },
+  {
+    "obj": "1.4",
+    "type": "multi",
+    "q": "SIEM je prikupio ove događaje sa domain controllera. Nalog svc_sql_backup je honey account sa SPN-om. Koja DVA zaključka su ispravna?",
+    "snippet": "2026-10-21T02:14:07Z 4769 user=j.kovac svc=svc_web01      enc=0x17 client=10.0.6.44\n2026-10-21T02:14:07Z 4769 user=j.kovac svc=svc_mssql02    enc=0x17 client=10.0.6.44\n2026-10-21T02:14:08Z 4769 user=j.kovac svc=svc_backup     enc=0x17 client=10.0.6.44\n2026-10-21T02:14:08Z 4769 user=j.kovac svc=svc_sql_backup enc=0x17 client=10.0.6.44\n2026-10-21T02:14:09Z 4769 user=j.kovac svc=svc_sharepoint enc=0x17 client=10.0.6.44\n2026-10-21T02:14:09Z 4769 user=j.kovac svc=svc_exchange   enc=0x17 client=10.0.6.44\n# svc_sql_backup = honey account (nijedan legitiman servis ga ne koristi)",
+    "lang": "log",
+    "options": [
+      "Ovo je Kerberoasting: jedan nalog u sekundama traži service tickete (RC4, 0x17) za mnogo servisnih naloga radi offline probijanja lozinki",
+      "Zahtjev za tiket honey naloga je alarm visoke pouzdanosti sa vrlo malo lažno pozitivnih, jer ga legitimni procesi nikad ne koriste",
+      "Napadač već ima Domain Admin prava, jer samo administratori mogu tražiti service tickete",
+      "Enkripcija 0x17 znači AES-256, pa ukradeni tiketi nisu upotrebljivi"
+    ],
+    "answer": [0, 1],
+    "explain": "Event 4769 sa jednog naloga i hosta za šest SPN-ova u dvije sekunde, uz RC4 (0x17), je obrazac Kerberoastinga (ATT&CK T1558.003): napadač izvlači tikete i offline probija lozinke servisnih naloga. Honey account sa SPN-om postoji samo kao mamac, pa svaki zahtjev za njegov tiket ima vrlo malo lažno pozitivnih. Za traženje service tiketa dovoljan je bilo koji domenski nalog, pa nije potreban Domain Admin, a 0x17 je RC4-HMAC (lakši za probijanje), ne AES (0x12). Sljedeći korak: istražiti j.kovac i 10.0.6.44 kao kompromitovane i rotirati lozinke ciljanih servisnih naloga."
+  }
+]

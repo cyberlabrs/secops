@@ -1,0 +1,303 @@
+[
+  {
+    "obj": "4.1",
+    "q": "AppSec tim primjećuje da se ranjivosti tipa IDOR (pristup tuđim objektima promjenom ID-a) ponavljaju u aplikacijama sedam različitih razvojnih timova, iako svi timovi koriste SAST. Šta je NAJBOLJI sljedeći korak?",
+    "options": [
+      "Zamijeniti postojeći SAST alat komercijalnim alatom sa boljom detekcijom.",
+      "Zabraniti deploy svake aplikacije dok AppSec tim ručno ne pregleda kod.",
+      "Uvesti ciljani trening o autorizaciji na nivou objekta i mrežu security championa u timovima.",
+      "Dodati WAF pravilo koje blokira zahtjeve sa numeričkim ID-jevima u URL-u."
+    ],
+    "answer": 2,
+    "explain": "Ista greška u više timova ukazuje na nedostatak znanja, pa trening uz security champions rješava korijenski uzrok. SAST slabo hvata greške autorizacije jer su to greške poslovne logike, pa novi alat malo pomaže. Ručni pregled svega ne skalira, a WAF pravilo je krhka kompenzaciona mjera koja ne popravlja aplikaciju."
+  },
+  {
+    "obj": "4.1",
+    "q": "Banka ugovara razvoj aplikacije sa vanjskom firmom i želi u ugovor unijeti mjerljive, provjerljive sigurnosne zahtjeve za aplikaciju. Na koji dokument se NAJBOLJE pozvati?",
+    "options": [
+      "OWASP ASVS, uz navođenje traženog nivoa verifikacije (npr. Level 2).",
+      "OWASP Top 10, uz obavezu da aplikacija nema nijednu kategoriju sa liste.",
+      "CWE/SANS Top 25, uz obavezu da kod ne sadrži navedene slabosti.",
+      "OWASP API Security Top 10, jer aplikacija koristi REST API."
+    ],
+    "answer": 0,
+    "explain": "ASVS je standard verifikacije sa provjerljivim zahtjevima po nivoima, pa je pogodan za ugovore i testiranje prihvatljivosti. Top 10 liste su awareness dokumenti koji opisuju kategorije rizika, a ne mjerljive zahtjeve. CWE Top 25 je korisna lista slabosti, ali ne pokriva sve zahtjeve aplikacije."
+  },
+  {
+    "obj": "4.1",
+    "q": "Interni AI asistent ima alate za slanje e-maila i brisanje tiketa. Korisnik je u dijeljeni dokument sakrio instrukciju da asistent obriše sve otvorene tikete, i asistent je to uradio kada je sumirao dokument. Koja kontrola NAJVIŠE smanjuje uticaj ovakvih napada?",
+    "options": [
+      "Proširiti system prompt jasnom zabranom brisanja tiketa.",
+      "Ograničiti alate asistenta na najmanje potrebne ovlasti i tražiti ljudsku potvrdu za destruktivne akcije.",
+      "Prebaciti asistenta na veći model koji bolje razumije instrukcije.",
+      "Šifrovati dokumente u dijeljenom repozitoriju ključem kojim upravlja kupac."
+    ],
+    "answer": 1,
+    "explain": "Ovo je indirektni prompt injection pojačan prekomjernim ovlastima (excessive agency). Least privilege za alate i human-in-the-loop su provjerljive kontrole koje ograničavaju štetu. Instrukcije u promptu i veći model ne garantuju ništa, a enkripcija ne utiče na sadržaj koji asistent legitimno čita."
+  },
+  {
+    "obj": "4.1",
+    "q": "Tim prebacuje monolitnu aplikaciju sa on-prem servera u cloud uz autoskaliranje. Nakon migracije korisnici se nasumično odjavljuju. Koja tipična zamka (common pitfall) je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Vendor lock-in zbog korištenja vlasničkih servisa CSP-a.",
+      "Nedostatak enkripcije podataka u mirovanju na volumenima.",
+      "Prekoračenje API rate limita kod CSP-a.",
+      "Aplikacija nije cloud-ready: čuva stanje sesije lokalno na instanci koja se gasi ili mijenja."
+    ],
+    "answer": 3,
+    "explain": "Aplikacije pisane za fiksne servere često čuvaju sesije na lokalnom disku ili u memoriji; kod autoskaliranja zahtjevi idu na druge instance, pa sesija nestaje. Rješenje je eksterno skladište stanja. Ostale opcije su stvarni rizici, ali ne objašnjavaju simptom."
+  },
+  {
+    "obj": "4.2",
+    "q": "Direktor projekta pita kada je NAJISPLATIVIJE uključiti sigurnosni tim u razvoj nove cloud aplikacije koja će obrađivati zdravstvene podatke.",
+    "options": [
+      "U fazi testiranja, kada postoji aplikacija koju je moguće testirati.",
+      "U fazi prikupljanja poslovnih zahtjeva, prije dizajna.",
+      "U fazi dizajna, kada arhitekta crta dijagrame.",
+      "Neposredno prije deploya, kroz penetration test."
+    ],
+    "answer": 1,
+    "explain": "Klasifikacija podataka, regulatorne obaveze (npr. HIPAA, GDPR) i sigurnosni zahtjevi moraju biti u poslovnim zahtjevima, inače ih dizajn neće pokriti. Svaka kasnija faza je skuplja za ispravke. Dizajn je dobar, ali dolazi poslije zahtjeva."
+  },
+  {
+    "obj": "4.2",
+    "q": "Organizacija prelazi sa waterfall modela na agile sa dvosedmičnim sprintovima. Sigurnosni tim i dalje traži ručni pentest prije svakog releasea, pa se releasei odgađaju. Šta je NAJBOLJI pristup?",
+    "options": [
+      "Ukinuti pentest jer nije kompatibilan sa agile metodologijom.",
+      "Vratiti se na waterfall za aplikacije koje obrađuju osjetljive podatke.",
+      "Raditi pentest jednom godišnje i prihvatiti rizik za međurelease.",
+      "Automatizovati SAST, SCA i DAST u pipelineu, uvesti sigurnosne user stories i zadržati ručni pentest za značajne promjene."
+    ],
+    "answer": 3,
+    "explain": "U agile i DevSecOps okruženju sigurnost se ugrađuje u svaki sprint i automatizuje u pipelineu, dok se ručni pentest zadržava za veće promjene po riziku. Ukidanje testiranja ili godišnji pentest ostavljaju rupu, a povratak na waterfall rješava organizacijski problem pogrešnim alatom."
+  },
+  {
+    "obj": "4.2",
+    "q": "Koja faza SDLC-a je u cloud okruženju NAJČEŠĆE zanemarena, a obuhvata ukidanje ključeva, pristupa i sigurno uklanjanje podataka, često kroz crypto-shredding?",
+    "options": [
+      "Disposal / decommissioning",
+      "Deployment",
+      "Testing",
+      "Requirements"
+    ],
+    "answer": 0,
+    "explain": "Disposal faza obuhvata povlačenje sistema: ukidanje pristupa, rotaciju i uništavanje ključeva i uklanjanje podataka. Pošto u cloudu kupac nema fizički pristup diskovima, crypto-shredding je glavna tehnika. Ostale faze nisu povezane sa povlačenjem sistema."
+  },
+  {
+    "obj": "4.2",
+    "q": "U kojem razvojnom modelu je sigurnost NAJČEŠĆE implementirana kao formalni gate na kraju svake faze, uz rizik da se defekti otkriju kasno?",
+    "options": [
+      "Agile (Scrum)",
+      "DevSecOps",
+      "Waterfall",
+      "Kanban"
+    ],
+    "answer": 2,
+    "explain": "Waterfall je sekvencijalan i sigurnosni pregledi su obično gate-ovi na prelazu faza, pa se problemi u dizajnu otkrivaju tek u testiranju. Agile, Kanban i DevSecOps su iterativni i rade sigurnost kontinuirano."
+  },
+  {
+    "obj": "4.3",
+    "q": "Arhitekta treba metodologiju koja počinje od poslovnih ciljeva, prolazi kroz dekompoziciju aplikacije i modeliranje napada i završava analizom rizika i poslovnog uticaja. Koju metodologiju treba izabrati?",
+    "options": [
+      "STRIDE",
+      "DREAD",
+      "ATASM",
+      "PASTA"
+    ],
+    "answer": 3,
+    "explain": "PASTA je rizično orijentisana metodologija u sedam faza, od definisanja poslovnih ciljeva do analize rizika i uticaja. STRIDE klasifikuje prijetnje po kategorijama, DREAD ih boduje, a ATASM je arhitektonski pristup bez eksplicitnog povezivanja sa poslovnim ciljevima kroz faze."
+  },
+  {
+    "obj": "4.3",
+    "q": "Tokom threat modelinga tim je identifikovao 40 prijetnji i sada ih treba rangirati po šteti, ponovljivosti, lakoći iskorištavanja, broju pogođenih korisnika i lakoći otkrivanja. Koji model koriste?",
+    "options": [
+      "STRIDE",
+      "PASTA",
+      "DREAD",
+      "ATASM"
+    ],
+    "answer": 2,
+    "explain": "DREAD je model ocjenjivanja (Damage, Reproducibility, Exploitability, Affected users, Discoverability) za prioritizaciju već identifikovanih prijetnji. STRIDE služi za identifikaciju i klasifikaciju, a PASTA i ATASM su širi procesi."
+  },
+  {
+    "obj": "4.3",
+    "q": "Administrator obriše produkcijsku bazu, a kasnije tvrdi da to nije uradio. Logovi postoje samo lokalno na serveru kojim je upravljao. Koju STRIDE kategoriju ovaj scenarij NAJBOLJE ilustruje i koja je kontrola?",
+    "options": [
+      "Repudiation; centralizovani nepromjenjivi audit logovi van kontrole administratora.",
+      "Tampering; potpisivanje baze podataka.",
+      "Elevation of privilege; MFA za administratore.",
+      "Spoofing; jača politika lozinki."
+    ],
+    "answer": 0,
+    "explain": "Poricanje akcije bez pouzdanog dokaza je repudiation, a kontrola je neporecivost kroz centralne, nepromjenjive logove koje administrator ne može izmijeniti. Ostale kategorije ne opisuju poricanje, a MFA i lozinke ne daju dokaz ko je šta uradio."
+  },
+  {
+    "obj": "4.3",
+    "q": "Pravni tim je zabrinut da zaposleni kod CSP-a sa privilegovanim pristupom mogu vidjeti povjerljive podatke klijenata. Koja kombinacija NAJBOLJE adresira ovaj cloud-specifični rizik?",
+    "options": [
+      "Dedicated hostovi i jače lozinke za korisnike aplikacije.",
+      "Enkripcija ključevima pod kontrolom kupca (BYOK/HYOK), odobravanje pristupa CSP podrške i ugovorne obaveze uz provjeru SOC 2 izvještaja.",
+      "Penetration test infrastrukture CSP-a od strane vlastitog tima.",
+      "Prelazak na drugi region istog CSP-a."
+    ],
+    "answer": 1,
+    "explain": "CSP insider prijetnja se ublažava tehničkom kontrolom ključeva, mehanizmima odobravanja pristupa (customer lockbox / access approval) i ugovornom i audit garancijom. Dedicated hostovi rješavaju dijeljeni hardver, ne insajdera; pentest CSP infrastrukture obično nije dozvoljen; promjena regiona ne mijenja insajderski rizik."
+  },
+  {
+    "obj": "4.3",
+    "q": "Produkcijska konfiguracija cloud okruženja se često mijenja ručno kroz konzolu i niko ne zna koja je trenutno odobrena verzija. Šta je NAJBOLJA dugoročna mjera?",
+    "options": [
+      "Uključiti dodatne alarme na svaku promjenu u konzoli.",
+      "Zabraniti pristup konzoli svim inženjerima osim jednog administratora.",
+      "Uvesti infrastructure as code pod version controlom sa baselineom, code reviewom i change control procesom.",
+      "Raditi mjesečne snimke ekrana konfiguracije za audit."
+    ],
+    "answer": 2,
+    "explain": "Software configuration management traži da konfiguracija bude verzionisana, da postoji odobrena baseline i trag svake promjene, uz mogućnost rollbacka. Alarmi otkrivaju simptom, jedan administrator je single point of failure i krši razdvajanje dužnosti, a snimci ekrana nisu kontrola."
+  },
+  {
+    "obj": "4.4",
+    "q": "Organizacija koristi SaaS HR aplikaciju i ugovorom ima pravo na sigurnosno testiranje, ali nema pristup izvornom kodu. Koja tehnika je NAJPRIKLADNIJA?",
+    "options": [
+      "SAST",
+      "SCA",
+      "IAST",
+      "DAST"
+    ],
+    "answer": 3,
+    "explain": "DAST testira aplikaciju koja radi, spolja, bez potrebe za kodom (black box). SAST i SCA traže kod ili zavisnosti, a IAST traži agent instaliran u aplikaciji, što kod SaaS-a nije moguće."
+  },
+  {
+    "obj": "4.4",
+    "q": "Developeri ignorišu izvještaje DAST alata jer sadrže mnogo lažnih pozitiva i ne kažu gdje je problem u kodu. Koja tehnika NAJBOLJE rješava ovaj problem uz zadržavanje dinamičkog testiranja?",
+    "options": [
+      "IAST, jer agent u aplikaciji prati izvršavanje i daje preciznu lokaciju uz manje lažnih pozitiva.",
+      "SCA, jer analizira zavisnosti.",
+      "Black box penetration test jednom godišnje.",
+      "RASP, jer blokira napade u produkciji."
+    ],
+    "answer": 0,
+    "explain": "IAST kombinuje runtime perspektivu sa vidljivošću koda, pa smanjuje lažne pozitive i pokazuje liniju koda. SCA pokriva samo zavisnosti, godišnji pentest ne rješava svakodnevni tok, a RASP je zaštita u produkciji, ne testiranje."
+  },
+  {
+    "obj": "4.4",
+    "q": "QA tim piše test u kojem kupac istovremeno šalje 50 paralelnih zahtjeva za primjenu istog jednokratnog kupona. Kako se zove ova vrsta testiranja?",
+    "options": [
+      "Regression testing",
+      "Abuse case testing",
+      "User acceptance testing",
+      "Load testing"
+    ],
+    "answer": 1,
+    "explain": "Test simulira zloupotrebu legitimne funkcije (race condition u poslovnoj logici), što je abuse/misuse case. Regression provjerava da stare funkcije i dalje rade, UAT potvrđuje zahtjeve sa korisnicima, a load test mjeri performanse pod opterećenjem, ne zloupotrebu."
+  },
+  {
+    "obj": "4.4",
+    "q": "Koja tvrdnja NAJBOLJE opisuje razliku između quality assurance (QA) i quality control (QC)?",
+    "options": [
+      "QA se radi samo u waterfall modelu, a QC samo u agileu.",
+      "QA je automatizovano testiranje, a QC ručno testiranje.",
+      "QA osigurava da proces razvoja prati standarde, a QC provjerava sam proizvod kroz testiranje.",
+      "QA je odgovornost sigurnosnog tima, a QC razvojnog tima."
+    ],
+    "answer": 2,
+    "explain": "QA je usmjeren na proces (da li razvijamo na ispravan način), a QC na proizvod (da li proizvod ispunjava zahtjeve). Ostale tvrdnje su netačne podjele po metodologiji, automatizaciji ili timu."
+  },
+  {
+    "obj": "4.5",
+    "q": "Objavljena je kritična ranjivost u široko korištenoj open-source biblioteci. CISO traži listu pogođenih aplikacija u roku od sat vremena. Koja ranije uvedena praksa bi to NAJVIŠE omogućila?",
+    "options": [
+      "Godišnji penetration test svih aplikacija.",
+      "WAF ispred svih javnih aplikacija.",
+      "Code review svakog pull requesta.",
+      "SBOM za svaku aplikaciju, centralno pohranjen i pretraživ."
+    ],
+    "answer": 3,
+    "explain": "SBOM je inventar komponenti i verzija, pa se pogođene aplikacije nalaze pretragom. Pentest i code review ne daju inventar, a WAF može ublažiti napad, ali ne odgovara na pitanje gdje se biblioteka koristi."
+  },
+  {
+    "obj": "4.5",
+    "q": "Developeri instaliraju pakete direktno sa javnih registara bez ikakve provjere. Šta je NAJBOLJA upravljačka mjera?",
+    "options": [
+      "Zabraniti korištenje open-source softvera u organizaciji.",
+      "Uvesti politiku i interni odobreni repozitorij (proxy) sa SCA provjerom ranjivosti i licenci, uz pinovanje verzija.",
+      "Tražiti od developera da ručno provjere svaki paket na internetu.",
+      "Skenirati produkciju jednom mjesečno skenerom ranjivosti."
+    ],
+    "answer": 1,
+    "explain": "Kontrolisano korištenje kroz odobreni repozitorij, automatsku SCA provjeru i pinovanje verzija upravlja rizikom bez blokiranja posla. Zabrana je nerealna, ručne provjere ne skaliraju, a mjesečno skeniranje produkcije otkriva problem kasno."
+  },
+  {
+    "obj": "4.5",
+    "q": "Organizacija preuzima kontejnersku sliku dobavljača i želi potvrditi da slika zaista dolazi od tog dobavljača i da nije izmijenjena. Koja kontrola to NAJBOLJE osigurava?",
+    "options": [
+      "Provjera digitalnog potpisa slike (npr. cosign) i provenance atestacije prije deploya.",
+      "Skeniranje slike na poznate ranjivosti.",
+      "Pokretanje slike u izolovanom namespaceu.",
+      "Provjera da slika ima tag sa semantičkom verzijom."
+    ],
+    "answer": 0,
+    "explain": "Digitalni potpis dokazuje autentičnost (izvor) i integritet (neizmijenjenost), a provenance pokazuje kako je artefakt izgrađen. Skeniranje ranjivosti ne dokazuje porijeklo, izolacija ograničava štetu, a tag se lako mijenja i ništa ne dokazuje."
+  },
+  {
+    "obj": "4.5",
+    "q": "Mobilna aplikacija treba čitati korisnikove dokumente iz cloud storagea trećeg lica, bez da korisnik daje svoju lozinku aplikaciji. Koji mehanizam je NAJPRIKLADNIJI?",
+    "options": [
+      "Statički API ključ ugrađen u aplikaciju.",
+      "HTTP Basic autentifikacija preko TLS-a.",
+      "OAuth 2.0 delegirana autorizacija sa ograničenim scopeom.",
+      "SAML assertion koji aplikacija sama potpisuje."
+    ],
+    "answer": 2,
+    "explain": "OAuth 2.0 omogućava delegirani pristup sa ograničenim scopeom, bez dijeljenja lozinke. API ključ identifikuje aplikaciju, ne korisnika, i u mobilnoj aplikaciji se lako izvuče; Basic auth traži lozinku; SAML koji aplikacija sama potpisuje nema smisla jer potpis daje IdP."
+  },
+  {
+    "obj": "4.5",
+    "q": "Organizacija za kritičnu aplikaciju koristi softver malog dobavljača. Uprava je zabrinuta šta će biti ako dobavljač prestane postojati. Koja ugovorna mjera NAJBOLJE adresira ovaj rizik?",
+    "options": [
+      "Pravo na godišnji audit dobavljača.",
+      "Software escrow ugovor kojim treća strana čuva izvorni kod.",
+      "SLA sa kaznama za nedostupnost.",
+      "Obaveza dobavljača da dostavi SOC 2 Type II izvještaj."
+    ],
+    "answer": 1,
+    "explain": "Escrow čuva izvorni kod kod neutralne treće strane i predaje ga kupcu ako dobavljač propadne ili prestane podržavati proizvod. Audit, SLA i SOC 2 su korisni, ali ne rješavaju nestanak dobavljača."
+  },
+  {
+    "obj": "4.3",
+    "type": "order",
+    "q": "Poredaj faze PASTA metodologije od prve do posljednje.",
+    "options": [
+      "Threat analysis",
+      "Define technical scope",
+      "Risk and impact analysis",
+      "Define objectives",
+      "Attack modeling",
+      "Application decomposition",
+      "Vulnerability and weakness analysis"
+    ],
+    "answer": [3, 1, 5, 0, 6, 4, 2],
+    "explain": "PASTA počinje poslovnim ciljevima, zatim tehničkim obimom i dekompozicijom aplikacije, nastavlja analizom prijetnji i ranjivosti, modeliranjem napada, i završava analizom rizika i poslovnog uticaja."
+  },
+  {
+    "obj": "4.4",
+    "type": "match",
+    "q": "Upari svaku situaciju sa NAJPRIKLADNIJOM tehnikom sigurnosnog testiranja.",
+    "options": [
+      "Provjera svakog pull requesta na SQL injection u izvornom kodu",
+      "Otkrivanje ranjive verzije biblioteke i GPL licence u zavisnostima",
+      "Testiranje SaaS aplikacije bez pristupa kodu",
+      "Agent u test okruženju prati izvršavanje tokom funkcionalnih testova",
+      "Provjera da korisnik ne može pristupiti tuđoj fakturi promjenom ID-a"
+    ],
+    "targets": [
+      "DAST",
+      "Abuse case testing",
+      "SAST",
+      "IAST",
+      "SCA"
+    ],
+    "answer": [2, 4, 0, 3, 1],
+    "explain": "SAST analizira kod rano u PR-u. SCA analizira zavisnosti i licence. DAST testira radnu aplikaciju bez koda. IAST koristi agent tokom testiranja. Pokušaj pristupa tuđem objektu je abuse case koji hvata grešku poslovne logike."
+  }
+]

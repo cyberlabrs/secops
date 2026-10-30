@@ -1,0 +1,62 @@
+[
+  {
+    "q": "Napadač mijenja polje 'price' u HTTP zahtjevu za narudžbu i plaća 1 KM umjesto 100 KM. Koja STRIDE kategorija?",
+    "options": ["Spoofing", "Tampering", "Repudiation", "Information disclosure"],
+    "answer": 1,
+    "explain": "Podaci su izmijenjeni u prenosu ili na klijentu: to je tampering (integritet). Kontrola: cijenu uvijek računa server iz vlastitih podataka."
+  },
+  {
+    "q": "Korisnik tvrdi da nije pokrenuo brisanje projekta, a aplikacija ne bilježi ko je pokrenuo akciju. Koja kategorija?",
+    "options": ["Repudiation", "Denial of service", "Elevation of privilege", "Tampering"],
+    "answer": 0,
+    "explain": "Repudiation je mogućnost poricanja radnje jer nema pouzdanog dokaza. Kontrola: audit log s identitetom, vremenom i akcijom, zaštićen od izmjena."
+  },
+  {
+    "q": "API vraća pun stack trace sa connection stringom baze kad dođe do greške. Koja kategorija?",
+    "options": ["Spoofing", "Information disclosure", "Denial of service", "Repudiation"],
+    "answer": 1,
+    "explain": "Curenje osjetljivih informacija. Kontrola: generička poruka korisniku, detalji samo u internom logu."
+  },
+  {
+    "q": "Običan korisnik može pozvati /api/admin/users jer endpoint provjerava samo da je korisnik prijavljen. Koja kategorija?",
+    "options": ["Spoofing", "Tampering", "Elevation of privilege", "Information disclosure"],
+    "answer": 2,
+    "explain": "Korisnik dobija prava koja mu ne pripadaju: to je elevation of privilege. Autentikacija postoji, a autorizacija nedostaje."
+  },
+  {
+    "q": "Gdje u DFD-u najčešće tražiš prijetnje?",
+    "options": ["Unutar jednog procesa", "Na tokovima koji prelaze granice povjerenja", "Samo kod vanjskih entiteta", "Samo kod baza"],
+    "answer": 1,
+    "explain": "Na granici povjerenja se podaci kreću iz manje povjerljive zone u povjerljiviju (ili obratno). Tu su potrebne autentikacija, validacija i zaštita kanala."
+  },
+  {
+    "q": "Koje STRIDE kategorije se po pravilu primjenjuju na TOK podataka? (više odgovora)",
+    "options": ["Tampering", "Information disclosure", "Denial of service", "Elevation of privilege"],
+    "answer": [0, 1, 2],
+    "explain": "Tok se može izmijeniti (T), prisluškivati (I) ili prekinuti (D). Tok sam po sebi nema identitet ni privilegije, pa S i E nisu za njega relevantni."
+  },
+  {
+    "q": "Koja su četiri pitanja modelovanja prijetnji (Shostack)?",
+    "options": ["Ko, šta, kada, gdje", "Na čemu radimo? Šta može poći po zlu? Šta ćemo uraditi? Jesmo li dobro uradili posao?", "Identify, Protect, Detect, Respond", "Plan, Do, Check, Act"],
+    "answer": 1,
+    "explain": "Ova četiri pitanja čine okvir svakog pristupa modelovanju, bez obzira na alat ili metodologiju."
+  },
+  {
+    "q": "Prijetnja je identifikovana, ali vlasnik sistema odlučuje da je trošak kontrole veći od rizika. Šta je ispravno?",
+    "options": ["Ignorisati prijetnju i ne zapisivati je", "Dokumentovati prihvatanje rizika sa obrazloženjem i vlasnikom", "Obrisati prijetnju iz modela", "Odbiti puštanje u produkciju"],
+    "answer": 1,
+    "explain": "Prihvatanje rizika je legitimna odluka, ali mora biti svjesna, zapisana i imati vlasnika, te se preispitivati kad se okolnosti promijene."
+  },
+  {
+    "q": "Lažni interni servis se predstavlja kao servis za plaćanje jer servisi ne provjeravaju identitet jedni drugih. Koja kontrola najdirektnije pomaže?",
+    "options": ["Rate limiting", "mTLS ili potpisani servisni tokeni između servisa", "Enkripcija diska", "Backup"],
+    "answer": 1,
+    "explain": "Ovo je spoofing između servisa. mTLS (npr. kroz service mesh) ili kratkotrajni potpisani tokeni daju servisima provjerljiv identitet."
+  },
+  {
+    "q": "Koja metodologija je specijalizovana za prijetnje PRIVATNOSTI?",
+    "options": ["STRIDE", "LINDDUN", "DREAD", "CVSS"],
+    "answer": 1,
+    "explain": "LINDDUN pokriva prijetnje privatnosti (linkability, identifiability, non-repudiation, detectability, disclosure, unawareness, non-compliance)."
+  }
+]

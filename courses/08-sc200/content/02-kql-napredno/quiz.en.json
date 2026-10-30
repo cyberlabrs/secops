@@ -1,0 +1,157 @@
+[
+  {
+    "obj": "3.1",
+    "q": "You need to find devices from DeviceInfo that have had NO records in DeviceProcessEvents in the last 7 days. How should you complete the query?\n\nDeviceInfo\n| where Timestamp > ago(7d)\n| distinct DeviceId, DeviceName\n| join kind=??? (DeviceProcessEvents | where Timestamp > ago(7d) | distinct DeviceId) on DeviceId",
+    "options": ["leftouter", "inner", "leftsemi", "leftanti"],
+    "answer": 3,
+    "explain": "leftanti returns rows from the left table that have no match in the right table, i.e. devices without events. leftsemi returns the opposite (devices that do have events), inner returns pairs, and leftouter returns all devices regardless of a match."
+  },
+  {
+    "obj": "3.1",
+    "q": "An analyst joins EmailAttachmentInfo and DeviceFileEvents on SHA256 without specifying kind. The malicious attachment arrived in 12 different emails, but the result shows only one email. What is the cause and the fix?",
+    "options": ["The default kind=innerunique deduplicates the left table by key; kind=inner should be used.", "The default kind=leftsemi returns only the left columns; kind=fullouter should be used.", "join returns at most one row per key; union should be used.", "SHA256 is not indexed; the join should be on FileName."],
+    "answer": 0,
+    "explain": "The default join kind is innerunique, which keeps one row of the left table per key value. For hunting, Microsoft recommends kind=inner so that all rows are visible. union doesn't join on a key, and joining on the file name produces false hits."
+  },
+  {
+    "obj": "3.1",
+    "q": "For each device, you need to show only the NEWEST record from DeviceInfo, with all columns. Which expression should you use?",
+    "options": ["DeviceInfo | top 1 by Timestamp desc", "DeviceInfo | summarize max(Timestamp) by DeviceId", "DeviceInfo | summarize arg_max(Timestamp, *) by DeviceId", "DeviceInfo | distinct DeviceId"],
+    "answer": 2,
+    "explain": "arg_max(Timestamp, *) returns the whole row with the largest Timestamp for each group. top 1 returns a single row for all devices in total, max(Timestamp) returns only the time without the other columns, and distinct only a list of IDs."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have the query:\n\nlet Threshold = 20;\nlet BadIP = SecurityEvent | where EventID == 4625 | summarize C = count() by IpAddress | where C > Threshold | project IpAddress\nSecurityEvent\n| where EventID == 4624 and IpAddress in (BadIP)\n\nThe query reports a syntax error. What needs to be fixed?",
+    "options": ["Threshold must be declared as dynamic(20).", "A semicolon is missing at the end of the second let statement.", "in (BadIP) should be replaced with == BadIP.", "let cannot be used for tabular expressions."],
+    "answer": 1,
+    "explain": "Every let statement must end with ;. A tabular let is correctly used with in (...), while == would expect a scalar. The scalar 20 does not need dynamic."
+  },
+  {
+    "obj": "3.1",
+    "q": "In a single result, you need to show all events for device ws-fin-042 from DeviceProcessEvents, DeviceNetworkEvents and DeviceFileEvents, with a column that shows which table each row came from. Which operator does this?",
+    "options": ["union withsource=Source DeviceProcessEvents, DeviceNetworkEvents, DeviceFileEvents", "DeviceProcessEvents | join kind=fullouter DeviceNetworkEvents on DeviceId", "DeviceProcessEvents | lookup DeviceFileEvents on DeviceName", "DeviceProcessEvents | mv-expand DeviceNetworkEvents, DeviceFileEvents"],
+    "answer": 0,
+    "explain": "union stacks the rows of multiple tables one below another, and withsource adds a column with the name of the source table. join and lookup combine columns on a key, and mv-expand expands arrays into rows."
+  },
+  {
+    "obj": "3.1",
+    "q": "A Syslog message has the form: \"Failed password for invalid user admin from 203.0.113.7 port 51522 ssh2\". You need to extract the user and the IP address with the LEAST resource consumption. What should you use?",
+    "options": ["extract() with two regular expressions", "where SyslogMessage matches regex and then split()", "parse SyslogMessage with * \"user \" User \" from \" SourceIP \" port \" *", "parse_json(SyslogMessage)"],
+    "answer": 2,
+    "explain": "For text with a consistent format, Microsoft recommends parse (\"parse, don't extract\"), which is cheaper than regular expressions. parse_json works only on JSON, and the message is not JSON."
+  },
+  {
+    "obj": "3.1",
+    "q": "The AttackTechniques column in AlertInfo contains a JSON array of techniques, e.g. [\"Valid Accounts (T1078)\", \"Phishing (T1566)\"]. You need the number of alerts per individual technique. Which operator should be applied before summarize?",
+    "options": ["make_set()", "mv-expand", "parse kind=regex", "arg_max()"],
+    "answer": 1,
+    "explain": "mv-expand expands the array so that each element becomes a separate row, which can then be grouped by technique. make_set does the opposite (turns rows into an array), and arg_max picks the row with the largest value."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Order the steps of a query that finds days with an unusually high number of failed sign-ins per computer.",
+    "options": ["| extend (Anomalies, Score, Expected) = series_decompose_anomalies(Failed, 2.5)", "| where Anomalies == 1", "SecurityEvent | where TimeGenerated between (Start .. End) and EventID == 4625", "| mv-expand TimeGenerated to typeof(datetime), Failed to typeof(long), Anomalies to typeof(int)", "| make-series Failed = count() default=0 on TimeGenerated from Start to End step 1d by Computer"],
+    "answer": [2, 4, 0, 3, 1],
+    "explain": "First filter the source, then make-series creates a continuous series with zeros, series_decompose_anomalies flags anomalies in the array, mv-expand turns the arrays back into rows, and only then filter the spikes (flag 1)."
+  },
+  {
+    "obj": "3.1",
+    "q": "A colleague wrote:\n\nSecurityEvent\n| where EventID == 4625\n| summarize Failed = count() by bin(TimeGenerated, 1d), Computer\n| extend A = series_decompose_anomalies(Failed)\n\nThe query does not give the expected result. Why?",
+    "options": ["series_decompose_anomalies requires a threshold parameter and reports an error without it.", "bin with a 1d step is not allowed for anomalies.", "render anomalychart should be used instead of extend.", "series_decompose_anomalies works on an array (series), while summarize produces a scalar per row; make-series should be used."],
+    "answer": 3,
+    "explain": "The series_* functions expect a dynamic array produced by make-series. summarize gives one number per row and doesn't fill gaps with zeros. The threshold is optional (default 1.5), and render only displays the data."
+  },
+  {
+    "obj": "3.1",
+    "q": "What does series_decompose_anomalies return in the first output array for a point that is significantly BELOW the expected value?",
+    "options": ["-1", "0", "1", "null"],
+    "answer": 0,
+    "explain": "The anomaly flag is +1 for a spike above the expected value, -1 for a dip below the expected value and 0 for a normal point. The other two outputs are the score and the expected (baseline) value."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have a small list of 5 critical servers with their owners. You want to enrich every event from SecurityEvent for those servers with an Owner column, with the best performance. Which combination is the MOST appropriate?",
+    "options": ["union SecurityEvent and a datatable with the list", "a datatable with the list and lookup kind=inner on Computer", "join kind=fullouter with a datatable", "mv-expand over the server list"],
+    "answer": 1,
+    "explain": "lookup is optimized for enriching a large table with a small dimension table, and kind=inner keeps only the events of the critical servers. union doesn't combine columns, fullouter also returns unnecessary rows, and mv-expand doesn't join tables."
+  },
+  {
+    "obj": "3.1",
+    "q": "You are creating an analytics rule that uses a union of multiple tables. Some tables don't exist in all the workspaces where the rule will be used. How do you prevent the query from failing?",
+    "options": ["Add hint.strategy=broadcast", "Use join kind=leftouter instead of union", "Use union isfuzzy=true", "Add materialize() around each table"],
+    "answer": 2,
+    "explain": "isfuzzy=true allows union to succeed even when one of the listed tables doesn't exist or isn't available. The other options don't solve missing tables."
+  },
+  {
+    "obj": "3.1",
+    "q": "You are joining a small list of a few hundred suspicious emails (left) with the entire EmailUrlInfo table (right, hundreds of millions of rows). Which TWO measures improve performance? (Choose TWO.)",
+    "options": ["Add hint.strategy = broadcast to the join.", "Swap the sides so that EmailUrlInfo is on the left.", "Apply a time filter to the right table inside the join as well.", "Remove project so that the join has all columns for comparison."],
+    "answer": [0, 2],
+    "explain": "The broadcast hint helps when the left side is small and the right side is huge, and a time filter on both sides reduces the number of rows to compare. The smaller table should be on the left, and project before the join reduces, not increases, consumption."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Match the task with the join kind that should be used.",
+    "options": ["Show all users from SigninLogs and, if it exists, their department from IdentityInfo.", "Show only the IP addresses from SecurityEvent that are also in the indicator list, without columns from the list.", "Show EVERY email–device pair where the same malicious attachment was written to disk.", "Find accounts that are signing in today but did not sign in during the previous 14 days."],
+    "targets": ["kind=leftanti", "kind=leftsemi", "kind=inner", "kind=leftouter", "kind=rightouter"],
+    "answer": [3, 1, 2, 0],
+    "explain": "Enrichment while keeping all left rows is leftouter. Filtering on the existence of a match without the right columns is leftsemi. All pairs without deduplication is inner. Left rows without a match on the right (new accounts) is leftanti."
+  },
+  {
+    "obj": "3.1",
+    "q": "You are investigating an incident in the Microsoft Defender portal in which a user account has been compromised. You need to quickly see which critical resources the attacker can potentially reach from that account. What should you do?",
+    "options": ["In advanced hunting, write a join between IdentityInfo and AzureActivity.", "Open the Threat analytics report for the incident.", "Start an automated investigation for the account.", "In the incident graph, select the account node and View blast radius."],
+    "answer": 3,
+    "explain": "Blast radius in the incident graph shows possible paths from the selected entity to critical targets (the eight top-ranked, with a full list). Manual KQL is much slower, and threat analytics and AIR don't show paths to critical resources."
+  },
+  {
+    "obj": "3.1",
+    "q": "Without an active incident, the security team wants to proactively determine which devices, users and services have direct or indirect access to a specific Azure key vault. What is the FASTEST approach?",
+    "options": ["Hunting graph in advanced hunting with the predefined Access to key vaults scenario.", "A workbook with AzureActivity queries over key vault operations.", "An analytics rule that monitors key vault access.", "Blast radius in the incident graph."],
+    "answer": 0,
+    "explain": "Hunting graph has the predefined Access to key vaults scenario, which shows paths from entities to the given key vault. AzureActivity shows operations that happened, not potential access, and blast radius requires an incident."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which TWO statements about Microsoft Sentinel graph are true? (Choose TWO.)",
+    "options": ["It powers the hunting graph and blast radius experiences in the Defender portal.", "It replaces KQL in analytics rules.", "Custom graphs are queried with the GQL language on the Graphs page in the Defender portal.", "It works only on data in the analytics tier of a Log Analytics workspace."],
+    "answer": [0, 2],
+    "explain": "Sentinel graph is the foundation for the hunting graph, blast radius and other graph views, and custom graphs (preview) are built in a notebook, published with a graph job and queried with GQL. The graph relies on the Sentinel data lake, and analytics rules still use KQL."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have the query:\n\nlet SprayIP = SecurityEvent\n    | where EventID == 4625\n    | summarize Accounts = dcount(Account) by IpAddress\n    | where Accounts > 15\n    | project IpAddress;\nSecurityEvent\n| where EventID == 4624 and IpAddress in (SprayIP)\n| summarize arg_max(TimeGenerated, Computer) by Account, IpAddress\n\nWhat does the query return?",
+    "options": ["All failed sign-ins from IP addresses that tried more than 15 accounts.", "The latest successful sign-in of each account from an IP address that tried more than 15 different accounts.", "The number of successful sign-ins per IP address.", "The first successful sign-in after the last failure."],
+    "answer": 1,
+    "explain": "let extracts IP addresses with failed sign-ins to more than 15 different accounts, the main query looks for successful sign-ins (4624) from those addresses, and arg_max returns the newest one per account–IP pair, together with the computer. The query does not compare the time with the failures."
+  },
+  {
+    "obj": "3.1",
+    "q": "The AdditionalFields column in DeviceEvents contains JSON text with a DriveLetter field. How do you correctly extract the value for grouping?",
+    "options": ["extend Letter = AdditionalFields.DriveLetter", "parse AdditionalFields with \"DriveLetter\" Letter", "extend Letter = tostring(parse_json(AdditionalFields).DriveLetter)", "mv-expand AdditionalFields.DriveLetter"],
+    "answer": 2,
+    "explain": "parse_json converts the JSON string into dynamic, the field is accessed with a dot, and tostring converts the value into a string suitable for grouping and comparison. Dot access directly on a string column doesn't work, and mv-expand expands arrays."
+  },
+  {
+    "obj": "3.1",
+    "q": "Your advanced hunting query uses a tabular let expression that is referenced three times in the same query and re-reads large amounts of data each time. What reduces resource consumption?",
+    "options": ["Replace let with union", "Add hint.shufflekey to the let", "Convert the expression into a datatable", "Wrap the expression with materialize()"],
+    "answer": 3,
+    "explain": "materialize() calculates the result of the let expression once and caches it for the rest of the query. datatable is for manually entered values, and union and shufflekey don't solve re-reading."
+  },
+  {
+    "type": "spot",
+    "obj": "3.1",
+    "q": "The query should find a successful logon after more than 20 failures from the same address. Instead it returns only failed attempts. Mark the wrong lines.",
+    "snippet": "// successful logon after more than 20 failures from the same address\nlet Neuspjesi = SecurityEvent\n    | where TimeGenerated > ago(1d) and EventID == 4625\n    | summarize Neuspjelih = count(), Zadnji = max(TimeGenerated) by Account, IpAddress\n    | where Neuspjelih > 20;\nlet Uspjesi = SecurityEvent\n    | where TimeGenerated > ago(1d) and EventID == 4625\n    | project Uspjeh = TimeGenerated, Account, IpAddress, Computer;\nNeuspjesi\n| join kind=inner Uspjesi on Account, IpAddress\n| where Uspjeh < Zadnji\n| project Account, IpAddress, Computer, Neuspjelih, Zadnji, Uspjeh",
+    "lang": "kql",
+    "answer": [
+      6,
+      10
+    ],
+    "explain": "The second let must select successful logons, EventID 4624; with 4625 it joins failures with failures. The filter after the join must be Uspjeh > Zadnji (success > last failure): you want a success that came after the last failure, not before it. join kind=inner and the keys Account, IpAddress are correct."
+  }
+]

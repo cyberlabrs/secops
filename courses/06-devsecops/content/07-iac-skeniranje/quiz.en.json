@@ -1,0 +1,253 @@
+[
+  {
+    "obj": "4.1",
+    "q": "You added a job with the command `trivy config --severity HIGH,CRITICAL infra/` to the pipeline. The log shows HIGH findings for `aws_security_group.web`, but the job is green. Why?",
+    "options": [
+      "`--scanners misconfig` is missing, so Trivy only prints findings without evaluating them",
+      "`trivy config` doesn't support Terraform without `--tf-vars`",
+      "Without `--exit-code 1` Trivy returns 0 even when it finds issues",
+      "`--severity` only filters the display; a gate needs `--ignore-unfixed`"
+    ],
+    "answer": 2,
+    "explain": "Trivy exits with 0 by default; you get a gate only with `--exit-code 1`, and `--severity` determines which findings count. `--scanners misconfig` is needed for `trivy fs`/`image`, not for `trivy config`, and `--ignore-unfixed` applies to vulnerabilities, not configuration."
+  },
+  {
+    "obj": "4.1",
+    "q": "Checkov reports 9 findings on `infra/`. You want the report to keep showing everything, but the build should fail only because of SSH open to the internet (`CKV_AWS_24`) and a public database (`CKV_AWS_17`). Which command?",
+    "options": [
+      "checkov -d infra --hard-fail-on CKV_AWS_24,CKV_AWS_17",
+      "checkov -d infra --check CKV_AWS_24,CKV_AWS_17",
+      "checkov -d infra --soft-fail --check CKV_AWS_24,CKV_AWS_17",
+      "checkov -d infra --skip-check CKV_AWS_18,CKV_AWS_260,CKV_AWS_16"
+    ],
+    "answer": 0,
+    "explain": "`--hard-fail-on` gives exit 1 only for the listed checks, while the other failed findings stay in the report as an implicit soft-fail. `--check` runs only those two checks and hides the other findings, `--soft-fail` never breaks the build, and `--skip-check` removes checks from the report."
+  },
+  {
+    "obj": "4.1",
+    "q": "A developer added `#checkov:skip=CKV_AWS_24:Bastion privremeno, SEC-150` at the top of `infra/main.tf`, above the `provider \"aws\"` block. Checkov still reports FAILED for `aws_security_group.web`. What is the cause?",
+    "options": [
+      "There must be a space between `#` and `checkov`",
+      "The comment must be inside the block of the resource the suppression applies to",
+      "Checkov doesn't support inline suppressions in Terraform, only `--skip-check`",
+      "The reason after the colon must not contain a comma"
+    ],
+    "answer": 1,
+    "explain": "A Checkov inline skip applies to the resource in whose block it is located, so the comment needs to go inside `resource \"aws_security_group\" \"web\" { ... }`. The format `#checkov:skip=ID:reason` is correct, and inline suppressions in Terraform are supported."
+  },
+  {
+    "obj": "4.1",
+    "q": "Checkov reports `CKV_K8S_16` (privileged container) for the DaemonSet `node-exporter`, which legitimately needs privileges. The same check must stay active for all other workloads. What is the correct suppression?",
+    "options": [
+      "`skip-check: [CKV_K8S_16]` in `.checkov.yaml` with a comment",
+      "A `KSV-0017` entry in `.trivyignore`",
+      "`--soft-fail-on CKV_K8S_16` in the CI job",
+      "The annotation `checkov.io/skip1: CKV_K8S_16=Node metrics; SEC-120` on the DaemonSet"
+    ],
+    "answer": 3,
+    "explain": "For Kubernetes manifests Checkov reads the suppression from the `checkov.io/skipN` annotation on the resource itself, so it applies only to that DaemonSet. A global `skip-check` and `--soft-fail-on` would weaken the check for all workloads, and Checkov doesn't read `.trivyignore`."
+  },
+  {
+    "obj": "4.1",
+    "q": "The team has accepted the risk of the SSH rule in `aws_security_group.web` until the end of the year and uses Trivy as the gate. Which comment above the resource expresses this correctly?",
+    "options": [
+      "#trivy:ignore:AWS-0107:exp:2026-12-31",
+      "#trivy:ignore:AWS-0107 expired_at=2026-12-31",
+      "# nosec AWS-0107 until 2026-12-31",
+      "#checkov:skip=AWS-0107:2026-12-31"
+    ],
+    "answer": 0,
+    "explain": "A Trivy inline ignore has the form `trivy:ignore:<ID>` and an optional expiry `:exp:yyyy-mm-dd`; after that date the finding comes back. `expired_at` is a field in `.trivyignore.yaml`, not in a comment, `nosec` is other tools' syntax, and `checkov:skip` is read only by Checkov."
+  },
+  {
+    "obj": "4.1",
+    "q": "Trivy reports `DS-0002` (no `USER` in the Dockerfile). A developer adds `#trivy:ignore:DS-0002` above the `FROM` line, but the finding remains. What needs to be done for the suppression to work?",
+    "options": [
+      "Use the long ID `docker-least-privilege-user` instead of `DS-0002`",
+      "Add an `:exp:` expiry, because Trivy ignores the comment without one",
+      "Put the suppression in `.trivyignore.yaml` (`id`, `paths`, `statement`) and pass it with `--ignorefile`",
+      "Move the comment to the end of the Dockerfile"
+    ],
+    "answer": 2,
+    "explain": "Inline ignore works only for findings tied to an existing resource or instruction; a finding caused by the absence of something (no `USER`) must go into the ignore file. The long ID is a valid alias but doesn't solve the problem, and an expiry is not mandatory."
+  },
+  {
+    "obj": "4.1",
+    "q": "You added `.trivyignore.yaml` to the repo root with the entry `misconfigurations: [{id: AWS-0107, statement: ..., expired_at: 2026-12-31}]`. The job `trivy config --exit-code 1 infra/` still fails on `AWS-0107`. Why?",
+    "options": [
+      "The field is called `expires`, not `expired_at`",
+      "Trivy reads the YAML ignore file only when it's specified with `--ignorefile`",
+      "`trivy config` doesn't support ignore files, only inline comments",
+      "The file must be in the `infra/` directory next to the `.tf` files"
+    ],
+    "answer": 1,
+    "explain": "Only the plain `.trivyignore` is read automatically; the experimental YAML format needs an explicit `--ignorefile .trivyignore.yaml`. The fields `id`, `statement` and `expired_at` are correct."
+  },
+  {
+    "obj": "4.1",
+    "q": "Checkov in the lab runs without the platform and an API key. The team set `checkov -d infra --hard-fail-on HIGH,CRITICAL`, but the job is always green even though `CKV_AWS_17` fails. Why?",
+    "options": [
+      "`--hard-fail-on` accepts only check IDs, not severities",
+      "You need to add `--soft-fail=false`",
+      "`CKV_AWS_17` is a LOW check",
+      "Built-in checks have no severity without the platform, so no finding meets the threshold, and the rest are treated as soft-fail"
+    ],
+    "answer": 3,
+    "explain": "Severity for built-in Checkov checks comes from the platform; without it a finding has no severity and doesn't hit the `HIGH` threshold. When only `--hard-fail-on` is given, all other findings are implicitly soft-fail. Without the platform you build the gate by IDs or custom checks with `severity`."
+  },
+  {
+    "obj": "4.1",
+    "q": "You are introducing Checkov into an old Terraform repo with 120 findings. The team wants the build to fail immediately only for NEW findings, while the old debt is handled in a planned way. What do you do?",
+    "options": [
+      "`checkov -d infra --create-baseline`, commit `.checkov.baseline`, and in CI use `--baseline infra/.checkov.baseline`",
+      "Permanent `--soft-fail` until the team fixes all findings",
+      "`--skip-check` with a list of all IDs that currently fail",
+      "`--compact --quiet` to make the log shorter"
+    ],
+    "answer": 0,
+    "explain": "A baseline records the existing findings, so the report and exit code include only new ones. A permanent soft-fail blocks nothing, and `--skip-check` disables checks for future new resources too. `--compact` and `--quiet` only change the display."
+  },
+  {
+    "obj": "4.1",
+    "q": "The `iac-checkov` job fails, but there is no SARIF report in the MR:\n\n```yaml\niac-checkov:\n  stage: iac\n  needs: []\n  script:\n    - checkov -d infra -o cli -o sarif --output-file-path console,checkov.sarif\n  artifacts:\n    paths: [checkov.sarif]\n```\n\nWhat is missing?",
+    "options": [
+      "`allow_failure: true`",
+      "`expose_as: checkov`",
+      "`when: always` under `artifacts`",
+      "`needs: [build]`"
+    ],
+    "answer": 2,
+    "explain": "By default artifacts are kept only for a successful job; `artifacts:when: always` keeps the report even when the job fails. `allow_failure` would disable the gate, and `expose_as` only adds a link in the MR."
+  },
+  {
+    "obj": "4.1",
+    "q": "You wrote a YAML check `CKV2_KURS_1` in `policies/checkov/rds_deletion_protection.yaml`. The command `checkov -d infra` reports nothing for `aws_db_instance.shop` without `deletion_protection`. What is the most likely cause?",
+    "options": [
+      "YAML checks must be in the `.checkov.yaml` file",
+      "The directory with the check wasn't loaded with `--external-checks-dir policies/checkov`",
+      "YAML checks work only on a Terraform plan",
+      "You need to add `--framework yaml`"
+    ],
+    "answer": 1,
+    "explain": "Checkov loads custom checks (YAML and Python) only with `--external-checks-dir` (or the key of the same name in the configuration). `.checkov.yaml` is run configuration, and YAML checks also work on `.tf` files."
+  },
+  {
+    "obj": "4.1",
+    "q": "A Python check in `policies/checkov/sg_no_admin_ports.py` has a class `NoAdminPortsFromInternet(BaseResourceCheck)` with a correct `__init__` and `scan_resource_conf`. Checkov loads the directory, but the check never runs. What is missing?",
+    "options": [
+      "A `@checkov.register` decorator above the class",
+      "A `True`/`False` return value instead of `CheckResult`",
+      "The file must have the extension `.checkov.py`",
+      "An instance at the end of the module, e.g. `check = NoAdminPortsFromInternet()`"
+    ],
+    "answer": 3,
+    "explain": "A check is registered when an instance of the class is created; without the `check = ...()` line Checkov loads the file but doesn't run the check. `scan_resource_conf` returns `CheckResult.PASSED`/`FAILED`, and neither the decorator nor a special extension exists."
+  },
+  {
+    "obj": "4.1",
+    "q": "The company introduces a rule: every `aws_db_instance` must have `deletion_protection = true`, severity HIGH, and the finding must enter the gate. The team doesn't know Rego, and Checkov runs without the platform. What is the fastest solution?",
+    "options": [
+      "A Checkov YAML check (`cond_type: attribute`, `operator: equals`) with `severity: HIGH` in the metadata",
+      "A Trivy Rego check in the `user.kurs` package with `--check-namespaces user`",
+      "A hadolint rule in `.hadolint.yaml`",
+      "Trivy `--severity HIGH,CRITICAL` over the built-in check `AWS-0177`"
+    ],
+    "answer": 0,
+    "explain": "A Checkov YAML check is written without Rego, and the severity set in its metadata applies even without the platform. A Rego check would work, but the team doesn't know Rego. hadolint doesn't read Terraform, and the built-in `AWS-0177` is MEDIUM, so the `HIGH,CRITICAL` filter drops it."
+  },
+  {
+    "obj": "4.1",
+    "q": "You wrote a Trivy check `policies/trivy/rds.rego` with `package user.kurs.rds_deletion_protection` and a METADATA block. The command `trivy config --config-check policies/trivy infra/` gives only built-in findings. What is missing?",
+    "options": [
+      "The package must start with `builtin.`",
+      "The check must be in a `.yaml` file",
+      "`--check-namespaces user`, because without it Trivy evaluates only the built-in namespace",
+      "`trivy config` doesn't support custom checks; you need `trivy fs`"
+    ],
+    "answer": 2,
+    "explain": "By default Trivy runs only `builtin.*` packages; a custom package prefix must be specified with `--check-namespaces` (alias `--namespaces`). `builtin.` is reserved for built-in checks."
+  },
+  {
+    "obj": "4.1",
+    "q": "`infra/main.tf` says `publicly_accessible = var.db_public`, and the value `true` comes from `prod.tfvars`, which the pipeline generates only in the deploy stage. Checkov over the `.tf` files doesn't report this. How do you reliably catch the problem before `apply`?",
+    "options": [
+      "Add `--download-external-modules true`",
+      "Scan the JSON plan: `terraform show -json tfplan > tfplan.json`, then `checkov -f tfplan.json --framework terraform_plan` or `trivy config tfplan.json`",
+      "Add `--skip-path prod.tfvars`",
+      "Run Checkov with `--compact`"
+    ],
+    "answer": 1,
+    "explain": "The plan contains the actual, computed variable values, so the scanner sees `publicly_accessible = true`. Downloading modules doesn't resolve values from tfvars that are generated later, and `--skip-path` and `--compact` don't affect values."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Order the steps for introducing Checkov as a gate into an existing repo so that developers aren't blocked overnight.",
+    "options": [
+      "Turn on the gate: `checkov -d infra --baseline infra/.checkov.baseline` without `--soft-fail`",
+      "Run `checkov` with `--soft-fail` and a SARIF report so the team sees the findings",
+      "Every sprint fix some of the old findings and remove them from the baseline",
+      "Create `.checkov.baseline` with `--create-baseline` and commit it"
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      2
+    ],
+    "explain": "First reporting mode (visibility without blocking), then a snapshot of the existing debt, then a gate only for new findings, and finally a planned reduction of the baseline."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match each suppression mechanism with its behavior.",
+    "options": [
+      "`#checkov:skip=CKV_AWS_260:reason` inside the resource",
+      "`checkov.io/skip1: CKV_K8S_16=reason`",
+      "`#trivy:ignore:AWS-0107:exp:2026-12-31`",
+      "`--soft-fail-on CKV_AWS_260`"
+    ],
+    "targets": [
+      "An annotation on a Kubernetes resource",
+      "An inline suppression with an expiry above a Terraform resource",
+      "The finding stays FAILED in the report but doesn't break the build",
+      "An inline suppression of one Terraform resource, shown as SKIPPED in the report",
+      "Global disabling of a check; the finding isn't shown"
+    ],
+    "answer": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "explain": "A Checkov inline skip and annotation apply to one resource and are visible as SKIPPED; the Trivy comment has an `exp:` expiry; `--soft-fail-on` shows the finding but doesn't break the build. Global disabling describes `skip-check`, which isn't offered here."
+  },
+  {
+    "obj": "4.1",
+    "q": "HTTP 80 open to `0.0.0.0/0` in `aws_security_group.web` is intentional (a public web site behind an ALB). Which TWO approaches keep this finding from breaking the Checkov gate while the decision stays visible and justified? (Choose TWO.)",
+    "options": [
+      "`#checkov:skip=CKV_AWS_260:Public web behind the ALB; SEC-118` inside the resource",
+      "`--skip-check CKV_AWS_260` in the CI command, without a comment",
+      "`--soft-fail` for the whole job",
+      "`--soft-fail-on CKV_AWS_260` with a comment giving the reason and ticket in `.gitlab-ci.yml`",
+      "Remove the ingress rule from Terraform and add it manually in the AWS console"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "An inline skip with a reason goes through code review and is SKIPPED in the report; `--soft-fail-on` leaves the finding visible as FAILED but doesn't break the build. A skip without a comment hides the decision, `--soft-fail` disables the whole gate, and a manual change in the console creates drift and bypasses the control."
+  },
+  {
+    "type": "spot",
+    "obj": "4.1",
+    "q": "Checkov reports two findings on this Terraform: the bucket can become public and SSH is open. Mark the lines that cause them.",
+    "snippet": "resource \"aws_s3_bucket_public_access_block\" \"artifacts\" {\n  bucket                  = aws_s3_bucket.artifacts.id\n  block_public_acls       = true\n  block_public_policy     = false\n  ignore_public_acls      = true\n  restrict_public_buckets = true\n}\n\nresource \"aws_security_group_rule\" \"ssh_in\" {\n  type              = \"ingress\"\n  from_port         = 22\n  to_port           = 22\n  protocol          = \"tcp\"\n  cidr_blocks       = [\"0.0.0.0/0\"]\n  security_group_id = aws_security_group.app.id\n}",
+    "lang": "hcl",
+    "answer": [
+      3,
+      13
+    ],
+    "explain": "block_public_policy = false allows a bucket policy that makes the bucket public; all four public access block settings should be true. cidr_blocks 0.0.0.0/0 on port 22 opens SSH to the whole internet; restrict it to the VPN or bastion range (e.g. 10.20.0.0/16) or use SSM Session Manager with no open port. If an exception is really needed, use an inline skip with a justification, not disabling the check for the whole project."
+  }
+]

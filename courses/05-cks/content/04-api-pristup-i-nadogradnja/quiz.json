@@ -1,0 +1,241 @@
+[
+  {
+    "obj": "2.3",
+    "q": "Sa node01 pokreneš curl -k https://controlplane:6443/api/v1/namespaces i dobiješ 403 Forbidden sa porukom User \"system:anonymous\" cannot list resource \"namespaces\". Šta to govori?",
+    "options": [
+      "Anonimni pristup je uključen; zahtjev je autentifikovan kao system:anonymous, ali RBAC ne daje dozvolu",
+      "Anonimni pristup je isključen sa --anonymous-auth=false",
+      "Firewall blokira port 6443 sa node01",
+      "API server koristi --authorization-mode=AlwaysDeny"
+    ],
+    "answer": 0,
+    "explain": "403 znači da je identitet utvrđen (system:anonymous), a autorizacija je odbila. Sa isključenim anonimnim pristupom odgovor bi bio 401 Unauthorized, a blokiran port ne bi dao HTTP odgovor uopšte."
+  },
+  {
+    "obj": "2.3",
+    "q": "U /etc/kubernetes/manifests/kube-apiserver.yaml vidiš --authorization-mode=AlwaysAllow. Zadatak: vrati sigurnu konfiguraciju kakvu kubeadm postavlja. Koja vrijednost je ispravna?",
+    "options": [
+      "--authorization-mode=RBAC,AlwaysAllow",
+      "--authorization-mode=Webhook",
+      "--authorization-mode=Node,RBAC",
+      "--authorization-mode=ABAC"
+    ],
+    "answer": 2,
+    "explain": "kubeadm koristi Node,RBAC: Node autorizuje kubelete za objekte njihovog čvora, a RBAC sve ostale. Dodavanje AlwaysAllow na kraj liste i dalje propušta sve što RBAC ne odobri, a sam Webhook ili ABAC nisu standardna konfiguracija."
+  },
+  {
+    "obj": "2.3",
+    "q": "Dodao si --anonymous-auth=false u manifest API servera. Klaster radi, ali crictl ps -a pokazuje da se kontejner kube-apiserver restartuje svakih par minuta. Šta je najvjerovatniji uzrok?",
+    "options": [
+      "NodeRestriction odbija zahtjeve kubeleta",
+      "Probe static Poda šalju zahtjeve na /livez i /readyz bez kredencijala i dobijaju 401",
+      "Flag --anonymous-auth ne postoji pa API server odbija start",
+      "etcd ne prihvata konekcije bez anonimnog pristupa"
+    ],
+    "answer": 1,
+    "explain": "HTTP probe kubeleta nemaju kredencijale; bez anonimnog pristupa dobijaju 401 i kubelet restartuje kontejner. Flag postoji (default true), a etcd se autentifikuje klijentskim certifikatom, ne anonimno."
+  },
+  {
+    "obj": "2.3",
+    "q": "Želiš da anonimni zahtjevi prolaze samo za /livez, /readyz i /healthz. Napravio si AuthenticationConfiguration sa anonymous.enabled: true i conditions za te putanje i dodao --authentication-config. API server ne startuje. Šta još treba uraditi?",
+    "options": [
+      "Dodati --anonymous-auth=true da bi anonymous blok bio aktivan",
+      "Promijeniti apiVersion u audit.k8s.io/v1",
+      "Dodati --enable-admission-plugins=AnonymousAuth",
+      "Ukloniti flag --anonymous-auth iz manifesta i montirati fajl u Pod preko hostPath volumena"
+    ],
+    "answer": 3,
+    "explain": "Kad AuthenticationConfiguration konfiguriše anonymous, flag --anonymous-auth se ne smije postaviti; uz to fajl mora biti dostupan u kontejneru kroz volumeMount. Ispravan apiVersion je apiserver.config.k8s.io/v1, a admission plugin AnonymousAuth ne postoji."
+  },
+  {
+    "obj": "2.3",
+    "q": "Napadač je preuzeo /etc/kubernetes/kubelet.conf sa node01. Klaster ima --authorization-mode=Node,RBAC i --enable-admission-plugins=NodeRestriction. Šta od navedenog i dalje MOŽE da uradi tim kredencijalima?",
+    "options": [
+      "Postavi oznaku node-restriction.kubernetes.io/pci=true na node01",
+      "Ukloni taint sa node01",
+      "Postavi običnu oznaku test=ok na sopstveni Node objekat node01",
+      "Promijeni oznake čvora controlplane"
+    ],
+    "answer": 2,
+    "explain": "NodeRestriction dozvoljava kubeletu da mijenja svoj Node, ali zabranjuje prefiks node-restriction.kubernetes.io/, izmjenu taintova i bilo kakvu izmjenu tuđih čvorova. Obična oznaka bez rezervisanog prefiksa na sopstvenom čvoru prolazi."
+  },
+  {
+    "obj": "2.3",
+    "q": "Osjetljivi Deployment koristi nodeSelector sa oznakom koju bi napadač mogao postaviti sa kompromitovanog čvora i tako privući Podove na njega. Koji prefiks oznake je namijenjen baš za ovaj slučaj jer ga kubelet uz NodeRestriction ne može postaviti?",
+    "options": [
+      "kubernetes.io/",
+      "node.kubernetes.io/",
+      "kubelet.kubernetes.io/",
+      "node-restriction.kubernetes.io/"
+    ],
+    "answer": 3,
+    "explain": "Prefiks node-restriction.kubernetes.io/ je rezervisan za administratore radi izolacije workloada. Prefiksi node.kubernetes.io/ i kubelet.kubernetes.io/ su eksplicitno dozvoljeni kubeletu, a dio kubernetes.io/ oznaka (npr. hostname, zone) takođe."
+  },
+  {
+    "obj": "2.3",
+    "q": "kubectl get svc kubernetes -n default pokazuje TYPE NodePort, PORT(S) 443:31000/TCP. Koja kombinacija koraka trajno vraća servis na ClusterIP?",
+    "options": [
+      "kubectl edit svc kubernetes i promijeniti type u ClusterIP; manifest se ne dira",
+      "Ukloniti --kubernetes-service-node-port iz manifesta API servera, sačekati restart i po potrebi obrisati servis kubernetes da ga API server ponovo kreira",
+      "Postaviti --secure-port=0 da se ugasi NodePort",
+      "Napraviti NetworkPolicy koja blokira port 31000 u namespaceu default"
+    ],
+    "answer": 1,
+    "explain": "Servis kubernetes održava sam API server, a flag --kubernetes-service-node-port ga pretvara u NodePort; ručna izmjena servisa ne uklanja uzrok. --secure-port se ne može isključiti nulom, a NetworkPolicy ne štiti API server jer on radi sa hostNetwork, van mreže Podova."
+  },
+  {
+    "obj": "2.3",
+    "q": "Zadatak: dozvoli pristup portu 6443 na controlplane samo iz mreže 10.0.0.0/24. Koji par iptables pravila to radi (pravila se dodaju na kraj INPUT lanca bez drugih pravila za 6443)?",
+    "options": [
+      "iptables -A INPUT -p tcp --dport 6443 -j DROP; iptables -A INPUT -p tcp --dport 6443 -s 10.0.0.0/24 -j ACCEPT",
+      "iptables -A OUTPUT -p tcp --sport 6443 -d 10.0.0.0/24 -j ACCEPT; iptables -A OUTPUT -p tcp --sport 6443 -j DROP",
+      "iptables -A INPUT -p tcp --dport 6443 -s 10.0.0.0/24 -j ACCEPT; iptables -A INPUT -p tcp --dport 6443 -j DROP",
+      "iptables -A INPUT -p tcp --dport 10250 -s 10.0.0.0/24 -j ACCEPT; iptables -A INPUT -p tcp --dport 10250 -j DROP"
+    ],
+    "answer": 2,
+    "explain": "iptables poredi pravila redom: prvo ACCEPT za dozvoljenu mrežu, zatim DROP za sve ostale na 6443. Obrnut redoslijed odbacuje i dozvoljene adrese, OUTPUT ne filtrira dolazne konekcije, a 10250 je kubelet, ne API server."
+  },
+  {
+    "obj": "2.3",
+    "q": "Developer jane je poslala CSR. kubectl get csr jane -o jsonpath='{.spec.request}' | base64 -d | openssl req -noout -subject ispisuje subject=CN = jane, O = system:masters. Šta je ispravno uraditi?",
+    "options": [
+      "kubectl certificate deny jane, jer grupa system:masters zaobilazi RBAC",
+      "kubectl certificate approve jane, pa ukloniti ClusterRoleBinding cluster-admin",
+      "kubectl certificate approve jane, jer CertificateSubjectRestriction ionako mijenja grupu",
+      "Potpisati CSR ručno sa ca.key i -days 1 da bude kratkotrajan"
+    ],
+    "answer": 0,
+    "explain": "Grupa system:masters ima neograničen pristup koji RBAC ne može ukinuti, a certifikat se ne može opozvati. CertificateSubjectRestriction ne mijenja grupu nego odbija takve zahtjeve, a ručno potpisivanje samo zaobilazi kontrolu."
+  },
+  {
+    "obj": "2.3",
+    "q": "Odobrio si CSR za korisnika jane, ugradio certifikat u kubeconfig i pokrenuo kubectl --context jane get pods. Dobiješ: Error from server (Forbidden): pods is forbidden: User \"jane\" cannot list resource \"pods\". Šta nedostaje?",
+    "options": [
+      "CSR nije odobren",
+      "Role i RoleBinding (ili ClusterRole/ClusterRoleBinding) za korisnika jane",
+      "signerName treba biti kubernetes.io/kubelet-serving",
+      "Certifikat treba da ima usages: server auth"
+    ],
+    "answer": 1,
+    "explain": "Poruka sadrži User \"jane\", pa je autentifikacija uspjela; odbila je autorizacija. Neodobren CSR ili pogrešan signer/usages bi doveli do toga da certifikat ne postoji ili da daje 401, ne 403."
+  },
+  {
+    "obj": "2.3",
+    "q": "Šta nedostaje ili je pogrešno u ovom CSR manifestu za klijentski certifikat korisnika? spec: {request: <base64>, signerName: kubernetes.io/kube-apiserver-client, expirationSeconds: 300, usages: [client auth]}",
+    "options": [
+      "signerName mora biti kubernetes.io/legacy-unknown",
+      "usages mora sadržati digital signature i key encipherment",
+      "Nedostaje polje spec.username",
+      "expirationSeconds je ispod minimuma od 600"
+    ],
+    "answer": 3,
+    "explain": "Minimalna vrijednost za expirationSeconds je 600 sekundi. Signer kubernetes.io/kube-apiserver-client sa usages client auth je ispravan izbor, a username API popunjava sam na osnovu identiteta koji šalje CSR."
+  },
+  {
+    "obj": "2.3",
+    "q": "Zaposleni koji je imao klijentski certifikat (CN=bob, O=ops, važi godinu dana) je napustio firmu. Koji korak odmah sprečava da bob išta radi u klasteru?",
+    "options": [
+      "kubectl delete csr bob",
+      "kubectl certificate deny bob",
+      "Ukloniti RoleBindinge i ClusterRoleBindinge za korisnika bob i grupu ops (ili ih premjestiti na drugu grupu)",
+      "Restartovati kube-apiserver da zaboravi certifikat"
+    ],
+    "answer": 2,
+    "explain": "Kubernetes ne podržava opoziv klijentskih certifikata: certifikat ostaje validan za autentifikaciju do isteka. Brisanje CSR objekta ili deny poslije izdavanja ne utiče na izdati certifikat; jedino uklanjanje dozvola (ili rotacija CA) ga obesmišljava."
+  },
+  {
+    "obj": "2.3",
+    "q": "Upari fajl na kubeadm controlplane čvoru sa identitetom ili ulogom koju nosi.",
+    "type": "match",
+    "options": [
+      "/etc/kubernetes/admin.conf",
+      "/etc/kubernetes/super-admin.conf",
+      "/etc/kubernetes/kubelet.conf",
+      "/etc/kubernetes/pki/ca.key"
+    ],
+    "targets": [
+      "Ključ kojim se može potpisati bilo koji klijentski identitet",
+      "Grupa system:masters, zaobilazi RBAC",
+      "Korisnik system:node:<ime>, ograničen Node autorizacijom",
+      "Grupa kubeadm:cluster-admins, admin preko RBAC bindinga",
+      "Token ServiceAccounta default"
+    ],
+    "answer": [3, 1, 2, 0],
+    "explain": "admin.conf od verzije 1.29 koristi grupu kubeadm:cluster-admins vezanu RBAC-om, super-admin.conf nosi system:masters, kubelet.conf identitet čvora, a ca.key je CA ključ. ServiceAccount tokeni nisu u ovim fajlovima."
+  },
+  {
+    "obj": "2.3",
+    "q": "Poslije izmjene /etc/kubernetes/manifests/kube-apiserver.yaml kubectl vraća connection refused, a crictl ps --name kube-apiserver ne prikazuje ništa. Koji je najbrži sljedeći korak?",
+    "options": [
+      "kubectl describe pod kube-apiserver-controlplane -n kube-system",
+      "crictl ps -a --name kube-apiserver i crictl logs <id>, a ako kontejnera nema, journalctl -u kubelet za grešku u YAML-u",
+      "kubeadm reset i ponovna inicijalizacija",
+      "systemctl restart kube-apiserver"
+    ],
+    "answer": 1,
+    "explain": "Dok API ne radi, kubectl ne može ništa opisati. Log izašlog kontejnera pokazuje pogrešan flag, a ako kontejner nije ni kreiran, kubelet log pokazuje grešku parsiranja manifesta. kube-apiserver nije systemd servis na kubeadm klasteru."
+  },
+  {
+    "obj": "2.4",
+    "q": "Klaster radi na v1.35.0. Objavljen je CVE za kube-apiserver koji je popravljen u patch izdanjima 1.35 grane. Šta je ispravan plan?",
+    "options": [
+      "Nadograditi na posljednji patch 1.35.x preko kubeadm upgrade plan/apply, pa kubelete",
+      "Odmah preći na najnoviju minor verziju preskačući međuverzije",
+      "Nadograditi samo kubelete na čvorovima, jer API server dolazi iz slike",
+      "Sačekati sljedeću minor verziju jer patch izdanja ne sadrže sigurnosne popravke"
+    ],
+    "answer": 0,
+    "explain": "Sigurnosne popravke stižu u patch izdanjima podržanih minor verzija, pa je najbrži i najsigurniji put patch iste grane. Minor verzije se ne preskaču, a nadogradnja samo kubeleta ne popravlja API server (i kubelet ne smije biti noviji od njega)."
+  },
+  {
+    "obj": "2.4",
+    "q": "kube-apiserver je na v1.35.N. Koja verzija kubeleta na node01 NIJE podržana po version skew politici?",
+    "options": [
+      "1.35",
+      "1.34",
+      "1.32",
+      "1.36"
+    ],
+    "answer": 3,
+    "explain": "Kubelet ne smije biti noviji od kube-apiservera; smije biti do tri minor verzije stariji (1.35, 1.34, 1.33, 1.32). Zato je 1.36 nepodržan."
+  },
+  {
+    "obj": "2.4",
+    "q": "Poredaj korake nadogradnje controlplane čvora na novi patch (kubeadm, apt).",
+    "type": "order",
+    "options": [
+      "kubectl drain controlplane --ignore-daemonsets",
+      "kubeadm upgrade apply v1.35.N",
+      "apt-get install kubeadm='1.35.N-*' (uz apt-mark unhold/hold)",
+      "kubectl uncordon controlplane",
+      "apt-get install kubelet i kubectl, systemctl daemon-reload i restart kubelet",
+      "kubeadm upgrade plan"
+    ],
+    "answer": [2, 5, 1, 0, 4, 3],
+    "explain": "Prvo nova verzija kubeadm alata, pa plan i apply za komponente control planea. Zatim drain, nadogradnja kubeleta i kubectla sa restartom kubeleta, i na kraju uncordon."
+  },
+  {
+    "obj": "2.4",
+    "q": "Na node01 si instalirao novi kubeadm. Koja komanda nadograđuje lokalnu konfiguraciju kubeleta na radnom čvoru?",
+    "options": [
+      "kubeadm upgrade apply v1.35.N",
+      "kubeadm upgrade plan",
+      "kubeadm join --upgrade",
+      "kubeadm upgrade node"
+    ],
+    "answer": 3,
+    "explain": "Na radnim čvorovima (i dodatnim control plane čvorovima) koristi se kubeadm upgrade node. upgrade apply se pokreće samo na prvom control plane čvoru, plan samo prikazuje opcije, a join --upgrade ne postoji."
+  },
+  {
+    "obj": "2.4",
+    "q": "Tim želi automatski da prati nove ranjivosti Kubernetesa. Koji izvor je zvaničan i mašinski čitljiv?",
+    "options": [
+      "Official CVE Feed na kubernetes.io (index.json i feed.xml)",
+      "Izlaz komande kubeadm upgrade plan",
+      "kube-bench run --targets master",
+      "Trivy skeniranje slike nginx"
+    ],
+    "answer": 0,
+    "explain": "Official CVE Feed (JSON i RSS) objavljuje CVE-ove koje je najavio Kubernetes Security Response Committee. kubeadm plan pokazuje dostupne verzije, kube-bench provjerava CIS konfiguraciju, a Trivy na aplikacionoj slici ne prati ranjivosti samog Kubernetesa."
+  }
+]

@@ -1,0 +1,312 @@
+[
+  {
+    "obj": "4.1",
+    "q": "A network engineer is analyzing a problem in which a device forwards traffic based on MAC addresses and drops frames with an invalid FCS field. At which OSI layer does this device PRIMARILY operate, and which forwarding method does it use?",
+    "options": [
+      "Layer 3, cut-through",
+      "Layer 1, store-and-forward",
+      "Layer 2, store-and-forward",
+      "Layer 2, cut-through"
+    ],
+    "answer": 2,
+    "explain": "Decisions based on MAC addresses are Layer 2 (switch). Checking the FCS/CRC before forwarding means the device receives the entire frame, which is store-and-forward. Cut-through forwards as soon as it reads the destination address and therefore passes damaged frames."
+  },
+  {
+    "obj": "4.1",
+    "q": "Two branch offices need to be connected over the internet so that the entire original IP packet, including internal addresses, is encrypted and authenticated between two gateways. Which configuration BEST meets the requirement?",
+    "options": [
+      "IPSec ESP in tunnel mode",
+      "IPSec AH in transport mode",
+      "IPSec ESP in transport mode",
+      "IPSec AH in tunnel mode"
+    ],
+    "answer": 0,
+    "explain": "ESP provides confidentiality, and tunnel mode encapsulates the entire original packet in a new one, so internal addresses stay hidden. AH does not encrypt, and transport mode protects only the payload and leaves the original header."
+  },
+  {
+    "obj": "4.1",
+    "q": "An organization has deployed DNSSEC, and management now believes employees' DNS queries are protected from eavesdropping on public Wi-Fi. What is the security advisor's MOST ACCURATE response?",
+    "options": [
+      "Correct, DNSSEC encrypts both queries and responses between the client and the resolver.",
+      "Correct, but only if IPv6 is also enabled.",
+      "Incorrect, because DNSSEC works only between authoritative servers, not toward the client.",
+      "Incorrect, DNSSEC provides integrity and authenticity of responses, while confidentiality requires DoT or DoH."
+    ],
+    "answer": 3,
+    "explain": "DNSSEC digitally signs records, so it protects against spoofing (integrity, origin authenticity), but it encrypts nothing. Query privacy is provided by DNS over TLS or DNS over HTTPS."
+  },
+  {
+    "obj": "4.1",
+    "q": "A power distribution utility uses DNP3 between the control center and substations, and the protocol now runs over a TCP/IP WAN. What is the GREATEST security implication of such a multilayer protocol?",
+    "options": [
+      "DNP3 cannot run over IP, so there will be a loss of availability.",
+      "A protocol designed for closed networks, without authentication, is now more widely exposed and can be abused or tunneled past filters.",
+      "Encapsulation automatically adds encryption, so the ability to inspect traffic is lost.",
+      "Multilayer protocols require IPv6, so the network must be upgraded."
+    ],
+    "answer": 1,
+    "explain": "The key implication of multilayer protocols is that they inherit the risks of the carrier and leave the isolation they were designed for: there is no authentication, and covert and tunneled communication is possible. The controls are OT network segmentation and protocol-aware inspection."
+  },
+  {
+    "obj": "4.1",
+    "q": "A company is moving from a Fibre Channel SAN to iSCSI over its existing Ethernet infrastructure to save costs. What should be ensured FIRST to keep the level of protection the separate SAN network provided?",
+    "options": [
+      "Deploy cut-through switches for lower latency.",
+      "Logically isolate storage traffic (a dedicated VLAN/segment) and introduce initiator authentication, with encryption where needed.",
+      "Move iSCSI to UDP for faster transfer.",
+      "Enable multicast for disk replication."
+    ],
+    "answer": 1,
+    "explain": "Convergence loses the physical isolation of a separate network. The replacement is logical isolation plus authentication (CHAP) and, if needed, IPSec. Performance is secondary to preserving protection."
+  },
+  {
+    "obj": "4.1",
+    "q": "An attacker has compromised one application server and is moving laterally from there to other servers in the same subnet. The perimeter NGFW recorded nothing. Which architectural change BEST solves this problem in the long term?",
+    "options": [
+      "Replacing the perimeter NGFW with a more powerful model with higher throughput.",
+      "Adding another DMZ in front of the internet.",
+      "Moving from IPv4 to IPv6 so that subnet scanning becomes impractical.",
+      "Microsegmentation with a distributed firewall and per-workload policy, in line with Zero Trust principles."
+    ],
+    "answer": 3,
+    "explain": "Lateral movement is east-west traffic that the perimeter does not see. Microsegmentation applies policy to each workload and removes implicit trust within the subnet. A stronger perimeter and a DMZ address north-south traffic."
+  },
+  {
+    "obj": "4.1",
+    "q": "During a DDoS attack the production network is congested, and administrators cannot reach the routers over SSH to apply filters. Which design would BEST have prevented this?",
+    "options": [
+      "An out-of-band management network with independent access to device consoles",
+      "In-band management with stronger encryption of SSH sessions",
+      "An air-gapped production network",
+      "An additional VLAN for administrators on the same links"
+    ],
+    "answer": 0,
+    "explain": "OOB management uses a physically separate path, so it remains available when production traffic is congested. An additional VLAN shares the same congested links, and air-gapping production is not realistic for a network that must be connected."
+  },
+  {
+    "obj": "4.1",
+    "q": "SDN is being introduced in the data center: a central controller manages all switches through a southbound API, and orchestration uses a northbound REST API. What is the GREATEST new security concern?",
+    "options": [
+      "Switches can no longer forward traffic without internet access.",
+      "SDN does not support VLANs, so segmentation disappears.",
+      "The controller and its APIs become a central point whose compromise gives control over the entire network.",
+      "The data plane becomes slow because every packet passes through the controller."
+    ],
+    "answer": 2,
+    "explain": "SDN centralizes the control plane, so the controller becomes the most valuable target and a potential single point of failure. Controls: hardening, HA, mTLS to devices, strong authentication and authorization on the APIs, logging."
+  },
+  {
+    "obj": "4.1",
+    "q": "In an IaC repository, the security team defines security groups, microsegmentation rules and automatic workload quarantine triggered by SOAR. What is the GREATEST risk of this approach that must be controlled?",
+    "options": [
+      "Policies stop applying when a workload moves to another host.",
+      "A code error or a compromised pipeline can change the security of the entire environment at once, so policy must go through change management and review.",
+      "Software-defined security does not work in the cloud.",
+      "Rules cannot be versioned, so there is no audit trail."
+    ],
+    "answer": 1,
+    "explain": "Software-defined security brings consistency and speed, and policies follow the workload. The price is that an error spreads automatically and everywhere. That is why policy is treated as code: versioning, review, testing, pipeline protection."
+  },
+  {
+    "obj": "4.2",
+    "q": "A key core switch has reached end of support and the vendor no longer releases firmware patches. Replacement is planned in 9 months. What is the security manager's BEST course of action?",
+    "options": [
+      "Ignore the problem because the switch is working without errors.",
+      "Shut down the switch immediately regardless of the business impact.",
+      "Install unofficial community firmware.",
+      "Record the risk in the risk register, apply compensating controls and obtain formal risk acceptance from the owner until replacement."
+    ],
+    "answer": 3,
+    "explain": "Unsupported equipment is a risk that must be formally managed: risk register, compensating controls (management plane isolation, ACLs, monitoring) and acceptance by the owner. Shutting down without analysis harms the business, and unofficial firmware introduces new risk."
+  },
+  {
+    "obj": "4.2",
+    "q": "Visitors in a meeting room plug personal laptops into wall jacks and receive an IP address on the internal network. Which control BEST solves the problem?",
+    "options": [
+      "802.1X NAC with device posture checking and a quarantine VLAN for noncompliant devices",
+      "MAC filtering on switch ports",
+      "Hiding the wireless network SSID",
+      "Static IP addresses instead of DHCP"
+    ],
+    "answer": 0,
+    "explain": "802.1X authenticates the device before the port passes traffic, and posture checking and quarantine handle noncompliant devices. MAC addresses are easily spoofed, the SSID has nothing to do with a wired port, and static addresses do not prevent access."
+  },
+  {
+    "obj": "4.2",
+    "q": "In an 802.1X architecture, which component plays the role of the authenticator?",
+    "options": [
+      "An employee's laptop with an EAP client",
+      "The RADIUS server",
+      "A switch or wireless access point",
+      "The user directory (LDAP)"
+    ],
+    "answer": 2,
+    "explain": "The supplicant is the client, the authenticator is the network device (switch, WAP) that controls the port, and the authentication server is the RADIUS server that makes the decision, often with a directory behind it."
+  },
+  {
+    "obj": "4.2",
+    "q": "A research institute processes sensitive data in a room next to industrial equipment that generates strong electromagnetic interference. There is also concern about emanation-based eavesdropping. Which transmission medium is the BEST choice?",
+    "options": [
+      "UTP Cat6",
+      "Fiber-optic cable",
+      "Coaxial cable",
+      "STP Cat6a"
+    ],
+    "answer": 1,
+    "explain": "Fiber carries light, so it is not susceptible to EMI and does not emit electromagnetic radiation that could be intercepted. STP is better than UTP but is still a copper medium."
+  },
+  {
+    "obj": "4.2",
+    "q": "A data center has a critical firewall with a single power supply connected to a UPS. An audit calls for improved availability. Which step MOST reduces the risk of a power-related outage?",
+    "options": [
+      "A device with dual power supplies connected to two independent circuits, along with a UPS and a generator",
+      "A larger UPS on the same circuit",
+      "An extended warranty on the firewall",
+      "A rule to restart the firewall once a month"
+    ],
+    "answer": 0,
+    "explain": "Redundant power supplies on independent circuits remove the single point of failure (the device power supply and the circuit), the UPS bridges short outages, and the generator long ones. A larger UPS still leaves one power supply and one circuit."
+  },
+  {
+    "obj": "4.2",
+    "q": "With the introduction of a Zero Trust model, the organization wants application access decisions to also rely on device state. Which data source is MOST USEFUL for this?",
+    "options": [
+      "A list of MAC addresses from the DHCP server",
+      "NetFlow records from the perimeter router",
+      "EDR/MDM agent telemetry on patches, disk encryption and active protection",
+      "The annual asset inventory report"
+    ],
+    "answer": 2,
+    "explain": "Host-based agents provide the current device state (posture) that the PDP uses in its decision. A MAC list and NetFlow say nothing about device state, and an annual inventory is outdated."
+  },
+  {
+    "obj": "4.2",
+    "q": "Cables between two floors run through the space above a drop ceiling that is also used for air circulation. Which requirement is PRIMARILY related to human safety?",
+    "options": [
+      "The cables must be STP to reduce crosstalk.",
+      "The cables must be color-coded by VLAN.",
+      "The cables must be shorter than 100 m because of signal attenuation.",
+      "The cables must be plenum-rated, because ordinary PVC releases toxic smoke into the ventilation system in a fire."
+    ],
+    "answer": 3,
+    "explain": "Human life comes first. Plenum-rated insulation releases less toxic smoke, which would otherwise spread through the building via the ventilation. The other answers are technically correct but relate to signal quality."
+  },
+  {
+    "obj": "4.3",
+    "q": "A company discovered that thousands of expensive international calls were made through its PBX over the weekend. What threat is this, and what is the BEST first control?",
+    "options": [
+      "Vishing; employee training on social engineering",
+      "Toll fraud; securing and restricting remote access to the PBX (DISA), changing default passwords and restricting destinations",
+      "SPIT; filtering unwanted calls",
+      "Jitter; implementing QoS on the voice VLAN"
+    ],
+    "answer": 1,
+    "explain": "Unauthorized calls charged to the organization are toll fraud, usually through abused remote access or default passwords. Vishing and SPIT are other threats, and jitter is a quality metric."
+  },
+  {
+    "obj": "4.3",
+    "q": "A hardware vendor needs occasional remote access to a SAN device for diagnostics. What is the BEST approach?",
+    "options": [
+      "A permanent VPN account for the vendor with access to the entire internal network, for fast response",
+      "Open the SAN management port to the internet, restricted to the vendor's IP address",
+      "On-request, approved, time-limited access through PAM/a jump host with session recording, backed by the vendor's contractual obligations",
+      "Give the vendor local administrator credentials that never change"
+    ],
+    "answer": 2,
+    "explain": "Third-party access should be least privilege, time-limited, approved, monitored and covered by contract. A permanent VPN and standing credentials create overly broad and uncontrolled exposure."
+  },
+  {
+    "obj": "4.3",
+    "q": "Network administrators manage hundreds of routers and switches, and an audit requires knowing, for every command executed, who executed it and whether it was permitted. Which AAA protocol is the BEST choice?",
+    "options": [
+      "TACACS+",
+      "RADIUS",
+      "PAP",
+      "CHAP"
+    ],
+    "answer": 0,
+    "explain": "TACACS+ separates authentication, authorization and accounting, supports per-command authorization and encrypts the entire payload over TCP. RADIUS combines authentication and authorization and encrypts only the password. PAP and CHAP are authentication methods, not an AAA solution."
+  },
+  {
+    "obj": "4.3",
+    "q": "Employees work from home over a VPN with split tunneling enabled. After an incident, malware from a home network reached the internal network via a laptop. Which change BEST reduces this risk while keeping remote work?",
+    "options": [
+      "Prohibit working from home.",
+      "Move to full tunnel or ZTNA access with device posture checking and EDR on managed devices.",
+      "Increase the bandwidth of the VPN concentrator.",
+      "Replace the IPSec VPN with an SSL VPN while keeping split tunneling."
+    ],
+    "answer": 1,
+    "explain": "Split tunneling keeps the device on an untrusted network and the corporate network at the same time. Full tunnel or ZTNA with posture checking and EDR reduces the risk while the business continues. A ban does not serve the business, and changing the VPN type does not address the cause."
+  },
+  {
+    "obj": "4.3",
+    "q": "A remote mine is connected to headquarters exclusively via a geostationary satellite, and both SCADA data and email travel over the link. What is MOST IMPORTANT to consider in the design?",
+    "options": [
+      "Satellite links are physically inaccessible to attackers, so encryption is not needed.",
+      "A satellite link has low latency, so it is suitable for all real-time applications without adjustment.",
+      "Telnet should be used because SSH does not work over satellite.",
+      "The signal can be intercepted over a wide area and latency is high, so end-to-end encryption, adapted protocols and a backup communication path are needed."
+    ],
+    "answer": 3,
+    "explain": "The satellite footprint allows eavesdropping from a wide area, GEO latency is about 600 ms round-trip, and a single link is a single point of failure. Hence encryption, application adjustments and a backup path."
+  },
+  {
+    "obj": "4.3",
+    "q": "Management wants the video conferencing rooms to be always ready: cameras, microphones and displays are connected to the internal network and never turned off. What is the BEST recommendation?",
+    "options": [
+      "Treat the room devices as IoT: a separate segment, regular firmware updates, changing default credentials and controlling when the camera and microphone are active.",
+      "Connect the devices directly to the internet without a firewall for better picture quality.",
+      "Prohibit video meetings.",
+      "Disable encryption to reduce jitter."
+    ],
+    "answer": 0,
+    "explain": "In-room collaboration equipment is IoT with microphones and cameras in a space where confidential conversations take place. Segmentation, patching, credentials and activity control reduce the risk and enable the business."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Order the OSI layers from the lowest (1) to the highest (7).",
+    "options": [
+      "Transport",
+      "Session",
+      "Physical",
+      "Application",
+      "Network",
+      "Presentation",
+      "Data Link"
+    ],
+    "answer": [2, 6, 4, 0, 1, 5, 3],
+    "explain": "Physical (1), Data Link (2), Network (3), Transport (4), Session (5), Presentation (6), Application (7). Mnemonic from the bottom up: Please Do Not Throw Sausage Pizza Away."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match each protocol or device with the OSI layer at which it PRIMARILY operates.",
+    "options": [
+      "A router that makes decisions based on IP address",
+      "A switch that makes decisions based on MAC address",
+      "A stateful firewall that tracks TCP connections",
+      "A WAF that blocks SQL injection in an HTTP request",
+      "Repeater"
+    ],
+    "targets": [
+      "Layer 1 (Physical)",
+      "Layer 2 (Data Link)",
+      "Layer 3 (Network)",
+      "Layer 4 (Transport)",
+      "Layer 7 (Application)"
+    ],
+    "answer": [2, 1, 3, 4, 0],
+    "explain": "A router is L3, a switch L2, a stateful firewall tracks state at L4 (and L3), a WAF understands HTTP at L7, and a repeater only amplifies the signal at L1."
+  },
+  {
+    "obj": "4.1",
+    "type": "spot",
+    "q": "Configuration of a core switch (Cisco IOS) before an audit. Policy requires that only encrypted and authenticated protocols are used for management. Mark the lines that violate the policy.",
+    "snippet": "hostname core-sw01\nenable secret 9 $9$nhEmQVczB7dqsO$X.HsgL6x1il0RxkOSSvyQYwucySCt7qFm4v7pqCxkKM\nip ssh version 2\nline vty 0 4\n transport input telnet ssh\n access-class MGMT-ONLY in\nsnmp-server community public RW\nsnmp-server group NETOPS v3 priv\nip http server\nip http secure-server\nlogging host 10.0.9.20\nntp server 10.0.9.1",
+    "lang": "text",
+    "answer": [4, 6, 8],
+    "explain": "Line 5: transport input telnet allows Telnet, which sends credentials and commands in clear text; use only transport input ssh. Line 7: SNMP v1/v2c with the community string public and RW access sends the string in clear text and lets anyone who knows it change the configuration; remove it and use only SNMPv3 with authentication and encryption (line 8 is correct). Line 9: ip http server enables an unencrypted HTTP management interface; keep only ip http secure-server (HTTPS) or disable it entirely. SSHv2, a type 9 (scrypt) enable secret, an ACL on vty, central logging and NTP are good practice."
+  }
+]

@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "1.4",
+    "q": "Imate Microsoft Defender XDR i Microsoft Sentinel onboardovan u Defender portal. Trebate detekciju koja kombinuje DeviceProcessEvents i CommonSecurityLog, automatski izoluje uređaj i ne povećava trošak unosa podataka u Sentinel. Šta trebate kreirati?",
+    "options": [
+      "Scheduled analytics rule u Sentinelu i playbook za izolaciju.",
+      "NRT analytics rule u Sentinelu.",
+      "Custom detection rule iz Advanced hunting u Defender portalu.",
+      "Alert tuning pravilo u Defender XDR."
+    ],
+    "answer": 2,
+    "explain": "Custom detection može čitati i Defender XDR i Sentinel tabele bez unosa XDR podataka u workspace i ima ugrađenu akciju Isolate device. Analytics pravila traže da DeviceProcessEvents bude unesen u workspace i playbook za akciju."
+  },
+  {
+    "obj": "1.4",
+    "q": "Kreirate custom detection rule nad DeviceProcessEvents i želite akciju Isolate device. U wizardu je ta akcija nedostupna. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Upit ne vraća kolonu DeviceId.",
+      "Frekvencija pravila je Every 24 hours.",
+      "Pravilo nema mapiranu MITRE tehniku.",
+      "Scope pravila je All devices."
+    ],
+    "answer": 0,
+    "explain": "Akcije na uređaju primjenjuju se na uređaje iz kolone DeviceId u rezultatima. Bez te kolone akcija nije dostupna. Frekvencija, MITRE mapiranje i scope ne uklanjaju akciju."
+  },
+  {
+    "obj": "1.4",
+    "q": "Custom detection rule ima frekvenciju Every 3 hours i čita Defender XDR tabele. Koliki je lookback?",
+    "options": [
+      "3 sata",
+      "4 sata",
+      "48 sati",
+      "12 sati"
+    ],
+    "answer": 3,
+    "explain": "Za pravila sa Defender XDR podacima lookback je fiksan: 1h → 4h, 3h → 12h, 12h → 48h, 24h → 30 dana."
+  },
+  {
+    "obj": "1.4",
+    "q": "Želite prebaciti custom detection rule na Continuous (NRT) frekvenciju. Upit čita DeviceNetworkEvents i radi join sa DeviceProcessEvents. Šta trebate uraditi?",
+    "options": [
+      "Promijeniti frekvenciju na Custom i postaviti 1 minut.",
+      "Prepisati upit tako da čita samo jednu tabelu bez join-a.",
+      "Dodati komentar // NRT na početak upita.",
+      "Kreirati NRT analytics rule u Sentinelu sa istim upitom nad Defender tabelama."
+    ],
+    "answer": 1,
+    "explain": "Continuous (NRT) traži upit nad jednom tabelom, bez join, union i externaldata, i bez komentara. Custom frekvencija postoji samo za pravila nad Sentinel podacima i minimum je 5 minuta."
+  },
+  {
+    "obj": "1.4",
+    "q": "Analitičar ima samo manage dozvole za Microsoft Defender for Office 365 u Defender unified RBAC-u. Koju custom detekciju može kreirati?",
+    "options": [
+      "Pravilo nad tabelom IdentityLogonEvents.",
+      "Pravilo nad tabelama EmailEvents i EmailUrlInfo.",
+      "Pravilo nad DeviceProcessEvents sa scopeom na jednu device grupu.",
+      "Bilo koje pravilo, jer custom detekcije traže samo Security Reader."
+    ],
+    "answer": 1,
+    "explain": "Dozvole za custom detekcije prate izvor podataka: prava za Defender for Office 365 omogućavaju pravila nad Email* tabelama. IdentityLogonEvents traži prava i za Defender for Identity i za Defender for Cloud Apps."
+  },
+  {
+    "obj": "1.4",
+    "q": "Onboardovali ste Sentinel workspace u Microsoft Defender portal. Pravilo Advanced multistage attack detection (Fusion) je sada isključeno. Šta trebate uraditi da zadržite korelaciju alarma iz više proizvoda?",
+    "options": [
+      "Ništa, Defender XDR correlation engine preuzima korelaciju i kreiranje incidenata.",
+      "Ponovo uključiti Fusion pravilo iz Rule templates taba.",
+      "Kreirati Microsoft security pravilo za svaki Defender proizvod.",
+      "Uključiti alert grouping u svim scheduled pravilima na 14 dana."
+    ],
+    "answer": 0,
+    "explain": "U Defender portalu Fusion nije dostupan jer korelaciju i kreiranje incidenata radi Defender XDR. Microsoft security pravila se također deaktiviraju da ne bi bilo duplikata."
+  },
+  {
+    "obj": "1.4",
+    "q": "Trebate alarm u roku od jedne do dvije minute kada se nalog doda u grupu Domain Admins (SecurityEvent 4728). Izvor ima kašnjenje unosa do 3 minute. Koji tip Sentinel analytics pravila trebate koristiti?",
+    "options": [
+      "Scheduled pravilo koje se izvršava svakih 5 minuta.",
+      "Anomaly pravilo.",
+      "Microsoft security pravilo.",
+      "Near-real-time (NRT) pravilo."
+    ],
+    "answer": 3,
+    "explain": "NRT pravilo se izvršava svake minute i koristi vrijeme unosa, pa kašnjenje izvora ne uzrokuje propuštene evente. Scheduled minimum je 5 minuta uz ugrađeno kašnjenje, anomaly ne pravi alarme, a Microsoft security pravi incidente iz alarma Microsoftovih proizvoda."
+  },
+  {
+    "obj": "1.4",
+    "q": "Imate scheduled pravilo sa Run query every 5 minutes i Lookup data from the last 1 hour. Analitičari dobijaju 12 identičnih alarma za isti napad. Šta trebate uraditi uz zadržavanje frekvencije od 5 minuta?",
+    "options": [
+      "Promijeniti event grouping na Trigger an alert for each event.",
+      "Smanjiti alert threshold na 0.",
+      "Uključiti suppression na 1 sat nakon generisanja alarma.",
+      "Pretvoriti pravilo u anomaly pravilo."
+    ],
+    "answer": 2,
+    "explain": "Lookback je duži od frekvencije, pa svako pokretanje vidi iste evente. Suppression zaustavlja izvršavanje pravila određeno vrijeme nakon alarma. Trigger an alert for each event bi povećao broj alarma."
+  },
+  {
+    "obj": "1.4",
+    "q": "Koji tip analytics pravila u Sentinelu automatski poredi domen, IP i URL indikatore iz Microsoft Threat Intelligence sa CEF, Syslog i Windows DNS podacima i ne može se prilagoditi?",
+    "options": [
+      "Microsoft Threat Intelligence Analytics",
+      "ML Behavior Analytics",
+      "Fusion",
+      "NRT pravilo iz TI templatea"
+    ],
+    "answer": 0,
+    "explain": "Microsoft Threat Intelligence Analytics (matching analytics) je jedinstveno, neprilagodljivo pravilo koje radi matching Microsoftovih indikatora. ML Behavior Analytics cilja SSH i RDP prijave, a TI templatei su prilagodljiva scheduled pravila."
+  },
+  {
+    "obj": "1.4",
+    "q": "Trebate detektovati anomalne RDP prijave na osnovu geolokacije i istorije korisnika, bez pisanja vlastitog upita. Šta trebate uključiti?",
+    "options": [
+      "NRT pravilo nad SecurityEvent sa EventID 4624.",
+      "ML Behavior Analytics pravilo za anomalne RDP prijave.",
+      "Microsoft security pravilo za Defender for Identity.",
+      "Watchlistu sa dozvoljenim zemljama."
+    ],
+    "answer": 1,
+    "explain": "ML Behavior Analytics pravila (preview) koriste Microsoftove ML modele za anomalne SSH i RDP prijave i ne traže vlastiti upit. Ostale opcije zahtijevaju pisanje logike."
+  },
+  {
+    "obj": "1.4",
+    "q": "Napravili ste scheduled pravilo koje otkriva Kerberoasting, ali na stranici MITRE ATT&CK tehnika T1558 i dalje nema aktivnih detekcija. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "MITRE stranica prikazuje samo NRT pravila.",
+      "Pravilo nije generisalo nijedan alarm u posljednjih 30 dana.",
+      "U pravilu nisu postavljene taktika i tehnika u General tabu.",
+      "Pravilo čita tabelu SecurityEvent koju MITRE stranica ne podržava."
+    ],
+    "answer": 2,
+    "explain": "Pokrivenost se računa iz MITRE taktika i tehnika dodijeljenih aktivnim scheduled i NRT pravilima, ne iz teksta upita niti broja alarma."
+  },
+  {
+    "obj": "1.4",
+    "q": "Želite vidjeti kako bi se poboljšala vaša MITRE ATT&CK pokrivenost kada biste uključili dostupne analytics rule templateove, bez da ih zaista uključite. Šta trebate koristiti?",
+    "options": [
+      "SOC optimization preporuke.",
+      "Workbook MITRE ATT&CK iz Content huba.",
+      "Hunting stranicu sa filterom po taktici.",
+      "Opciju Simulated rules na MITRE ATT&CK stranici."
+    ],
+    "answer": 3,
+    "explain": "Simulated rules prikazuje moguću pokrivenost iz dostupnih, a neaktivnih detekcija i hunting upita direktno u matrici."
+  },
+  {
+    "obj": "1.4",
+    "q": "Ugrađeno anomaly pravilo generiše previše anomalija. Trebate testirati viši threshold bez prekidanja postojećeg pravila. Šta trebate uraditi PRVO?",
+    "options": [
+      "Urediti threshold direktno u ugrađenom pravilu.",
+      "Duplicirati pravilo i izmijeniti threshold na kopiji koja radi u Flighting modu.",
+      "Isključiti ugrađeno pravilo i kreirati scheduled pravilo nad tabelom Anomalies.",
+      "Prebaciti ugrađeno pravilo u Flighting mod."
+    ],
+    "answer": 1,
+    "explain": "Ugrađena anomaly pravila se ne mogu uređivati. Duplikat (jedan po pravilu) se pravi u Flighting modu, original ostaje u Production, pa se rezultati porede u tabeli Anomalies."
+  },
+  {
+    "obj": "1.4",
+    "q": "Prebacili ste prilagođenu kopiju anomaly pravila iz Flighting u Production. Šta se dešava sa originalnim pravilom?",
+    "options": [
+      "Automatski prelazi u Flighting.",
+      "Ostaje u Production, pa obje verzije pišu anomalije.",
+      "Briše se.",
+      "Postaje disabled i dobija oznaku AUTO DISABLED."
+    ],
+    "answer": 0,
+    "explain": "Dvije verzije istog anomaly pravila ne mogu biti u produkciji istovremeno; original automatski prelazi u Flighting."
+  },
+  {
+    "obj": "1.4",
+    "q": "Imate sljedeći upit u custom detection pravilu: DeviceEvents | where ActionType == \"AntivirusDetection\" | summarize count() by DeviceId | where count_ > 5. Alarmi nemaju ispravan device group scope ni process tree. Šta trebate dodati u summarize?",
+    "options": [
+      "bin(Timestamp, 1h) u by klauzulu.",
+      "dcount(FileName) kao novu kolonu.",
+      "(Timestamp, ReportId) = arg_max(Timestamp, ReportId)",
+      "where Timestamp > ago(30d) prije summarize."
+    ],
+    "answer": 2,
+    "explain": "Za MDE tabele upit treba vratiti DeviceId, Timestamp i ReportId iz istog eventa. arg_max vraća posljednji Timestamp i odgovarajući ReportId po uređaju. Filtriranje po Timestamp se ne preporučuje jer servis sam primjenjuje lookback."
+  },
+  {
+    "obj": "1.4",
+    "q": "Sentinel scheduled pravilo vraća kolone IpAddress, Computer i Account. Trebate da se alarmi iz ovog i drugih pravila ispravno koreliraju u incidente po napadačkoj IP adresi i hostu. Koja DVA podešavanja trebate konfigurisati? (Izaberi DVA.)",
+    "options": [
+      "Entity mapping: IP → IpAddress.",
+      "Custom details: Account.",
+      "Entity mapping: Host → Computer.",
+      "Event grouping: Trigger an alert for each event.",
+      "Suppression na 24 sata."
+    ],
+    "answer": [0, 2],
+    "explain": "Entiteti (IP, Host) su osnova za korelaciju alarma i istragu. Custom details samo prikazuju vrijednosti u alarmu, a event grouping i suppression ne utiču na entitete."
+  },
+  {
+    "obj": "1.4",
+    "q": "Koje DVIJE tvrdnje o NRT analytics pravilima u Sentinelu su tačne? (Izaberi DVA.)",
+    "options": [
+      "Izvršavaju se svake minute nad podacima unesenim u prethodnoj minuti.",
+      "Možete podesiti frekvenciju od 1 do 5 minuta.",
+      "Upit može referencirati više od jedne tabele.",
+      "Broj NRT pravila nije ograničen.",
+      "Koriste TimeGenerated, pa kasne koliko i izvor."
+    ],
+    "answer": [0, 2],
+    "explain": "NRT pravila su hard-kodirana na jednu minutu, koriste vrijeme unosa (ne TimeGenerated) i mogu čitati više tabela. Ograničenje je 50 NRT pravila."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Poredaj korake za kreiranje custom detection pravila koje automatski izoluje uređaj, od prvog do posljednjeg.",
+    "options": [
+      "Odabrati akciju Isolate device i scope na device grupu.",
+      "U Advanced hunting napisati i pokrenuti upit koji vraća Timestamp, DeviceId i ReportId.",
+      "Pregledati pravilo i odabrati Create; pravilo se odmah pokreće.",
+      "Odabrati Create detection rule i unijeti naziv, frekvenciju, severity i MITRE tehniku."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Prvo se upit testira u Advanced hunting, zatim se iz njega kreira pravilo sa alert detaljima, pa se biraju akcije i scope, i na kraju pravilo se kreira i odmah izvršava."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Upari zahtjev sa tipom pravila koje ga NAJBOLJE ispunjava.",
+    "options": [
+      "Alarm u roku od minute na kritičan Windows event u Sentinelu.",
+      "Detekcija nad EmailEvents koja automatski briše email.",
+      "Bazna linija ponašanja korisnika koja ne smije generisati alarme.",
+      "Agregacija neuspjelih prijava preko 24 sata sa pragom.",
+      "Matching Microsoftovih IP i domen indikatora sa CEF podacima bez pisanja upita."
+    ],
+    "targets": ["Scheduled analytics rule", "NRT analytics rule", "Anomaly rule", "Custom detection rule", "Microsoft Threat Intelligence Analytics", "Fusion"],
+    "answer": [1, 3, 2, 0, 4],
+    "explain": "NRT za brzinu, custom detection za Defender podatke sa akcijama na emailu, anomaly za baseline bez alarma, scheduled za agregacije sa lookbackom, a Microsoft Threat Intelligence Analytics za matching Microsoftovih indikatora. Fusion je isključen u Defender portalu."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Upari frekvenciju custom detection pravila nad Defender XDR podacima sa njenim lookbackom.",
+    "options": [
+      "Every hour",
+      "Every 3 hours",
+      "Every 12 hours",
+      "Every 24 hours"
+    ],
+    "targets": ["30 dana", "48 sati", "4 sata", "12 sati"],
+    "answer": [2, 3, 1, 0],
+    "explain": "Fiksni lookbackovi za Defender XDR podatke: 1h → 4 sata, 3h → 12 sati, 12h → 48 sati, 24h → 30 dana."
+  },
+  {
+    "type": "spot",
+    "obj": "1.4",
+    "q": "Upit treba sačuvati kao custom detection pravilo u Defender XDR-u (Every hour), tako da alarmi budu vezani za uređaj i originalni event. Prema Microsoftovim preporukama, koji redovi su problem?",
+    "snippet": "// custom detection: enkodovan PowerShell 3+ puta po uređaju\nDeviceProcessEvents\n| where Timestamp > ago(1h)\n| where FileName in~ (\"powershell.exe\", \"pwsh.exe\")\n| where ProcessCommandLine has_any (\"-EncodedCommand\", \"-enc \")\n| summarize Executions = count() by DeviceName, AccountUpn\n| where Executions >= 3",
+    "lang": "kql",
+    "answer": [
+      2,
+      5
+    ],
+    "explain": "U custom detekciji se ne filtrira po Timestamp: servis sam ograničava podatke na lookback i uzima u obzir kašnjenje unosa, pa ručni ago(1h) može propustiti zakašnjele evente. summarize bez Timestamp, ReportId i DeviceId gubi kolone koje pravilo traži za vrijeme alarma, scope device grupe i mapiranje imovine; vrati ih sa (Timestamp, ReportId) = arg_max(Timestamp, ReportId) i by DeviceId, DeviceName, AccountUpn."
+  }
+]

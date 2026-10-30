@@ -1,0 +1,241 @@
+[
+  {
+    "obj": "4.4",
+    "q": "After upgrading to OPA 1.21, a policy fails to load:\n\n```text\nrego_parse_error: `if` keyword is required before rule body\nrego_parse_error: `contains` keyword is required for partial set rules\n```\n\nThe rule reads `deny[msg] { input.kind == \"Deployment\"; ... }`. What is the permanent fix?",
+    "options": [
+      "Add `import future.keywords` at the top of the file",
+      "Rename the rule to `violation[msg]`",
+      "Rewrite the rule in Rego v1: `deny contains msg if { ... }`",
+      "Add `package main` above the rule"
+    ],
+    "answer": 2,
+    "explain": "OPA 1.x requires Rego v1 syntax by default, where multi-value rules have `contains` and the body has `if`. `--v0-compatible` is only a temporary workaround; imports and renaming don't change the rule syntax."
+  },
+  {
+    "obj": "4.4",
+    "q": "The policies are in `policy/k8s.rego` with `package kubernetes`. `conftest test k8s/deployment.yaml` reports no FAIL even though the container is privileged. What is the cause?",
+    "options": [
+      "Conftest evaluates the `main` package by default; you need `--namespace kubernetes` or `--all-namespaces`",
+      "The YAML file needs an explicit `--parser yaml`",
+      "Policies must be in the `policies/` directory",
+      "You need `--combine` for Conftest to see all containers"
+    ],
+    "answer": 0,
+    "explain": "Conftest looks for rules in the `main` package unless you specify another namespace. The parser is chosen by extension, the default directory is `policy/`, and `--combine` merges several files into one input."
+  },
+  {
+    "obj": "4.4",
+    "q": "The `warn_limits` rule reports containers without a memory limit, but the pipeline stays green. The team wants warnings to break the build without changing the policies. Which flag?",
+    "options": [
+      "`--all-namespaces`",
+      "`--combine`",
+      "`-o junit`",
+      "`--fail-on-warn`"
+    ],
+    "answer": 3,
+    "explain": "With `--fail-on-warn` Conftest returns exit 1 for warnings (and 2 for failures). The other flags change package selection, input shape or output format, but not the exit code."
+  },
+  {
+    "obj": "4.4",
+    "q": "The `node-exporter` DaemonSet legitimately needs `hostPath`. All other rules (privileges, registries, tag) must still apply to it. Which Conftest exception is correct?",
+    "options": [
+      "`exception contains rules if { input.metadata.name == \"node-exporter\"; rules := [\"\"] }`",
+      "`exception contains rules if { input.kind == \"DaemonSet\"; input.metadata.name == \"node-exporter\"; rules := [\"hostpath\"] }`",
+      "`exception contains rules if { input.metadata.name == \"node-exporter\"; rules := [\"deny_hostpath\"] }`",
+      "`allow_hostpath if input.metadata.name == \"node-exporter\"`"
+    ],
+    "answer": 1,
+    "explain": "`rules` contains rule suffixes, so `\"hostpath\"` disables only `deny_hostpath`/`violation_hostpath` for that DaemonSet. An empty string disables all rules named `deny`, the full name `deny_hostpath` doesn't match as a suffix, and Conftest doesn't use `allow_` rules for exceptions."
+  },
+  {
+    "obj": "4.4",
+    "q": "The list of allowed registries changes every month, and the `deny_registry` policy is the same across 30 repos. How should this be organized?",
+    "options": [
+      "The list in `data/registries.yaml` (`allowed_registries: [...]`), the policy reads `data.allowed_registries`, and Conftest runs with `--data data`",
+      "Hardcode the list into every copy of the policy",
+      "Create a separate policy for each registry",
+      "Pass the list through a CI variable and read it with an `opa.runtime()` call in every rule"
+    ],
+    "answer": 0,
+    "explain": "`--data` loads JSON/YAML data available as `data.*`, so the list changes without touching the Rego. Hardcoding and separate policies multiply the changes, and environment variables are not the intended mechanism for policy data."
+  },
+  {
+    "obj": "4.4",
+    "q": "A rule is supposed to require `runAsNonRoot`:\n\n```rego\ndeny_root contains msg if {\n\tsome c in containers\n\tc.securityContext.runAsNonRoot == false\n\tmsg := sprintf(\"%s runs as root\", [c.name])\n}\n```\n\nA Deployment without any `securityContext` passes. Why?",
+    "options": [
+      "Conftest has a bug with non-existent fields; you need `--strict`",
+      "You should use `every` instead of `some`",
+      "A non-existent field is undefined, so the comparison is not true and the rule doesn't hold; you need `not c.securityContext.runAsNonRoot`",
+      "`sprintf` doesn't accept the container name"
+    ],
+    "answer": 2,
+    "explain": "In Rego an expression over a non-existent field is neither true nor an error, so the rule body doesn't succeed. `not c.securityContext.runAsNonRoot` is true both when the field is missing and when it is `false`. This is language behavior, not a Conftest bug."
+  },
+  {
+    "obj": "4.4",
+    "q": "Someone changed `deny_privileged` and accidentally disabled it completely. The pipeline stayed green and a privileged Deployment got through. What should have been in the job before `conftest test`?",
+    "options": [
+      "`opa fmt -w policy/`",
+      "`conftest verify --policy policy` with tests such as `test_privileged_denied`",
+      "`conftest test --output json`",
+      "`opa eval -d policy/ \"data.main\"`"
+    ],
+    "answer": 1,
+    "explain": "`conftest verify` runs Rego unit tests (`test_*`); a test expecting a FAIL for a privileged container would have failed and stopped the pipeline. Formatting, a different output or a manual `opa eval` don't check that the policy still works."
+  },
+  {
+    "obj": "4.4",
+    "q": "After upgrading the Kyverno CLI to 1.19, `kyverno apply` prints a warning about your `ClusterPolicy` files alongside the results. What is the correct conclusion?",
+    "options": [
+      "The CLI no longer supports ClusterPolicy and the results are invalid",
+      "You should switch to OPA Gatekeeper",
+      "You should add `spec.validationFailureAction: Enforce`",
+      "`ClusterPolicy` is deprecated in 1.19 with removal announced for 1.20; write new policies as `ValidatingPolicy` (CEL) and plan the migration"
+    ],
+    "answer": 3,
+    "explain": "In 1.19 ClusterPolicy still works but is deprecated, and the CEL types (`ValidatingPolicy`, `ImageValidatingPolicy`...) are the recommended path. `validationFailureAction` itself has been replaced by `failureAction` in the rule."
+  },
+  {
+    "obj": "4.4",
+    "q": "A `ValidatingPolicy` has the expression `object.spec.template.spec.containers.all(c, c.securityContext.privileged == false)`. For a Deployment whose container has no `securityContext`, evaluation reports an error instead of a result. What is the fix?",
+    "options": [
+      "Guard optional fields with `has()`: `!has(c.securityContext) || !has(c.securityContext.privileged) || c.securityContext.privileged == false`",
+      "Change `validationActions` to `[Audit]`",
+      "Move the expression into `matchConditions`",
+      "Set `failurePolicy: Ignore`"
+    ],
+    "answer": 0,
+    "explain": "In CEL, accessing a non-existent field is an error, so optional fields must be checked with `has()`. Audit, `matchConditions` and `failurePolicy` change what happens with the result or the error, but they don't fix the expression."
+  },
+  {
+    "obj": "4.4",
+    "q": "You are writing `kyverno-test.yaml` for the `ValidatingPolicy` `kurs-deployment-baseline`. What must every entry in `results` contain, besides `policy`, `kind`, `resources` and `result`?",
+    "options": [
+      "`rule: validations[0]`",
+      "`isValidatingAdmissionPolicy: true`",
+      "`isValidatingPolicy: true`",
+      "`kind: ValidatingPolicy` instead of the resource kind"
+    ],
+    "answer": 2,
+    "explain": "For a Kyverno CEL `ValidatingPolicy` the result is marked with `isValidatingPolicy: true` and there are no named rules. `isValidatingAdmissionPolicy` is for Kubernetes VAP, and `kind` is the kind of the tested resource (Deployment)."
+  },
+  {
+    "obj": "4.4",
+    "q": "You are introducing a new Kyverno policy. For the first two weeks the cluster should only record violations, and the pipeline should show them as warnings, not as a failure. Which combination?",
+    "options": [
+      "`validationActions: [Deny]` in the cluster and `kyverno apply --audit-warn` in CI",
+      "`validationActions: [Audit]` in the cluster and `kyverno apply --audit-warn` in CI",
+      "`validationActions: [Audit]` in the cluster and `kyverno apply --policy-report` in CI",
+      "`validationActions: [Deny]` in the cluster and `kyverno apply --continue-on-fail` in CI"
+    ],
+    "answer": 1,
+    "explain": "Audit in the cluster records violations in a policy report without rejecting, and `--audit-warn` in the CLI shows violations of Audit policies as warnings. Deny would block deploys immediately, `--policy-report` only changes the output format, and `--continue-on-fail` doesn't change the outcome."
+  },
+  {
+    "obj": "4.4",
+    "q": "The same rule (\"no public resources\") must be checked against a Terraform plan, a Dockerfile and `.gitlab-ci.yml`, with one language and in CI. Which tool?",
+    "options": [
+      "Kyverno `ClusterPolicy`",
+      "Kyverno `ImageValidatingPolicy`",
+      "OPA Gatekeeper in the cluster",
+      "Conftest with Rego policies"
+    ],
+    "answer": 3,
+    "explain": "Conftest parses many formats (JSON plan, Dockerfile, YAML) and evaluates them with Rego policies in CI. Kyverno and Gatekeeper are primarily for Kubernetes resources at admission, and `ImageValidatingPolicy` verifies image signatures."
+  },
+  {
+    "obj": "4.4",
+    "q": "A Conftest policy checks `tfplan.json` (the output of `terraform show -json`). Which path in `input` leads to the planned value of `publicly_accessible` for an `aws_db_instance`?",
+    "options": [
+      "`input.resource_changes[_].change.after.publicly_accessible` (with `type == \"aws_db_instance\"`)",
+      "`input.resource.aws_db_instance.shop.publicly_accessible`",
+      "`input.aws.rds.instances[_].publicaccess.value`",
+      "`input.spec.template.spec.publicly_accessible`"
+    ],
+    "answer": 0,
+    "explain": "The JSON plan has `resource_changes`, and the planned state of a resource is in `change.after`. The second option matches the HCL source, the third Trivy's internal cloud model, and the fourth a Kubernetes manifest."
+  },
+  {
+    "obj": "4.4",
+    "q": "The Conftest gate in the pipeline works, but someone ran a privileged Deployment in production with `kubectl apply` from a laptop. Which control prevents this?",
+    "options": [
+      "Conftest in a pre-commit hook",
+      "Kyverno (or Gatekeeper) admission in the cluster with the same policy",
+      "A protected branch on the main branch",
+      "`conftest test --fail-on-warn` in the pipeline"
+    ],
+    "answer": 1,
+    "explain": "An admission controller checks every request to the API server, regardless of where it comes from. Pre-commit, protected branches and a stricter CI gate only protect the path through the repo and the pipeline."
+  },
+  {
+    "obj": "4.4",
+    "q": "An application team deleted `deny_hostpath` from `policy/k8s.rego` in their own repo because it bothered them, and the pipeline passed. How do you prevent this?",
+    "options": [
+      "Add `policy/` to `.gitignore`",
+      "Run Conftest with `--all-namespaces`",
+      "Keep policies in a central repo included at a pinned version (`include: project`, `ref`), and allow only exceptions in the application repo, with CODEOWNERS approval from the security team",
+      "Set `allow_failure: false` on the policy job"
+    ],
+    "answer": 2,
+    "explain": "When policies live in a central repo, the team can't change them with a single commit, and exceptions go through review. `.gitignore`, `--all-namespaces` and `allow_failure` don't prevent a rule from being deleted."
+  },
+  {
+    "obj": "4.4",
+    "type": "order",
+    "q": "Order the steps for introducing a new Conftest rule in an organization with many repos.",
+    "options": [
+      "Rename the rule to `deny_...` and turn on the gate",
+      "Write the rule as `warn_...` with tests (`test_*`)",
+      "In CI run `conftest verify`, then `conftest test`",
+      "Track how many repos are affected and send the teams fix instructions"
+    ],
+    "answer": [
+      1,
+      2,
+      3,
+      0
+    ],
+    "explain": "The rule first comes in as a warning with tests, CI verifies and applies it, the teams get time and instructions, and only then does the warning become a gate."
+  },
+  {
+    "obj": "4.4",
+    "type": "match",
+    "q": "Match each Conftest rule with its behavior.",
+    "options": [
+      "deny_hostpath",
+      "warn_limits",
+      "exception",
+      "test_privileged_denied"
+    ],
+    "targets": [
+      "A unit test run by `conftest verify` or `opa test`",
+      "A FAIL finding, exit 1",
+      "A WARN finding, exit 0 without `--fail-on-warn`",
+      "Disables rules by suffix for specific inputs",
+      "Modifies the resource before admission"
+    ],
+    "answer": [
+      1,
+      2,
+      3,
+      0
+    ],
+    "explain": "`deny_` produces a FAIL, `warn_` a warning, `exception` disables rules by suffix, and `test_` rules are unit tests. Modifying resources is done by a Kyverno `MutatingPolicy`, not Conftest."
+  },
+  {
+    "obj": "4.4",
+    "q": "You are migrating the old policy `deny[msg] { input.kind == \"Pod\"; msg := \"...\" }` to OPA 1.21 without a compatibility mode. Which TWO changes are required? (Choose TWO.)",
+    "options": [
+      "Add `import rego.v1`",
+      "Add `contains` for a rule that builds a set of messages",
+      "Add `if` before the rule body",
+      "Change the package to `package v1.main`",
+      "Replace `msg` with a `result.new` call"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Rego v1 requires `contains` for multi-value rules and `if` before the body: `deny contains msg if { ... }`. `import rego.v1` isn't needed in OPA 1.x, and the package name and `result.new` (a Trivy function) have nothing to do with the syntax."
+  }
+]

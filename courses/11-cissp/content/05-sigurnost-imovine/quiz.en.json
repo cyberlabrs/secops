@@ -1,0 +1,298 @@
+[
+  {
+    "obj": "2.1",
+    "q": "A new analytics application processes marketing data (public), internal financial projections (sensitive) and employee salaries (private). The security architect must determine the protection level for the server the application runs on. Which approach is CORRECT?",
+    "options": [
+      "The average level of all the data, so the controls are not too expensive",
+      "The highest level of any data the server processes (high-water mark)",
+      "The level of the data that is most plentiful by volume",
+      "The level set by the server administrator based on workload"
+    ],
+    "answer": 1,
+    "explain": "An asset inherits the highest classification of the data it contains or processes (high-water mark). An average or volume-based level would leave the most sensitive data insufficiently protected, and the administrator (custodian) does not determine classification."
+  },
+  {
+    "obj": "2.1",
+    "q": "The head of sales asks the IT department to \"classify all the data in the CRM however it thinks best.\" What is the CISO's BEST response?",
+    "options": [
+      "IT will classify the data because it knows the systems best",
+      "The security team will classify the data at the most restrictive level",
+      "The head of sales, as the data owner, determines the classification, using the scheme and advice of the security team",
+      "Classification can be skipped if all the data is encrypted"
+    ],
+    "answer": 2,
+    "explain": "The data owner (the business function manager) determines classification because they know the value and sensitivity of the data. The security team defines the scheme and advises, and IT as custodian implements the controls. Encryption does not replace classification."
+  },
+  {
+    "obj": "2.1",
+    "q": "An organization has eight classification levels and employees apply them inconsistently. What is MOST LIKELY the best step?",
+    "options": [
+      "Reduce the levels to a small number of clearly defined ones (e.g., three to five) and train employees",
+      "Add more levels so the distinctions are more precise",
+      "Leave classification to a DLP tool with no human involvement",
+      "Label all data with the highest level"
+    ],
+    "answer": 0,
+    "explain": "Too many levels make consistent application difficult. A small number of clearly defined levels combined with training is the most effective. Labeling everything at the highest level is too expensive and makes classification meaningless, and automation without an owner does not solve the accountability problem."
+  },
+  {
+    "obj": "2.1",
+    "q": "A market research report was Confidential until the product launch. After the launch the data is publicly available. Which process should be applied?",
+    "options": [
+      "Sanitization",
+      "Scoping",
+      "Tailoring",
+      "Declassification approved by the data owner"
+    ],
+    "answer": 3,
+    "explain": "When the value or sensitivity of data decreases, the owner declassifies it so resources are not spent on unnecessary protection. Sanitization applies to media, and scoping and tailoring to adjusting controls."
+  },
+  {
+    "obj": "2.2",
+    "q": "A storage technician finds a box of USB drives with no classification label in a room where Secret media are also stored. How should they be treated until their contents are determined?",
+    "options": [
+      "As public, because they are not labeled",
+      "As media of the highest classification present in the environment",
+      "Format them immediately and return them to use",
+      "Hand them out to any employee who needs a USB drive"
+    ],
+    "answer": 1,
+    "explain": "Unlabeled media are treated as having the highest classification in the environment until proven otherwise. Formatting is not sanitization and would destroy the information needed for the assessment."
+  },
+  {
+    "obj": "2.2",
+    "q": "Laptops with SSDs that held health data are being sold to an outside buyer after being written off. Which approach is MOST APPROPRIATE?",
+    "options": [
+      "Degaussing all drives",
+      "A quick format and OS reinstallation",
+      "Multiple overwrite passes with an operating system tool",
+      "Cryptographic erase or the manufacturer's Secure Erase with verification, and physical destruction of the drive for the most sensitive data"
+    ],
+    "answer": 3,
+    "explain": "Degaussing has no effect on SSDs, formatting leaves the data, and overwriting does not reach spare blocks because of wear leveling. Purge methods for flash (crypto erase, Secure Erase) with verification are correct; if the risk is high, physical destruction."
+  },
+  {
+    "obj": "2.2",
+    "q": "An attacker stole a laptop with full disk encryption enabled while the laptop was powered off. A few days later, another attacker gains remote access to a user's logged-in session on a different laptop with the same protection. What is CORRECT?",
+    "options": [
+      "FDE protects in the first case but not the second, because the data is decrypted while the user is logged in",
+      "FDE protects equally in both cases",
+      "FDE protects in neither case",
+      "FDE protects only in the second case"
+    ],
+    "answer": 0,
+    "explain": "FDE protects data at rest when the device is powered off or locked. When the system is running and the user is logged in, the volume is unlocked, so an attacker with access to the session sees the data. That requires access controls, EDR or application-level encryption."
+  },
+  {
+    "obj": "2.2",
+    "q": "An organization must sanitize hard drives that remain in use within the same organization but are moving to a department with a lower confidentiality level. The data must be protected against laboratory recovery techniques. Which NIST SP 800-88 level applies?",
+    "options": [
+      "Clear",
+      "Destroy",
+      "Purge",
+      "Deletion"
+    ],
+    "answer": 2,
+    "explain": "Purge protects against laboratory recovery techniques, and the media can be reused (except HDDs after degaussing). Clear protects only against simple tools, Destroy prevents reuse, and deletion is not a sanitization level."
+  },
+  {
+    "obj": "2.3",
+    "q": "After acquiring another company, a network scan finds hundreds of devices that nobody recognizes. What is the FIRST step?",
+    "options": [
+      "Disconnect all unknown devices immediately",
+      "Deploy NAC and block everything that is not in Active Directory",
+      "Run a penetration test against the unknown devices",
+      "Build an accurate inventory and assign an owner and classification to each device"
+    ],
+    "answer": 3,
+    "explain": "You cannot protect what you do not know about. An inventory with owners is a prerequisite for control decisions. Disconnecting or blocking without knowing what the devices do can halt critical business processes."
+  },
+  {
+    "obj": "2.3",
+    "q": "Which of the following is an INTANGIBLE asset that should be included in the inventory?",
+    "options": [
+      "A rack server in the data center",
+      "Backup tapes in a safe",
+      "Registered domains, software licenses and TLS certificates",
+      "Network switches in a wiring closet"
+    ],
+    "answer": 2,
+    "explain": "Domains, licenses, certificates, intellectual property and data are intangible assets. An expired certificate or a lost domain can cause a serious outage, so they must be in the inventory with an owner. The other options are tangible assets."
+  },
+  {
+    "obj": "2.3",
+    "q": "A department head delegated day-to-day database access management to the DBA team. A leak occurs because of excessive privileges. Who bears ultimate accountability for the data?",
+    "options": [
+      "The department head as the data owner",
+      "The DBA team as the custodian",
+      "The user who had excessive privileges",
+      "The external auditor who did not spot the problem"
+    ],
+    "answer": 0,
+    "explain": "The owner can delegate tasks (responsibility) but not accountability. The DBA is responsible for execution, but ultimate accountability remains with the owner, who should have conducted periodic access reviews."
+  },
+  {
+    "obj": "2.4",
+    "q": "A European company uses a US SaaS provider for payroll processing. The provider processes personal data solely on the company's instructions. How are the roles assigned under the GDPR?",
+    "options": [
+      "The provider is the controller because it owns the infrastructure",
+      "The company is the controller, the provider is the processor",
+      "Both are data subjects",
+      "The company is the custodian, the provider is the owner"
+    ],
+    "answer": 1,
+    "explain": "The controller determines the purposes and means of processing (the company), and the processor processes on the controller's behalf according to its instructions (the provider). Owning the infrastructure does not make someone a controller. The company remains accountable to the regulator, including for its choice of provider."
+  },
+  {
+    "obj": "2.4",
+    "q": "The retention policy requires deleting email archives older than seven years. The legal team reports that litigation has begun in which eight-year-old emails are relevant. What should be done?",
+    "options": [
+      "Delete the emails per the policy, because the policy is binding",
+      "Move the emails to the lawyer's personal archive",
+      "Apply a legal hold and suspend deletion of the relevant emails",
+      "Anonymize the emails and then retain them"
+    ],
+    "answer": 2,
+    "explain": "A legal hold takes precedence over the regular retention schedule. Deleting data relevant to litigation can constitute destruction of evidence (spoliation). Anonymization would alter the evidence."
+  },
+  {
+    "obj": "2.4",
+    "q": "The marketing team wants to add fields for date of birth, address and national ID number to the registration form \"because it might be useful later.\" Which principle is MOST RELEVANT?",
+    "options": [
+      "Data remanence",
+      "Data sovereignty",
+      "Tailoring",
+      "Data minimization and purpose limitation"
+    ],
+    "answer": 3,
+    "explain": "Only data necessary for a defined purpose is collected. Data you do not have cannot leak, and collecting it \"just in case\" violates the GDPR principles of data minimization and purpose limitation."
+  },
+  {
+    "obj": "2.4",
+    "q": "The law of country X requires that its citizens' personal data be stored exclusively on servers within that country. What is this requirement called?",
+    "options": [
+      "Data localization",
+      "Data remanence",
+      "Data minimization",
+      "Data maintenance"
+    ],
+    "answer": 0,
+    "explain": "Data localization is a legal requirement that data stay in a particular country. Data sovereignty means data is subject to the laws of the country where it is located, and data residency is the physical storage location. The other options are not related to location."
+  },
+  {
+    "obj": "2.4",
+    "q": "Who is TYPICALLY responsible for performing backups, applying encryption and maintaining database integrity according to the owner's requirements?",
+    "options": [
+      "Data subject",
+      "Data custodian",
+      "Data controller",
+      "Data owner"
+    ],
+    "answer": 1,
+    "explain": "The custodian (IT, DBA, cloud ops) implements the technical controls specified by the owner: backup, encryption, patching. The owner and controller make decisions, and the subject is the person the data relates to."
+  },
+  {
+    "obj": "2.5",
+    "q": "A production line depends on a control computer running an operating system that has reached End of Support. Replacement of the line is planned in two years. What is the BEST approach?",
+    "options": [
+      "Continue operating without changes, because the system has not been attacked so far",
+      "Shut down the computer immediately until the line is replaced",
+      "Isolate the system, apply compensating controls and document formal risk acceptance by the owner along with a replacement plan",
+      "Install the latest OS without compatibility testing"
+    ],
+    "answer": 2,
+    "explain": "Security serves the business: shutting down stops production, and ignoring the issue leaves vulnerabilities unpatched. Segmentation, allowlisting, monitoring and formal risk acceptance with a replacement deadline strike the balance. Upgrading without testing can bring the line down."
+  },
+  {
+    "obj": "2.5",
+    "q": "From a security standpoint, which date is MOST CRITICAL for planning software replacement?",
+    "options": [
+      "The date the vendor stops releasing security patches",
+      "The date sales of new licenses end",
+      "The date the hardware warranty expires",
+      "The release date of a new major version"
+    ],
+    "answer": 0,
+    "explain": "The end of security patches (End of Support / End of Service Life) means new vulnerabilities remain open. End of sales (often EOL) does not immediately change the security posture, and the release of a new version does not by itself end support."
+  },
+  {
+    "obj": "2.5",
+    "q": "A team is decommissioning a cloud web application. The disks were wiped with crypto-shredding. Which step was MOST LIKELY omitted if, a month later, fake content appears on the application's subdomain?",
+    "options": [
+      "Issuing a certificate of destruction",
+      "Archiving the logs",
+      "Reviewing the data classification",
+      "Removing DNS records and other references to the decommissioned resources"
+    ],
+    "answer": 3,
+    "explain": "A dangling DNS record pointing to a deleted cloud resource enables subdomain takeover. Asset decommissioning includes removing DNS records, certificates, accounts and rules, not just sanitizing data."
+  },
+  {
+    "obj": "2.6",
+    "q": "An organization adopts the NIST SP 800-53 moderate baseline. The system has no wireless network, so the team removes the wireless access controls, and in place of one control that is not feasible it introduces a compensating control. What are these two activities called?",
+    "options": [
+      "Supplementation and scoping",
+      "Scoping (removing irrelevant controls) and tailoring (adjusting, including compensating controls)",
+      "Tailoring and declassification",
+      "Categorization and accreditation"
+    ],
+    "answer": 1,
+    "explain": "Scoping determines which baseline controls apply to the system, and tailoring adjusts them to the environment and risk, including parameters and compensating controls. Supplementation is adding controls beyond the baseline."
+  },
+  {
+    "obj": "2.6",
+    "q": "A law firm sends contracts to clients and wants the client to be able to read the document but not print or forward it, and for access to expire automatically after 30 days. Which technology BEST meets the requirement?",
+    "options": [
+      "Network DLP",
+      "CASB in API mode",
+      "DRM/IRM",
+      "TLS 1.3"
+    ],
+    "answer": 2,
+    "explain": "DRM/IRM travels with the document itself, even outside the organization, with rights (read, print, forward) and expiration. DLP protects the organization's boundary, CASB controls SaaS usage, and TLS protects only transmission."
+  },
+  {
+    "obj": "2.6",
+    "q": "The security team needs a unified view of misconfigurations, excessive IAM permissions and vulnerable container images across multiple cloud accounts and providers. Which tool category is the BEST fit?",
+    "options": [
+      "CNAPP",
+      "DRM",
+      "Endpoint DLP",
+      "SIEM without integrations"
+    ],
+    "answer": 0,
+    "explain": "CNAPP combines CSPM (configuration), CIEM (entitlements) and CWPP/image scanning (workloads). DRM protects documents, endpoint DLP prevents leakage from devices, and a SIEM aggregates logs but does not by itself assess configuration and permissions."
+  },
+  {
+    "obj": "2.6",
+    "type": "match",
+    "q": "Match each scenario with the data state and the control that BEST protects it.",
+    "options": [
+      "A database of card numbers on a disk in a data center that could be stolen",
+      "Data is sent between two data centers over the internet",
+      "An analytics model processes sensitive data at a cloud provider that is not fully trusted",
+      "A user tries to copy a Confidential file to a personal USB drive"
+    ],
+    "targets": [
+      "In transit: IPsec/TLS tunnel",
+      "In use: endpoint DLP",
+      "At rest: TDE/storage encryption",
+      "In use: confidential computing (TEE)"
+    ],
+    "answer": [2, 0, 3, 1],
+    "explain": "Data on disk is at rest (TDE, FDE), transfer between sites is in transit (IPsec/TLS), processing at an untrusted provider requires in-use protection (TEE), and copying from the endpoint is prevented by endpoint DLP."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Order the hard disk drive (HDD) sanitization methods from WEAKEST to STRONGEST protection against data recovery.",
+    "options": [
+      "Degaussing (purge)",
+      "File deletion",
+      "Pulverization (destroy)",
+      "A single overwrite of all logical sectors (clear)"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Deletion only removes pointers; clear (overwriting) protects against simple tools; purge (degaussing) against laboratory recovery; destroy (pulverization) physically makes recovery impossible."
+  }
+]

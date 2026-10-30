@@ -1,0 +1,237 @@
+[
+  {
+    "obj": "4.2",
+    "q": "The AKIA… key of user ci-deploy has leaked. The user has another active key that the pipeline uses. Which field do you filter CloudTrail by to separate the attacker from the pipeline?",
+    "options": [
+      "userIdentity.accessKeyId",
+      "userIdentity.userName",
+      "eventSource",
+      "recipientAccountId"
+    ],
+    "answer": 0,
+    "explain": "Both keys belong to the same user, so userName mixes legitimate and malicious calls. accessKeyId identifies exactly the credential that leaked. eventSource is the service, and recipientAccountId is the account that received the event."
+  },
+  {
+    "obj": "4.2",
+    "q": "You are checking whether the attacker created a new IAM user, but you filter CloudTrail only by awsRegion eu-central-1, where all your workloads run, and you do not find CreateUser. Why?",
+    "options": [
+      "CreateUser is a data event and is not enabled",
+      "IAM is a global service and its events are recorded with awsRegion us-east-1",
+      "CreateUser is recorded only in Event history, not in the trail",
+      "CloudTrail does not record IAM calls without an organization trail"
+    ],
+    "answer": 1,
+    "explain": "Global services such as IAM record their events in us-east-1, regardless of where the call came from. CreateUser is a management event and goes to both the trail and Event history; an organization trail is not a requirement."
+  },
+  {
+    "obj": "4.2",
+    "q": "In CloudTrail you see CreateAccessKey where userIdentity.userName is \"ci-deploy\" and requestParameters.userName is \"backup-svc\". What does this mean and what is the next step?",
+    "options": [
+      "ci-deploy rotated its own key; nothing",
+      "backup-svc created a key for ci-deploy; revoke ci-deploy",
+      "ci-deploy created a key for backup-svc (possible persistence, T1098.001); take the new accessKeyId from responseElements and track its use",
+      "An error in the log; requestParameters does not refer to a user"
+    ],
+    "answer": 2,
+    "explain": "The caller is in userIdentity and the target in requestParameters. A key for another user is classic persistence. The new accessKeyId is in responseElements.accessKey; by filtering on it you see what the attacker did next, and the key is revoked together with the original one."
+  },
+  {
+    "obj": "4.2",
+    "q": "From an unknown IP address, using a key that is otherwise used only by the CI runner, within two minutes you see GetCallerIdentity followed by 40 List*/Describe* calls, most of them AccessDenied. How do you classify this?",
+    "options": [
+      "Normal CI pipeline operation after an upgrade",
+      "Defense evasion (T1562.008)",
+      "Impact, because AccessDenied means the resource was deleted",
+      "Use of a compromised credential and reconnaissance (T1078.004, T1087.004/T1580)"
+    ],
+    "answer": 3,
+    "explain": "GetCallerIdentity from a new IP address and a burst of AccessDenied on enumeration calls are the typical pattern of checking a stolen key and probing its permissions. Nothing turns off logging (T1562.008), and AccessDenied means the call was not allowed, not that the resource was deleted."
+  },
+  {
+    "obj": "4.2",
+    "q": "The last event from the trail before a three-hour silence is cloudtrail:StopLogging with no errorCode. Where do you find out what happened during that period?",
+    "options": [
+      "From the organization trail in the management account (or CloudTrail Lake/GuardDuty copies), which the member account cannot turn off",
+      "From the same trail, because StopLogging takes effect only after 24 hours",
+      "From the responseElements of the StopLogging event",
+      "Nowhere; the data is lost everywhere"
+    ],
+    "answer": 0,
+    "explain": "StopLogging stops that trail immediately. The organization trail from the management account and other independent copies keep recording. That is why an organization trail is the standard control against T1562.008. StopLogging has no delay, and its response does not contain future events."
+  },
+  {
+    "obj": "4.2",
+    "q": "Calls arrive with userIdentity.arn arn:aws:sts::111122223333:assumed-role/web-role/i-0abc123def4567890, but sourceIPAddress is an address of a VPS provider outside AWS. What is most likely?",
+    "options": [
+      "The role was used correctly through a NAT gateway",
+      "The instance's temporary credentials were stolen (e.g. via the metadata service, T1552.005) and are being used outside AWS",
+      "Someone created an IAM user named after the instance",
+      "An AWS service is calling the API on behalf of the instance"
+    ],
+    "answer": 1,
+    "explain": "The session name i-… means the credentials were issued to an EC2 instance; use from an external address that is neither the instance nor its NAT means they were exfiltrated. GuardDuty reports this as InstanceCredentialExfiltration. A call by an AWS service would have invokedBy, and an IAM user would be of type IAMUser."
+  },
+  {
+    "obj": "4.2",
+    "q": "You are searching ConsoleLogin events. Where do you see whether the sign-in succeeded and whether MFA was used?",
+    "options": [
+      "errorCode and userIdentity.sessionContext.attributes.mfaAuthenticated",
+      "eventType and readOnly",
+      "responseElements.ConsoleLogin (Success/Failure) and additionalEventData.MFAUsed",
+      "requestParameters.status and tlsDetails"
+    ],
+    "answer": 2,
+    "explain": "For ConsoleLogin the outcome is in responseElements.ConsoleLogin, and MFA use in additionalEventData.MFAUsed. mfaAuthenticated exists for sessions with temporary credentials, but it is not the outcome field for a console sign-in. readOnly and tlsDetails say nothing about the outcome."
+  },
+  {
+    "obj": "4.2",
+    "q": "You have deactivated the leaked key. What else from CloudTrail must go into the revocation plan?",
+    "options": [
+      "Nothing; deactivating the key undoes everything it created",
+      "Only deleting the CloudTrail log for that period",
+      "Only changing the root account password",
+      "All artifacts the key created: new users, keys, login profiles, policies, trust policy changes, key pairs, functions"
+    ],
+    "answer": 3,
+    "explain": "An attacker who created a new key or user survives the revocation of the first key. That is why every readOnly=false call made by that credential is extracted from CloudTrail and every artifact is removed. Deleting logs destroys evidence."
+  },
+  {
+    "obj": "4.3",
+    "q": "You are writing a detection for kubectl exec over the Kubernetes audit log. Which condition is the most reliable?",
+    "options": [
+      "objectRef.resource == \"pods\" and objectRef.subresource == \"exec\", regardless of verb",
+      "verb == \"create\" and objectRef.resource == \"pods/exec\"",
+      "requestURI contains \"kubectl\"",
+      "userAgent starts with \"kubectl/\""
+    ],
+    "answer": 0,
+    "explain": "Exec is recorded as resource pods with subresource exec. The verb depends on the client protocol: older SPDY yields create, while WebSocket in newer kubectl yields get in some versions. resource is never \"pods/exec\" as a single string, and userAgent and the URI do not reliably identify exec."
+  },
+  {
+    "obj": "4.3",
+    "q": "An audit record has user.username system:serviceaccount:prod:web, userAgent curl/8.5.0, and sourceIPs[-1] is not the IP of the pod from user.extra pod-name but a public address. What do you conclude?",
+    "options": [
+      "The web application was upgraded to use curl",
+      "The service account token was exfiltrated from the pod and is being used outside the cluster (T1528)",
+      "kube-proxy changed the address",
+      "Anonymous access, because service accounts are not users"
+    ],
+    "answer": 1,
+    "explain": "A bound token carries the pod and node it was issued to; use from a different address, with a tool the application does not use, means the token was stolen. kube-proxy does not change the sourceIPs of API requests, and a service account is an authenticated identity, not system:anonymous."
+  },
+  {
+    "obj": "4.3",
+    "q": "You want the audit log to show securityContext.privileged in new pods, but secret values must never end up in the log. How do you configure the policy?",
+    "options": [
+      "Everything at RequestResponse",
+      "Everything at Metadata",
+      "pods at Request (or RequestResponse), secrets at Metadata, with the secrets rule placed before more general ones because the first match decides",
+      "secrets at None, pods at Metadata"
+    ],
+    "answer": 2,
+    "explain": "securityContext is in the request body, which is recorded from the Request level up. For secrets, Metadata records who accessed them without the content. Rules are evaluated in order and the first match decides. None for secrets would hide the access itself."
+  },
+  {
+    "obj": "4.3",
+    "q": "Service account prod:web created a selfsubjectrulesreviews and then received 30 responses of 403 on list secrets, nodes and clusterrolebindings. What does this show?",
+    "options": [
+      "Normal controller operation",
+      "Successful privilege escalation",
+      "A misconfigured audit policy",
+      "Permission reconnaissance with a stolen token (kubectl auth can-i --list, then probing)"
+    ],
+    "answer": 3,
+    "explain": "selfsubjectrulesreviews is kubectl auth can-i --list, and a series of 403s on sensitive resources is probing the boundaries. An application service account does not normally do this. 403 means the access failed, so there is no escalation."
+  },
+  {
+    "obj": "4.3",
+    "q": "Which value from sourceIPs may you treat as the reliable client address?",
+    "options": [
+      "The last one, because the preceding ones come from X-Forwarded-For and X-Real-Ip, which the client can set",
+      "The first one, because it is the original client",
+      "Any of them, all are verified",
+      "None; the IP is visible only in the kubelet log"
+    ],
+    "answer": 0,
+    "explain": "According to the audit Event specification, all addresses except the last may come from headers the client sets. The last one is the remote address of the connection to the apiserver (or to a proxy in front of it)."
+  },
+  {
+    "obj": "4.3",
+    "q": "In the audit log you find create clusterrolebindings with requestObject.roleRef.name cluster-admin by user dev-ana, outside the GitOps pipeline. How do you classify this?",
+    "options": [
+      "Access to secrets",
+      "Persistence and privilege escalation through RBAC, analogous to AttachUserPolicy in AWS",
+      "Exec into a container",
+      "Defense evasion by deleting the audit log"
+    ],
+    "answer": 1,
+    "explain": "A new binding to cluster-admin grants persistent full privileges and survives revocation of the original access. It is the Kubernetes equivalent of attaching an administrator policy to an IAM user. It is neither reading secrets nor exec."
+  },
+  {
+    "obj": "4.3",
+    "q": "A pod with privileged: true was rejected (code 403), and annotations contain pod-security.kubernetes.io/enforce-policy. Should this be investigated?",
+    "options": [
+      "No, the control worked and there is no damage",
+      "No, 403 means an RBAC error",
+      "Yes: the attempt shows intent; check who it was, with which credential, and what else they did",
+      "Yes, but only if the pod was later started"
+    ],
+    "answer": 2,
+    "explain": "Pod Security admission stopped the pod, but an attempt to create a privileged pod (a path to T1611) says that someone with that credential is trying to escape to the node. The annotation shows that admission rejected it, not RBAC. The attacker will try another way, so investigate immediately."
+  },
+  {
+    "type": "match",
+    "obj": "4.2",
+    "q": "Match the CloudTrail call with the ATT&CK technique it most often represents.",
+    "options": [
+      "cloudtrail:StopLogging",
+      "iam:CreateAccessKey for another user",
+      "Bulk s3:GetObject from a data bucket",
+      "iam:CreateUser"
+    ],
+    "targets": ["T1530 Data from Cloud Storage", "T1136.003 Create Account: Cloud Account", "T1562.008 Disable or Modify Cloud Logs", "T1098.001 Additional Cloud Credentials", "T1609 Container Administration Command"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Turning off the trail is T1562.008, an additional key is T1098.001, downloading from S3 is T1530, and a new user is T1136.003. T1609 is Kubernetes/container exec and is a distractor here."
+  },
+  {
+    "type": "order",
+    "obj": "4.2",
+    "q": "Order the steps of a CloudTrail investigation of the leaked key AKIA…, starting with the first.",
+    "options": [
+      "Build a timeline in UTC and map events to ATT&CK",
+      "Filter all events by userIdentity.accessKeyId",
+      "Determine the first appearance of a new IP address and userAgent for that key",
+      "Extract new credentials (keys, users) from responseElements and track their use too"
+    ],
+    "answer": [1, 2, 3, 0],
+    "explain": "First you isolate the credential's events, then you find the moment the attacker started (new IP address, tool), then you follow the artifacts they created, and finally you merge everything into a timeline with ATT&CK labels."
+  },
+  {
+    "type": "match",
+    "obj": "4.3",
+    "q": "Match the Kubernetes investigation question with the condition in a jq filter over the audit log.",
+    "options": [
+      "Who got into containers",
+      "Who read secrets",
+      "Who was issued new service account tokens",
+      "Who is checking their own permissions"
+    ],
+    "targets": [".objectRef.resource==\"serviceaccounts\" and .objectRef.subresource==\"token\"", ".objectRef.resource==\"secrets\" and (.verb==\"get\" or .verb==\"list\")", ".objectRef.subresource==\"exec\"", ".objectRef.resource | test(\"selfsubject(rules|access)reviews\")", ".user.username==\"system:kube-scheduler\""],
+    "answer": [2, 1, 0, 3],
+    "explain": "exec is a pod subresource, secrets are the secrets resource with get/list, TokenRequest is the token subresource of a service account, and kubectl auth can-i creates selfsubject*reviews. The kube-scheduler filter matches none of the questions."
+  },
+  {
+    "obj": "4.2",
+    "q": "ci-deployer is an IAM user normally used only by the GitLab runner inside the VPC. What does this CloudTrail record show?",
+    "snippet": "{\n  \"eventTime\": \"2026-10-16T03:22:51Z\",\n  \"eventSource\": \"cloudtrail.amazonaws.com\",\n  \"eventName\": \"StopLogging\",\n  \"awsRegion\": \"eu-central-1\",\n  \"sourceIPAddress\": \"198.51.100.77\",\n  \"userAgent\": \"aws-cli/2.15.0 Python/3.11.6 Linux/6.1.0\",\n  \"userIdentity\": {\n    \"type\": \"IAMUser\",\n    \"userName\": \"ci-deployer\",\n    \"accessKeyId\": \"AKIAEXAMPLEKEY123456\"\n  },\n  \"requestParameters\": {\"name\": \"org-trail\"},\n  \"responseElements\": null\n}",
+    "lang": "json",
+    "options": [
+      "Defense evasion (T1562.008): the ci-deployer key, from an external address, successfully stopped trail logging; the key is likely compromised",
+      "A failed attempt, because responseElements is null",
+      "A routine action by AWS itself, because eventSource is cloudtrail.amazonaws.com",
+      "Persistence: a new trail named org-trail was created"
+    ],
+    "answer": 0,
+    "explain": "StopLogging stops the trail from recording, the technique Impair Defenses: Disable or Modify Cloud Logs. The call did not fail, since there is no errorCode; a null responseElements is normal for a successful StopLogging. eventSource only says which API was called, and userIdentity shows the IAM user and its access key, from an address and tool (aws-cli) that do not match the runner. Next steps: deactivate the key, StartLogging, then pull every event for that accessKeyId."
+  }
+]

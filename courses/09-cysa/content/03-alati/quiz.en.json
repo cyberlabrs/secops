@@ -1,0 +1,276 @@
+[
+  {
+    "obj": "1.3",
+    "q": "In a process log, an analyst sees powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBi... and wants to quickly see what the command does, without executing it. Which tool is BEST?",
+    "options": [
+      "VirusTotal",
+      "Joe Sandbox",
+      "CyberChef",
+      "Wireshark"
+    ],
+    "answer": 2,
+    "explain": "CyberChef decodes Base64 and UTF-16LE text (recipe From Base64 → Decode text) and runs locally. VirusTotal gives reputation, a sandbox would execute the code, and Wireshark analyzes packets."
+  },
+  {
+    "obj": "1.3",
+    "q": "On a Linux server without a graphical environment, all traffic to a suspicious IP address needs to be captured to a file for later analysis. Which tool should be used?",
+    "options": [
+      "tcpdump",
+      "Zeek",
+      "Snort in IPS mode",
+      "MXToolbox"
+    ],
+    "answer": 0,
+    "explain": "tcpdump captures packets with a BPF filter (e.g., host 198.51.100.23) to a pcap file on the command line. Zeek produces metadata logs, not full packets by default, Snort in IPS mode blocks, and MXToolbox is for email and DNS analysis."
+  },
+  {
+    "obj": "1.3",
+    "q": "A threat hunting team wants to retrospectively search for beaconing and rare TLS fingerprints in traffic across the entire network over the last 90 days, without storing full packets. Which tool BEST fits?",
+    "options": [
+      "Wireshark",
+      "Zeek",
+      "Snort",
+      "strings"
+    ],
+    "answer": 1,
+    "explain": "Zeek generates structured logs (conn.log, ssl.log, dns.log) for every connection, ideal for long-term retention and hunting. Wireshark is for manual analysis of a single pcap, and Snort only alerts when a rule matches."
+  },
+  {
+    "obj": "1.3",
+    "q": "An organization wants to automatically block traffic at the perimeter that matches known exploit signatures, with alerts in JSON format for the SIEM. Which solution is BEST?",
+    "options": [
+      "Zeek",
+      "tcpdump",
+      "OpenCTI",
+      "Suricata in inline (IPS) mode"
+    ],
+    "answer": 3,
+    "explain": "Suricata works as a signature-based IDS/IPS, can run inline and block, and writes alerts and metadata to EVE JSON. Zeek and tcpdump do not block, and OpenCTI is a threat intelligence platform."
+  },
+  {
+    "obj": "1.3",
+    "q": "In a pcap, an analyst sees an HTTP download of an executable and wants to extract it for hashing. Which feature is BEST for this?",
+    "options": [
+      "Wireshark File → Export Objects → HTTP",
+      "tcpdump -c 100",
+      "A WHOIS query for the host",
+      "A YARA scan of the pcap file"
+    ],
+    "answer": 0,
+    "explain": "Wireshark Export Objects reconstructs files transferred over HTTP (and SMB, TFTP) from the capture. tcpdump -c only limits the number of packets, WHOIS gives domain information, and YARA over a pcap file does not reconstruct the file."
+  },
+  {
+    "obj": "1.3",
+    "q": "A suspicious attachment containing a client contract was received. The analyst wants to know whether it is known malware, without disclosing the confidential content. What should be done FIRST?",
+    "options": [
+      "Upload the file to VirusTotal",
+      "Open the file in Word on an isolated VM",
+      "Calculate the SHA-256 hash and search for it on VirusTotal",
+      "Send the file back to the sender for verification"
+    ],
+    "answer": 2,
+    "explain": "A hash search does not disclose content but shows whether the file is already known. Uploading a confidential document makes it available to others and can tip off the attacker. Opening it manually is dynamic analysis and comes later, in a controlled sandbox."
+  },
+  {
+    "obj": "1.3",
+    "q": "The team wants a rule that identifies variants of the same malware family on all file servers by common strings and the MZ header. What should be written?",
+    "options": [
+      "A Snort rule",
+      "A YARA rule",
+      "A Sigma rule",
+      "A regex in the firewall"
+    ],
+    "answer": 1,
+    "explain": "YARA rules describe files and memory through strings, byte sequences and conditions. Snort/Suricata rules are for network traffic, and Sigma is for logs."
+  },
+  {
+    "obj": "1.3",
+    "q": "A sample ran in a sandbox for 5 minutes without any network or file activity, even though static analysis showed a URL to a suspicious domain. What is the MOST likely explanation?",
+    "options": [
+      "The file is certainly harmless",
+      "The sandbox has no internet access, so the analysis is invalid in any case",
+      "The URL in the strings is a false positive",
+      "The malware uses sandbox evasion techniques (VM detection, delayed execution)"
+    ],
+    "answer": 3,
+    "explain": "Malware often checks whether it is in a VM or waits longer than the analysis lasts. A negative sandbox result is not proof that the file is clean, especially when static analysis shows suspicious indicators."
+  },
+  {
+    "obj": "1.3",
+    "q": "Phishing messages come from a domain that looks like a partner's domain. The analyst wants to know when the domain was registered. Which tool should be used?",
+    "options": [
+      "WHOIS",
+      "GeoIP",
+      "AbuseIPDB",
+      "YARA"
+    ],
+    "answer": 0,
+    "explain": "WHOIS gives the registrar and creation date of a domain; a newly registered domain is a strong phishing indicator. GeoIP gives the approximate location of an IP address, AbuseIPDB abuse reports for an IP, and YARA is for files."
+  },
+  {
+    "obj": "1.3",
+    "q": "An SSH log shows thousands of failed logons from a single public IP address. The analyst wants to quickly see whether other organizations have reported it for brute force. Which tool is BEST?",
+    "options": [
+      "MXToolbox",
+      "Cuckoo Sandbox",
+      "AbuseIPDB",
+      "CyberChef"
+    ],
+    "answer": 2,
+    "explain": "AbuseIPDB aggregates community reports about malicious IP addresses, with categories (e.g., SSH brute force) and a confidence score. The other tools are for email, file analysis and decoding."
+  },
+  {
+    "obj": "1.3",
+    "q": "A user reports a suspicious message. The analyst wants to check the SPF, DKIM and DMARC results and the message's path through the Received headers. Which tool is MOST appropriate?",
+    "options": [
+      "OpenUBA",
+      "Zeek",
+      "MISP",
+      "MXToolbox"
+    ],
+    "answer": 3,
+    "explain": "MXToolbox analyzes message headers and DNS records for mail authentication (SPF, DKIM, DMARC) and blocklists. OpenUBA is UEBA, Zeek is network monitoring, and MISP is an IoC-sharing platform."
+  },
+  {
+    "obj": "1.3",
+    "q": "A sector ISAC requires members to exchange IoCs from incidents in a structured form, with TLP markings and automatic synchronization between instances. Which platform is BEST?",
+    "options": [
+      "MISP",
+      "Wireshark",
+      "SIEM",
+      "MDM"
+    ],
+    "answer": 0,
+    "explain": "MISP is designed precisely for exchanging indicators between organizations, with events, attributes, tags, TLP and instance synchronization. A SIEM correlates internal logs and does not serve as an exchange platform."
+  },
+  {
+    "obj": "1.3",
+    "q": "An analyst needs to see which process on a laptop opened a connection to a C2 server and immediately isolate the laptop from the network, while keeping the connection to the management console. Which tool enables this?",
+    "options": [
+      "MDM",
+      "EDR",
+      "GeoIP",
+      "Snort"
+    ],
+    "answer": 1,
+    "explain": "EDR records processes and their network connections and has a host isolation feature that keeps the connection to the console. MDM manages device policies (primarily mobile), and Snort works on the network and does not know which process opened the connection."
+  },
+  {
+    "obj": "1.3",
+    "q": "The command vssadmin delete shadows /all /quiet was executed on several servers a few minutes before mass file modification. What does the command MOST likely indicate?",
+    "options": [
+      "Routine disk cleanup",
+      "Creating a backup before an update",
+      "Active Directory reconnaissance",
+      "Ransomware preparation: deleting shadow copies to prevent recovery"
+    ],
+    "answer": 3,
+    "explain": "Deleting all Volume Shadow copies without confirmation is a typical ransomware step before encryption, so the victim cannot restore files. The command does not create a backup or perform AD reconnaissance."
+  },
+  {
+    "obj": "1.3",
+    "q": "An analyst needs to extract all source IP addresses of failed ConsoleLogin events from 50,000 CloudTrail records and count them. Which tool is MOST efficient?",
+    "options": [
+      "jq",
+      "strings",
+      "xmllint",
+      "Wireshark"
+    ],
+    "answer": 0,
+    "explain": "CloudTrail records are JSON, and jq filters and extracts fields (select by eventName and result, then .sourceIPAddress). xmllint is for XML, strings for binary files, and Wireshark for packets."
+  },
+  {
+    "obj": "1.3",
+    "q": "Which regular expression BEST extracts SHA-256 hash values from a report?",
+    "options": [
+      "\\b[a-f0-9]{32}\\b",
+      "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b",
+      "\\b[a-f0-9]{64}\\b",
+      "[A-Za-z0-9+/]{40,}={0,2}"
+    ],
+    "answer": 2,
+    "explain": "SHA-256 is 256 bits, i.e., 64 hexadecimal characters. 32 characters is the length of MD5, the second expression matches IPv4 addresses, and the last one matches long Base64 strings."
+  },
+  {
+    "obj": "1.3",
+    "q": "Fixed-threshold rules do not detect an employee who, using legitimate credentials, gradually downloads many more files than colleagues on the same team. Which technology would BEST detect this?",
+    "options": [
+      "Signature-based IDS",
+      "UEBA",
+      "Sandbox",
+      "WHOIS"
+    ],
+    "answer": 1,
+    "explain": "UEBA builds a behavioral profile of the user and their peer group and flags deviations, which suits insiders and abuse of legitimate accounts. Signatures do not recognize legitimate actions, and a sandbox and WHOIS have nothing to do with user behavior."
+  },
+  {
+    "obj": "1.3",
+    "q": "Which TWO data formats do you MOST often encounter as YAML in SecOps work? (Choose TWO.)",
+    "options": [
+      "Sigma detection rules",
+      "Windows Security.evtx",
+      "Kubernetes manifests",
+      "Suricata eve.json"
+    ],
+    "answer": [0, 2],
+    "explain": "Sigma rules and Kubernetes manifests are written in YAML. EVTX is a binary Windows format, and EVE is JSON (one object per line)."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match each task with the tool that is BEST for it.",
+    "options": [
+      "Decode a URL-encoded and Base64 parameter from a web log",
+      "Get a list of readable URLs and registry keys from a suspicious .exe",
+      "Observe which processes and connections a sample creates when executed",
+      "Find out the approximate country and ASN of a source IP address",
+      "Map the actor–campaign–technique relationship in a structured way in STIX 2.1",
+      "Correlate sign-ins from VPN, AD and firewall in a single query",
+      "Remotely wipe a lost company phone"
+    ],
+    "targets": [
+      "SIEM",
+      "CyberChef",
+      "strings",
+      "Cuckoo Sandbox",
+      "GeoIP",
+      "OpenCTI",
+      "MDM"
+    ],
+    "answer": [1, 2, 3, 4, 5, 0, 6],
+    "explain": "CyberChef decodes, strings gives static strings from a binary, a sandbox shows behavior during execution, GeoIP gives location and ASN, OpenCTI structured knowledge in STIX, a SIEM correlates multiple log sources, and MDM manages mobile devices and wipes them remotely."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match each excerpt with the data format it is written in.",
+    "options": [
+      "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\"><System><EventID>4625</EventID>",
+      "{\"eventName\":\"ConsoleLogin\",\"sourceIPAddress\":\"185.220.101.4\"}",
+      "detection:\\n  selection:\\n    Image|endswith: '\\\\certutil.exe'",
+      "A binary Security.evtx file copied from a domain controller"
+    ],
+    "targets": [
+      "JSON",
+      "XML",
+      "YAML",
+      "EVTX"
+    ],
+    "answer": [1, 0, 2, 3],
+    "explain": "A Windows event shown in XML view uses Event/System elements, CloudTrail is JSON, a Sigma rule is YAML with indentation, and a raw Windows event log is a binary EVTX file read with Event Viewer or Get-WinEvent."
+  },
+  {
+    "obj": "1.3",
+    "q": "Based on this Zeek conn.log excerpt, what is the MOST likely explanation for the traffic from host 10.0.4.15?",
+    "snippet": "#path conn\n#fields ts             id.orig_h  id.resp_h      id.resp_p service duration orig_bytes resp_bytes\n1761040800.112  10.0.4.15  198.51.100.23  443       ssl     0.31     402        1210\n1761040812.904  10.0.4.22  20.190.159.2   443       ssl     4.87     8812       51230\n1761040860.118  10.0.4.15  198.51.100.23  443       ssl     0.30     402        1210\n1761040920.131  10.0.4.15  198.51.100.23  443       ssl     0.31     402        1210\n1761040944.551  10.0.4.31  10.0.1.10      53        dns     0.01     61         127\n1761040980.109  10.0.4.15  198.51.100.23  443       ssl     0.32     402        1210\n1761041040.127  10.0.4.15  198.51.100.23  443       ssl     0.30     402        1210",
+    "lang": "log",
+    "options": [
+      "Beaconing to a C2 server: connections exactly every 60 seconds to the same address with identical byte counts",
+      "Exfiltration of a large volume of data over TLS",
+      "A vertical port scan from 10.0.4.15 against 198.51.100.23",
+      "Normal Microsoft 365 client sync, because the port is 443"
+    ],
+    "answer": 0,
+    "explain": "The timestamps are ~60 s apart, the destination and port are the same, the duration is ~0.3 s and orig_bytes/resp_bytes are always 402/1210: small, regular, uniform requests are a classic beacon. Exfiltration would show large orig_bytes, a port scan would hit many different ports, and port 443 alone does not prove legitimacy (the 10.0.4.22 line looks like real user traffic of varying size). Next step: check the reputation of 198.51.100.23 and ssl.log (SNI, JA3/JA4), then isolate the host."
+  }
+]

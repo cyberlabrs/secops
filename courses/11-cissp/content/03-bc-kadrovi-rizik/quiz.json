@@ -1,0 +1,301 @@
+[
+  {
+    "obj": "1.7",
+    "q": "Organizacija počinje razvoj plana kontinuiteta poslovanja. Šta je PRVI korak?",
+    "options": [
+      "Izbor alternativne lokacije (hot site)",
+      "Sprovođenje Business Impact Analysis",
+      "Definisanje obima projekta i obezbjeđivanje podrške i sponzorstva uprave",
+      "Testiranje backupa"
+    ],
+    "answer": 2,
+    "explain": "BCP počinje obimom i planiranjem projekta: sponzor iz uprave, BCP tim, resursi i zahtjevi. BIA slijedi, a izbor lokacije i testiranje dolaze kasnije."
+  },
+  {
+    "obj": "1.7",
+    "q": "Vlasnik procesa online plaćanja procjenjuje da organizacija može izdržati najviše 10 sati prekida. Nakon tehničke obnove potrebno je 3 sata za usklađivanje transakcija. Koliki je NAJVEĆI prihvatljiv RTO?",
+    "options": [
+      "13 sati",
+      "10 sati",
+      "3 sata",
+      "7 sati"
+    ],
+    "answer": 3,
+    "explain": "RTO + WRT ≤ MTD, pa je RTO ≤ 10 − 3 = 7 sati."
+  },
+  {
+    "obj": "1.7",
+    "q": "Koja metrika iz BIA PRVENSTVENO određuje koliko često se moraju praviti backup kopije ili replicirati podaci?",
+    "options": [
+      "RPO",
+      "RTO",
+      "MTD",
+      "MTBF"
+    ],
+    "answer": 0,
+    "explain": "RPO je najveći prihvatljiv gubitak podataka izražen u vremenu; učestalost backupa ili replikacije mora biti jednaka ili manja od RPO."
+  },
+  {
+    "obj": "1.7",
+    "q": "Šta je PRIMARNI cilj Business Impact Analysis?",
+    "options": [
+      "Identifikovati sve prijetnje i njihovu vjerovatnoću",
+      "Utvrditi kritične poslovne funkcije, uticaj njihovog prekida kroz vrijeme i vremenske ciljeve oporavka",
+      "Izabrati tehnologiju za replikaciju podataka",
+      "Testirati plan oporavka od katastrofe"
+    ],
+    "answer": 1,
+    "explain": "BIA analizira uticaj gubitka funkcija (finansijski, operativni, pravni, reputacioni) i određuje MTD, RTO i RPO. Prijetnje i vjerovatnoću analizira procjena rizika."
+  },
+  {
+    "obj": "1.7",
+    "q": "Ko treba da odredi maksimalno prihvatljivo vrijeme prekida (MTD) za proces obrade narudžbi?",
+    "options": [
+      "IT operacije, jer one obnavljaju sisteme",
+      "CISO",
+      "Dobavljač ERP sistema",
+      "Vlasnik poslovnog procesa i uprava"
+    ],
+    "answer": 3,
+    "explain": "MTD je poslovna odluka zasnovana na uticaju na posao. IT predlaže tehnička rješenja kojima se postiže RTO unutar MTD."
+  },
+  {
+    "obj": "1.7",
+    "q": "BIA pokazuje da sve SaaS aplikacije zavise od jednog cloud provajdera identiteta (IdP). Šta je NAJBOLJI zaključak sa aspekta spoljnih zavisnosti?",
+    "options": [
+      "IdP je kritična spoljna zavisnost i mogući kaskadni single point of failure, pa treba procijeniti njegov SLA, BC plan i alternativni pristup za hitne slučajeve",
+      "IdP nije relevantan za BIA jer ga upravlja treća strana",
+      "Treba odmah preći na lokalni Active Directory",
+      "Zavisnost se rješava jačim lozinkama"
+    ],
+    "answer": 0,
+    "explain": "Spoljne zavisnosti se mapiraju i ocjenjuju kao i interne. Otkaz IdP-a onemogućava sve zavisne aplikacije, pa su potrebni SLA, provjera kontinuiteta provajdera i break-glass procedura."
+  },
+  {
+    "obj": "1.7",
+    "q": "SLA cloud provajdera garantuje 99,9% mjesečne dostupnosti. Koliko je otprilike prekida dozvoljeno mjesečno?",
+    "options": [
+      "Oko 4 minute",
+      "Oko 7 sati",
+      "Oko 44 minute",
+      "Oko 8,8 sati"
+    ],
+    "answer": 2,
+    "explain": "0,1% od oko 730 sati mjesečno je oko 43,8 minuta. 8,76 sati je godišnja vrijednost za 99,9%, a 7,3 sata mjesečno odgovara 99%."
+  },
+  {
+    "obj": "1.8",
+    "q": "Zaposlenom sa administratorskim pristupom treba saopštiti otkaz zbog kršenja politike. Kada treba ukinuti njegov pristup?",
+    "options": [
+      "Na kraju otkaznog roka",
+      "Nakon exit intervjua",
+      "Sljedećeg radnog dana",
+      "Neposredno prije ili u trenutku saopštavanja otkaza, koordinisano sa HR-om"
+    ],
+    "answer": 3,
+    "explain": "Kod neprijateljskog otkaza pristup se ukida u trenutku saopštavanja ili neposredno prije, da bi se spriječila sabotaža ili krađa podataka."
+  },
+  {
+    "obj": "1.8",
+    "q": "Revizija pokazuje da zaposleni koji je tokom pet godina radio u tri odjeljenja i dalje ima prava iz svih njih. Koji problem je identifikovan i koja kontrola ga NAJBOLJE sprječava?",
+    "options": [
+      "Collusion; job rotation",
+      "Privilege creep; ukidanje starih prava pri premještaju i periodična revizija prava",
+      "Separation of duties; mandatory vacation",
+      "Aggregation; šifrovanje"
+    ],
+    "answer": 1,
+    "explain": "Gomilanje prava kroz premještaje je privilege creep. Sprječava se procesom premještaja koji ukida stara prava i redovnim access reviewom."
+  },
+  {
+    "obj": "1.8",
+    "q": "Banka zahtijeva da službenici koji odobravaju kredite uzmu dvije uzastopne sedmice odmora godišnje, tokom kojih njihov posao obavlja kolega. Koja je PRIMARNA svrha ove kontrole?",
+    "options": [
+      "Otkrivanje prevara i nepravilnosti koje bi zaposleni inače prikrivao",
+      "Poboljšanje zadovoljstva zaposlenih",
+      "Sprječavanje privilege creepa",
+      "Usklađenost sa radnim pravom"
+    ],
+    "answer": 0,
+    "explain": "Mandatory vacation je detektivna administrativna kontrola: zamjena otkriva skrivene aktivnosti koje zahtijevaju stalno prisustvo počinioca."
+  },
+  {
+    "obj": "1.8",
+    "q": "U finansijskoj službi ista osoba može kreirati novog dobavljača u sistemu i odobriti plaćanje tom dobavljaču. Koja kontrola NAJBOLJE rješava ovaj rizik?",
+    "options": [
+      "Job rotation",
+      "Mandatory vacation",
+      "Separation of duties",
+      "Least privilege za čitanje izvještaja"
+    ],
+    "answer": 2,
+    "explain": "Razdvajanje dužnosti dijeli kritičan proces tako da prevara zahtijeva dosluh dvije osobe. Rotacija i odmor su detektivne i ne sprječavaju direktno."
+  },
+  {
+    "obj": "1.8",
+    "q": "Dubina provjere kandidata (background check) treba da zavisi PRVENSTVENO od čega?",
+    "options": [
+      "Od osjetljivosti pozicije i nivoa pristupa koji će kandidat imati, u skladu sa zakonom",
+      "Od godina iskustva kandidata",
+      "Od toga da li je kandidat preporučen od zaposlenog",
+      "Od budžeta HR odjeljenja"
+    ],
+    "answer": 0,
+    "explain": "Provjera se određuje prema klasifikaciji osjetljivosti pozicije iz opisa posla, uz poštovanje radnog prava i privatnosti."
+  },
+  {
+    "obj": "1.8",
+    "q": "Organizacija angažuje eksternu firmu za upravljanje SOC-om. Koji ugovorni element NAJBOLJE definiše mjerljive obaveze, kao što je vrijeme odgovora na kritičan alarm u roku od 15 minuta?",
+    "options": [
+      "NDA",
+      "MOU",
+      "ISA",
+      "SLA"
+    ],
+    "answer": 3,
+    "explain": "SLA sadrži mjerljive nivoe usluge i posljedice nepoštovanja. NDA štiti povjerljivost, MOU je manje formalan dogovor, a ISA definiše sigurnost povezivanja mreža."
+  },
+  {
+    "obj": "1.8",
+    "q": "Dvije organizacije povezuju svoje mreže VPN tunelom radi razmjene podataka. Koji dokument PRVENSTVENO definiše tehničke i sigurnosne zahtjeve tog povezivanja?",
+    "options": [
+      "OLA",
+      "Interconnection Security Agreement (ISA)",
+      "SOW",
+      "AUP"
+    ],
+    "answer": 1,
+    "explain": "ISA dokumentuje tehničke i sigurnosne zahtjeve za povezivanje sistema dviju organizacija, često uz MOU koji opisuje poslovni odnos."
+  },
+  {
+    "obj": "1.9",
+    "q": "Server vrijedi 120.000 EUR. Požar bi uništio 75% njegove vrijednosti, a očekuje se jednom u 15 godina. Kolika je ALE?",
+    "options": [
+      "90.000 EUR",
+      "8.000 EUR",
+      "6.000 EUR",
+      "1.200 EUR"
+    ],
+    "answer": 2,
+    "explain": "SLE = 120.000 × 0,75 = 90.000 EUR; ARO = 1/15 ≈ 0,0667; ALE = 90.000 / 15 = 6.000 EUR."
+  },
+  {
+    "obj": "1.9",
+    "q": "Trenutna ALE za krađu laptopa je 50.000 EUR. Šifrovanje diskova košta 12.000 EUR godišnje i smanjuje ALE na 5.000 EUR. Kolika je godišnja vrijednost kontrole?",
+    "options": [
+      "33.000 EUR",
+      "45.000 EUR",
+      "38.000 EUR",
+      "57.000 EUR"
+    ],
+    "answer": 0,
+    "explain": "Vrijednost = (ALE prije − ALE poslije) − godišnji trošak = (50.000 − 5.000) − 12.000 = 33.000 EUR."
+  },
+  {
+    "obj": "1.9",
+    "q": "Organizacija kupuje cyber osiguranje koje pokriva troškove odgovora na ransomware. Šta je TAČNO u vezi sa ovom odlukom?",
+    "options": [
+      "Rizik je eliminisan",
+      "Odgovornost za zaštitu podataka prešla je na osiguravača",
+      "Organizacija više ne mora imati backup",
+      "Finansijski uticaj je djelimično prenesen, ali odgovornost i reputacioni rizik ostaju na organizaciji"
+    ],
+    "answer": 3,
+    "explain": "Transfer rizika prenosi finansijske posljedice, ne odgovornost (accountability). Osiguravači uz to traže minimalne kontrole kao što su MFA i offline backup."
+  },
+  {
+    "obj": "1.9",
+    "q": "Trošak jedine dostupne kontrole za rizik niskog uticaja višestruko premašuje očekivani godišnji gubitak. Šta je NAJPRIKLADNIJI tretman?",
+    "options": [
+      "Ignorisati rizik jer je mali",
+      "Formalno prihvatiti rizik od strane vlasnika rizika, dokumentovano u registru rizika",
+      "Ipak uvesti kontrolu radi usklađenosti sa najboljom praksom",
+      "Prenijeti rizik na IT odjeljenje"
+    ],
+    "answer": 1,
+    "explain": "Kada je kontrola skuplja od koristi, a rizik ispod apetita, ispravno je svjesno i dokumentovano prihvatanje. Ignorisanje nije tretman, a „prenos“ unutar organizacije nije transfer."
+  },
+  {
+    "obj": "1.9",
+    "q": "Legacy sistem ne podržava MFA, a zamjena nije moguća narednih godinu dana. Uvodi se pristup isključivo preko PAM jump hosta sa snimanjem sesija. Kakva je ovo kontrola?",
+    "options": [
+      "Deterrent",
+      "Directive",
+      "Compensating",
+      "Recovery"
+    ],
+    "answer": 2,
+    "explain": "Kompenzaciona kontrola je alternativa kada primarna kontrola nije izvodljiva, uz približno isti nivo zaštite."
+  },
+  {
+    "obj": "1.9",
+    "q": "Tim koristi anonimne krugove upitnika sa stručnjacima dok se ne postigne konsenzus o vjerovatnoći i uticaju rizika. Koja tehnika se koristi?",
+    "options": [
+      "Delphi tehnika, u okviru kvalitativne analize",
+      "Monte Carlo simulacija",
+      "Kvantitativna ALE analiza",
+      "Analiza stabla grešaka"
+    ],
+    "answer": 0,
+    "explain": "Delphi tehnika je kvalitativna metoda anonimnog stručnog konsenzusa koja smanjuje uticaj dominantnih pojedinaca."
+  },
+  {
+    "obj": "1.9",
+    "q": "Procjenitelj pregleda konfiguraciju, intervjuiše administratore i testira kontrolu da bi utvrdio da li radi kako je namjeravano. Koji dokument NIST opisuje ovaj pristup procjeni kontrola?",
+    "options": [
+      "SP 800-37",
+      "SP 800-61",
+      "SP 800-137",
+      "SP 800-53A"
+    ],
+    "answer": 3,
+    "explain": "SP 800-53A definiše procedure procjene sigurnosnih i privatnosnih kontrola kroz metode examine, interview i test. 800-37 je RMF, 800-137 ISCM, 800-61 odgovor na incidente."
+  },
+  {
+    "obj": "1.9",
+    "q": "Uprava traži pokazatelj koji će UNAPRIJED signalizirati da rizik od kompromitovanja naloga raste. Koji je NAJBOLJI izbor?",
+    "options": [
+      "Broj završenih projekata u kvartalu",
+      "KRI, kao što je rastući broj naloga bez MFA i rastući broj uspješnih phishing simulacija",
+      "Ukupan budžet sigurnosti",
+      "Broj zaposlenih u SOC-u"
+    ],
+    "answer": 1,
+    "explain": "Key Risk Indicator je rani signal promjene izloženosti riziku. KPI mjeri performanse procesa, a budžet i broj ljudi su ulazi, ne pokazatelji rizika."
+  },
+  {
+    "obj": "1.9",
+    "type": "order",
+    "q": "Poredaj korake NIST Risk Management Frameworka (SP 800-37 Rev. 2).",
+    "options": [
+      "Select",
+      "Authorize",
+      "Prepare",
+      "Assess",
+      "Categorize",
+      "Monitor",
+      "Implement"
+    ],
+    "answer": [2, 4, 0, 6, 3, 1, 5],
+    "explain": "Prepare, Categorize, Select, Implement, Assess, Authorize, Monitor. Authorizing Official donosi odluku o ATO nakon procjene, a praćenje je kontinuirano."
+  },
+  {
+    "obj": "1.9",
+    "type": "match",
+    "q": "Upari kontrolu sa njenim PRIMARNIM funkcionalnim tipom.",
+    "options": [
+      "Snimanje CCTV kamere koje se pregleda nakon incidenta",
+      "Mantrap na ulazu u data centar",
+      "Restore baze iz offline backupa",
+      "Znak „Prostor je pod video nadzorom“"
+    ],
+    "targets": [
+      "Deterrent",
+      "Preventive",
+      "Recovery",
+      "Detective"
+    ],
+    "answer": [3, 1, 2, 0],
+    "explain": "Snimak koji se pregleda naknadno je detektivan, mantrap fizički sprječava neovlašćen ulaz, restore vraća sistem u rad, a znak upozorenja odvraća."
+  }
+]

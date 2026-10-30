@@ -1,0 +1,191 @@
+#!/usr/bin/env python3
+"""tool-guard: replay recorded agent tool calls against a declarative policy (tool guard).
+
+Usage:
+  tool-guard --policy policy.yaml traces/*.jsonl            CSV: call_id,session_id,tool,decision,reason
+  tool-guard --policy policy.yaml --summary traces/*.jsonl  plus a summary on stderr
+
+Input: JSON Lines; only records with "event": "tool_call" are used (fields call_id, session_id, tool, args).
+Policy (YAML or JSON):
+
+  default: deny                  # deny | allow: decision for a tool not listed under tools
+  tools:
+    <tool>:
+      decision: allow            # allow | approval | deny: decision when every constraint is met
+      # run_sql
+      read_only: true            # a single SELECT statement, no INSERT/UPDATE/DELETE/DROP/...
+      tables: [orders]           # every table after FROM/JOIN must be in the list
+      # send_email
+      recipient_domains: [corp.example]   # every recipient (to, cc, bcc) must be exactly @<domain>
+      # http_get
+      hosts: [status.corp.example]        # URL host exactly in this list: decision = decision
+      approval_hosts: [api.partner.example] # URL host in this list: decision = approval
+      max_url_length: 200                 # longer URL: deny
+
+A constraint that is not given is not checked. An unknown key in the policy is an error (exit 2).
+"""
+import csv, json, re, subprocess, sys
+from urllib.parse import urlsplit
+
+TOOL_KEYS = {"decision", "read_only", "tables", "recipient_domains", "hosts", "approval_hosts", "max_url_length"}
+DECISIONS = {"allow", "approval", "deny"}
+WRITE_WORDS = re.compile(r"\b(insert|update|delete|drop|alter|create|grant|revoke|truncate|merge|into|copy|call|exec|execute)\b", re.I)
+TABLE_RE = re.compile(r"\b(?:from|join)\s+([A-Za-z_][\w.]*)", re.I)
+
+
+def die(msg):
+    print(f"tool-guard: {msg}", file=sys.stderr)
+    sys.exit(2)
+
+
+def load_policy(path):
+    try:
+        if path.endswith((".yaml", ".yml")):
+            out = subprocess.run(["yq", "-o=json", ".", path], capture_output=True, text=True)
+            if out.returncode != 0:
+                die(f"invalid YAML in {path}: {out.stderr.strip()}")
+            pol = json.loads(out.stdout)
+        else:
+            pol = json.load(open(path, encoding="utf-8"))
+    except FileNotFoundError:
+        die(f"no such file: {path}")
+    except json.JSONDecodeError as e:
+        die(f"invalid JSON in {path}: {e}")
+    if not isinstance(pol, dict):
+        die("policy must be an object with keys default and tools")
+    extra = set(pol) - {"default", "tools", "version", "description"}
+    if extra:
+        die(f"unknown top-level keys: {sorted(extra)}")
+    if pol.get("default", "deny") not in ("allow", "deny"):
+        die("default must be allow or deny")
+    tools = pol.get("tools") or {}
+    if not isinstance(tools, dict):
+        die("tools must be a map tool -> rule")
+    for name, rule in tools.items():
+        if not isinstance(rule, dict):
+            die(f"rule for {name} must be a map")
+        bad = set(rule) - TOOL_KEYS
+        if bad:
+            die(f"{name}: unknown keys {sorted(bad)} (allowed: {sorted(TOOL_KEYS)})")
+        if rule.get("decision", "allow") not in DECISIONS:
+            die(f"{name}: decision must be allow, approval or deny")
+        for k in ("tables", "recipient_domains", "hosts", "approval_hosts"):
+            if k in rule and not isinstance(rule[k], list):
+                die(f"{name}: {k} must be a list")
+    return pol
+
+
+def check_sql(rule, args):
+    q = str(args.get("query", "")).strip()
+    body = q.rstrip().rstrip(";").strip()
+    if rule.get("read_only"):
+        if ";" in body:
+            return "multiple SQL statements"
+        if not re.match(r"select\b", body, re.I):
+            return "not a SELECT (read_only)"
+        if WRITE_WORDS.search(body):
+            return "SQL contains a write keyword (read_only)"
+    if "tables" in rule:
+        allowed = {t.lower() for t in rule["tables"]}
+        used = [t.split(".")[-1].lower() for t in TABLE_RE.findall(body)]
+        if not used:
+            return "no table found in query"
+        bad = sorted({t for t in used if t not in allowed})
+        if bad:
+            return "table not in allowlist: " + ",".join(bad)
+    return None
+
+
+def check_email(rule, args):
+    if "recipient_domains" not in rule:
+        return None
+    allowed = {d.lower().lstrip("@") for d in rule["recipient_domains"]}
+    rcpts = []
+    for k in ("to", "cc", "bcc"):
+        v = args.get(k)
+        if v is None:
+            continue
+        rcpts += v if isinstance(v, list) else [v]
+    if not rcpts:
+        return "no recipient"
+    for r in rcpts:
+        m = re.fullmatch(r"[^@\s]+@([^@\s]+)", str(r).strip().lower())
+        if not m or m.group(1) not in allowed:
+            return f"recipient domain not allowed: {r}"
+    return None
+
+
+def check_http(rule, args):
+    url = str(args.get("url", ""))
+    if "max_url_length" in rule and len(url) > int(rule["max_url_length"]):
+        return "deny", f"URL longer than {rule['max_url_length']}"
+    if "hosts" not in rule and "approval_hosts" not in rule:
+        return None, None
+    try:
+        host = (urlsplit(url).hostname or "").lower()
+    except ValueError:
+        host = ""
+    if host in {h.lower() for h in rule.get("hosts", [])}:
+        return None, None
+    if host in {h.lower() for h in rule.get("approval_hosts", [])}:
+        return "approval", f"host {host} requires approval"
+    return "deny", f"host not in allowlist: {host or '?'}"
+
+
+def decide(pol, tool, args):
+    tools = pol.get("tools") or {}
+    if tool not in tools:
+        return pol.get("default", "deny"), "tool not in policy (default)"
+    rule = tools[tool]
+    dec = rule.get("decision", "allow")
+    if dec == "deny":
+        return "deny", "tool denied by policy"
+    args = args if isinstance(args, dict) else {}
+    if tool == "run_sql" or "read_only" in rule or "tables" in rule:
+        why = check_sql(rule, args)
+        if why:
+            return "deny", why
+    if "recipient_domains" in rule:
+        why = check_email(rule, args)
+        if why:
+            return "deny", why
+    if {"hosts", "approval_hosts", "max_url_length"} & set(rule):
+        d, why = check_http(rule, args)
+        if d == "deny":
+            return "deny", why
+        if d == "approval":
+            return "approval", why
+    return dec, "matches policy" if dec == "allow" else "human approval required"
+
+
+def main(argv):
+    if "--policy" not in argv or argv.index("--policy") + 1 >= len(argv):
+        print(__doc__, file=sys.stderr)
+        sys.exit(2)
+    i = argv.index("--policy")
+    pol = load_policy(argv[i + 1])
+    files = [a for j, a in enumerate(argv) if j not in (i, i + 1) and not a.startswith("--")]
+    if not files:
+        die("give at least one .jsonl file with tool calls")
+    w = csv.writer(sys.stdout, lineterminator="\n")
+    w.writerow(["call_id", "session_id", "tool", "decision", "reason"])
+    counts = {}
+    for f in files:
+        for n, line in enumerate(open(f, encoding="utf-8"), 1):
+            if not line.strip():
+                continue
+            try:
+                ev = json.loads(line)
+            except json.JSONDecodeError:
+                die(f"{f}:{n}: invalid JSON")
+            if ev.get("event") != "tool_call":
+                continue
+            dec, why = decide(pol, ev.get("tool"), ev.get("args"))
+            counts[dec] = counts.get(dec, 0) + 1
+            w.writerow([ev.get("call_id", ""), ev.get("session_id", ""), ev.get("tool", ""), dec, why])
+    if "--summary" in argv:
+        print("summary: " + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())), file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

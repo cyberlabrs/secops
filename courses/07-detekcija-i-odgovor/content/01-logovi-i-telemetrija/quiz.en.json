@@ -1,0 +1,237 @@
+[
+  {
+    "obj": "1.1",
+    "q": "On a server you see an audit.log record with uid=0, euid=0 and auid=1001 for a read of /etc/shadow. Who actually performed the action?",
+    "options": [
+      "The user with UID 1001, who logged in and elevated privileges (e.g. sudo)",
+      "root, because uid=0",
+      "The kernel, because auid denotes a system process",
+      "It cannot be determined without journald records"
+    ],
+    "answer": 0,
+    "explain": "auid (loginuid) is set at login and does not change through sudo or su, so it shows the real user behind a root action. uid=0 is only the effective identity after privilege elevation; auid is not a kernel marker, and the information is already in the audit record."
+  },
+  {
+    "obj": "1.1",
+    "q": "On a Debian 12 server with rsyslog, auth.log lines start with 2026-10-16T09:14:02.481233+00:00, and on an old Ubuntu server with Oct 16 09:14:02. What is the practical problem of the second format for an investigation?",
+    "options": [
+      "It does not contain the hostname",
+      "It has no year and no time zone, so correlating with other sources requires assumptions",
+      "It cannot be sent to a SIEM",
+      "It does not record the process PID"
+    ],
+    "answer": 1,
+    "explain": "The traditional syslog timestamp has neither a year nor a zone offset, so when correlating with CloudTrail (UTC) or around a year change you have to assume the zone. The hostname and PID are present in both formats, and a SIEM accepts both."
+  },
+  {
+    "obj": "1.1",
+    "q": "You want journald on a server to detect later modification of its records by an attacker with root access. What do you configure?",
+    "options": [
+      "Storage=volatile",
+      "ForwardToSyslog=yes",
+      "Forward Secure Sealing: journalctl --setup-keys, Seal=yes, verification with journalctl --verify",
+      "SystemMaxUse=1G"
+    ],
+    "answer": 2,
+    "explain": "FSS periodically seals the journal with a key that evolves forward, so modification of older records fails journalctl --verify. volatile keeps records only in RAM, ForwardToSyslog sends to rsyslog, and SystemMaxUse limits disk usage."
+  },
+  {
+    "obj": "1.1",
+    "q": "On a busy web server there are no auth.log records at all between 02:10 and 02:55, while normally there are records every few seconds. How do you interpret this?",
+    "options": [
+      "Normal, there are no logins at night",
+      "An NTP problem, the records are just shifted",
+      "A sign that logrotate ran",
+      "A possible trace of log deletion (T1070.002); compare with the copy in the SIEM and with auditd/journald"
+    ],
+    "answer": 3,
+    "explain": "A gap in an otherwise dense log is a classic indicator of log deletion or modification. The copy sent to the SIEM before the incident shows what disappeared. logrotate creates a new file but does not delete 45 minutes from the middle, and an NTP error shifts time rather than creating a gap."
+  },
+  {
+    "obj": "1.1",
+    "q": "You need an auditd rule that records every modification of /etc/sudoers.d/ with a key for easy searching. Which one is correct?",
+    "options": [
+      "-w /etc/sudoers.d/ -p wa -k priv_esc",
+      "-a always,exit -S execve -k priv_esc",
+      "-w /etc/sudoers.d/ -p x -k priv_esc",
+      "-e 2 -k priv_esc"
+    ],
+    "answer": 0,
+    "explain": "-w sets a watch on the path, -p wa records writes and attribute changes, and -k adds a key for ausearch -k. execve records program execution, -p x records execution of the watched path, and -e 2 locks the audit configuration."
+  },
+  {
+    "obj": "1.1",
+    "q": "A freshly installed Debian 12 server has no /var/log/auth.log, and you need SSH events. What is the most likely reason?",
+    "options": [
+      "sshd on Debian 12 does not log failed logins",
+      "rsyslog is not installed by default; the events are in journald (journalctl -u ssh)",
+      "auth.log has been moved to /var/log/audit/",
+      "auditd must be enabled for sshd to log"
+    ],
+    "answer": 1,
+    "explain": "Since Debian 12, rsyslog is not installed by default, so the text auth.log does not exist until you install it. sshd still logs to journald. audit.log is a different subsystem and does not replace auth.log."
+  },
+  {
+    "obj": "1.2",
+    "q": "You are investigating whether someone downloaded objects from an S3 bucket, but in CloudTrail you only see CreateBucket and PutBucketPolicy, with no GetObject. Why?",
+    "options": [
+      "GetObject is never recorded in CloudTrail",
+      "Event history deletes GetObject after 7 days",
+      "S3 GetObject is a data event, which the trail must explicitly enable; by default only management events are recorded",
+      "GetObject is visible only in VPC Flow Logs"
+    ],
+    "answer": 2,
+    "explain": "Management events (control plane) are recorded by default, while data events such as S3 GetObject must be enabled on the trail or event data store and are billed separately. Event history keeps management events for 90 days. Flow logs show network traffic, not API calls."
+  },
+  {
+    "obj": "1.2",
+    "q": "In Sentinel you are looking for failed sign-ins with a wrong password in Entra ID. Which table and condition do you use?",
+    "options": [
+      "AzureActivity, ActivityStatusValue == \"Failed\"",
+      "Syslog, ProcessName == \"sshd\"",
+      "SecurityEvent, EventID == 4625",
+      "SigninLogs, ResultType == \"50126\""
+    ],
+    "answer": 3,
+    "explain": "Entra ID sign-ins are in SigninLogs, and ResultType 50126 means an invalid username or password (0 is success). AzureActivity records changes to resources, Syslog is Linux, and 4625 is a Windows local/domain logon."
+  },
+  {
+    "obj": "1.2",
+    "q": "On a kubeadm cluster you want to find out who read a Secret in the prod namespace, but you have no audit records at all. What is missing?",
+    "options": [
+      "kube-apiserver was not started with --audit-policy-file and --audit-log-path (or a webhook backend)",
+      "kubelet has no --audit-log-path",
+      "metrics-server must be enabled",
+      "Audit logs are in etcd and are read with etcdctl"
+    ],
+    "answer": 0,
+    "explain": "Auditing is done by kube-apiserver, and without a policy file it generates no events; the backend is a log file or a webhook. kubelet has no API audit, metrics-server is for metrics, and etcd does not store audit records."
+  },
+  {
+    "obj": "1.2",
+    "q": "Which source answers the question \"who changed a Network Security Group in Azure and when\"?",
+    "options": [
+      "Entra ID sign-in logs",
+      "Azure Activity log",
+      "Kubernetes audit log",
+      "Linux auth.log on the VM"
+    ],
+    "answer": 1,
+    "explain": "The Azure Activity log records operations on resources (control plane), with Caller and OperationNameValue. Sign-in logs show sign-ins, not resource changes, and the other two sources do not see the Azure control plane."
+  },
+  {
+    "obj": "1.3",
+    "q": "A team sends auth logs from 200 servers to the SIEM via *.* @siem:514. Events are occasionally missing. What is the cause and the fix?",
+    "options": [
+      "Port 514 is wrong; it should be 1514",
+      "Switch to @@siem:514 without a queue",
+      "@ is UDP with no delivery acknowledgment; switch to TCP with an on-disk queue (omfwd, queue) and preferably TLS",
+      "rsyslog does not support forwarding the auth facility"
+    ],
+    "answer": 2,
+    "explain": "A single @ means UDP, which loses messages under congestion or when the collector is unavailable. omfwd over TCP with a disk-assisted queue and resumeRetryCount=-1 keeps messages until the collector is back, and TLS protects the content. 1514 is the Wazuh agent port, not syslog."
+  },
+  {
+    "obj": "1.3",
+    "q": "You are writing a rule that should work across SSH, VPN and cloud sign-ins. Which ECS field indicates that the login failed?",
+    "options": [
+      "event.kind: alert",
+      "log.level: error",
+      "user.risk: high",
+      "event.outcome: failure"
+    ],
+    "answer": 3,
+    "explain": "In ECS, event.category: authentication describes the type and event.outcome: failure the outcome. event.kind: alert marks an alert, log.level is the message level from the source, and risk fields are not the login outcome."
+  },
+  {
+    "obj": "1.3",
+    "q": "AWS Security Lake normalizes CloudTrail events into OCSF. Which class do API calls go into?",
+    "options": [
+      "API Activity (class_uid 6003)",
+      "Authentication (class_uid 3002)",
+      "Network Activity (class_uid 4001)",
+      "File System Activity (class_uid 1001)"
+    ],
+    "answer": 0,
+    "explain": "The OCSF API Activity class (6003, Application Activity category) describes API calls, which is what CloudTrail records. Authentication is for logins, Network Activity for network flows, and File System Activity for file operations."
+  },
+  {
+    "obj": "1.3",
+    "q": "A SIEM parser normalized SSH records into ECS, but because of a new sshd version it extracted the username incorrectly. What allows you to correct the investigation?",
+    "options": [
+      "event.hash",
+      "The preserved original message (event.original in ECS, full_log in Wazuh)",
+      "Re-running the parser over the index without the original",
+      "The @timestamp field"
+    ],
+    "answer": 1,
+    "explain": "Normalization can make mistakes, so the raw record is always kept alongside the normalized fields. Without the original there is nothing to re-parse, and a hash or timestamp does not bring back the content."
+  },
+  {
+    "obj": "1.3",
+    "q": "The company pays for its SIEM per GB per day, and one application's debug logs are 70% of the volume with no security value. Where is the best place to filter them?",
+    "options": [
+      "In the SIEM, with a level 0 rule",
+      "Do not filter, because any log might be needed",
+      "At the source or in the collector (rsyslog/agent), before ingestion",
+      "Delete them manually from the index every week"
+    ],
+    "answer": 2,
+    "explain": "Everything that reaches the SIEM is paid for and consumes disk, so noise is filtered before ingestion. A level 0 rule only avoids creating an alert, but the event has already been ingested. Indiscriminately collecting everything is expensive and slows down investigations."
+  },
+  {
+    "type": "match",
+    "obj": "1.1",
+    "q": "Match the investigation question with the source that best answers it.",
+    "options": [
+      "Which process read /etc/shadow and who originally logged in",
+      "From which IP address the failed SSH logins came",
+      "Which systemd service crashed and with which PID",
+      "Which commands the user deploy ran via sudo"
+    ],
+    "targets": ["journalctl -u <service> -o json", "ausearch -k shadow_access -i", "grep 'sudo:' /var/log/auth.log | grep COMMAND=", "grep 'Failed password' /var/log/auth.log", "aws cloudtrail lookup-events"],
+    "answer": [1, 3, 0, 2],
+    "explain": "auditd records file access with the auid, sshd writes failed logins to auth.log, journald has structured service fields (_SYSTEMD_UNIT, _PID), and sudo logs every command with COMMAND= to auth.log. CloudTrail is for AWS API calls, not a Linux host."
+  },
+  {
+    "type": "order",
+    "obj": "1.1",
+    "q": "Put the steps in order for a reliable incident timeline from auth.log (Frankfurt, CET), CloudTrail and Kubernetes audit.",
+    "options": [
+      "Merge the events into a single table sorted by time",
+      "Write down the time zone and time format of each source",
+      "Convert all times to UTC (date -u -d, jq)",
+      "Check whether the clocks were synchronized (NTP) during the incident period"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "First you need to know the zone and format of each source, then check that the clock did not drift, then convert everything to UTC, and only then merge. Merging before normalizing time produces a false order."
+  },
+  {
+    "type": "match",
+    "obj": "1.3",
+    "q": "Match the collection method with its main weakness.",
+    "options": [
+      "Syslog over UDP",
+      "Agent on the host",
+      "API pull from the cloud",
+      "Only local files with logrotate"
+    ],
+    "targets": ["Latency, API quotas and collector credentials", "No delivery acknowledgment, messages are lost and easily spoofed", "An attacker with root access deletes them, and rotation removes them after a few weeks anyway", "Software on every host that has to be maintained"],
+    "answer": [1, 3, 0, 2],
+    "explain": "UDP syslog has neither acknowledgment nor protection, an agent requires installation and maintenance, API pull depends on quotas and credentials, and local files are neither secure nor long-lived."
+  },
+  {
+    "obj": "1.1",
+    "q": "Based on this excerpt from /var/log/auth.log, what happened?",
+    "snippet": "Oct 16 02:11:04 web1 sshd[2210]: Invalid user oracle from 203.0.113.45 port 40112\nOct 16 02:11:06 web1 sshd[2210]: Failed password for invalid user oracle from 203.0.113.45 port 40112 ssh2\nOct 16 02:11:09 web1 sshd[2214]: Failed password for deploy from 203.0.113.45 port 40130 ssh2\nOct 16 02:11:12 web1 sshd[2219]: Failed password for deploy from 203.0.113.45 port 40148 ssh2\nOct 16 02:11:15 web1 sshd[2223]: Accepted password for deploy from 203.0.113.45 port 40166 ssh2\nOct 16 02:11:15 web1 sshd[2223]: pam_unix(sshd:session): session opened for user deploy(uid=1001) by (uid=0)\nOct 16 02:12:40 web1 sudo: deploy : TTY=pts/0 ; PWD=/tmp ; USER=root ; COMMAND=/usr/sbin/useradd backup2\nOct 16 02:12:41 web1 useradd[2301]: new user: name=backup2, UID=1002, GID=1002, home=/home/backup2",
+    "lang": "log",
+    "options": [
+      "A successful password guessing attack on account deploy from 203.0.113.45, followed by sudo use and creation of account backup2 for persistence",
+      "Only failed login attempts; the attacker did not get in because account oracle does not exist",
+      "An administrator created account backup2 locally on the console, unrelated to the SSH attempts",
+      "The attacker logged in directly as root through an sshd vulnerability, without a password"
+    ],
+    "answer": 0,
+    "explain": "The same address first guesses (invalid user oracle, then failures for deploy), and seconds later an Accepted password for deploy arrives from it: a successful brute force (T1110) and use of a valid account (T1078). The sudo entry shows deploy running useradd as root, and useradd confirms the new account backup2: persistence (T1136.001). TTY=pts/0 is an SSH session, not the console, and there is no login as root anywhere."
+  }
+]

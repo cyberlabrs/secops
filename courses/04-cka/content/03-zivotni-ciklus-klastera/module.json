@@ -1,0 +1,11 @@
+{
+  "title": "Životni ciklus: nadogradnja, etcd backup/restore, certifikati",
+  "summary": "Nadogradnja kubeadm klastera korak po korak, etcd backup sa etcdctl i restore sa etcdutl, provjera i obnova certifikata te drain/cordon za održavanje čvorova.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.4"
+  ],
+  "title_en": "Lifecycle: upgrades, etcd backup/restore, certificates",
+  "summary_en": "Upgrading a kubeadm cluster step by step, etcd backup with etcdctl and restore with etcdutl, checking and renewing certificates, and drain/cordon for node maintenance."
+}

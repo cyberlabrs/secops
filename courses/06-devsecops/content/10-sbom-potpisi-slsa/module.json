@@ -1,0 +1,14 @@
+{
+  "title": "SBOM, potpisi i SLSA",
+  "summary": "SBOM (CycloneDX, SPDX) za digest slike sa Syftom i Trivyjem, potpis cosignom v3 sa ključem i keyless, in-toto atestacije i SLSA provenance, te provjera potpisa prije deploya i Kyverno ImageValidatingPolicy u klasteru.",
+  "minutes": 100,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.2",
+    "5.3",
+    "5.4"
+  ],
+  "title_en": "SBOM, signatures and SLSA",
+  "summary_en": "SBOMs (CycloneDX, SPDX) for an image digest with Syft and Trivy, signing with cosign v3 using a key and keyless, in-toto attestations and SLSA provenance, verifying signatures before deploy, and Kyverno ImageValidatingPolicy in the cluster."
+}

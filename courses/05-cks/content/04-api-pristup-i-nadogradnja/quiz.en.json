@@ -1,0 +1,241 @@
+[
+  {
+    "obj": "2.3",
+    "q": "From node01 you run curl -k https://controlplane:6443/api/v1/namespaces and get 403 Forbidden with the message User \"system:anonymous\" cannot list resource \"namespaces\". What does that tell you?",
+    "options": [
+      "Anonymous access is enabled; the request was authenticated as system:anonymous, but RBAC doesn't grant permission",
+      "Anonymous access is disabled with --anonymous-auth=false",
+      "A firewall blocks port 6443 from node01",
+      "The API server uses --authorization-mode=AlwaysDeny"
+    ],
+    "answer": 0,
+    "explain": "403 means the identity was established (system:anonymous) and authorization denied it. With anonymous access disabled the response would be 401 Unauthorized, and a blocked port wouldn't give an HTTP response at all."
+  },
+  {
+    "obj": "2.3",
+    "q": "In /etc/kubernetes/manifests/kube-apiserver.yaml you see --authorization-mode=AlwaysAllow. Task: restore the secure configuration that kubeadm sets. Which value is correct?",
+    "options": [
+      "--authorization-mode=RBAC,AlwaysAllow",
+      "--authorization-mode=Webhook",
+      "--authorization-mode=Node,RBAC",
+      "--authorization-mode=ABAC"
+    ],
+    "answer": 2,
+    "explain": "kubeadm uses Node,RBAC: Node authorizes kubelets for their node's objects, and RBAC everything else. Adding AlwaysAllow at the end of the list still lets through everything RBAC doesn't approve, and Webhook or ABAC alone aren't the standard configuration."
+  },
+  {
+    "obj": "2.3",
+    "q": "You added --anonymous-auth=false to the API server manifest. The cluster works, but crictl ps -a shows that the kube-apiserver container restarts every few minutes. What is the most likely cause?",
+    "options": [
+      "NodeRestriction rejects the kubelet's requests",
+      "The static Pod's probes send requests to /livez and /readyz without credentials and get 401",
+      "The --anonymous-auth flag doesn't exist so the API server refuses to start",
+      "etcd doesn't accept connections without anonymous access"
+    ],
+    "answer": 1,
+    "explain": "The kubelet's HTTP probes have no credentials; without anonymous access they get 401 and the kubelet restarts the container. The flag exists (default true), and etcd authenticates with a client certificate, not anonymously."
+  },
+  {
+    "obj": "2.3",
+    "q": "You want anonymous requests to pass only for /livez, /readyz and /healthz. You created an AuthenticationConfiguration with anonymous.enabled: true and conditions for those paths and added --authentication-config. The API server doesn't start. What else needs to be done?",
+    "options": [
+      "Add --anonymous-auth=true so the anonymous block is active",
+      "Change apiVersion to audit.k8s.io/v1",
+      "Add --enable-admission-plugins=AnonymousAuth",
+      "Remove the --anonymous-auth flag from the manifest and mount the file into the Pod through a hostPath volume"
+    ],
+    "answer": 3,
+    "explain": "When an AuthenticationConfiguration configures anonymous, the --anonymous-auth flag must not be set; in addition the file must be available in the container through a volumeMount. The correct apiVersion is apiserver.config.k8s.io/v1, and an AnonymousAuth admission plugin doesn't exist."
+  },
+  {
+    "obj": "2.3",
+    "q": "An attacker obtained /etc/kubernetes/kubelet.conf from node01. The cluster has --authorization-mode=Node,RBAC and --enable-admission-plugins=NodeRestriction. Which of the following CAN they still do with those credentials?",
+    "options": [
+      "Set the label node-restriction.kubernetes.io/pci=true on node01",
+      "Remove a taint from node01",
+      "Set a regular label test=ok on its own Node object node01",
+      "Change the labels of the controlplane node"
+    ],
+    "answer": 2,
+    "explain": "NodeRestriction lets the kubelet modify its own Node, but forbids the node-restriction.kubernetes.io/ prefix, changing taints and any change to other nodes. A regular label without a reserved prefix on its own node goes through."
+  },
+  {
+    "obj": "2.3",
+    "q": "A sensitive Deployment uses a nodeSelector with a label an attacker could set from a compromised node and thereby attract Pods to it. Which label prefix is intended exactly for this case because the kubelet cannot set it under NodeRestriction?",
+    "options": [
+      "kubernetes.io/",
+      "node.kubernetes.io/",
+      "kubelet.kubernetes.io/",
+      "node-restriction.kubernetes.io/"
+    ],
+    "answer": 3,
+    "explain": "The node-restriction.kubernetes.io/ prefix is reserved for administrators for workload isolation. The node.kubernetes.io/ and kubelet.kubernetes.io/ prefixes are explicitly allowed for the kubelet, and so are some kubernetes.io/ labels (e.g. hostname, zone)."
+  },
+  {
+    "obj": "2.3",
+    "q": "kubectl get svc kubernetes -n default shows TYPE NodePort, PORT(S) 443:31000/TCP. Which combination of steps permanently returns the service to ClusterIP?",
+    "options": [
+      "kubectl edit svc kubernetes and change type to ClusterIP; the manifest isn't touched",
+      "Remove --kubernetes-service-node-port from the API server manifest, wait for the restart, and if needed delete the kubernetes service so the API server recreates it",
+      "Set --secure-port=0 to disable the NodePort",
+      "Create a NetworkPolicy that blocks port 31000 in the default namespace"
+    ],
+    "answer": 1,
+    "explain": "The kubernetes service is maintained by the API server itself, and the --kubernetes-service-node-port flag turns it into a NodePort; editing the service manually doesn't remove the cause. --secure-port can't be disabled with zero, and NetworkPolicy doesn't protect the API server because it runs with hostNetwork, outside the Pod network."
+  },
+  {
+    "obj": "2.3",
+    "q": "Task: allow access to port 6443 on controlplane only from the 10.0.0.0/24 network. Which pair of iptables rules does that (the rules are appended to the end of the INPUT chain with no other rules for 6443)?",
+    "options": [
+      "iptables -A INPUT -p tcp --dport 6443 -j DROP; iptables -A INPUT -p tcp --dport 6443 -s 10.0.0.0/24 -j ACCEPT",
+      "iptables -A OUTPUT -p tcp --sport 6443 -d 10.0.0.0/24 -j ACCEPT; iptables -A OUTPUT -p tcp --sport 6443 -j DROP",
+      "iptables -A INPUT -p tcp --dport 6443 -s 10.0.0.0/24 -j ACCEPT; iptables -A INPUT -p tcp --dport 6443 -j DROP",
+      "iptables -A INPUT -p tcp --dport 10250 -s 10.0.0.0/24 -j ACCEPT; iptables -A INPUT -p tcp --dport 10250 -j DROP"
+    ],
+    "answer": 2,
+    "explain": "iptables evaluates rules in order: first ACCEPT for the allowed network, then DROP for everyone else on 6443. The reverse order also drops the allowed addresses, OUTPUT doesn't filter incoming connections, and 10250 is the kubelet, not the API server."
+  },
+  {
+    "obj": "2.3",
+    "q": "The developer jane submitted a CSR. kubectl get csr jane -o jsonpath='{.spec.request}' | base64 -d | openssl req -noout -subject prints subject=CN = jane, O = system:masters. What is the correct action?",
+    "options": [
+      "kubectl certificate deny jane, because the system:masters group bypasses RBAC",
+      "kubectl certificate approve jane, then remove the cluster-admin ClusterRoleBinding",
+      "kubectl certificate approve jane, because CertificateSubjectRestriction changes the group anyway",
+      "Sign the CSR manually with ca.key and -days 1 so it is short-lived"
+    ],
+    "answer": 0,
+    "explain": "The system:masters group has unlimited access that RBAC can't revoke, and the certificate can't be revoked. CertificateSubjectRestriction doesn't change the group but rejects such requests, and manual signing just bypasses the control."
+  },
+  {
+    "obj": "2.3",
+    "q": "You approved the CSR for the user jane, embedded the certificate in the kubeconfig and ran kubectl --context jane get pods. You get: Error from server (Forbidden): pods is forbidden: User \"jane\" cannot list resource \"pods\". What is missing?",
+    "options": [
+      "The CSR wasn't approved",
+      "A Role and RoleBinding (or ClusterRole/ClusterRoleBinding) for the user jane",
+      "signerName should be kubernetes.io/kubelet-serving",
+      "The certificate needs usages: server auth"
+    ],
+    "answer": 1,
+    "explain": "The message contains User \"jane\", so authentication succeeded; authorization denied it. An unapproved CSR or a wrong signer/usages would mean the certificate doesn't exist or gives 401, not 403."
+  },
+  {
+    "obj": "2.3",
+    "q": "What is missing or wrong in this CSR manifest for a user's client certificate? spec: {request: <base64>, signerName: kubernetes.io/kube-apiserver-client, expirationSeconds: 300, usages: [client auth]}",
+    "options": [
+      "signerName must be kubernetes.io/legacy-unknown",
+      "usages must contain digital signature and key encipherment",
+      "The spec.username field is missing",
+      "expirationSeconds is below the minimum of 600"
+    ],
+    "answer": 3,
+    "explain": "The minimum value for expirationSeconds is 600 seconds. The signer kubernetes.io/kube-apiserver-client with usages client auth is the correct choice, and the API fills in username itself based on the identity submitting the CSR."
+  },
+  {
+    "obj": "2.3",
+    "q": "An employee who had a client certificate (CN=bob, O=ops, valid for a year) has left the company. Which step immediately prevents bob from doing anything in the cluster?",
+    "options": [
+      "kubectl delete csr bob",
+      "kubectl certificate deny bob",
+      "Remove the RoleBindings and ClusterRoleBindings for the user bob and the group ops (or move them to another group)",
+      "Restart kube-apiserver so it forgets the certificate"
+    ],
+    "answer": 2,
+    "explain": "Kubernetes doesn't support revoking client certificates: the certificate remains valid for authentication until it expires. Deleting the CSR object or denying it after issuance doesn't affect the issued certificate; only removing permissions (or rotating the CA) makes it useless."
+  },
+  {
+    "obj": "2.3",
+    "q": "Match the file on a kubeadm controlplane node with the identity or role it carries.",
+    "type": "match",
+    "options": [
+      "/etc/kubernetes/admin.conf",
+      "/etc/kubernetes/super-admin.conf",
+      "/etc/kubernetes/kubelet.conf",
+      "/etc/kubernetes/pki/ca.key"
+    ],
+    "targets": [
+      "A key that can sign any client identity",
+      "Group system:masters, bypasses RBAC",
+      "User system:node:<name>, limited by Node authorization",
+      "Group kubeadm:cluster-admins, admin via an RBAC binding",
+      "The token of the default ServiceAccount"
+    ],
+    "answer": [3, 1, 2, 0],
+    "explain": "Since version 1.29 admin.conf uses the kubeadm:cluster-admins group bound via RBAC, super-admin.conf carries system:masters, kubelet.conf the node's identity, and ca.key is the CA key. ServiceAccount tokens aren't in these files."
+  },
+  {
+    "obj": "2.3",
+    "q": "After editing /etc/kubernetes/manifests/kube-apiserver.yaml, kubectl returns connection refused, and crictl ps --name kube-apiserver shows nothing. What is the fastest next step?",
+    "options": [
+      "kubectl describe pod kube-apiserver-controlplane -n kube-system",
+      "crictl ps -a --name kube-apiserver and crictl logs <id>, and if there's no container, journalctl -u kubelet for a YAML error",
+      "kubeadm reset and re-initialization",
+      "systemctl restart kube-apiserver"
+    ],
+    "answer": 1,
+    "explain": "While the API is down, kubectl can't describe anything. The exited container's log shows a wrong flag, and if the container wasn't even created, the kubelet log shows a manifest parsing error. kube-apiserver isn't a systemd service on a kubeadm cluster."
+  },
+  {
+    "obj": "2.4",
+    "q": "The cluster runs v1.35.0. A CVE was published for kube-apiserver that is fixed in patch releases of the 1.35 branch. What is the correct plan?",
+    "options": [
+      "Upgrade to the latest 1.35.x patch via kubeadm upgrade plan/apply, then the kubelets",
+      "Immediately move to the newest minor version, skipping intermediate versions",
+      "Upgrade only the kubelets on the nodes, because the API server comes from an image",
+      "Wait for the next minor version because patch releases don't contain security fixes"
+    ],
+    "answer": 0,
+    "explain": "Security fixes arrive in patch releases of supported minor versions, so the fastest and safest path is a patch of the same branch. Minor versions aren't skipped, and upgrading only the kubelets doesn't fix the API server (and the kubelet must not be newer than it)."
+  },
+  {
+    "obj": "2.4",
+    "q": "kube-apiserver is at v1.35.N. Which kubelet version on node01 is NOT supported by the version skew policy?",
+    "options": [
+      "1.35",
+      "1.34",
+      "1.32",
+      "1.36"
+    ],
+    "answer": 3,
+    "explain": "The kubelet must not be newer than kube-apiserver; it may be up to three minor versions older (1.35, 1.34, 1.33, 1.32). That is why 1.36 is unsupported."
+  },
+  {
+    "obj": "2.4",
+    "q": "Order the steps for upgrading the controlplane node to a new patch (kubeadm, apt).",
+    "type": "order",
+    "options": [
+      "kubectl drain controlplane --ignore-daemonsets",
+      "kubeadm upgrade apply v1.35.N",
+      "apt-get install kubeadm='1.35.N-*' (with apt-mark unhold/hold)",
+      "kubectl uncordon controlplane",
+      "apt-get install kubelet and kubectl, systemctl daemon-reload and restart kubelet",
+      "kubeadm upgrade plan"
+    ],
+    "answer": [2, 5, 1, 0, 4, 3],
+    "explain": "First the new version of the kubeadm tool, then plan and apply for the control plane components. Then drain, upgrade the kubelet and kubectl with a kubelet restart, and finally uncordon."
+  },
+  {
+    "obj": "2.4",
+    "q": "You installed the new kubeadm on node01. Which command upgrades the local kubelet configuration on a worker node?",
+    "options": [
+      "kubeadm upgrade apply v1.35.N",
+      "kubeadm upgrade plan",
+      "kubeadm join --upgrade",
+      "kubeadm upgrade node"
+    ],
+    "answer": 3,
+    "explain": "On worker nodes (and additional control plane nodes) you use kubeadm upgrade node. upgrade apply runs only on the first control plane node, plan only shows the options, and join --upgrade doesn't exist."
+  },
+  {
+    "obj": "2.4",
+    "q": "A team wants to automatically track new Kubernetes vulnerabilities. Which source is official and machine-readable?",
+    "options": [
+      "The Official CVE Feed on kubernetes.io (index.json and feed.xml)",
+      "The output of kubeadm upgrade plan",
+      "kube-bench run --targets master",
+      "A Trivy scan of the nginx image"
+    ],
+    "answer": 0,
+    "explain": "The Official CVE Feed (JSON and RSS) publishes CVEs announced by the Kubernetes Security Response Committee. kubeadm plan shows available versions, kube-bench checks the CIS configuration, and Trivy on an application image doesn't track vulnerabilities of Kubernetes itself."
+  }
+]

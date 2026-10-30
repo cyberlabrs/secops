@@ -1,0 +1,12 @@
+{
+  "title": "RBAC i ServiceAccount: najmanje privilegije",
+  "summary": "RBAC po principu najmanjih privilegija (opasni glagoli, pregled ko šta smije, smanjenje dozvola) i siguran rad sa ServiceAccountima i njihovim tokenima.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.2"
+  ],
+  "title_en": "RBAC and ServiceAccounts: least privilege",
+  "summary_en": "Least-privilege RBAC (dangerous verbs, reviewing who can do what, reducing permissions) and safe use of ServiceAccounts and their tokens."
+}

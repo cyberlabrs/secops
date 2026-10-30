@@ -1,0 +1,266 @@
+[
+  {
+    "obj": "2.2",
+    "q": "Dodao si dekoder za kurs-api u local_decoder.xml. wazuh-logtest i dalje u fazi 2 ne pokazuje name: 'kurs-api'. XML je ispravan. Šta je najvjerovatniji uzrok?",
+    "options": [
+      "Manager nije restartovan, pa analysisd i dalje ima stari skup dekodera",
+      "Pravilo 100100 ima nivo 0",
+      "alerts.json nije upisiv",
+      "Nedostaje <mitre> tag"
+    ],
+    "answer": 0,
+    "explain": "wazuh-logtest koristi dekodere i pravila koja je analysisd učitao. Izmjene u local_decoder.xml i local_rules.xml postaju vidljive tek poslije restarta managera. Nivo pravila i mitre ne utiču na fazu 2."
+  },
+  {
+    "obj": "2.2",
+    "q": "Linija 'login failed user=ana src=198.51.100.23' iz kurs-api treba da napuni srcip i polje result. Kako se u pravilu provjerava vrijednost polja result?",
+    "options": [
+      "<result>^failed$</result>",
+      "<field name=\"result\">^failed$</field>",
+      "<match field=\"result\">failed</match>",
+      "<status>failed</status>, jer je result alias za status"
+    ],
+    "answer": 1,
+    "explain": "result nije statičko polje, pa je dinamičko i provjerava se tagom <field name=\"...\">. Posebne tagove (<srcip>, <user>, <status>...) imaju samo statička polja."
+  },
+  {
+    "obj": "2.2",
+    "q": "Želiš da brute force pravilo okida kad se tvoje pravilo 100101 desi 6 puta u 2 minute sa iste adrese. Koja kombinacija je ispravna?",
+    "options": [
+      "level=\"10\" timeframe=\"6\" frequency=\"120\" + <if_sid>100101</if_sid>",
+      "level=\"10\" + <if_sid>100101</if_sid> + <frequency>6</frequency>",
+      "level=\"10\" frequency=\"6\" timeframe=\"120\" + <if_matched_sid>100101</if_matched_sid> + <same_srcip />",
+      "level=\"0\" frequency=\"6\" + <if_group>100101</if_group>"
+    ],
+    "answer": 2,
+    "explain": "frequency i timeframe su atributi pravila, a brojanje prethodnih alarma radi if_matched_sid (ili if_matched_group). same_srcip ograničava brojanje na istu izvornu adresu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Tvoje frequency pravilo nikad ne okida iako u auth.log ima stotine poklapanja baznog pravila. Bazno pravilo je level=\"0\" da ne pravi šum. U čemu je problem?",
+    "options": [
+      "frequency ne radi na manageru bez indexera",
+      "same_srcip radi samo za Windows agente",
+      "timeframe mora biti djeljiv sa 60",
+      "Alarmi nivoa 0 se odmah odbacuju i ne mogu se brojati sa if_matched_sid; bazno pravilo mora biti bar nivo 1 (po potrebi sa <options>no_log</options>)"
+    ],
+    "answer": 3,
+    "explain": "Dokumentacija eksplicitno kaže da se pravila nivoa 0 odbacuju odmah i ne mogu se koristiti sa if_matched_sid. Ako ne želiš da se bazno pravilo vidi, koristi no_log, a ne nivo 0."
+  },
+  {
+    "obj": "2.2",
+    "q": "Treba ti da ugrađeno pravilo 5710 (sshd invalid user) ima nivo 7 umjesto 5. Koji je ispravan pristup?",
+    "options": [
+      "Kopirati pravilo u local_rules.xml sa overwrite=\"yes\" i promijeniti level",
+      "Izmijeniti /var/ossec/ruleset/rules/0095-sshd_rules.xml",
+      "Napraviti novo pravilo 5710 u local_rules.xml bez dodatnih atributa",
+      "Promijeniti log_alert_level u ossec.conf na 7"
+    ],
+    "answer": 0,
+    "explain": "Ugrađeni fajlovi se pregaze pri upgradeu. overwrite=\"yes\" u local_rules.xml zamjenjuje pravilo; if_sid i ostali if_* tagovi se pri tome ne mogu mijenjati. Isti ID bez overwrite daje grešku duplikata."
+  },
+  {
+    "obj": "2.2",
+    "q": "Interni skener ranjivosti 10.20.0.15 svake noći pravi desetine alarma 5710. Koji način utišavanja je najbolji?",
+    "options": [
+      "Postaviti 5710 na nivo 0 sa overwrite",
+      "Dodati dijete pravilo nivoa 0 sa <if_sid>5710</if_sid> i <srcip>10.20.0.15</srcip>, uz ticket u opisu",
+      "Isključiti cijeli 0095-sshd_rules.xml",
+      "Obrisati linije skenera iz auth.log cron jobom"
+    ],
+    "answer": 1,
+    "explain": "Usko dijete nivoa 0 utišava samo konkretan izvor za konkretno pravilo, a sve ostalo ostaje vidljivo. Spuštanje 5710 ili isključivanje fajla gubi detekciju za sve, a brisanje logova uništava dokaze."
+  },
+  {
+    "obj": "2.2",
+    "q": "U wazuh-logtest izlazu faza 2 pokazuje name: 'kurs-api', ali nema polja srcuser ni srcip. Šta provjeravaš?",
+    "options": [
+      "rules_id u active-response bloku",
+      "Nivo pravila 100101",
+      "Regex i offset u dječjem dekoderu (i prematch koji ga aktivira)",
+      "Da li je JSON_Decoder uključen"
+    ],
+    "answer": 2,
+    "explain": "Ime dekodera znači da se roditelj (program_name) poklopio, ali nijedno dijete nije izvuklo polja. Uzrok je u prematch, regex ili offset djeteta. Pravila se gledaju tek u fazi 3."
+  },
+  {
+    "obj": "2.2",
+    "q": "Koji je smisao opcije -U u komandi wazuh-logtest -q -U '5710:5:sshd'?",
+    "options": [
+      "Učitava korisnički ruleset iz drugog direktorija",
+      "Upisuje rezultat u alerts.json",
+      "Ažurira ruleset sa interneta",
+      "Vraća izlazni kod 0 samo ako linija završi na pravilu 5710, nivou 5 i dekoderu sshd, pa se koristi u automatskim testovima"
+    ],
+    "answer": 3,
+    "explain": "-U zadaje očekivani rezultat (pravilo:nivo:dekoder) i postavlja izlazni kod, što omogućava regresione testove detekcija u CI-ju. Uz -U se šalje jedna linija."
+  },
+  {
+    "obj": "2.2",
+    "q": "Regex u dekoderu sa podrazumijevanim tipom ne radi: ^login (\\w+) user=([a-z0-9._-]{2,32}). Zašto?",
+    "options": [
+      "OS_Regex nema klase [a-z] ni kvantifikatore {n,m}; za to treba type=\"pcre2\"",
+      "OS_Regex ne podržava zagrade",
+      "Regex mora početi sa offset=\"after_regex\"",
+      "Dekoder ne smije sadržati tačku"
+    ],
+    "answer": 0,
+    "explain": "Podrazumijevani OS_Regex je ograničen na osnovne operatore (\\w, \\d, \\s, \\S, +, *...). Složeniji izrazi traže type=\"pcre2\" na <regex>, <prematch> ili <program_name>."
+  },
+  {
+    "obj": "2.2",
+    "q": "Pravilo 100121 treba da okine kad stigne uspješna prijava (100102) sa adrese koja je u zadnjih 5 minuta izazvala brute force alarm 100120. Šta je ključni dio?",
+    "options": [
+      "<if_sid>100120</if_sid> i frequency=\"2\"",
+      "<if_sid>100102</if_sid>, <if_matched_sid>100120</if_matched_sid>, timeframe=\"300\" i <same_srcip />",
+      "<if_group>authentication_failures</if_group> bez timeframe",
+      "<list> sa adresama iz alerts.json"
+    ],
+    "answer": 1,
+    "explain": "Pravilo se provjerava kao dijete uspješne prijave, a if_matched_sid u prozoru timeframe traži raniji brute force alarm; same_srcip veže oba na istu adresu. Ugrađeno 40112 radi isto preko grupa."
+  },
+  {
+    "obj": "2.4",
+    "q": "Dodao si active-response blok sa firewall-drop i <level>7</level>, bez rules_id. Šta će se desiti?",
+    "options": [
+      "Blokiraće se samo IP iz pravila 5763",
+      "Ništa, level se ignoriše bez rules_group",
+      "Blokiraće se svaka izvorna adresa iz bilo kojeg alarma nivoa 7 ili višeg, uključujući lažne pozitive i interne adrese",
+      "Blok će trajati 7 minuta"
+    ],
+    "answer": 2,
+    "explain": "level, rules_id i rules_group su kumulativni: bilo koji aktivira odgovor. Sam level 7 znači blokiranje za ogroman broj pravila, što je gotovo uvijek greška."
+  },
+  {
+    "obj": "2.4",
+    "q": "Koji podatak skripta active responsea dobija na stdin?",
+    "options": [
+      "Sirovu liniju iz auth.log",
+      "Putanju do alerts.json",
+      "Samo IP adresu kao prvi argument komandne linije",
+      "JSON sa command (add ili delete) i parameters.alert koji sadrži cijeli alarm, npr. data.srcip"
+    ],
+    "answer": 3,
+    "explain": "Od Wazuha 4.2 skripte dobijaju JSON na stdin: version, origin, command (add/delete) i parameters sa extra_args, alert i program. delete stiže kad istekne timeout."
+  },
+  {
+    "obj": "2.4",
+    "q": "Brute force na SSH dolazi sa javne NAT adrese kancelarije, iza koje su i svi admini. firewall-drop je uključen za 5763. Koja mjera direktno sprečava samoblokiranje?",
+    "options": [
+      "Dodati adresu kancelarije u <white_list> u <global> bloku ossec.conf",
+      "Staviti location na all",
+      "Povećati timeout na 86400",
+      "Prebaciti firewall-drop na host-deny"
+    ],
+    "answer": 0,
+    "explain": "white_list adrese su izuzete od active responsea. Duži timeout i location all pogoršavaju posljedice, a host-deny blokira isto, samo drugim mehanizmom."
+  },
+  {
+    "obj": "2.4",
+    "q": "Tim predlaže disable-account kao odgovor na pravilo 'više neuspjelih prijava za korisnika'. Koji je glavni rizik?",
+    "options": [
+      "disable-account ne postoji na Linuxu",
+      "Napadač može namjerno zaključati sve naloge (uključujući admine) samo pogađanjem lozinki, pa detekcija postaje DoS alat",
+      "Nalog se nikad ne može ponovo omogućiti",
+      "Skripta traži indexer"
+    ],
+    "answer": 1,
+    "explain": "Automatsko zaključavanje na signal koji napadač kontroliše pretvara odbranu u uskraćivanje usluge. Za naloge je bolje alarm i ručna odluka ili AR samo na visoko pouzdana pravila."
+  },
+  {
+    "obj": "2.4",
+    "q": "Gdje provjeravaš da li je active response zaista izvršen i sa kojim parametrima?",
+    "options": [
+      "journalctl -u sshd",
+      "/var/ossec/logs/alerts/alerts.log jedino",
+      "/var/ossec/logs/active-responses.log (i stanje, npr. iptables -S INPUT)",
+      "/var/ossec/etc/lists/"
+    ],
+    "answer": 2,
+    "explain": "Rezultati izvršavanja skripti idu u /var/ossec/logs/active-responses.log. Efekat se potvrđuje direktno na sistemu, npr. pravilom u iptables."
+  },
+  {
+    "obj": "2.4",
+    "q": "Čemu služi repeated_offenders u konfiguraciji agenta, npr. 1,5,10?",
+    "options": [
+      "Broj alarma prije nego što AR krene",
+      "Broj agenata na kojima se AR izvršava",
+      "Lista ID-jeva pravila",
+      "Rastući timeouti u minutama za adrese koje se ponovo blokiraju"
+    ],
+    "answer": 3,
+    "explain": "repeated_offenders zadaje rastuće trajanje bloka (u minutama) za ponavljače; timeout iz managera važi samo za prvi prekršaj. Podešava se u ossec.conf agenta."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Poredaj faze kroz koje analysisd (i wazuh-logtest) provodi jednu liniju loga, od prve.",
+    "options": [
+      "Filtering: stablo pravila, najdublje poklapanje",
+      "Upis alarma u alerts.json ako je nivo iznad praga",
+      "Pre-decoding: timestamp, hostname, program_name",
+      "Decoding: roditeljski pa dječji dekoder izvlači polja"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      1
+    ],
+    "explain": "Prvo se iz zaglavlja izvuku timestamp, hostname i program_name, zatim dekoder izvlači polja, pa se provjeravaju pravila. Alarm se upisuje samo ako je nivo pobjedničkog pravila dovoljan."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Upari zahtjev sa elementom Wazuh pravila ili dekodera koji ga rješava.",
+    "options": [
+      "Prepoznati izvor po imenu programa u syslog zaglavlju",
+      "Brojati prethodne alarme jednog pravila u vremenskom prozoru",
+      "Ne ponavljati isti korelacioni alarm narednih 60 sekundi",
+      "Provjeriti adresu protiv liste poznatih skenera"
+    ],
+    "targets": [
+      "<list field=\"srcip\" lookup=\"address_match_key\">",
+      "ignore=\"60\"",
+      "<program_name> u roditeljskom dekoderu",
+      "<if_matched_sid> uz frequency i timeframe",
+      "<options>no_full_log</options>"
+    ],
+    "answer": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "program_name prepoznaje izvor, if_matched_sid sa frequency/timeframe broji alarme, ignore utišava ponavljanje, a list radi lookup u CDB listi. no_full_log samo izbacuje full_log iz alarma."
+  },
+  {
+    "obj": "2.4",
+    "type": "order",
+    "q": "Poredaj korake bezbjednog uvođenja automatskog blokiranja IP adresa za novo brute force pravilo.",
+    "options": [
+      "Uključiti firewall-drop sa timeout i white_list",
+      "Pustiti pravilo bez AR-a i mjeriti lažne pozitive",
+      "Testirati pravilo u wazuh-logtest",
+      "AR koji samo obavještava (bez blokiranja)"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "Prvo se pravilo provjeri u logtestu, zatim radi u produkciji bez akcije dok se ne izmjere lažni pozitivi, pa slijedi AR koji samo javlja, i tek onda pravo blokiranje sa timeoutom i whitelistom."
+  },
+  {
+    "type": "spot",
+    "obj": "2.2",
+    "q": "wazuh-logtest pokazuje da se 100101 poklapa na svaku neuspjelu prijavu i da dekoder izvlači srcip, ali 100120 se ne aktivira ni poslije 20 pokušaja sa iste adrese. Klikni red koji je uzrok.",
+    "snippet": "<group name=\"kurs-api,\">\n  <rule id=\"100101\" level=\"0\">\n    <decoded_as>kurs-api</decoded_as>\n    <match>login failed</match>\n    <description>kurs-api: neuspjela prijava</description>\n  </rule>\n\n  <rule id=\"100120\" level=\"10\" frequency=\"6\" timeframe=\"120\">\n    <if_matched_sid>100101</if_matched_sid>\n    <same_srcip />\n    <description>kurs-api: brute force sa $(srcip)</description>\n  </rule>\n</group>",
+    "lang": "xml",
+    "answer": [
+      1
+    ],
+    "explain": "Alarm nivoa 0 se odbacuje odmah i ne ulazi u brojanje, pa frequency nema šta da broji. Ispravka: level=\"3\" (bar 1), a ako bazni alarm ne želiš u indeksu, dodaj <options>no_log</options>, a ne nivo 0. Ostatak korelacije (if_matched_sid, same_srcip, frequency i timeframe) je ispravan."
+  }
+]

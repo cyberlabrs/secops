@@ -1,0 +1,12 @@
+{
+  "title": "Sigurnosni koncepti i principi dizajna",
+  "summary": "Kriptografija i ključevi (CMK, BYOK, HYOK), IAM, sanitizacija i crypto-shredding, mrežna i virtualizacijska sigurnost, cloud prijetnje i higijena, te principi dizajna: data lifecycle, BIA i BC/DR (RTO/RPO/RSL), lock-in, okviri i DevSecOps.",
+  "minutes": 75,
+  "domain": 1,
+  "objectives": [
+    "1.3",
+    "1.4"
+  ],
+  "title_en": "Security concepts and design principles",
+  "summary_en": "Cryptography and key management (CMK, BYOK, HYOK), IAM, sanitization and crypto-shredding, network and virtualization security, cloud threats and hygiene, plus design principles: the data lifecycle, BIA and BC/DR (RTO/RPO/RSL), lock-in, frameworks and DevSecOps."
+}

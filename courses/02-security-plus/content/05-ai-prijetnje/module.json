@@ -1,0 +1,11 @@
+{
+  "title": "AI prijetnje i ranjivosti",
+  "summary": "Prijetnje i ranjivosti pri korištenju vještačke inteligencije: od prompt injectiona i poisoninga do halucinacija, privatnosti i izvršavanja koda, uz OWASP Top 10 za LLM i MITRE ATLAS.",
+  "minutes": 75,
+  "domain": 2,
+  "objectives": [
+    "2.6"
+  ],
+  "title_en": "AI threats and vulnerabilities",
+  "summary_en": "Threats and vulnerabilities when using artificial intelligence: from prompt injection and poisoning to hallucinations, privacy, and code execution, with the OWASP Top 10 for LLM and MITRE ATLAS."
+}

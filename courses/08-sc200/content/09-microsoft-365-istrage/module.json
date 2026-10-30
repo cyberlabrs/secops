@@ -1,0 +1,11 @@
+{
+  "title": "Istraga Microsoft 365 aktivnosti: Audit, eDiscovery, Graph",
+  "summary": "Istraga Microsoft 365 aktivnosti: Purview Audit (Standard i Premium, retencija, pretraga i OfficeActivity), Content search u eDiscovery sa KeyQL-om i search and purge, te Microsoft Graph activity logs za praćenje API poziva aplikacija.",
+  "minutes": 60,
+  "domain": 2,
+  "objectives": [
+    "2.3"
+  ],
+  "title_en": "Investigating Microsoft 365 activities: Audit, eDiscovery, Graph",
+  "summary_en": "Investigating Microsoft 365 activities: Purview Audit (Standard and Premium, retention, search and OfficeActivity), Content search in eDiscovery with KeyQL and search and purge, and Microsoft Graph activity logs for tracking application API calls."
+}

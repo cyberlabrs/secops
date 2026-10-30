@@ -1,0 +1,11 @@
+{
+  "title": "Modelovanje prijetnji za AI sisteme",
+  "summary": "Modelovanje prijetnji za LLM aplikacije, RAG, agente i ML pipeline: DFD sa AI granicama povjerenja, AI imovina, STRIDE dopunjen OWASP i ATLAS listama, abuse case zapisi, heuristike lethal trifecta i Agents Rule of Two, risk registar i okidači za reviziju.",
+  "minutes": 60,
+  "domain": 1,
+  "objectives": [
+    "1.3"
+  ],
+  "title_en": "Threat modeling AI systems",
+  "summary_en": "Threat modeling LLM applications, RAG, agents and ML pipelines: DFDs with AI trust boundaries, AI assets, STRIDE extended with the OWASP and ATLAS lists, abuse case records, the lethal trifecta and Agents Rule of Two heuristics, a risk register and review triggers."
+}

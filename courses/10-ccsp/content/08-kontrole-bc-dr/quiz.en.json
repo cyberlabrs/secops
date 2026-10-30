@@ -1,0 +1,302 @@
+[
+  {
+    "obj": "3.4",
+    "q": "A bank using public IaaS seeks assurance that the provider has adequate physical access controls at its data centers. What is the BEST approach?",
+    "options": [
+      "Demand an individual unannounced tour of all of the provider's data centers.",
+      "Assume the controls are good because the provider is large.",
+      "Review the provider's SOC 2 Type II report and ISO/IEC 27001 certificate.",
+      "Install its own cameras in the provider's data center."
+    ],
+    "answer": 2,
+    "explain": "Independent audit reports are the standard way for a customer to gain assurance about the provider's physical controls. Individual tours and own cameras are not allowed because they would endanger all tenants, and an assumption is not evidence."
+  },
+  {
+    "obj": "3.4",
+    "q": "A company uses 40 SaaS applications with local accounts. An audit finds active accounts of employees who left months ago. Which control BEST addresses the root cause?",
+    "options": [
+      "Federation with a central IdP (SSO) and automatic provisioning and deprovisioning through SCIM",
+      "Mandatory password change every 30 days in each application",
+      "A quarterly manual review of accounts in each application",
+      "Adding CAPTCHA to the sign-in pages"
+    ],
+    "answer": 0,
+    "explain": "A central identity means that disabling an account in the IdP revokes access to all federated applications, and SCIM automatically removes local accounts. Password changes do not remove accounts, manual reviews are slow and error-prone, and CAPTCHA is not relevant."
+  },
+  {
+    "obj": "3.4",
+    "q": "An application on VMs uses a static API key, stored in a configuration file, to access cloud storage. Which change is the BEST?",
+    "options": [
+      "Encrypt the configuration file with a password stored in the same directory.",
+      "Rotate the key once a year.",
+      "Move the key to an environment variable.",
+      "Use a workload identity (instance role) with short-lived credentials and minimal permissions."
+    ],
+    "answer": 3,
+    "explain": "Workload identities provide automatically rotated, short-lived credentials without static secrets, with least privilege. An environment variable and encryption with a password from the same directory leave a static secret, and annual rotation is too weak."
+  },
+  {
+    "obj": "3.4",
+    "q": "A regulator requires that the cloud provider cannot access patient data even while it is being processed in memory. Which control BEST meets this requirement?",
+    "options": [
+      "Disk encryption with provider-managed keys",
+      "Confidential computing with hardware enclaves",
+      "TLS 1.3 between the client and the application",
+      "Object versioning in storage"
+    ],
+    "answer": 1,
+    "explain": "Encryption at rest and TLS do not protect data in use. Confidential computing processes data in hardware-isolated enclaves inaccessible to the host and the operator. Versioning is protection against loss, not confidentiality."
+  },
+  {
+    "obj": "3.4",
+    "q": "The incident response team wants to analyze the content of network traffic of a suspicious instance in an IaaS environment. Which mechanism is the MOST appropriate?",
+    "options": [
+      "A request to the provider for access to the physical switch",
+      "Traffic mirroring from the instance to a packet capture sensor",
+      "Reviewing the provider's SOC 3 report",
+      "Analyzing only billing reports"
+    ],
+    "answer": 1,
+    "explain": "In IaaS the customer has no access to the physical network, but can use traffic mirroring or a host agent for packet capture. Access to the switch is not allowed, and SOC 3 and billing do not contain traffic."
+  },
+  {
+    "obj": "3.4",
+    "q": "An organization has logs from three cloud providers and dozens of SaaS applications, but analysts review them separately and miss attacks that cross system boundaries. What is the BEST solution?",
+    "options": [
+      "Increase log retention in each system.",
+      "Disable logging in less important systems.",
+      "Hire more analysts for manual review.",
+      "Centralize logs in a SIEM with normalization, synchronized time, and correlation rules."
+    ],
+    "answer": 3,
+    "explain": "Correlating events from different sources in a SIEM reveals attacks that are not visible in individual logs. Longer retention, more people, or fewer logs do not solve the problem of linking events."
+  },
+  {
+    "obj": "3.4",
+    "q": "An organization is launching a private cloud in its own facility. Employees have been observed entering the server room right behind colleagues without using their badge. Which control BEST prevents this?",
+    "options": [
+      "A mantrap (security booth) with authentication of one person per passage",
+      "A warning sign on the door",
+      "A camera whose footage is not monitored",
+      "A longer keypad code"
+    ],
+    "answer": 0,
+    "explain": "A mantrap physically prevents tailgating because it lets through one authenticated person. A sign is a deterrent, an unmonitored camera only records, and a longer code does not prevent entering behind a colleague."
+  },
+  {
+    "obj": "3.4",
+    "q": "Ransomware compromised an administrator account and deleted production data and backups in the same cloud account. Which control would MOST likely have preserved the backups?",
+    "options": [
+      "More frequent backups in the same account",
+      "Backup compression",
+      "Backups in a separate account with separate credentials and immutability (WORM)",
+      "A longer password for the administrator account"
+    ],
+    "answer": 2,
+    "explain": "Backup isolation (another account, separate credentials) and immutability prevent a compromised production administrator from deleting the copies. More frequent backups in the same account and compression do not protect, and a longer password does not fix an already compromised account."
+  },
+  {
+    "obj": "3.4",
+    "q": "The root account of a cloud environment is used for everyday administrative tasks. Which combination of measures is the BEST?",
+    "options": [
+      "Share the root account password with all administrators for availability.",
+      "Delete the root account.",
+      "Use root only on weekends.",
+      "Protect root with strong MFA, use it only through a break-glass procedure, alert on every use, and give administrators individual accounts with least privilege."
+    ],
+    "answer": 3,
+    "explain": "The root account is not used for everyday work; it is reserved for emergencies with strong MFA and alerting, and administrators work through individual, restricted accounts for accountability. Sharing the password destroys accountability, and root typically cannot be deleted."
+  },
+  {
+    "obj": "3.4",
+    "q": "A firm uses a SaaS CRM and wants in-depth packet capture of traffic inside the application for forensics. What is the MOST likely outcome?",
+    "options": [
+      "The customer can install a network tap in the provider's data center.",
+      "Packet capture inside the SaaS is not available to the customer; it relies on the audit logs the provider exposes and contractual cooperation.",
+      "The SaaS provider is obliged to hand over all traffic of all tenants.",
+      "Packet capture is automatically enabled in every SaaS."
+    ],
+    "answer": 1,
+    "explain": "In SaaS the customer controls neither the network nor the infrastructure. What is available are the application's audit logs and the provider's cooperation as defined by contract. A tap in the data center and other tenants' traffic are not possible."
+  },
+  {
+    "obj": "3.5",
+    "q": "Who should determine the RTO and RPO for an order processing system?",
+    "options": [
+      "Business process owners through the BIA, with management approval",
+      "The cloud provider in its SLA",
+      "The backup system administrator based on technical capabilities",
+      "The external auditor"
+    ],
+    "answer": 0,
+    "explain": "RTO and RPO derive from the business impact of a disruption, so they are determined by process owners through the BIA. IT proposes solutions and costs, the provider gives an SLA for its service, and the auditor checks the process."
+  },
+  {
+    "obj": "3.5",
+    "q": "The BIA shows that at most 10 minutes of transactions may be lost. Which metric is defined by this, and what does it MOST directly determine?",
+    "options": [
+      "RTO; it determines the number of employees in the DR team",
+      "RSL; it determines the percentage of capacity in the DR environment",
+      "RPO; it determines the backup frequency or the data replication method",
+      "MTD; it determines the location of the DR center"
+    ],
+    "answer": 2,
+    "explain": "RPO is the maximum acceptable data loss measured in time and determines how often data is copied or replicated. RTO is the recovery time, RSL the capacity during DR, and MTD the survival limit."
+  },
+  {
+    "obj": "3.5",
+    "q": "For a critical system, the MTD is 6 hours, and after technical recovery 2 hours are needed to verify the data (WRT). What is the HIGHEST acceptable RTO?",
+    "options": [
+      "4 hours",
+      "6 hours",
+      "8 hours",
+      "2 hours"
+    ],
+    "answer": 0,
+    "explain": "RTO + WRT must not exceed the MTD: 6 − 2 = 4 hours. An RTO of 6 or 8 hours exceeds the MTD when the WRT is added. 2 hours is acceptable, but it is not the highest value."
+  },
+  {
+    "obj": "3.5",
+    "q": "During a disaster, the company accepts that the reporting system runs at 40% of normal capacity. Which metric describes this requirement?",
+    "options": [
+      "Recovery Point Objective",
+      "Recovery Service Level",
+      "Maximum Tolerable Downtime",
+      "Mean Time Between Failures"
+    ],
+    "answer": 1,
+    "explain": "Recovery Service Level (RSL) is the percentage of normal capacity or performance needed during the DR state. It enables a smaller and cheaper DR environment. RPO is data loss, MTD the disruption limit, and MTBF a reliability metric."
+  },
+  {
+    "obj": "3.5",
+    "q": "An organization has built its entire production with a single public provider. Management is most concerned about the possibility that the provider stops providing service due to bankruptcy or a legal dispute. Which DR strategy BEST addresses this risk?",
+    "options": [
+      "A multi-AZ architecture in the same region",
+      "DR in another region of the same provider",
+      "More frequent snapshots in the same account",
+      "DR with another provider, with portable data formats and an exit strategy"
+    ],
+    "answer": 3,
+    "explain": "The risk is at the level of the entire provider, so zones and regions of the same provider do not cover it. A strategy with another provider, portable data and configurations (IaC), and a contractual exit strategy is needed."
+  },
+  {
+    "obj": "3.5",
+    "q": "A system has an RTO of 30 minutes and an RPO of 5 minutes, and the budget does not allow a full duplicate production environment. Which cloud DR pattern is the MOST appropriate?",
+    "options": [
+      "Backup and restore with a daily backup",
+      "A cold site without replication",
+      "Multi-site active/active with full capacity at both sites",
+      "Warm standby with continuous replication and reduced capacity that scales up on failover"
+    ],
+    "answer": 3,
+    "explain": "Warm standby provides recovery in minutes at a lower cost than active/active. A daily backup and a cold site meet neither the 5-minute RPO nor the 30-minute RTO, and active/active is too expensive for the given budget."
+  },
+  {
+    "obj": "3.5",
+    "q": "Management wants to test the DR plan with the MOST confidence that it works technically, but without the risk of interrupting production. Which test is the BEST?",
+    "options": [
+      "Parallel test: DR systems process data in parallel while production is running",
+      "Full interruption test",
+      "Checklist review of the plan",
+      "Tabletop exercise"
+    ],
+    "answer": 0,
+    "explain": "A parallel test proves that the DR environment actually works, while production remains untouched. Full interruption gives more confidence, but carries the risk of an outage. Checklist and tabletop do not prove technical feasibility."
+  },
+  {
+    "obj": "3.5",
+    "q": "During a real outage, the team could not access the DR plan because it was stored only on a wiki in the affected cloud environment. What should have been done?",
+    "options": [
+      "Store the plan in the same region, but in another bucket.",
+      "Keep the plan also outside the systems it protects (another location, offline copies) and verify its availability during tests.",
+      "Keep the plan only in the head of the DR team leader.",
+      "Abandon the written plan."
+    ],
+    "answer": 1,
+    "explain": "The plan must be available when the primary systems are not. It is kept at an independent location and in offline form, and tests also verify its availability. Another bucket in the same region shares the same risk, and a plan in one person's head is a single point of failure."
+  },
+  {
+    "obj": "3.5",
+    "q": "A DR test shows that the application successfully starts in another region, but cannot decrypt the database. Which planning oversight is the MOST likely?",
+    "options": [
+      "The wrong type of load balancer",
+      "Too few instances in the DR region",
+      "Encryption keys (KMS) are not replicated or available in the DR region",
+      "Tabletop tests that are not frequent enough"
+    ],
+    "answer": 2,
+    "explain": "Dependencies such as encryption keys, the IdP, and DNS must be available at the DR site. Without the key, replicated data is unusable. The load balancer and the number of instances do not affect decryption."
+  },
+  {
+    "obj": "3.5",
+    "q": "What is the MOST important activity after every DR test or real incident?",
+    "options": [
+      "Deleting the test logs to save space",
+      "Changing the DR provider",
+      "A lessons learned analysis, comparing the achieved RTO/RPO with the objectives, and updating the plan",
+      "Reducing the frequency of future tests"
+    ],
+    "answer": 2,
+    "explain": "The purpose of a test is to find gaps. Lessons learned and updating the plan, together with measuring the achieved metrics, close the improvement loop. Deleting logs, changing providers without analysis, and less frequent tests do not contribute."
+  },
+  {
+    "obj": "3.5",
+    "type": "order",
+    "q": "Arrange the types of BC/DR plan tests from the least to the greatest impact on production.",
+    "options": [
+      "Parallel test",
+      "Checklist / read-through",
+      "Full interruption",
+      "Tabletop / structured walkthrough",
+      "Simulation"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "Checklist and tabletop have no impact on systems, simulation includes real activities without switching production, a parallel test brings up DR systems alongside production, and full interruption actually shuts down production."
+  },
+  {
+    "obj": "3.4",
+    "type": "match",
+    "q": "Match each requirement with the control that BEST meets it.",
+    "options": [
+      "Administrators need privileged access only when they have an approved task",
+      "Traffic between the on-prem data center and the cloud VPC must be encrypted",
+      "A compromised web server must not be able to directly access other applications' databases",
+      "Link events from the IdP, cloud API, and EDR into a single incident"
+    ],
+    "targets": [
+      "SIEM correlation",
+      "PAM with just-in-time access",
+      "Microsegmentation",
+      "IPsec VPN or an encrypted dedicated link",
+      "Degaussing"
+    ],
+    "answer": [
+      1,
+      3,
+      2,
+      0
+    ],
+    "explain": "JIT privileged access is provided by PAM, an encrypted connection between on-prem and the cloud by an IPsec VPN or an encrypted dedicated link, lateral movement is limited by microsegmentation, and linking events from different sources is done by a SIEM. Degaussing is a media sanitization method."
+  },
+  {
+    "obj": "3.5",
+    "type": "multi",
+    "q": "Based on the BIA requirements and the DR test record, which TWO requirements were NOT met?",
+    "snippet": "BIA (orders): MTD 8 h | RTO 4 h | RPO 15 min | RSL 50 %\nStrategy: warm standby in a second region, asynchronous database replication\nDR test 2026-10-18, simulated outage of the primary region at 09:00\n09:00        disaster declared, DR plan activated\n09:05        last replicated transaction in the DR database: 08:20\n11:40        application available in the DR region (60 % capacity)\n11:40-17:30  data verification and users back to work (WRT)",
+    "lang": "text",
+    "options": [
+      "The RTO was not met",
+      "The RPO was not met",
+      "The RSL was not met",
+      "The total time until users are back to work (RTO + WRT) exceeds the MTD"
+    ],
+    "answer": [1, 3],
+    "explain": "RPO: the last replicated transaction is from 08:20 and the outage was at 09:00, so 40 minutes of data were lost (15 allowed); asynchronous replication must be made faster or switched to synchronous for this system. MTD: technical recovery took 2 h 40 min and verification and return to work another 5 h 50 min, 8 h 30 min in total, which exceeds the 8 h MTD (rule RTO + WRT <= MTD). The RTO (2 h 40 min <= 4 h) and RSL (60 % >= 50 %) were met. The test result goes to process owners and management, who decide whether to invest or accept the risk."
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "title": "Siguran SDLC, assurance i provjeren softver",
+  "summary": "Kako zagovarati trening iz aplikativne sigurnosti, OWASP Top 10, ASVS, API i LLM Top 10, faze secure SDLC-a, threat modeling (STRIDE, DREAD, PASTA, ATASM), SAST/DAST/IAST/SCA, abuse case testiranje, sigurnost API-ja i softverskog lanca snabdijevanja (SBOM, potpisivanje, licence, open source).",
+  "minutes": 90,
+  "domain": 4,
+  "objectives": [
+    "4.1",
+    "4.2",
+    "4.3",
+    "4.4",
+    "4.5"
+  ],
+  "title_en": "Secure SDLC, assurance, and validated software",
+  "summary_en": "How to advocate for application security training, OWASP Top 10, ASVS, API and LLM Top 10, secure SDLC phases, threat modeling (STRIDE, DREAD, PASTA, ATASM), SAST/DAST/IAST/SCA, abuse case testing, API and software supply chain security (SBOM, signing, licensing, open source)."
+}

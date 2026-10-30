@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "3.1",
+    "q": "An internal assistant indexes all SharePoint documents into one collection. The system prompt tells the model not to reveal documents the user has no right to. A sales employee receives a summary of salaries from HR. What is the fundamental design mistake?",
+    "options": [
+      "The model is too small to follow the instruction",
+      "Access control was left to the model; non-permitted chunks have already entered the context, and the ACL filter must be applied at retrieval",
+      "The system prompt should be repeated at the end of the context",
+      "SharePoint should not be indexed"
+    ],
+    "answer": 1,
+    "explain": "Anything that enters the context should be considered disclosed. The ACL is enforced in the retriever based on the identity from authentication. A larger model or a repeated prompt doesn't make the model an authorization mechanism, and indexing SharePoint is fine with the right controls."
+  },
+  {
+    "obj": "3.1",
+    "q": "The retriever fetches the top 5 most similar chunks, and then the application drops those the user has no right to. Users from small departments often get empty answers. What is the best fix?",
+    "options": [
+      "Pre-filter: the vector store searches only chunks the user may see, and the post-check stays as defense in depth",
+      "Send all 5 chunks to the model with an instruction to ignore the non-permitted ones",
+      "Increase top-k to 500 and remove the check",
+      "Give small departments access to all documents"
+    ],
+    "answer": 0,
+    "explain": "A post-filter over a small top-k set gives poor or empty results when the most similar chunks belong to others. A pre-filter solves both accuracy and security. Sending them to the model discloses the data, removing the check is dangerous, and widening rights violates least privilege."
+  },
+  {
+    "obj": "3.1",
+    "q": "Marko lost access to the legal folder this morning. The RAG index, including ACLs, is refreshed once a week. Which combination of controls best closes this window?",
+    "options": [
+      "Manually tell Marko not to use the assistant for legal questions",
+      "Delete the whole index every night",
+      "Event-driven processing of rights changes, a maximum revocation delay metric and a real-time access check in the source system for sensitive sources",
+      "Encrypt the vector store at rest"
+    ],
+    "answer": 2,
+    "explain": "The ACL in the index is a copy that goes stale. Revocation must arrive quickly (events), it must be measured, and for sensitive documents a check in the source system before insertion into the prompt removes the dependency on the copy. Encryption doesn't change who is authorized, and nightly deletion is expensive and leaves a daily window."
+  },
+  {
+    "obj": "3.1",
+    "q": "The retriever filters on a group field that comes from the JSON body of a request sent by the frontend. What is the problem?",
+    "options": [
+      "JSON is not a fast enough format for filters",
+      "The field should be called groups instead of group",
+      "The filter should be applied only after the answer is generated",
+      "The identity and groups come from the client and can be forged; the retriever must take them from a verified token or the IdP"
+    ],
+    "answer": 3,
+    "explain": "Authorization attributes must come from authentication (a verified token, the IdP), not from data controlled by the client or the query text. The field name and format aren't security-relevant, and filtering after generation is too late."
+  },
+  {
+    "obj": "3.1",
+    "q": "A multi-customer application uses one collection in the vector store and a tenant_id filter that developers add to every query. In a new endpoint the filter was forgotten. Which design change prevents a repeat?",
+    "options": [
+      "A code review checklist with the item “add tenant_id”",
+      "The tenant filter is set automatically by the data access layer from the request's identity (or a separate index per tenant), with an automated isolation test in CI",
+      "Add tenant_id to the system prompt",
+      "Use a larger embedding model"
+    ],
+    "answer": 1,
+    "explain": "A control that depends on a developer not forgetting it is not reliable. A central layer or logical isolation (a separate index/namespace) removes the possibility of error, and a test with two tenants proves it. A checklist helps but isn't a technical control; the prompt and the model are irrelevant."
+  },
+  {
+    "obj": "3.1",
+    "q": "A team introduces a semantic cache: if a new query is similar enough to an earlier one, the earlier answer is returned. The cache is keyed only by the query vector. What risk does this introduce?",
+    "options": [
+      "An answer built from documents available to one user can be returned to a user without those rights; the cache must be keyed by tenant and set of rights, or disabled for sensitive sources",
+      "The cache increases token cost",
+      "The cache doesn't work with embeddings",
+      "There is no risk because the cache contains only answers, not documents"
+    ],
+    "answer": 0,
+    "explain": "An answer is a derived artifact and inherits the rights of the documents it was built from. A cache keyed only by similarity bypasses the ACL filter. A cache reduces cost, works precisely with embeddings, and the answer does contain information from the documents."
+  },
+  {
+    "obj": "3.1",
+    "q": "A vector store backup with vectors, but without the chunk text, was found in a publicly accessible storage bucket. A manager claims it isn't an incident because they're “just numbers.” How should you proceed?",
+    "options": [
+      "Agree, because vectors can't be turned back into text",
+      "Delete the backup and not document the event",
+      "Treat it as a data leak with the same classification as the source documents, because embedding inversion can reconstruct a significant part of the text, and start the incident response process",
+      "Rotate only the embedding service's API key"
+    ],
+    "answer": 2,
+    "explain": "OWASP LLM08 lists embedding inversion as a risk: vectors are not anonymization and carry the source's classification. The event is handled as an incident, including an assessment of notification obligations. Deleting without documenting and rotating an unrelated key don't address the exposure."
+  },
+  {
+    "obj": "3.1",
+    "q": "A user requests deletion of their data (right to erasure). The documents were deleted from the source system, but the RAG assistant still quotes parts of them. What was missing?",
+    "options": [
+      "A larger top-k",
+      "A new system prompt forbidding mention of that user",
+      "Encrypting the vectors",
+      "A doc_id and source version on every chunk, and a process that removes chunks, vectors, summaries and cache entries when the source is deleted"
+    ],
+    "answer": 3,
+    "explain": "Reliable deletion requires linking every derived artifact to its source (doc_id) and an event that triggers deletion in the index, cache and summaries. A prompt doesn't delete data, and encryption and top-k are irrelevant to deletion."
+  },
+  {
+    "obj": "3.1",
+    "q": "A vector store in Kubernetes has its admin dashboard exposed through a public Ingress, and the application and the ingest job use the same API key with full rights. Which changes are the priority?",
+    "options": [
+      "Dashboard only via VPN/SSO, a private network and a NetworkPolicy for the database, separate accounts for ingest (write) and the retriever (read-only), keys in a secrets manager",
+      "Move the dashboard to a non-standard port",
+      "Add a CAPTCHA to the dashboard",
+      "Increase the number of database replicas"
+    ],
+    "answer": 0,
+    "explain": "A vector store contains the same data as the source documents and is protected like a production database: no public admin access, network isolation and least privilege per component. A non-standard port is security through obscurity, a CAPTCHA doesn't replace authentication, and replicas are about availability."
+  },
+  {
+    "obj": "3.1",
+    "q": "A support RAG assistant also indexes tickets opened by customers. After a few weeks the assistant gives an incorrect phone number for the “refund department,” which comes from a single ticket. What is this pattern called, and which control is key?",
+    "options": [
+      "LLM09 Misinformation; shut down RAG",
+      "RAG corpus poisoning (ATLAS AML.T0070); source trust levels, quarantine of user-generated content before indexing and citations in the answer",
+      "Model extraction; rate limit",
+      "Embedding inversion; encrypt the vectors"
+    ],
+    "answer": 1,
+    "explain": "Content from a source that a wide circle of people writes to entered the corpus without review: that is RAG poisoning. The controls are at ingest (trust, quarantine, provenance) and in the UI (citations). Shutting down RAG is disproportionate, and model extraction and inversion are different risks."
+  },
+  {
+    "obj": "3.1",
+    "q": "Before the first indexing of the internal wiki, the security team proposes scanning the whole corpus. What is the main reason?",
+    "options": [
+      "Speeding up embedding",
+      "Reducing the number of chunks",
+      "Wikis and tickets often contain pasted secrets and personal data; what isn't indexed can't leak through the assistant (ATLAS also describes RAG Credential Harvesting)",
+      "Spell checking for better answers"
+    ],
+    "answer": 2,
+    "explain": "Scanning for secrets and personal data before indexing prevents the assistant from becoming a credential search engine (AML.T0082). Speed, chunk count and spelling are not security reasons."
+  },
+  {
+    "obj": "3.1",
+    "q": "A team is considering an external API for embedding documents that contain customers' personal data. What is the most important question before deciding?",
+    "options": [
+      "What the vector dimension is",
+      "Whether the API supports batch requests",
+      "Whether the API is faster than a local model",
+      "Where the data is processed, how long the vendor retains it and whether it uses it for training, and whether a data processing agreement exists"
+    ],
+    "answer": 3,
+    "explain": "External embedding means every document and query leaves your infrastructure. That is a data processing decision: location, retention, use and contract. Dimension, batching and speed are technical details with no impact on data protection."
+  },
+  {
+    "obj": "3.1",
+    "q": "A team is switching to a new, better embedding model. A developer suggests embedding only new documents with the new model and leaving the old ones as they are. What is the problem?",
+    "options": [
+      "The vectors of two models aren't comparable, so retrieval becomes unreliable; changing the model is a migration with a new index version and full reindexing",
+      "No problem, vectors are universal",
+      "The only problem is storage cost",
+      "The old vectors just need to be normalized"
+    ],
+    "answer": 0,
+    "explain": "Different models produce different vector spaces. Mixing them breaks ranking, and with it the behavior of filters and tests. The right approach is to reindex with a versioned index and verify that the metadata (ACL, provenance) was carried over."
+  },
+  {
+    "obj": "3.1",
+    "q": "What is the most reliable way to automatically test that a RAG system doesn't leak documents between users?",
+    "options": [
+      "Ask the model whether it has ever revealed someone else's documents",
+      "A canary document with a unique string available to only one test user; a second test user from another group and tenant runs queries, and the test fails if the string appears in chunks or the answer",
+      "Manually review 10 random answers a month",
+      "Check whether the vector store has TLS enabled"
+    ],
+    "answer": 1,
+    "explain": "A canary test is deterministic, repeatable and can run in CI on every retriever change. The model is not a reliable witness of its own behavior, a manual sample is weak, and TLS says nothing about authorization."
+  },
+  {
+    "obj": "3.1",
+    "q": "The application marks retrieved content in the prompt as “data, not instructions.” A developer believes this solves indirect prompt injection from the corpus. How do you respond?",
+    "options": [
+      "Correct, the markers fully solve the problem",
+      "The markers should be removed because they confuse the model",
+      "The markers reduce the risk but don't remove it; they must be combined with control over what enters the corpus and limited permissions for what the model may do",
+      "Only fine-tuning the model solves the problem"
+    ],
+    "answer": 2,
+    "explain": "Separation in the prompt is a useful but probabilistic measure. Defense in depth combines control over corpus input, limited permissions (gateway, approval) and treating output as untrusted. Fine-tuning alone doesn't give a guarantee either."
+  },
+  {
+    "obj": "3.1",
+    "q": "At ingest the model writes a summary of every document, and the summaries are indexed into a shared “previews” collection without ACLs to make search faster. What is the problem?",
+    "options": [
+      "Summaries are too short for a good embedding",
+      "Summaries consume too many tokens",
+      "The model doesn't know how to write summaries",
+      "A summary is a derived artifact and must inherit the document's ACL; without that, the previews collection bypasses access control"
+    ],
+    "answer": 3,
+    "explain": "Everything created from a document carries its rights, and when several documents are mixed, the most restrictive ones. A collection without ACLs is a side channel for leakage. Length and cost are secondary."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which set of metadata fields is minimally required on every chunk to enforce access control, deletion and poisoning investigations?",
+    "options": [
+      "doc_id, source version, source system, tenant, allowed groups, classification, ingest time and content hash",
+      "Only the chunk text and the vector",
+      "The document title and page number",
+      "The name of the embedding model"
+    ],
+    "answer": 0,
+    "explain": "The ACL fields enable filtering, doc_id and version enable deletion, and source, time and hash enable provenance and investigation. The other options are useful, but don't enable any of the three security functions."
+  },
+  {
+    "obj": "3.1",
+    "q": "In the RAG logs you see that the number of chunks rejected due to ACLs for one user rose 50-fold in a single day. What does this most likely mean, and what is a reasonable response?",
+    "options": [
+      "An error in the embedding model; replace the model",
+      "Possibly deliberate probing for other people's data, or a change in rights/ranking; investigate the user's queries and recent ACL and retriever changes",
+      "Normal behavior; ignore it",
+      "The vector store is compromised; shut it down immediately"
+    ],
+    "answer": 1,
+    "explain": "A sudden rise in rejected chunks is a signal worth investigating: the user may be deliberately looking for sensitive topics, or group membership or ranking has changed. The filter worked, so there is no evidence of a database compromise, and replacing the model is unrelated."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Match the RAG system risk with the control that most directly mitigates it.",
+    "options": [
+      "Leakage between customers in a shared index",
+      "Reconstruction of text from stolen vectors",
+      "Revoked rights still apply through the assistant",
+      "Incorrect content from customer tickets in answers",
+      "An answer for the director returned to an intern"
+    ],
+    "targets": [
+      "Quarantine and trust levels for user-generated content",
+      "A cache keyed by tenant and set of rights",
+      "A mandatory tenant filter from the data access layer or a separate index",
+      "Vectors classified and protected like the source text",
+      "Event-driven revocation sync and a check in the source system"
+    ],
+    "answer": [2, 3, 4, 0, 1],
+    "explain": "Tenant isolation prevents leakage between customers, vector protection addresses embedding inversion, revocation sync closes the window of stale rights, quarantine prevents corpus poisoning, and a cache keyed by rights prevents leakage through derived answers."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Order the steps for processing a query in a RAG system with access control, from first to last.",
+    "options": [
+      "The model generates the answer, and the application displays it with source citations",
+      "The vector store returns the top-k chunks only from the permitted set (pre-filter)",
+      "The application takes the user's identity and groups from a verified token",
+      "A second ACL check on the results and prompt assembly with marked context",
+      "The query is turned into an embedding"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "Identity comes first because the filter depends on it. Then the query embedding, retrieval with the pre-filter, the second check and prompt assembly, and finally generation and display with citations."
+  },
+  {
+    "obj": "3.1",
+    "type": "spot",
+    "q": "Function of a multi-tenant RAG assistant. A user may see only documents of their own tenant and of groups they belong to. Mark the lines where access control is implemented incorrectly.",
+    "snippet": "def answer(question: str, session) -> str:\n    user = session.user                                  # from the SSO token\n    tenant = extract_tenant(question) or user.tenant     # tenant from the question text\n    hits = vector_db.search(embed(question), top_k=8, filter={\"tenant\": tenant})\n    context = \"\\n\\n\".join(h.text for h in hits)\n    system = f\"Do not show documents of groups the user does not belong to. Groups: {user.groups}\"\n    prompt = f\"{system}\\n<documents>\\n{context}\\n</documents>\\nQuestion: {question}\"\n    reply = llm.generate(prompt, max_tokens=800)\n    audit.log(user=user.id, doc_ids=[h.doc_id for h in hits])\n    return reply",
+    "lang": "python",
+    "answer": [2, 3, 5],
+    "explain": "Line 3: the tenant is taken from the question text, so a user can write another tenant's name and search its documents; identity and tenant come only from authentication (session.user). Line 4: the search filter contains only the tenant, not the group ACL and classification, so documents the user has no right to enter the context; pre-filter on allowed_groups (and classification) in the vector database itself. Line 6: access control is left to an instruction in the prompt, but the data is already in context and can leak (injection, model error); only what the user may see without AI goes into the prompt. Logging the doc_ids used is good practice."
+  }
+]

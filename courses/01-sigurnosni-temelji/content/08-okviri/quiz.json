@@ -1,0 +1,68 @@
+[
+  {
+    "q": "Koja funkcija je NOVA u NIST CSF 2.0?",
+    "options": ["Identify", "Govern", "Recover", "Detect"],
+    "answer": 1,
+    "explain": "CSF 2.0 (februar 2024) dodao je Govern, pa sada ima šest funkcija: Govern, Identify, Protect, Detect, Respond, Recover."
+  },
+  {
+    "q": "Testiranje vraćanja podataka iz backupa spada prvenstveno u koju NIST CSF funkciju?",
+    "options": ["Protect", "Detect", "Recover", "Govern"],
+    "answer": 2,
+    "explain": "Recover pokriva vraćanje sistema i podataka nakon incidenta. Backup koji nikad nije testiran nije dokaz oporavka."
+  },
+  {
+    "q": "Šta je CIS Implementation Group 1 (IG1)?",
+    "options": ["Najnapredniji nivo za banke", "Osnovna sajber higijena: minimalni skup mjera za svaku organizaciju", "Lista za cloud provajdere", "Grupa za penetraciono testiranje"],
+    "answer": 1,
+    "explain": "IG1 je polazna tačka za sve. IG2 i IG3 dodaju mjere za složenije organizacije i one izložene sofisticiranim napadačima."
+  },
+  {
+    "q": "Koja je razlika između CIS Controls i CIS Benchmarks?",
+    "options": ["Nema razlike", "Controls su organizacione kontrole (šta raditi), Benchmarks su detaljne postavke konkretnog sistema (kako konfigurisati)", "Benchmarks su stariji naziv za Controls", "Controls su samo za Windows"],
+    "answer": 1,
+    "explain": "Npr. CIS Control 4 traži sigurnu konfiguraciju, a CIS Benchmark za Ubuntu ili Kubernetes daje stotine konkretnih postavki kojima je ispunjavaš."
+  },
+  {
+    "q": "Koliko kontrola ima Annex A standarda ISO/IEC 27001:2022?",
+    "options": ["114", "93", "18", "153"],
+    "answer": 1,
+    "explain": "Verzija 2022 ima 93 kontrole u četiri teme (37 organizacionih, 8 ljudskih, 14 fizičkih, 34 tehnološke). Verzija 2013 imala je 114 kontrola."
+  },
+  {
+    "q": "Šta je Statement of Applicability (SoA) u ISO 27001?",
+    "options": ["Ugovor sa kupcem", "Dokument koji za svaku Annex A kontrolu navodi da li se primjenjuje i zašto", "Izvještaj o penetracionom testu", "Lista zaposlenih"],
+    "answer": 1,
+    "explain": "SoA je jedan od ključnih dokumenata ISMS-a i prvi koji auditor traži."
+  },
+  {
+    "q": "Kupac traži dokaz da su tvoje kontrole stvarno radile tokom prošle godine. Koji izvještaj?",
+    "options": ["SOC 2 Type I", "SOC 2 Type II", "ISO 27002", "CIS IG1"],
+    "answer": 1,
+    "explain": "Type I potvrđuje dizajn kontrola u jednom trenutku. Type II testira njihovu djelotvornost tokom perioda (obično 3 do 12 mjeseci)."
+  },
+  {
+    "q": "Koji SOC 2 Trust Services kriterij je UVIJEK uključen?",
+    "options": ["Availability", "Privacy", "Security", "Processing Integrity"],
+    "answer": 2,
+    "explain": "Security (Common Criteria) je obavezan. Ostala četiri se biraju prema usluzi i zahtjevima kupaca."
+  },
+  {
+    "q": "Uvođenje Trivy skeniranja Docker slika u CI najdirektnije podržava koju CIS kontrolu?",
+    "options": ["CIS 7 Continuous Vulnerability Management", "CIS 14 Security Awareness", "CIS 11 Data Recovery", "CIS 9 Email Protections"],
+    "answer": 0,
+    "explain": "Skeniranje ranjivosti i njihova sanacija su jezgro kontrole 7. Uz to podržava i CIS 16 (Application Software Security)."
+  },
+  {
+    "q": "Koja EU regulativa se odnosi na digitalnu otpornost finansijskog sektora i njegovih ICT dobavljača?",
+    "options": ["GDPR", "NIS2", "DORA", "Cyber Resilience Act"],
+    "answer": 2,
+    "explain": "DORA (Digital Operational Resilience Act) je u primjeni od januara 2025. i obuhvata i kritične ICT dobavljače finansijskih institucija, uključujući cloud provajdere."
+  },
+  {
+    "q": "Zašto zreli timovi održavaju jednu listu kontrola mapiranu na više okvira?",
+    "options": ["Jer je to zakonska obaveza", "Jedna tehnička kontrola i njen dokaz pokrivaju zahtjeve više okvira, pa se posao ne radi više puta", "Da bi izbjegli audit", "Jer okviri zabranjuju duplikate"],
+    "answer": 1,
+    "explain": "Npr. centralni CloudTrail sa zaštićenim logovima istovremeno ispunjava NIST DE, CIS 8, ISO A.8.15 i SOC 2 CC7. Dokaz se skuplja jednom."
+  }
+]

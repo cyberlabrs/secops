@@ -1,0 +1,310 @@
+[
+  {
+    "obj": "5.1",
+    "q": "Zaposleni je dobio otkaz zbog kršenja politike. HR ga obavještava u 10:00. Kada i šta je NAJBOLJE uraditi sa njegovim pristupom?",
+    "options": [
+      "Ugasiti logičke naloge na kraju radnog dana, a bedž sljedeće sedmice.",
+      "Onemogućiti logičke naloge i fizički pristup (bedž) prije ili istovremeno sa razgovorom, uz praćenje vraćanja opreme.",
+      "Odmah obrisati sve naloge i podatke korisnika kako ne bi ostao trag.",
+      "Ostaviti pristup sedam dana kako bi predao posao kolegama."
+    ],
+    "answer": 1,
+    "explain": "Kod prinudnog otkaza pristup se gasi prije ili tokom obavještenja, i logički i fizički. Nalozi se onemogućavaju, a ne brišu odmah, jer su potrebni za reviziju i prenos podataka."
+  },
+  {
+    "obj": "5.1",
+    "q": "Revizija otkriva da bedževi bivših zaposlenih i dalje otvaraju ulaz u zgradu, iako su im korisnički nalozi ugašeni na vrijeme. Koji je NAJVJEROVATNIJI uzrok i najbolje rješenje?",
+    "options": [
+      "Kartični čitači su zastarjeli; zamijeniti ih biometrijskim.",
+      "Čuvari ne provjeravaju bedževe; uvesti obuku čuvara.",
+      "Bedževi su klonirani; preći na mantrap.",
+      "Fizički i logički pristup se upravljaju odvojenim procesima; povezati sistem kontrole fizičkog pristupa sa HR/IAM procesom offboardinga."
+    ],
+    "answer": 3,
+    "explain": "Problem je proces: fizički pristup nije dio istog životnog ciklusa (provision, control, review, revoke). Konvergencija fizičkog i logičkog IAM-a, sa HR-om kao izvorom istine, rješava uzrok."
+  },
+  {
+    "obj": "5.1",
+    "q": "Outline iz 2027. dodaje „identities“ kao imovinu kojoj treba upravljati pristupom. Šta od navedenog je NAJBOLJI primjer upravljanja ovom kategorijom?",
+    "options": [
+      "Popis i dodjela vlasnika svim ljudskim i ne-ljudskim identitetima, uz otkrivanje i gašenje napuštenih (orphan) identiteta i zaštitu IdP-a",
+      "Enkripcija baze podataka sa ličnim podacima kupaca",
+      "Postavljanje mantrapa na ulaz u data centar",
+      "Instalacija EDR agenta na sve laptopove"
+    ],
+    "answer": 0,
+    "explain": "Identiteti su sami po sebi imovina: treba znati koji postoje, ko ih posjeduje, koje privilegije imaju i ukloniti napuštene. Ostali odgovori se odnose na informacije, objekte i uređaje."
+  },
+  {
+    "obj": "5.1",
+    "q": "Analitičar ima clearance za podatke nivoa „Povjerljivo“, ali traži pristup povjerljivom projektu drugog odjeljenja na kojem ne radi. Šta je ISPRAVNA odluka?",
+    "options": [
+      "Odobriti, jer clearance odgovara klasifikaciji podataka.",
+      "Odobriti privremeno, uz obavezu da prijavi pristup.",
+      "Odbiti, jer pored clearancea mora postojati i need to know za taj projekat.",
+      "Odbiti, jer analitičari nikad ne smiju pristupati povjerljivim podacima."
+    ],
+    "answer": 2,
+    "explain": "Clearance je neophodan, ali ne i dovoljan uslov. Need to know traži da je pristup potreban za posao. Bez učešća na projektu, nema need to know."
+  },
+  {
+    "obj": "5.2",
+    "q": "Organizacija bira biometrijski sistem za ulaz u server salu. Sistem A ima CER 3%, sistem B 1%, sistem C ima FAR 0,1% uz FRR 15%. Koji sistem je NAJPRECIZNIJI?",
+    "options": [
+      "Sistem C, jer ima najniži FAR",
+      "Sistem A, jer ima najviši CER",
+      "Sistem B, jer ima najniži CER",
+      "Ne može se odrediti bez cijene sistema"
+    ],
+    "answer": 2,
+    "explain": "Preciznost biometrijskih sistema poredi se po CER/EER (tačka gdje je FAR = FRR); niži je bolji. Sistem C je samo podešen na visoku osjetljivost, pa ima neprihvatljivo visok FRR."
+  },
+  {
+    "obj": "5.2",
+    "q": "Uprava traži autentifikaciju administratora cloud konzole koja je otporna na phishing i zadovoljava NIST AAL3. Koji izbor je NAJBOLJI?",
+    "options": [
+      "FIDO2/WebAuthn hardverski sigurnosni ključ vezan za uređaj",
+      "Lozinka plus SMS jednokratni kod",
+      "Lozinka plus push notifikacija u mobilnoj aplikaciji",
+      "Duga lozinka koja se mijenja svakih 30 dana"
+    ],
+    "answer": 0,
+    "explain": "WebAuthn kredencijal je vezan za origin, pa lažni sajt ne može dobiti valjan potpis; hardverski, device-bound autentifikator zadovoljava AAL3. SMS i push su podložni phishingu, presretanju i fatigue napadima."
+  },
+  {
+    "obj": "5.2",
+    "q": "Zaposleni se prijavljuje lozinkom i zatim unosi PIN od šest cifara koji je sam izabrao. Kako ovo NAJTAČNIJE opisati?",
+    "options": [
+      "MFA, jer postoje dva odvojena koraka",
+      "Jednofaktorska autentifikacija sa dva elementa istog tipa (something you know)",
+      "MFA tipa 1 i tipa 2",
+      "Passwordless autentifikacija"
+    ],
+    "answer": 1,
+    "explain": "Lozinka i PIN su oba something you know (Type 1). MFA zahtijeva faktore različitih tipova, bez obzira na broj koraka."
+  },
+  {
+    "obj": "5.2",
+    "q": "Administratori imaju stalno članstvo u grupi sa punim privilegijama u produkciji. CISO želi zero standing privileges uz minimalno ometanje rada. Koje rješenje NAJBOLJE odgovara?",
+    "options": [
+      "Dodati drugi admin nalog svakom administratoru.",
+      "Ukloniti sva admin prava i sve promjene raditi preko jednog dijeljenog naloga.",
+      "Mijenjati lozinke admin naloga svake sedmice.",
+      "Just-In-Time pristup: privilegija se traži za konkretan zadatak, odobrava, vremenski ograničava i automatski ukida, uz logovanje."
+    ],
+    "answer": 3,
+    "explain": "JIT pristup daje privilegiju samo kada je potrebna i ukida je automatski, pa nema stalnih privilegija koje se mogu zloupotrijebiti. Dijeljeni nalog uništava accountability."
+  },
+  {
+    "obj": "5.3",
+    "q": "Mobilna aplikacija partnera treba da pročita kalendar korisnika u vašem SaaS-u, a da aplikacija nikad ne vidi korisnikovu lozinku i da korisnik može opozvati pristup. Koji standard je za ovo NAMIJENJEN?",
+    "options": [
+      "SAML 2.0",
+      "Kerberos",
+      "OAuth 2.0",
+      "SCIM"
+    ],
+    "answer": 2,
+    "explain": "OAuth 2.0 služi za delegiranu autorizaciju: aplikacija dobija ograničen, opoziv access token za određeni scope. SAML i OIDC su za autentifikaciju/SSO, SCIM za provisioning."
+  },
+  {
+    "obj": "5.3",
+    "q": "Kompanija koristi on-prem Active Directory sinhronizovan sa cloud IdP-om (hibridni model). Koja je NAJVEĆA specifična briga ovog modela?",
+    "options": [
+      "Kompromitacija on-prem okruženja ili sinhronizacionog servisa može se proširiti na cloud identitete i obrnuto, pa su sync server i njegovi kredencijali tier-0 imovina.",
+      "Cloud IdP ne podržava MFA za sinhronizovane korisnike.",
+      "Hibridni model ne dozvoljava SSO prema SaaS aplikacijama.",
+      "Lozinke se uvijek šalju u čistom tekstu prema cloudu."
+    ],
+    "answer": 0,
+    "explain": "U hibridnom modelu dva direktorija su povezana privilegovanim sinhronizacionim kanalom. Zato se sync infrastruktura štiti kao tier-0, a napad na jednu stranu može preći na drugu."
+  },
+  {
+    "obj": "5.3",
+    "q": "Organizacija uvodi federaciju sa SaaS dobavljačem preko cloud IDaaS-a. Šta treba NAJPRIJE definisati da bi se upravljalo rizikom treće strane?",
+    "options": [
+      "Boju i logo stranice za prijavu.",
+      "Ugovor sa odgovornostima obje strane, zahtjevima za logovanje, deprovisioningom, SLA-om i pravom na audit.",
+      "Koji preglednik zaposleni koriste.",
+      "Broj korisnika koji će koristiti aplikaciju prve sedmice."
+    ],
+    "answer": 1,
+    "explain": "Federacija je odnos povjerenja sa trećom stranom. Upravljački okvir (ugovor, odgovornosti, logovanje, deprovisioning, dostupnost, audit) dolazi prije tehničke konfiguracije."
+  },
+  {
+    "obj": "5.4",
+    "q": "U sistemu vojne obavještajne službe dokumentima je dodijeljena oznaka tajnosti, korisnicima clearance, a korisnik ne može promijeniti ko smije čitati dokument koji je sam kreirao. Koji model kontrole pristupa je u pitanju?",
+    "options": [
+      "DAC",
+      "RBAC",
+      "RuBAC",
+      "MAC"
+    ],
+    "answer": 3,
+    "explain": "MAC: sistem odlučuje na osnovu labela i clearancea (uz kategorije za need to know), a vlasnik objekta ne može diskreciono mijenjati pristup. To ga razlikuje od DAC-a."
+  },
+  {
+    "obj": "5.4",
+    "q": "Bolnica želi da ljekar može čitati kartone samo pacijenata svog odjeljenja, samo tokom smjene i samo sa upravljanog uređaja. Koji model NAJBOLJE izražava ovu politiku?",
+    "options": [
+      "RBAC sa jednom ulogom „Ljekar“",
+      "DAC, jer pacijent odlučuje",
+      "MAC sa nivoima tajnosti",
+      "ABAC, jer kombinuje atribute korisnika, resursa i okruženja"
+    ],
+    "answer": 3,
+    "explain": "Odjeljenje korisnika i pacijenta, vrijeme smjene i stanje uređaja su atributi subjekta, objekta i okruženja. ABAC ih kombinuje u jednoj politici, a čisti RBAC bi zahtijevao eksploziju uloga."
+  },
+  {
+    "obj": "5.4",
+    "q": "U Zero Trust arhitekturi po NIST SP 800-207, koja komponenta presreće zahtjev korisnika prema aplikaciji i propušta ga ili blokira prema odluci?",
+    "options": [
+      "Policy Enforcement Point (PEP)",
+      "Policy Decision Point (PDP)",
+      "Policy Information Point (PIP)",
+      "Policy Administration Point (PAP)"
+    ],
+    "answer": 0,
+    "explain": "PEP sprovodi odluku na putu zahtjeva. PDP (Policy Engine + Policy Administrator) donosi odluku, PIP daje atribute (npr. stanje uređaja), a PAP je mjesto upravljanja politikama."
+  },
+  {
+    "obj": "5.4",
+    "q": "Korisnik se prijavljuje sa uobičajenog uređaja, ali iz zemlje iz koje se nikad ranije nije prijavljivao, deset minuta nakon prijave iz domaćeg grada. Sistem traži dodatnu autentifikaciju i ograničava pristup osjetljivim podacima. Koji model ovo NAJBOLJE opisuje?",
+    "options": [
+      "Rule-based access control",
+      "Risk-Adaptable Access Control (RAdAC)",
+      "Discretionary access control",
+      "Mandatory access control"
+    ],
+    "answer": 1,
+    "explain": "RAdAC prilagođava odluku procjeni rizika u realnom vremenu (nemoguće putovanje, nova lokacija) i operativnoj potrebi. U outlineu iz 2024. isti koncept se zove risk-based access control."
+  },
+  {
+    "obj": "5.5",
+    "q": "Interna revizija utvrđuje da su zaposleni koji su mijenjali radna mjesta zadržali prava sa svih prethodnih pozicija. Kako se zove ovaj problem i šta je NAJBOLJA dugoročna mjera?",
+    "options": [
+      "Privilege escalation; uvesti EDR",
+      "Separation of duties; uvesti rotaciju poslova",
+      "Privilege creep; proces transfera koji uklanja stara prava i periodična recertifikacija od strane rukovodilaca",
+      "Orphan accounts; brisati naloge nakon 90 dana"
+    ],
+    "answer": 2,
+    "explain": "Akumulacija prava kroz premještaje je privilege creep (aggregation). Uzrok je proces transfera, pa se rješava uklanjanjem starih prava pri tranziciji uloge i redovnom revizijom pristupa."
+  },
+  {
+    "obj": "5.5",
+    "q": "Ko treba da potvrđuje (recertifikuje) da korisnici jednog finansijskog sistema i dalje trebaju svoja prava?",
+    "options": [
+      "Administrator sistema koji je dodijelio prava",
+      "Sigurnosni tim jer upravlja IAM alatom",
+      "Sami korisnici putem samoprocjene",
+      "Rukovodioci korisnika i vlasnik podataka/sistema"
+    ],
+    "answer": 3,
+    "explain": "Poslovnu potrebu znaju rukovodilac i vlasnik podataka. Administrator je custodian koji sprovodi odluke i ne treba revidirati sopstveni rad, a samoprocjena nema nezavisnost."
+  },
+  {
+    "obj": "5.5",
+    "q": "Na Linux serverima developeri imaju `sudo ALL` kako bi restartovali jedan servis. Koja izmjena NAJBOLJE primjenjuje PoLP uz zadržavanje mogućnosti rada?",
+    "options": [
+      "Ograničiti sudoers na tačno potrebne komande za taj servis, uz centralno logovanje i reviziju upotrebe sudo-a.",
+      "Dati developerima root lozinku umjesto sudo-a.",
+      "Ukloniti sudo i zahtijevati da svaki restart radi sigurnosni tim.",
+      "Zadržati `sudo ALL`, ali isključiti logovanje radi performansi."
+    ],
+    "answer": 0,
+    "explain": "PoLP traži minimum prava potrebnih za zadatak: konkretne komande u sudoers, uz audit eskalacije. Root lozinka uništava accountability, a potpuno uklanjanje ometa poslovanje bez potrebe."
+  },
+  {
+    "obj": "5.5",
+    "q": "Servisni nalog aplikacije koja je ugašena prije godinu dana i dalje postoji, ima administratorska prava u bazi i lozinku koja se nikad nije mijenjala. Koja kontrola bi ovo NAJBOLJE spriječila?",
+    "options": [
+      "Duža lozinka za servisne naloge",
+      "Svaki servisni nalog ima ljudskog vlasnika, uključen je u periodičnu reviziju pristupa i deprovisioning pri gašenju aplikacije",
+      "Interaktivna prijava za servisne naloge radi lakše provjere",
+      "Dijeljenje jednog servisnog naloga između svih aplikacija radi lakšeg upravljanja"
+    ],
+    "answer": 1,
+    "explain": "Napušteni servisni nalog nastaje kada nema vlasnika i nije dio životnog ciklusa. Vlasništvo, revizija i deprovisioning to sprečavaju; uz to idu najmanje privilegije i rotacija ili kratkotrajni kredencijali."
+  },
+  {
+    "obj": "5.6",
+    "q": "Korisnici u domenu povremeno ne mogu pristupiti servisima, a logovi pokazuju greške pri provjeri Kerberos tiketa. Satovi na nekim serverima kasne 12 minuta. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "KDC koristi asimetričnu kriptografiju koja je istekla",
+      "Previše korisnika u Domain Admins grupi",
+      "Neusklađeno vrijeme; Kerberos koristi vremenske oznake i podrazumijevano toleriše oko 5 minuta razlike",
+      "TGT je šifrovan lozinkom servisa"
+    ],
+    "answer": 2,
+    "explain": "Kerberos tiketi i authenticatori sadrže vremenske oznake radi zaštite od replay napada. Razlika veća od dozvoljene (obično 5 min) dovodi do odbijanja, pa je NTP kritična zavisnost."
+  },
+  {
+    "obj": "5.6",
+    "q": "Kerberos je uveden za SSO u cijeloj organizaciji. Šta je NAJVEĆI arhitektonski rizik koji treba adresirati u implementaciji?",
+    "options": [
+      "KDC je single point of failure i najvrijedniji cilj, pa traži redundanciju i jaku fizičku i logičku zaštitu",
+      "Lozinke se šalju mrežom u čistom tekstu",
+      "Kerberos ne podržava SSO",
+      "Kerberos zahtijeva PKI za svaku autentifikaciju"
+    ],
+    "answer": 0,
+    "explain": "Svi tiketi zavise od KDC-a: bez njega nema autentifikacije, a kompromitovan KDC ugrožava cijeli domen. Kerberos ne šalje lozinke mrežom i koristi simetričnu kriptografiju."
+  },
+  {
+    "obj": "5.6",
+    "q": "Organizacija je sve aplikacije vezala za jedan cloud IdP. Tokom višesatnog ispada IdP-a niko, uključujući administratore, nije mogao pristupiti kritičnim sistemima. Šta je trebalo biti dio implementacije?",
+    "options": [
+      "Lokalni nalozi za sve korisnike u svakoj aplikaciji",
+      "Isključenje MFA kako bi prijava bila brža",
+      "Prelazak na DAC model",
+      "Strogo kontrolisani break-glass nalozi nezavisni od IdP-a, sa alarmom na upotrebu, i plan kontinuiteta za IAM"
+    ],
+    "answer": 3,
+    "explain": "IAM sistemi su tier-0 i od njih zavisi cijelo poslovanje. Break-glass nalozi (malo, zaštićeni, nadzirani) i plan kontinuiteta omogućavaju oporavak bez otvaranja stalnih zaobilaznica za sve korisnike."
+  },
+  {
+    "obj": "5.6",
+    "type": "order",
+    "q": "Poredaj korake Kerberos autentifikacije od prvog do posljednjeg.",
+    "options": [
+      "TGS vraća service ticket šifrovan ključem servisa",
+      "Klijent predaje service ticket servisu",
+      "AS vraća TGT i sesijski ključ",
+      "Klijent šalje zahtjev za autentifikaciju AS-u",
+      "Klijent šalje TGT i authenticator TGS-u"
+    ],
+    "answer": [3, 2, 4, 0, 1],
+    "explain": "Klijent se prvo obraća AS-u i dobija TGT; zatim TGT predaje TGS-u i dobija service ticket; na kraju service ticket predaje servisu, koji ga dešifruje svojim ključem."
+  },
+  {
+    "obj": "5.4",
+    "type": "match",
+    "q": "Upari opis sa modelom kontrole pristupa.",
+    "options": [
+      "Firewall pravilo koje važi za sve korisnike: pristup samo radnim danima od 8 do 16h",
+      "Vlasnik fajla sam dodaje kolegu u listu sa pravom čitanja",
+      "Prava se dodjeljuju prema radnom mjestu, a pri premještaju se mijenja samo dodijeljena funkcija",
+      "Sistem poredi oznaku tajnosti objekta i clearance subjekta",
+      "Odluka kombinuje odjeljenje korisnika, osjetljivost resursa i stanje uređaja"
+    ],
+    "targets": [
+      "DAC",
+      "MAC",
+      "RBAC",
+      "RuBAC",
+      "ABAC"
+    ],
+    "answer": [3, 0, 2, 1, 4],
+    "explain": "Globalno pravilo za sve je rule-based (RuBAC), diskrecija vlasnika je DAC, radno mjesto je RBAC, labele i clearance su MAC, a kombinacija atributa je ABAC."
+  },
+  {
+    "obj": "5.5",
+    "type": "spot",
+    "q": "Kvartalna revizija pristupa ERP-u, poređenje sa HR sistemom. Politika SoD zabranjuje da ista osoba kreira dobavljače i odobrava plaćanja. Označi redove koji zahtijevaju korektivnu akciju.",
+    "snippet": "Korisnik    Nalog       HR status / odjel                    ERP uloge                       Zadnja prijava\na.petrovic  aktivan     zaposlen / Nabavka                   VENDOR_CREATE                   2026-10-28\nm.jovic     aktivan     zaposlen / Finansije                 PAYMENT_APPROVE                 2026-10-29\ns.nikolic   aktivan     zaposlen / Finansije                 VENDOR_CREATE, PAYMENT_APPROVE  2026-10-29\nd.ilic      aktivan     otišao 2026-08-31                    PAYMENT_APPROVE                 2026-10-12\nk.savic     aktivan     zaposlen / Prodaja (iz Fin. 06/2026) SALES_REPORT, PAYMENT_APPROVE   2026-10-27\nt.raic      onemogućen  otišao 2026-09-15                    -                               2026-09-15\nr.babic     aktivan     zaposlen / Nabavka                   VENDOR_CREATE                   2026-10-30",
+    "lang": "text",
+    "answer": [3, 4, 5],
+    "explain": "Red 4: s.nikolic ima VENDOR_CREATE i PAYMENT_APPROVE, što je konflikt razdvajanja dužnosti (fiktivni dobavljač i isplata); jednu ulogu ukloniti ili uvesti dokumentovan izuzetak sa kompenzacionom kontrolom. Red 5: d.ilic je otišao 31. 8, a nalog je aktivan i korišten 12. 10, što je propust u deprovisioningu i mogući incident; onemogućiti nalog odmah i istražiti prijavu. Red 6: k.savic je prešla u Prodaju, a zadržala PAYMENT_APPROVE iz Finansija (privilege creep); pri transferu stara prava se uklanjaju. Nalog t.raic je ispravno onemogućen, a ostali korisnici imaju uloge koje odgovaraju odjelu."
+  }
+]

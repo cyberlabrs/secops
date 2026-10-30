@@ -1,0 +1,280 @@
+[
+  {
+    "obj": "4.1",
+    "q": "The prod namespace has the label pod-security.kubernetes.io/enforce=restricted. You apply a Deployment whose template has no securityContext. kubectl apply succeeds, but READY is 0/3. Why?",
+    "options": [
+      "enforce applies only to Pod objects: the Deployment is accepted, and the ReplicaSet can't create Pods (FailedCreate)",
+      "enforce rejects the Deployment, but kubectl apply doesn't show the error",
+      "The scheduler can't find a node that satisfies the restricted level",
+      "The kubelet refuses to start the containers because they have no runAsUser"
+    ],
+    "answer": 0,
+    "explain": "PSA enforce checks only Pods; workload resources get only warn/audit. You see the reason in kubectl describe rs as FailedCreate with a violates PodSecurity message. The scheduler and kubelet aren't involved because the Pod was never created."
+  },
+  {
+    "obj": "4.1",
+    "q": "Task: the namespace team-a must reject Pods that violate baseline, and users should get a warning for anything that violates restricted. Which command does that?",
+    "options": [
+      "kubectl label ns team-a pod-security.kubernetes.io/enforce=restricted pod-security.kubernetes.io/warn=baseline",
+      "kubectl label ns team-a pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/warn=restricted",
+      "kubectl annotate ns team-a pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/warn=restricted",
+      "kubectl label ns team-a pod-security.kubernetes.io/audit=baseline pod-security.kubernetes.io/warn=restricted"
+    ],
+    "answer": 1,
+    "explain": "PSA reads labels, not annotations, and only the enforce mode rejects. The first option has the levels reversed, and audit only records in the audit log and doesn't reject."
+  },
+  {
+    "obj": "4.1",
+    "q": "In a namespace with enforce=restricted, a Pod has Pod-level runAsNonRoot: true and seccompProfile RuntimeDefault, and the container has capabilities.drop: [ALL]. The Pod is rejected. What is still missing?",
+    "options": [
+      "readOnlyRootFilesystem: true on the container",
+      "runAsUser other than 0 at the Pod level",
+      "privileged: false on the container",
+      "allowPrivilegeEscalation: false on the container"
+    ],
+    "answer": 3,
+    "explain": "Restricted requires allowPrivilegeEscalation to be explicitly false; unset doesn't pass. runAsUser may be unset, an omitted privileged is already fine, and readOnlyRootFilesystem isn't part of PSS restricted (it is a recommendation of analysis tools)."
+  },
+  {
+    "obj": "4.1",
+    "q": "Which of these Pods would pass baseline but be rejected by restricted? (Choose TWO.)",
+    "options": [
+      "A Pod with capabilities.add: [NET_ADMIN]",
+      "A Pod with a hostPath: /var/log volume",
+      "A Pod without any securityContext that uses only emptyDir",
+      "A Pod with hostNetwork: true",
+      "A Pod with capabilities.add: [CHOWN] and without drop: [ALL]"
+    ],
+    "answer": [
+      2,
+      4
+    ],
+    "explain": "Baseline allows a Pod without a securityContext and adding CHOWN (safe list), but restricted requires runAsNonRoot, seccomp, allowPrivilegeEscalation: false and drop ALL. NET_ADMIN, hostPath and hostNetwork already fail baseline."
+  },
+  {
+    "obj": "4.1",
+    "q": "A Pod with securityContext.runAsNonRoot: true (without runAsUser) uses the image nginx:1.27, which runs as root. What state will you see?",
+    "options": [
+      "The Pod is rejected at admission with a violates PodSecurity message",
+      "The Pod runs, but the kubelet automatically changes the UID to 65534",
+      "The Pod is in the CreateContainerConfigError state, and the event says the image will run as root",
+      "The Pod is Pending because no node supports non-root"
+    ],
+    "answer": 2,
+    "explain": "runAsNonRoot is checked by the kubelet at start time: if the effective UID would be 0, the container isn't created and the Pod stays in CreateContainerConfigError. PSA only checks that the field is set, and the kubelet doesn't change the UID on its own."
+  },
+  {
+    "obj": "4.1",
+    "q": "A Pod in a namespace with enforce=restricted was rejected with the message: allowPrivilegeEscalation != false (container \"init-perms\" must set securityContext.allowPrivilegeEscalation=false). The main container app already has a complete securityContext. What do you fix?",
+    "options": [
+      "Add allowPrivilegeEscalation: false to spec.securityContext at the Pod level",
+      "Change the namespace label to enforce=baseline",
+      "Remove the init container because restricted doesn't allow initContainers",
+      "Add the same securityContext (allowPrivilegeEscalation: false, drop ALL…) to the init container init-perms as well"
+    ],
+    "answer": 3,
+    "explain": "PSS rules apply to containers, initContainers and ephemeralContainers, and the message names the init container. allowPrivilegeEscalation doesn't exist at the Pod level, initContainers are allowed, and lowering the level doesn't solve the task."
+  },
+  {
+    "obj": "4.1",
+    "q": "You want all namespaces without PSA labels to have enforce=baseline by default, except kube-system. Where is that configured?",
+    "options": [
+      "In an AdmissionConfiguration with PodSecurityConfiguration (defaults and exemptions.namespaces), which kube-apiserver reads via --admission-control-config-file",
+      "In the KubeletConfiguration on every node, field podSecurityDefaults",
+      "With the flag --enable-admission-plugins=PodSecurity=baseline on kube-apiserver",
+      "With the label pod-security.kubernetes.io/enforce=baseline on the default namespace"
+    ],
+    "answer": 0,
+    "explain": "Cluster-wide defaults and exemptions are set in PodSecurityConfiguration (pod-security.admission.config.k8s.io/v1) inside an AdmissionConfiguration. The kubelet has no such field, --enable-admission-plugins doesn't take a level, and a label on the default namespace applies only to it."
+  },
+  {
+    "obj": "4.1",
+    "q": "Before setting enforce=restricted on a namespace with 40 Pods, you want to see which existing Pods would violate the policy, without changing anything. Which command?",
+    "options": [
+      "kubectl label ns app pod-security.kubernetes.io/audit=restricted",
+      "kubectl auth can-i create pods -n app --as=restricted",
+      "kubectl label --dry-run=client ns app pod-security.kubernetes.io/enforce=restricted",
+      "kubectl label --dry-run=server --overwrite ns app pod-security.kubernetes.io/enforce=restricted"
+    ],
+    "answer": 3,
+    "explain": "A server-side dry run goes through admission on the API server and returns warnings for existing Pods that violate the level, without writing anything. A client dry run doesn't contact the server, the audit label really changes the namespace, and auth can-i checks RBAC."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match the securityContext field with its effect.",
+    "options": [
+      "allowPrivilegeEscalation: false",
+      "readOnlyRootFilesystem: true",
+      "capabilities.drop: [ALL]",
+      "runAsNonRoot: true"
+    ],
+    "targets": [
+      "The kubelet refuses to start if the process would run as UID 0",
+      "Sets no_new_privs, a setuid binary doesn't raise privileges",
+      "Changes the user in the image to UID 1000",
+      "The process has no Linux capabilities at all",
+      "Writing to the container's root file system returns an error"
+    ],
+    "answer": [
+      1,
+      4,
+      3,
+      0
+    ],
+    "explain": "allowPrivilegeEscalation controls no_new_privs, readOnlyRootFilesystem mounts the root FS read-only, drop ALL removes capabilities, and runAsNonRoot only checks the UID and doesn't change it (runAsUser is for that)."
+  },
+  {
+    "obj": "4.2",
+    "q": "The developer jane has a Role in the app namespace with resources: [pods] and verbs: [create, get, list], and no rights at all on secrets. Can she read the Secret db-creds from that namespace?",
+    "options": [
+      "No, because kubectl get secret returns Forbidden",
+      "Yes: she can create a Pod that mounts db-creds as a volume or env and print the value",
+      "Only if the Secret is marked immutable: false",
+      "Only if the namespace is labeled pod-security enforce=privileged"
+    ],
+    "answer": 1,
+    "explain": "Mounting a Secret into a Pod doesn't require get secrets for the user; the kubelet reads the Secret with its own identity. That is why create pods in a namespace means access to all Secrets in that namespace. immutable and the PSA level don't prevent it."
+  },
+  {
+    "obj": "4.2",
+    "q": "The ServiceAccount monitor has a ClusterRole with resources: [secrets] and verbs: [list]. The team says it's safe because list returns only names. What is true?",
+    "options": [
+      "True, list returns only metadata, values require get",
+      "True, but only if encryption at rest is enabled",
+      "False: list returns whole objects including data, so the SA can read all Secrets in the cluster",
+      "False, but only for Secrets of type kubernetes.io/service-account-token"
+    ],
+    "answer": 2,
+    "explain": "list (and watch) return full objects with the data field. Encryption at rest protects etcd, not the API response, so it doesn't help against a user with the RBAC permission."
+  },
+  {
+    "obj": "4.2",
+    "q": "The EncryptionConfiguration for secrets has providers in this order: identity: {}, then aescbc with key key1. The API server was restarted and you replaced all Secrets. What do you see in etcdctl get /registry/secrets/app/db-creds?",
+    "options": [
+      "The password as plain text, because the first provider (identity) is used for writing",
+      "The prefix k8s:enc:aescbc:v1:key1 and encrypted bytes",
+      "An error, because identity and aescbc must not be in the same list",
+      "The base64-encoded value from the data field"
+    ],
+    "answer": 0,
+    "explain": "Writes always use the first provider; here that is identity, so replace writes unencrypted again. aescbc is used only for reading. The combination is allowed (that is how encryption is disabled), and etcd doesn't store base64 but a binary record."
+  },
+  {
+    "obj": "4.2",
+    "type": "order",
+    "q": "Order the steps to enable aescbc encryption of Secrets on a kubeadm cluster so that existing Secrets are encrypted too at the end.",
+    "options": [
+      "kubectl get secrets -A -o json | kubectl replace -f -",
+      "Create /etc/kubernetes/enc/enc.yaml with aescbc as the first provider and a key from head -c 32 /dev/urandom | base64",
+      "Check etcdctl get and the prefix k8s:enc:aescbc:v1:",
+      "In kube-apiserver.yaml add --encryption-provider-config, a volumeMount and a hostPath volume",
+      "Wait for the kube-apiserver static Pod to restart and kubectl to work again"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "First the file, then the manifest change (flag + mount), then waiting for the restart. Only then does replace write the existing Secrets through the new provider, and the check in etcd comes last."
+  },
+  {
+    "obj": "4.2",
+    "q": "After adding --encryption-provider-config=/etc/kubernetes/enc/enc.yaml, kube-apiserver doesn't come back. crictl logs shows: open /etc/kubernetes/enc/enc.yaml: no such file or directory. The file exists on the node. What is the cause?",
+    "options": [
+      "The key in the file isn't 32 bytes long",
+      "The file must be in /etc/kubernetes/pki",
+      "The feature gate EncryptionAtRest=true is missing",
+      "The manifest lacks a volumeMount/hostPath volume for /etc/kubernetes/enc, so the container can't see the file"
+    ],
+    "answer": 3,
+    "explain": "kube-apiserver runs in a container and sees only paths mounted from the host. A wrong key gives a different parsing error, the path isn't prescribed, and no such feature gate exists."
+  },
+  {
+    "obj": "4.2",
+    "q": "You enabled encryption and restarted the API server, but etcdctl still shows the password of the old Secret db-creds as plain text. New Secrets are encrypted. What do you need to do?",
+    "options": [
+      "Restart the etcd static Pod",
+      "Rewrite the existing Secrets: kubectl get secrets -A -o json | kubectl replace -f -",
+      "Add secrets to --encryption-provider-config-automatic-reload",
+      "Remove identity from the provider list"
+    ],
+    "answer": 1,
+    "explain": "Encryption is applied on write; existing records stay as they are until you write them again. Restarting etcd doesn't change data, and removing identity would only make still-unencrypted records unreadable."
+  },
+  {
+    "obj": "4.2",
+    "q": "Which provider in EncryptionConfiguration keeps the master key off the control plane node, so root on controlplane can't read the key from a file?",
+    "options": [
+      "secretbox",
+      "aesgcm",
+      "kms with apiVersion: v2",
+      "aescbc with two keys"
+    ],
+    "answer": 2,
+    "explain": "KMS v2 uses envelope encryption: the data key is encrypted by an external KMS through a plugin on a UNIX socket. aescbc, aesgcm and secretbox keep the key in the configuration file itself on the node."
+  },
+  {
+    "obj": "4.2",
+    "q": "The task requires that the Pod api no longer use a Secret through env variables. Which change is correct and safest?",
+    "options": [
+      "Replace env.valueFrom.secretKeyRef with envFrom.secretRef",
+      "Remove env and add volumes[].secret.secretName: api-creds with a volumeMount readOnly: true",
+      "Move the values into a ConfigMap and mount it as a volume",
+      "Keep env, but set immutable: true on the Secret"
+    ],
+    "answer": 1,
+    "explain": "A Secret volume is a file in tmpfs, isn't visible in the process environment and is refreshed on change. envFrom is still env, a ConfigMap isn't meant for secrets, and immutable doesn't affect leakage through env."
+  },
+  {
+    "obj": "4.2",
+    "q": "On the controlplane node you need to read the Secret token from the billing namespace directly from etcd. Which command is correct (the certificates are the kubeadm defaults)?",
+    "options": [
+      "ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key get /registry/secrets/billing/token",
+      "ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/ca.crt --cert=/etc/kubernetes/pki/apiserver.crt --key=/etc/kubernetes/pki/apiserver.key get /secrets/billing/token",
+      "etcdutl snapshot status /registry/secrets/billing/token",
+      "ETCDCTL_API=3 etcdctl get /registry/billing/secrets/token --insecure-skip-tls-verify"
+    ],
+    "answer": 0,
+    "explain": "Keys have the form /registry/secrets/<namespace>/<name>, and etcd requires a client certificate signed by the etcd CA (/etc/kubernetes/pki/etcd/). The second option uses the wrong CA and path, etcdutl works with snapshot files, and the fourth has the key in the wrong order and no certificates."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Match the EncryptionConfiguration provider with its description.",
+    "options": [
+      "identity",
+      "aescbc",
+      "secretbox",
+      "kms (apiVersion: v2)"
+    ],
+    "targets": [
+      "XSalsa20 and Poly1305, a local 32-byte key",
+      "Envelope encryption through an external KMS plugin on a UNIX socket",
+      "Encrypts only the values in the stringData field",
+      "No encryption; as the first provider it means plain text is written",
+      "AES-CBC with PKCS#7 padding, key in a file on the node"
+    ],
+    "answer": [
+      3,
+      4,
+      0,
+      1
+    ],
+    "explain": "identity doesn't encrypt, aescbc uses AES-CBC with a local key, secretbox XSalsa20+Poly1305, and kms v2 delegates key protection to an external KMS. No provider encrypts only stringData; that field is just a convenience when writing."
+  },
+  {
+    "type": "spot",
+    "obj": "4.1",
+    "q": "Namespace prod is labeled pod-security.kubernetes.io/enforce=restricted and this Pod is rejected. Mark the lines that violate the restricted profile.",
+    "snippet": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: api\n  namespace: prod\nspec:\n  securityContext:\n    runAsNonRoot: true\n    seccompProfile: {type: RuntimeDefault}\n  containers:\n  - name: api\n    image: registry.example.com/api:1.4.2\n    securityContext:\n      allowPrivilegeEscalation: true\n      capabilities: {drop: [\"ALL\"], add: [\"NET_ADMIN\"]}\n      readOnlyRootFilesystem: true",
+    "lang": "yaml",
+    "answer": [
+      13,
+      14
+    ],
+    "explain": "restricted requires allowPrivilegeEscalation: false, so true is a violation. For capabilities, restricted allows only drop ALL and optionally add NET_BIND_SERVICE, so NET_ADMIN fails. Fix: allowPrivilegeEscalation: false and remove the add (or keep only NET_BIND_SERVICE). runAsNonRoot, seccompProfile RuntimeDefault and drop ALL are exactly what restricted requires; readOnlyRootFilesystem is not part of the profile but does no harm."
+  }
+]

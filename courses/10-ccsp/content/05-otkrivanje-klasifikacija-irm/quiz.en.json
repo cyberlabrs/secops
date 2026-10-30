@@ -1,0 +1,269 @@
+[
+  {
+    "obj": "2.4",
+    "q": "A company plans to introduce DLP and automatic encryption for data in multiple SaaS applications and IaaS storage. Nobody knows exactly what sensitive data exists or where it is located. What should the security manager do FIRST?",
+    "options": [
+      "Enable encryption with customer-managed keys on all storage services.",
+      "Define DLP rules for card numbers and personal ID numbers in the email gateway.",
+      "Perform data discovery to build an inventory of data and its locations.",
+      "Request a SOC 2 Type II report from all providers."
+    ],
+    "answer": 2,
+    "explain": "Without an inventory you cannot classify data, and without classification DLP and encryption do not know what they are protecting. Discovery is the first step; encryption and DLP rules are later controls, and a SOC 2 report does not tell you what your data is."
+  },
+  {
+    "obj": "2.4",
+    "q": "A team uses a tool that searches for sensitive data solely by column names and descriptions in the data catalog. An audit found national ID numbers (JMBG) in a 'napomena' (notes) column. Which approach would BEST eliminate this gap?",
+    "options": [
+      "Add content-based analysis that samples values and looks for patterns.",
+      "Rename the 'napomena' column to 'jmbg' and repeat the metadata scan.",
+      "Rely on label-based discovery because labels are more precise than metadata.",
+      "Encrypt the entire database so that column contents are not readable."
+    ],
+    "answer": 0,
+    "explain": "Metadata-based discovery does not see content, so it misses sensitive data in free text. Content-based analysis reads the values. Renaming solves one case, labels do not exist for those values, and encryption discovers nothing."
+  },
+  {
+    "obj": "2.4",
+    "q": "An organization encrypts documents on the client side before uploading them to object storage. A new content-based discovery tool does not report any sensitive data in that storage. What is the MOST likely reason?",
+    "options": [
+      "The tool does not support object storage, only relational databases.",
+      "The documents are unstructured, and content-based tools work only on structured data.",
+      "The provider blocks scanning because of multi-tenancy rules.",
+      "The tool sees only encrypted content and cannot recognize patterns in it."
+    ],
+    "answer": 3,
+    "explain": "Content-based analysis requires plaintext. With client-side encryption, storage contains only encrypted data. The solution is discovery before encryption or relying on labels and metadata. Content-based tools are in fact intended precisely for unstructured data."
+  },
+  {
+    "obj": "2.4",
+    "q": "Which dataset is an example of semi-structured data?",
+    "options": [
+      "An orders table in a relational database with defined column types",
+      "JSON application log records and documents in a NoSQL database",
+      "Scanned patient consent forms in PDF format",
+      "Video surveillance recordings in a data center"
+    ],
+    "answer": 1,
+    "explain": "Semi-structured data has a self-describing, flexible structure (keys, tags) without a rigid schema: JSON, XML, logs, NoSQL documents. A relational table is structured, while scans and video are unstructured."
+  },
+  {
+    "obj": "2.4",
+    "q": "Analysis of proxy logs shows that sales employees regularly upload files to several SaaS services that IT has not approved. Which tool BEST helps discover where the company's data actually resides?",
+    "options": [
+      "Hypervisor introspection on servers in the data center",
+      "Cloud Access Security Broker (CASB) with shadow IT analysis",
+      "A Web Application Firewall in front of the corporate portal",
+      "A Hardware Security Module for encryption keys"
+    ],
+    "answer": 1,
+    "explain": "A CASB analyzes traffic and logs and discovers the use of unsanctioned cloud services (shadow IT), thereby revealing data locations outside the known inventory. WAF, HSM, and hypervisor tools do not solve this problem."
+  },
+  {
+    "obj": "2.4",
+    "q": "Discovery showed that a hospital's SaaS provider sends copies of records to a subprocessor in another country for technical support. What is the MOST important question for the data owner?",
+    "options": [
+      "Whether the subprocessor uses the same TLS version as the provider.",
+      "Whether the subprocessor is faster than the primary provider.",
+      "Whether the subprocessor has more availability zones.",
+      "Whether the contract and applicable laws permit such a transfer and under which mechanism."
+    ],
+    "answer": 3,
+    "explain": "Data location is primarily a matter of jurisdiction and legal responsibility. The customer remains responsible for compliance, so it first checks the contract (DPA, list of subprocessors) and a lawful cross-border transfer mechanism. Technical details are secondary."
+  },
+  {
+    "obj": "2.4",
+    "q": "A country's law requires that data about its citizens be stored and processed exclusively on its territory. Which term describes this requirement?",
+    "options": [
+      "Data localization",
+      "Data portability",
+      "Data minimization",
+      "Data dispersion"
+    ],
+    "answer": 0,
+    "explain": "Data localization is a legal requirement that data remain in the country. Portability is the ability to move data between providers, minimization is collecting only what is necessary, and data dispersion is a technique of distributing data fragments across locations for resilience."
+  },
+  {
+    "obj": "2.5",
+    "q": "Who is responsible for determining the classification level of business data stored in an IaaS environment?",
+    "options": [
+      "The cloud provider, because it physically stores the data",
+      "The database administrator who manages the storage",
+      "The data owner from the business unit",
+      "The organization's chief auditor"
+    ],
+    "answer": 2,
+    "explain": "The data owner is accountable for the data and determines its classification. The administrator (custodian) and the provider implement the controls the classification requires, and the auditor verifies compliance."
+  },
+  {
+    "obj": "2.5",
+    "q": "An organization has a classification scheme with eight levels. An audit shows that users mark almost all documents as 'Internal'. Which policy change is the BEST?",
+    "options": [
+      "Add two more levels to make distinctions more precise.",
+      "Abolish manual classification and treat all data as the highest level.",
+      "Penalize users who classify documents incorrectly.",
+      "Reduce the number of levels and provide clear criteria and examples for each."
+    ],
+    "answer": 3,
+    "explain": "Too many levels confuse users and lead to uniform, inaccurate classification. A smaller number of levels with clear criteria is the practice. Treating everything as the highest level is expensive and hinders business, and penalties do not fix a bad design."
+  },
+  {
+    "obj": "2.5",
+    "q": "Individually, data on fleet vehicle location, shift schedules, and driver names is classified as 'Internal'. Combined into a single report, it enables tracking the movements of specific individuals. What should the classification policy address?",
+    "options": [
+      "Declassification of data after a deadline expires",
+      "Data aggregation, which may require a higher classification",
+      "Data portability to another provider",
+      "The format of labels in the document header"
+    ],
+    "answer": 1,
+    "explain": "Aggregation of low-classified data can produce a more sensitive set. The policy must define how the result of aggregation is classified. Declassification, portability, and label format do not address this risk."
+  },
+  {
+    "obj": "2.5",
+    "q": "Two companies are merging and moving documents to a shared cloud tenant. One uses the levels Public/Internal/Secret, the other Open/Restricted/Confidential/Strictly Confidential. What should be done FIRST before the migration?",
+    "options": [
+      "Create and approve a mapping between the two classification schemes.",
+      "Migrate all documents without labels, then reclassify them later.",
+      "Apply the highest level to all migrated documents.",
+      "Shut down the older system and keep only the larger company's scheme."
+    ],
+    "answer": 0,
+    "explain": "Data mapping between schemes ensures that data in the new system receives equivalent protection. Migration without labels loses information, applying the highest level to everything is inefficient, and unilaterally abandoning a scheme without mapping leaves documents incorrectly protected."
+  },
+  {
+    "obj": "2.5",
+    "q": "The privacy team is preparing a data protection impact assessment (DPIA) for a new cloud application. Which artifact is MOST important for understanding where personal data goes?",
+    "options": [
+      "A VPC network topology map",
+      "A list of vulnerabilities from the latest scan",
+      "A data flow map with data sources, systems, locations, and recipients",
+      "The provider's SLA document with the availability percentage"
+    ],
+    "answer": 2,
+    "explain": "Data flow mapping documents where data comes from, where it is processed and stored, and to whom it is sent. It is the basis for a DPIA and for records of processing activities. A network map, vulnerabilities, and the SLA do not show flows of personal data."
+  },
+  {
+    "obj": "2.5",
+    "q": "Cloud resources have a DataClassification tag that triggers ABAC rules and mandatory encryption. An audit reveals that a developer changed the tag from Restricted to Public to share a bucket more easily. Which control BEST prevents this situation?",
+    "options": [
+      "Restrict who may change classification tags and check tag compliance automatically.",
+      "Remove tags and rely only on bucket names.",
+      "Require developers to sign a confidentiality statement.",
+      "Enable object versioning on the bucket."
+    ],
+    "answer": 0,
+    "explain": "The tagging policy must define who may change classification tags (e.g., only the owner or the security team), with automatic checking and alerting. Bucket names are not reliable, a statement is not a technical control, and versioning does not protect the tag."
+  },
+  {
+    "obj": "2.5",
+    "q": "Which element is NOT typical content of a data label according to ISC2 guidance?",
+    "options": [
+      "Date of creation and scheduled date of destruction",
+      "Data owner and data source",
+      "The password needed to open the document",
+      "Jurisdiction and handling restrictions"
+    ],
+    "answer": 2,
+    "explain": "A label carries metadata: date of creation, date of destruction, owner, source, jurisdiction, classification, and restrictions. A password (a secret) must never be in a label."
+  },
+  {
+    "obj": "2.6",
+    "q": "An engineering firm sends blueprints to a subcontractor. When the project ends, access to the blueprints must stop, even for copies the subcontractor has already downloaded. Which control BEST enables this?",
+    "options": [
+      "A DLP rule that blocks sending blueprints by email",
+      "Information Rights Management with rights revocation and expiration",
+      "TLS 1.3 on the file-exchange portal",
+      "Storage encryption with a customer-managed key"
+    ],
+    "answer": 1,
+    "explain": "IRM protection travels with the file and enables remote rights revocation and automatic expiration, so even downloaded copies become inaccessible. DLP prevents data from leaving, TLS protects the transfer, and storage encryption stops applying once the file is downloaded."
+  },
+  {
+    "obj": "2.6",
+    "q": "The legal team sent a protected contract with edit rights. Now it wants all recipients, including those who already have the file, to be able only to read the document. Which IRM capability enables this?",
+    "options": [
+      "Continuous audit trail",
+      "Replication restrictions",
+      "Persistent protection",
+      "Dynamic policy control"
+    ],
+    "answer": 3,
+    "explain": "Dynamic policy control allows rights to be changed later, and the change also applies to copies already distributed, because the client requests a valid license when opening the document. Audit trail logs, replication restrictions limit copying, and persistent protection means the protection stays with the file."
+  },
+  {
+    "obj": "2.6",
+    "q": "An organization wants to introduce IRM for documents shared with dozens of partner organizations. What is the MOST important prerequisite for success?",
+    "options": [
+      "Reliable identification of external users, e.g., federation with partners' IdPs",
+      "Applying watermarks to all documents",
+      "Converting all documents to PDF format",
+      "Increasing the bandwidth of the internet link"
+    ],
+    "answer": 0,
+    "explain": "IRM grants rights to identities; without reliable authentication of external users, it does not know to whom it is issuing a license. Federation or other provisioning of external identities is the key prerequisite. The other options are secondary."
+  },
+  {
+    "obj": "2.6",
+    "q": "The private key of a partner's IRM client certificate has been compromised. What should be done FIRST so that the compromised certificate is no longer accepted?",
+    "options": [
+      "Change the classification of all the partner's documents.",
+      "Issue the partner a new certificate with a longer validity period and keep the old one.",
+      "Revoke the certificate with the CA and publish it through CRL/OCSP.",
+      "Delete the audit logs related to that partner."
+    ],
+    "answer": 2,
+    "explain": "Revoking the certificate and publishing its status through CRL or OCSP prevents the compromised certificate from being used for authentication and obtaining licenses. A new certificate is issued after the old one is revoked. Reclassification does not solve the problem, and deleting logs destroys evidence."
+  },
+  {
+    "obj": "2.6",
+    "q": "A user opens an IRM-protected document with view-only rights and photographs the screen with a mobile phone. What does this case BEST illustrate?",
+    "options": [
+      "An error in the dynamic policy control mechanism",
+      "An IRM limitation known as the analog hole",
+      "A lack of encryption in transit",
+      "Incorrect classification mapping"
+    ],
+    "answer": 1,
+    "explain": "IRM enforces rights in the application, but cannot prevent photographing the screen with another device (analog hole). Watermarks help identify the source of the leak. The other options are not related to this case."
+  },
+  {
+    "obj": "2.6",
+    "q": "In an eDiscovery proceeding, the legal department must hand over IRM-protected documents to the court, and the authors have left the company. Which capability should have been planned when designing IRM?",
+    "options": [
+      "A shorter offline access period",
+      "Stricter replication restriction rules",
+      "Automatic expiration of all documents after 90 days",
+      "Organizational access for decryption (super user / recovery) with control and logging"
+    ],
+    "answer": 3,
+    "explain": "The organization must retain a controlled ability to decrypt protected content for eDiscovery, legal hold, and employee departures. A shorter offline period and stricter restrictions do not help, and automatic expiration could destroy evidence."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Match each data type with the discovery technique that is MOST appropriate for it.",
+    "options": [
+      "A relational database with clearly named columns",
+      "Scanned paper forms in PDF format",
+      "A JSON export from a laboratory device",
+      "Contracts in various formats with no fixed data pattern"
+    ],
+    "targets": ["OCR followed by pattern matching", "Metadata-based schema analysis with value sampling", "ML classifier (trainable classifier)", "Key parsing and content analysis of values", "Analysis of file size and date"],
+    "answer": [1, 0, 3, 2],
+    "explain": "Structured data has a schema, so metadata combined with sampling gives good results. Scans are images and require OCR before pattern matching. JSON has keys that provide context, so parsing and content analysis are combined. Contracts have no fixed pattern, so an ML classifier recognizes them best. Size and date do not reveal sensitivity."
+  },
+  {
+    "obj": "2.6",
+    "type": "order",
+    "q": "Arrange the steps of opening an IRM-protected document at the recipient's end, from first to last.",
+    "options": [
+      "The IRM service checks the policy and issues a license with rights.",
+      "The recipient opens the document in an IRM-enabled application.",
+      "The application enforces the rights (e.g., prohibits printing) and the event is logged.",
+      "The client authenticates the user with the IdP and requests a license."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Opening the document triggers authentication and a license request; the service checks the policy (including expiration and revocation) and issues a license; only then does the application decrypt the content, enforce the rights, and record the access."
+  }
+]

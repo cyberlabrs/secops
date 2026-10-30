@@ -1,0 +1,12 @@
+{
+  "title": "Siguran build i skeniranje slika",
+  "summary": "Siguran build kontejnera (hadolint, multi-stage, distroless, non-root, digest) i Trivy gate nad slikom: pragovi ozbiljnosti, ranjivosti bez popravke, .trivyignore i VEX.",
+  "minutes": 90,
+  "domain": 4,
+  "objectives": [
+    "4.2",
+    "4.3"
+  ],
+  "title_en": "Secure builds and image scanning",
+  "summary_en": "Secure container builds (hadolint, multi-stage, distroless, non-root, digest) and a Trivy gate on the image: severity thresholds, unfixed vulnerabilities, .trivyignore and VEX."
+}

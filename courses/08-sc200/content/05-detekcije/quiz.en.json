@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "1.4",
+    "q": "You have Microsoft Defender XDR and Microsoft Sentinel onboarded to the Defender portal. You need a detection that combines DeviceProcessEvents and CommonSecurityLog, automatically isolates the device and doesn't increase the cost of data ingestion into Sentinel. What should you create?",
+    "options": [
+      "A scheduled analytics rule in Sentinel and a playbook for isolation.",
+      "An NRT analytics rule in Sentinel.",
+      "A custom detection rule from Advanced hunting in the Defender portal.",
+      "An alert tuning rule in Defender XDR."
+    ],
+    "answer": 2,
+    "explain": "A custom detection can read both Defender XDR and Sentinel tables without ingesting XDR data into the workspace, and it has a built-in Isolate device action. Analytics rules require DeviceProcessEvents to be ingested into the workspace and a playbook for the action."
+  },
+  {
+    "obj": "1.4",
+    "q": "You are creating a custom detection rule over DeviceProcessEvents and want the Isolate device action. In the wizard that action is unavailable. What is the MOST LIKELY cause?",
+    "options": [
+      "The query doesn't return the DeviceId column.",
+      "The rule frequency is Every 24 hours.",
+      "The rule has no MITRE technique mapped.",
+      "The rule scope is All devices."
+    ],
+    "answer": 0,
+    "explain": "Device actions are applied to the devices in the DeviceId column of the results. Without that column the action is unavailable. Frequency, MITRE mapping and scope don't remove the action."
+  },
+  {
+    "obj": "1.4",
+    "q": "A custom detection rule has the frequency Every 3 hours and reads Defender XDR tables. What is the lookback?",
+    "options": [
+      "3 hours",
+      "4 hours",
+      "48 hours",
+      "12 hours"
+    ],
+    "answer": 3,
+    "explain": "For rules with Defender XDR data the lookback is fixed: 1h → 4h, 3h → 12h, 12h → 48h, 24h → 30 days."
+  },
+  {
+    "obj": "1.4",
+    "q": "You want to move a custom detection rule to Continuous (NRT) frequency. The query reads DeviceNetworkEvents and does a join with DeviceProcessEvents. What should you do?",
+    "options": [
+      "Change the frequency to Custom and set 1 minute.",
+      "Rewrite the query so it reads only one table without a join.",
+      "Add a // NRT comment at the start of the query.",
+      "Create an NRT analytics rule in Sentinel with the same query over Defender tables."
+    ],
+    "answer": 1,
+    "explain": "Continuous (NRT) requires a query over one table, without join, union and externaldata, and without comments. Custom frequency exists only for rules over Sentinel data and the minimum is 5 minutes."
+  },
+  {
+    "obj": "1.4",
+    "q": "An analyst has only manage permissions for Microsoft Defender for Office 365 in Defender unified RBAC. Which custom detection can they create?",
+    "options": [
+      "A rule over the IdentityLogonEvents table.",
+      "A rule over the EmailEvents and EmailUrlInfo tables.",
+      "A rule over DeviceProcessEvents scoped to one device group.",
+      "Any rule, because custom detections require only Security Reader."
+    ],
+    "answer": 1,
+    "explain": "Custom detection permissions follow the data source: rights for Defender for Office 365 allow rules over Email* tables. IdentityLogonEvents requires rights for both Defender for Identity and Defender for Cloud Apps."
+  },
+  {
+    "obj": "1.4",
+    "q": "You onboarded a Sentinel workspace to the Microsoft Defender portal. The Advanced multistage attack detection (Fusion) rule is now turned off. What should you do to keep correlation of alerts from multiple products?",
+    "options": [
+      "Nothing, the Defender XDR correlation engine takes over correlation and incident creation.",
+      "Turn the Fusion rule back on from the Rule templates tab.",
+      "Create a Microsoft security rule for each Defender product.",
+      "Turn on alert grouping in all scheduled rules for 14 days."
+    ],
+    "answer": 0,
+    "explain": "In the Defender portal Fusion is not available because correlation and incident creation are done by Defender XDR. Microsoft security rules are also deactivated to avoid duplicates."
+  },
+  {
+    "obj": "1.4",
+    "q": "You need an alert within one to two minutes when an account is added to the Domain Admins group (SecurityEvent 4728). The source has an ingestion delay of up to 3 minutes. Which type of Sentinel analytics rule should you use?",
+    "options": [
+      "A scheduled rule that runs every 5 minutes.",
+      "An anomaly rule.",
+      "A Microsoft security rule.",
+      "A near-real-time (NRT) rule."
+    ],
+    "answer": 3,
+    "explain": "An NRT rule runs every minute and uses ingestion time, so source delay doesn't cause missed events. The scheduled minimum is 5 minutes plus a built-in delay, anomaly doesn't create alerts, and Microsoft security creates incidents from alerts of Microsoft products."
+  },
+  {
+    "obj": "1.4",
+    "q": "You have a scheduled rule with Run query every 5 minutes and Lookup data from the last 1 hour. Analysts get 12 identical alerts for the same attack. What should you do while keeping the 5-minute frequency?",
+    "options": [
+      "Change event grouping to Trigger an alert for each event.",
+      "Lower the alert threshold to 0.",
+      "Turn on suppression for 1 hour after an alert is generated.",
+      "Convert the rule into an anomaly rule."
+    ],
+    "answer": 2,
+    "explain": "The lookback is longer than the frequency, so every run sees the same events. Suppression stops the rule from running for a set time after an alert. Trigger an alert for each event would increase the number of alerts."
+  },
+  {
+    "obj": "1.4",
+    "q": "Which type of analytics rule in Sentinel automatically matches domain, IP and URL indicators from Microsoft Threat Intelligence against CEF, Syslog and Windows DNS data and can't be customized?",
+    "options": [
+      "Microsoft Threat Intelligence Analytics",
+      "ML Behavior Analytics",
+      "Fusion",
+      "NRT rule from a TI template"
+    ],
+    "answer": 0,
+    "explain": "Microsoft Threat Intelligence Analytics (matching analytics) is a single, non-customizable rule that matches Microsoft indicators. ML Behavior Analytics targets SSH and RDP logins, and TI templates are customizable scheduled rules."
+  },
+  {
+    "obj": "1.4",
+    "q": "You need to detect anomalous RDP logins based on geolocation and user history, without writing your own query. What should you turn on?",
+    "options": [
+      "An NRT rule over SecurityEvent with EventID 4624.",
+      "The ML Behavior Analytics rule for anomalous RDP logins.",
+      "A Microsoft security rule for Defender for Identity.",
+      "A watchlist with allowed countries."
+    ],
+    "answer": 1,
+    "explain": "ML Behavior Analytics rules (preview) use Microsoft ML models for anomalous SSH and RDP logins and don't require your own query. The other options require writing logic."
+  },
+  {
+    "obj": "1.4",
+    "q": "You created a scheduled rule that detects Kerberoasting, but on the MITRE ATT&CK page technique T1558 still has no active detections. What is the MOST LIKELY cause?",
+    "options": [
+      "The MITRE page shows only NRT rules.",
+      "The rule hasn't generated any alerts in the last 30 days.",
+      "The tactic and technique aren't set in the rule's General tab.",
+      "The rule reads the SecurityEvent table, which the MITRE page doesn't support."
+    ],
+    "answer": 2,
+    "explain": "Coverage is calculated from the MITRE tactics and techniques assigned to active scheduled and NRT rules, not from the query text or the number of alerts."
+  },
+  {
+    "obj": "1.4",
+    "q": "You want to see how your MITRE ATT&CK coverage would improve if you turned on the available analytics rule templates, without actually turning them on. What should you use?",
+    "options": [
+      "SOC optimization recommendations.",
+      "The MITRE ATT&CK workbook from the Content hub.",
+      "The Hunting page with a filter by tactic.",
+      "The Simulated rules option on the MITRE ATT&CK page."
+    ],
+    "answer": 3,
+    "explain": "Simulated rules shows possible coverage from available but inactive detections and hunting queries directly in the matrix."
+  },
+  {
+    "obj": "1.4",
+    "q": "A built-in anomaly rule generates too many anomalies. You need to test a higher threshold without interrupting the existing rule. What should you do FIRST?",
+    "options": [
+      "Edit the threshold directly in the built-in rule.",
+      "Duplicate the rule and change the threshold on the copy running in Flighting mode.",
+      "Turn off the built-in rule and create a scheduled rule over the Anomalies table.",
+      "Switch the built-in rule to Flighting mode."
+    ],
+    "answer": 1,
+    "explain": "Built-in anomaly rules can't be edited. The duplicate (one per rule) is created in Flighting mode, the original stays in Production, and the results are compared in the Anomalies table."
+  },
+  {
+    "obj": "1.4",
+    "q": "You switched a customized copy of an anomaly rule from Flighting to Production. What happens to the original rule?",
+    "options": [
+      "It automatically moves to Flighting.",
+      "It stays in Production, so both versions write anomalies.",
+      "It is deleted.",
+      "It becomes disabled and gets the AUTO DISABLED label."
+    ],
+    "answer": 0,
+    "explain": "Two versions of the same anomaly rule can't be in production at the same time; the original automatically moves to Flighting."
+  },
+  {
+    "obj": "1.4",
+    "q": "You have the following query in a custom detection rule: DeviceEvents | where ActionType == \"AntivirusDetection\" | summarize count() by DeviceId | where count_ > 5. The alerts have neither a correct device group scope nor a process tree. What should you add to the summarize?",
+    "options": [
+      "bin(Timestamp, 1h) to the by clause.",
+      "dcount(FileName) as a new column.",
+      "(Timestamp, ReportId) = arg_max(Timestamp, ReportId)",
+      "where Timestamp > ago(30d) before the summarize."
+    ],
+    "answer": 2,
+    "explain": "For MDE tables the query must return DeviceId, Timestamp and ReportId from the same event. arg_max returns the latest Timestamp and the matching ReportId per device. Filtering on Timestamp isn't recommended because the service applies the lookback itself."
+  },
+  {
+    "obj": "1.4",
+    "q": "A Sentinel scheduled rule returns the columns IpAddress, Computer and Account. You need alerts from this and other rules to be correctly correlated into incidents by attacker IP address and host. Which TWO settings should you configure? (Choose TWO.)",
+    "options": [
+      "Entity mapping: IP → IpAddress.",
+      "Custom details: Account.",
+      "Entity mapping: Host → Computer.",
+      "Event grouping: Trigger an alert for each event.",
+      "Suppression for 24 hours."
+    ],
+    "answer": [0, 2],
+    "explain": "Entities (IP, Host) are the basis for alert correlation and investigation. Custom details only display values in the alert, and event grouping and suppression don't affect entities."
+  },
+  {
+    "obj": "1.4",
+    "q": "Which TWO statements about NRT analytics rules in Sentinel are true? (Choose TWO.)",
+    "options": [
+      "They run every minute over data ingested in the previous minute.",
+      "You can set the frequency from 1 to 5 minutes.",
+      "The query can reference more than one table.",
+      "The number of NRT rules is unlimited.",
+      "They use TimeGenerated, so they are as delayed as the source."
+    ],
+    "answer": [0, 2],
+    "explain": "NRT rules are hard-coded to one minute, use ingestion time (not TimeGenerated) and can read multiple tables. The limit is 50 NRT rules."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Order the steps for creating a custom detection rule that automatically isolates a device, from first to last.",
+    "options": [
+      "Select the Isolate device action and scope it to a device group.",
+      "In Advanced hunting, write and run a query that returns Timestamp, DeviceId and ReportId.",
+      "Review the rule and select Create; the rule runs immediately.",
+      "Select Create detection rule and enter the name, frequency, severity and MITRE technique."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "First the query is tested in Advanced hunting, then the rule is created from it with alert details, then the actions and scope are selected, and finally the rule is created and runs immediately."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Match the requirement with the rule type that BEST meets it.",
+    "options": [
+      "Alert within a minute on a critical Windows event in Sentinel.",
+      "Detection over EmailEvents that automatically deletes the email.",
+      "User behavior baseline that must not generate alerts.",
+      "Aggregation of failed logons over 24 hours with a threshold.",
+      "Matching Microsoft IP and domain indicators against CEF data without writing a query."
+    ],
+    "targets": ["Scheduled analytics rule", "NRT analytics rule", "Anomaly rule", "Custom detection rule", "Microsoft Threat Intelligence Analytics", "Fusion"],
+    "answer": [1, 3, 2, 0, 4],
+    "explain": "NRT for speed, custom detection for Defender data with email actions, anomaly for a baseline without alerts, scheduled for aggregations with a lookback, and Microsoft Threat Intelligence Analytics for matching Microsoft indicators. Fusion is turned off in the Defender portal."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Match the frequency of a custom detection rule over Defender XDR data with its lookback.",
+    "options": [
+      "Every hour",
+      "Every 3 hours",
+      "Every 12 hours",
+      "Every 24 hours"
+    ],
+    "targets": ["30 days", "48 hours", "4 hours", "12 hours"],
+    "answer": [2, 3, 1, 0],
+    "explain": "Fixed lookbacks for Defender XDR data: 1h → 4 hours, 3h → 12 hours, 12h → 48 hours, 24h → 30 days."
+  },
+  {
+    "type": "spot",
+    "obj": "1.4",
+    "q": "The query is to be saved as a custom detection rule in Defender XDR (Every hour) so that alerts are tied to the device and the original event. According to Microsoft's guidance, which lines are a problem?",
+    "snippet": "// custom detection: encoded PowerShell 3+ times per device\nDeviceProcessEvents\n| where Timestamp > ago(1h)\n| where FileName in~ (\"powershell.exe\", \"pwsh.exe\")\n| where ProcessCommandLine has_any (\"-EncodedCommand\", \"-enc \")\n| summarize Executions = count() by DeviceName, AccountUpn\n| where Executions >= 3",
+    "lang": "kql",
+    "answer": [
+      2,
+      5
+    ],
+    "explain": "A custom detection should not filter on Timestamp: the service itself limits data to the lookback and accounts for ingestion delay, so a manual ago(1h) can miss late events. summarize without Timestamp, ReportId and DeviceId drops the columns the rule needs for alert time, device group scope and asset mapping; return them with (Timestamp, ReportId) = arg_max(Timestamp, ReportId) and by DeviceId, DeviceName, AccountUpn."
+  }
+]

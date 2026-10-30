@@ -1,0 +1,101 @@
+{
+  "code": "Faza 0",
+  "badge": "SEC",
+  "order": 1,
+  "title": "Sigurnosni temelji",
+  "subtitle": "Faza 0 SecOps plana: zajednički jezik i modeli koje koristi cijela industrija. Lekcije, kvizovi sa objašnjenjima i praktični labovi u pravom Linux terminalu.",
+  "sources": {
+    "checked": "oktobar 2026.",
+    "items": [
+      {
+        "name": "OWASP Top 10:2025",
+        "url": "https://owasp.org/Top10/2025/",
+        "note": "aktuelno izdanje, zamijenilo verziju 2021",
+        "note_en": "current edition, replaced the 2021 version"
+      },
+      {
+        "name": "OWASP API Security Top 10 (2023)",
+        "url": "https://owasp.org/API-Security/"
+      },
+      {
+        "name": "OWASP Cheat Sheet Series",
+        "url": "https://cheatsheetseries.owasp.org"
+      },
+      {
+        "name": "MITRE ATT&CK Enterprise taktike",
+        "url": "https://attack.mitre.org/tactics/enterprise/",
+        "note": "v19 (april 2026): 15 taktika, Defense Evasion podijeljen na Stealth i Defense Impairment",
+        "name_en": "MITRE ATT&CK Enterprise tactics",
+        "note_en": "v19 (April 2026): 15 tactics, Defense Evasion split into Stealth and Defense Impairment"
+      },
+      {
+        "name": "MITRE ATT&CK ažuriranja, april 2026",
+        "url": "https://attack.mitre.org/resources/updates/updates-april-2026/",
+        "name_en": "MITRE ATT&CK updates, April 2026"
+      },
+      {
+        "name": "FIRST CVSS v4.0 specifikacija",
+        "url": "https://www.first.org/cvss/v4-0/",
+        "name_en": "FIRST CVSS v4.0 specification"
+      },
+      {
+        "name": "FIRST EPSS",
+        "url": "https://www.first.org/epss/"
+      },
+      {
+        "name": "CISA Known Exploited Vulnerabilities katalog",
+        "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+        "name_en": "CISA Known Exploited Vulnerabilities catalog"
+      },
+      {
+        "name": "NIST Cybersecurity Framework 2.0",
+        "url": "https://www.nist.gov/cyberframework"
+      },
+      {
+        "name": "CIS Critical Security Controls v8.1",
+        "url": "https://www.cisecurity.org/controls"
+      },
+      {
+        "name": "CIS Benchmarks (Ubuntu Linux)",
+        "url": "https://www.cisecurity.org/cis-benchmarks"
+      },
+      {
+        "name": "NIST SP 800-207 Zero Trust Architecture",
+        "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+      },
+      {
+        "name": "NIST SP 800-63B Digital Identity Guidelines",
+        "url": "https://pages.nist.gov/800-63-4/"
+      },
+      {
+        "name": "Microsoft STRIDE / Threat Modeling Tool",
+        "url": "https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats"
+      },
+      {
+        "name": "Lynis (CISOfy)",
+        "url": "https://cisofy.com/lynis/"
+      },
+      {
+        "name": "OpenSSH sshd_config(5)",
+        "url": "https://man.openbsd.org/sshd_config"
+      },
+      {
+        "name": "Mozilla Server Side TLS preporuke",
+        "url": "https://wiki.mozilla.org/Security/Server_Side_TLS",
+        "name_en": "Mozilla Server Side TLS recommendations"
+      }
+    ],
+    "checked_en": "October 2026"
+  },
+  "lab": {
+    "image": "kurs-temelji-lab:1",
+    "caps": []
+  },
+  "exam": {
+    "size": 30,
+    "minutes": 45,
+    "pass": 80
+  },
+  "title_en": "Security foundations",
+  "subtitle_en": "Phase 0 of the SecOps plan: the common language and models used across the industry. Lessons, quizzes with explanations and hands-on labs in a real Linux terminal."
+}

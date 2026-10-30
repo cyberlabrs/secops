@@ -1,0 +1,145 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Kompanija koristi EC2 instance za aplikaciju i Amazon RDS za bazu. Revizor pita ko je odgovoran za patchovanje operativnog sistema. Koja tvrdnja je TAČNA?",
+    "options": ["AWS patchuje OS i na EC2 i ispod RDS-a", "Kompanija patchuje OS na EC2, a AWS patchuje OS ispod RDS-a", "Kompanija patchuje OS i na EC2 i ispod RDS-a", "Niko, cloud instance se automatski ažuriraju"],
+    "answer": 1,
+    "explain": "EC2 je IaaS, pa je OS odgovornost klijenta. RDS je upravljani PaaS servis, pa provajder održava OS i softver baze. Podaci i pristup ostaju odgovornost klijenta u oba slučaja."
+  },
+  {
+    "obj": "3.1",
+    "q": "Tim prebacuje obradu narudžbi na AWS Lambda funkcije pokretane SQS porukama. Šta postaje NAJVAŽNIJI sigurnosni fokus tima u odnosu na raniji model sa VM-ovima?",
+    "options": ["Patchovanje kernela", "Fizička zaštita servera", "Konfiguracija hipervizora", "IAM dozvole funkcije, zavisnosti koda i validacija ulaznih događaja"],
+    "answer": 3,
+    "explain": "Kod serverlessa provajder upravlja OS-om i runtimeom, pa se odgovornost klijenta sužava na kod, biblioteke, IAM ulogu funkcije i ulaze (event injection). Kernel, hipervizor i fizička sigurnost su na provajderu."
+  },
+  {
+    "obj": "3.1",
+    "q": "Pet regionalnih bolnica želi zajedničku cloud infrastrukturu koja ispunjava iste propise o zdravstvenim podacima i dijeli troškove, ali ne želi dijeliti resurse sa drugim industrijama. Koji deployment model NAJBOLJE odgovara?",
+    "options": ["Community", "Public", "Hybrid", "Private za svaku bolnicu posebno"],
+    "answer": 0,
+    "explain": "Community cloud dijeli više organizacija sa zajedničkim zahtjevima, uz podjelu troškova. Public dijeli sa svima, a odvojen privatni cloud za svaku bolnicu ne dijeli troškove."
+  },
+  {
+    "obj": "3.1",
+    "q": "Nakon ispada cijelog cloud regiona, tim je ponovo podigao kompletno okruženje u drugom regionu za manje od sat vremena jer je sve opisano Terraform kodom. Koje tehničko razmatranje IaC u ovom slučaju NAJVIŠE poboljšava?",
+    "options": ["Data sovereignty", "Power requirements", "Ease of recovery", "Usability"],
+    "answer": 2,
+    "explain": "IaC omogućava ponovljivo i brzo ponovno kreiranje infrastrukture, što direktno poboljšava ease of recovery. Data sovereignty je poslovno/pravno pitanje lokacije podataka, a power requirements se odnose na napajanje."
+  },
+  {
+    "obj": "3.1",
+    "q": "U fabrici radi PLC kontroler sa zastarjelim firmwareom za koji proizvođač više ne izdaje zakrpe, a zamjena bi zaustavila proizvodnju na mjesece. Šta je NAJBOLJI pristup?",
+    "options": ["Odmah ugasiti kontroler", "Izolovati OT segment od IT mreže uz strogo kontrolisan prelaz i pasivni monitoring", "Instalirati klasični antivirus na PLC", "Povezati PLC direktno na internet radi lakšeg nadzora"],
+    "answer": 1,
+    "explain": "U OT okruženju dostupnost je prioritet, pa se nepatchabilni sistemi štite kompenzacionim kontrolama: segmentacija i monitoring. Gašenje zaustavlja proizvodnju, a PLC uglavnom ne podržava klasični antivirus."
+  },
+  {
+    "obj": "3.1",
+    "q": "Mreža za upravljanje kritičnim sistemom je air-gapped. Koji vektor napada ostaje NAJVJEROVATNIJI?",
+    "options": ["Zaraženi prenosni mediji (USB) kojima se prenose ažuriranja", "DDoS sa interneta", "Phishing e-mail direktno na upravljačke stanice", "Napad na javni DNS"],
+    "answer": 0,
+    "explain": "Air-gapped mreža nema vezu sa internetom, pa su internetski vektori isključeni. Podaci i ažuriranja ulaze preko prenosnih medija, što je i bio put Stuxneta."
+  },
+  {
+    "obj": "3.1",
+    "q": "Evropska firma bira cloud region za podatke o klijentima. Pravni tim traži da podaci ostanu pod jurisdikcijom EU. Koje poslovno razmatranje je ključno?",
+    "options": ["Scalability", "Cost", "Environmental requirements", "Data sovereignty"],
+    "answer": 3,
+    "explain": "Data sovereignty znači da podaci podliježu zakonima države u kojoj se nalaze, pa se bira region u skladu s tim. Skalabilnost i trošak su važni, ali ne odgovaraju na pravni zahtjev."
+  },
+  {
+    "obj": "3.1",
+    "q": "Aplikacija je razbijena na 40 mikroservisa u Kubernetesu koji međusobno komuniciraju preko HTTP-a. Koja kontrola NAJBOLJE štiti saobraćaj između servisa?",
+    "options": ["Jedan perimetarski firewall ispred klastera", "Duža lozinka za Kubernetes dashboard", "mTLS kroz service mesh uz NetworkPolicy pravila", "Air gap između podova"],
+    "answer": 2,
+    "explain": "Mikroservisi povećavaju istok-zapad saobraćaj koji perimetarski firewall ne vidi. mTLS daje enkripciju i identitet svakog servisa, a NetworkPolicy ograničava ko s kim smije pričati."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tim želi da IDS analizira sav saobraćaj prema serverima u internoj zoni, ali bez rizika da kvar IDS-a prekine saobraćaj. Gdje i kako ga je NAJBOLJE postaviti?",
+    "options": ["Pasivno, na TAP ili SPAN port iza internog firewalla", "Inline ispred internet rutera", "Na laptop administratora", "U guest Wi-Fi mrežu"],
+    "answer": 0,
+    "explain": "IDS je detektivna kontrola i postavlja se pasivno (TAP/SPAN) tamo gdje vidi bitan saobraćaj. Inline postavka je za IPS i unosi rizik prekida, a guest mreža ne vidi saobraćaj ka internim serverima."
+  },
+  {
+    "obj": "3.2",
+    "q": "U Zero Trust arhitekturi, koja komponenta stoji između korisnika i aplikacije i na osnovu odluke druge komponente uspostavlja ili prekida konekciju?",
+    "options": ["Policy engine", "Policy enforcement point (PEP)", "Policy administrator", "Implicit trust zone"],
+    "answer": 1,
+    "explain": "PEP u data plane-u sprovodi odluku: propušta ili blokira. Policy engine donosi odluku, a policy administrator je prenosi PEP-u; zajedno čine PDP u control plane-u."
+  },
+  {
+    "obj": "3.2",
+    "q": "Organizacija uvodi Zero Trust. Zaposleni sa ispravnom lozinkom i MFA ipak ne smije pristupiti internoj aplikaciji ako njegov laptop nije poznat ili nije u ispravnom stanju. Koja DVA elementa device managementa se provjeravaju? Izaberi DVA.",
+    "options": ["Health (patchevi, aktivan EDR, enkripcija diska)", "Geografska lokacija kancelarije", "Brzina internet veze", "Inventory (uređaj je upisan u MDM/inventar)"],
+    "answer": [0, 3],
+    "explain": "Zero Trust provjerava zdravlje uređaja i da li je uređaj poznat u inventaru. Brzina veze nije sigurnosni signal, a fizička lokacija kancelarije sama po sebi ne daje povjerenje u Zero Trust modelu."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tokom DDoS napada produkcijska mreža je zagušena i administratori ne mogu pristupiti ruterima da primijene filtere. Šta je trebalo uspostaviti unaprijed?",
+    "options": ["Split tunnel VPN", "Dodatni web server", "Screened subnet", "Out-of-band management mrežu sa konzolnim pristupom"],
+    "answer": 3,
+    "explain": "OOB management koristi zaseban kanal, pa radi i kad je produkcijska mreža nedostupna. Split tunnel i screened subnet ne daju nezavisan put do uređaja."
+  },
+  {
+    "obj": "3.2",
+    "q": "Udaljeni zaposleni se povezuju VPN-om. Sigurnosni tim želi da sav njihov internet saobraćaj prolazi kroz korporativni web filter i DLP. Koja VPN konfiguracija je potrebna?",
+    "options": ["Split tunnel", "Site-to-site", "Full tunnel", "GRE bez enkripcije"],
+    "answer": 2,
+    "explain": "Full tunnel šalje sav saobraćaj kroz VPN, pa ga korporativne kontrole vide. Split tunnel šalje internet saobraćaj direktno, mimo filtera. Site-to-site povezuje mreže, ne pojedinačne korisnike."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tokom kvartalnog pregleda pristupa otkriveno je da DevOps inženjer, koji je prije dvije godine radio u finansijama, i dalje ima pristup ERP sistemu. Kako se ovaj problem zove i šta ga NAJBOLJE sprečava?",
+    "options": ["Privilege escalation; patchovanje ERP-a", "Privilege creep; redovni access review i oduzimanje prava pri promjeni uloge", "Session hijacking; kraći tokeni", "Shadow IT; CASB"],
+    "answer": 1,
+    "explain": "Nakupljanje prava kroz promjene posla je privilege creep. Rješava se periodičnom recertifikacijom pristupa i procesom za promjenu uloge. Privilege escalation je napad koji iskorištava ranjivost, što ovdje nije slučaj."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Upari zahtjev sa rješenjem koje ga NAJBOLJE ispunjava.",
+    "options": [
+      "Partneri šalju fajlove preko FTP-a; treba šifrovati i kredencijale i sadržaj",
+      "Udaljeni radnici trebaju web filtriranje, kontrolu SaaS aplikacija i pristup internim aplikacijama bez klasičnog VPN-a",
+      "Servisni nalog koristi pet IIS servera, a lozinka se ne smije ručno rotirati",
+      "Pravni tim komunicira porukama koje ni provajder servisa ne može pročitati",
+      "Administratori trebaju pristup switchevima i kad produkcijska mreža ne radi"
+    ],
+    "targets": ["Out-of-band management", "Security Service Edge (SSE)", "SFTP", "gMSA", "End-to-end encrypted messaging", "Split tunnel"],
+    "answer": [2, 1, 3, 4, 0],
+    "explain": "SFTP zamjenjuje FTP i šifruje sve preko SSH-a. SSE objedinjuje SWG, CASB i ZTNA iz clouda. gMSA ima lozinku koju domen automatski rotira. E2E enkripcija skriva sadržaj i od provajdera. OOB daje nezavisan kanal do uređaja. Split tunnel ne rješava nijedan zahtjev."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Upari opisanu mjeru ili ponašanje sa arhitekturnim principom.",
+    "options": [
+      "Inline IPS pri kvaru propušta sav saobraćaj da prodavnica ne stane",
+      "Firewall ispred baze sa karticama pri kvaru blokira sav saobraćaj",
+      "Spoljni i unutrašnji firewall su od različitih proizvođača",
+      "Uklonjene javne IP adrese sa VM-ova i ugašeni neiskorišteni servisi",
+      "HR i razvoj su na različitim VLAN-ovima na istom switchu",
+      "OT mreža koristi potpuno odvojene switcheve i kablove"
+    ],
+    "targets": ["Diversity", "Fail-closed", "Physical segmentation", "Fail-open", "Logical segmentation", "Attack surface reduction"],
+    "answer": [3, 1, 0, 5, 4, 2],
+    "explain": "Propuštanje pri kvaru je fail-open (dostupnost), blokiranje je fail-closed (povjerljivost). Različiti proizvođači su diversity. Uklanjanje izloženosti smanjuje attack surface. VLAN je logička, a odvojen hardver fizička segmentacija."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Poredaj korake obrade zahtjeva za pristup u Zero Trust arhitekturi (po NIST SP 800-207 logici).",
+    "options": [
+      "Policy administrator javlja PEP-u da otvori sesiju",
+      "Korisnik sa uređaja zatraži pristup aplikaciji",
+      "Korisnik pristupa resursu kroz PEP",
+      "PEP prima zahtjev i prosljeđuje ga na odlučivanje",
+      "Policy engine procjenjuje identitet, stanje uređaja i politiku i donosi odluku"
+    ],
+    "answer": [1, 3, 4, 0, 2],
+    "explain": "Zahtjev stiže na PEP, PEP ga šalje u control plane, policy engine odlučuje, policy administrator prenosi odluku PEP-u, i tek onda korisnik pristupa resursu kroz PEP."
+  }
+]

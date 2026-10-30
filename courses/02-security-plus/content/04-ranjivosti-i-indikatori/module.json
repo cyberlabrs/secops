@@ -1,0 +1,12 @@
+{
+  "title": "Ranjivosti, napadi i indikatori kompromitacije",
+  "summary": "Tipovi ranjivosti i attack surface (od race conditiona do LLM-ova i identity providera), malver, fizički, mrežni, social engineering, aplikacioni i credential napadi, te indikatori kompromitacije.",
+  "minutes": 120,
+  "domain": 2,
+  "objectives": [
+    "2.4",
+    "2.5"
+  ],
+  "title_en": "Vulnerabilities, attacks, and indicators of compromise",
+  "summary_en": "Vulnerability types and attack surface (from race conditions to LLMs and identity providers), malware, physical, network, social engineering, application, and credential attacks, and indicators of compromise."
+}

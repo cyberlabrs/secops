@@ -1,0 +1,15 @@
+{
+  "title": "Sigurnost razvoja softvera",
+  "summary": "SDLC i metodologije (Waterfall, Spiral, Agile, SAFe, DevSecOps), CMM/SAMM, SSDF i SBOM, shift left; kontrole u razvojnom ekosistemu (memory-safe jezici, CI/CD, repozitoriji, SAST/DAST/IAST/RASP); efikasnost i rizik; nabavljeni softver (COTS, open source/SCA, cloud, escrow); sigurno kodiranje i API sigurnost.",
+  "minutes": 90,
+  "domain": 8,
+  "objectives": [
+    "8.1",
+    "8.2",
+    "8.3",
+    "8.4",
+    "8.5"
+  ],
+  "title_en": "Software Development Security",
+  "summary_en": "SDLC and methodologies (Waterfall, Spiral, Agile, SAFe, DevSecOps), CMM/SAMM, SSDF and SBOM, shift left; controls in the development ecosystem (memory-safe languages, CI/CD, repositories, SAST/DAST/IAST/RASP); effectiveness and risk; acquired software (COTS, open source/SCA, cloud, escrow); secure coding and API security."
+}

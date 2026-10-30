@@ -1,0 +1,13 @@
+{
+  "title": "Audit, rizik i ugovori",
+  "summary": "Interni i eksterni audit, ISMS i politike, izazovi assurancea u cloudu, SOC 1/2/3 i Type I/II (SSAE 18, ISAE 3402), ograničenja obima, gap analiza i planiranje audita, regulisane industrije (NERC CIP, HIPAA/HITECH, PCI DSS), ERM i uloge nad podacima, tretman i metrike rizika, te ugovori (MSA, SOW, SLA), upravljanje dobavljačima i lanac snabdijevanja (ISO/IEC 27036).",
+  "minutes": 75,
+  "domain": 6,
+  "objectives": [
+    "6.3",
+    "6.4",
+    "6.5"
+  ],
+  "title_en": "Audit, risk, and contracts",
+  "summary_en": "Internal and external audit, ISMS and policies, assurance challenges in the cloud, SOC 1/2/3 and Type I/II (SSAE 18, ISAE 3402), scope restrictions, gap analysis and audit planning, regulated industries (NERC CIP, HIPAA/HITECH, PCI DSS), ERM and data roles, risk treatment and metrics, and contracts (MSA, SOW, SLA), vendor management, and the supply chain (ISO/IEC 27036)."
+}

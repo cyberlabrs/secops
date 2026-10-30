@@ -1,0 +1,12 @@
+{
+  "title": "Raspoređivanje, resursi i autoskaliranje",
+  "summary": "Requests i limits, QoS, LimitRange i ResourceQuota, nodeSelector, affinity, taints i tolerations, topology spread, prioriteti i HPA/in-place resize za autoskaliranje workloada.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.3",
+    "2.5"
+  ],
+  "title_en": "Scheduling, resources and autoscaling",
+  "summary_en": "Requests and limits, QoS, LimitRange and ResourceQuota, nodeSelector, affinity, taints and tolerations, topology spread, priorities, and HPA/in-place resize for workload autoscaling."
+}

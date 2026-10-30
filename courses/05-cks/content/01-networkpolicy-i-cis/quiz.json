@@ -1,0 +1,240 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Zadatak: u namespaceu payments zabrani sav ulazni i izlazni saobraćaj za sve podove. Koja politika to radi?",
+    "options": [
+      "podSelector: {} i policyTypes: [Ingress, Egress], bez ingress i egress pravila",
+      "podSelector: {} i policyTypes: [Ingress, Egress], uz ingress: [{}] i egress: [{}]",
+      "podSelector: {} bez policyTypes i bez pravila",
+      "podSelector: {matchLabels: {app: '*'}} i policyTypes: [Ingress, Egress]"
+    ],
+    "answer": 0,
+    "explain": "Prazan podSelector bira sve podove, a oba policyTypes bez pravila izoluju oba smjera. Prazno pravilo {} dozvoljava sve, politika bez policyTypes izoluje samo Ingress, a oznake ne podržavaju wildcard."
+  },
+  {
+    "obj": "1.1",
+    "q": "Nakon default deny egress politike u namespaceu payments, aplikacija javlja 'could not resolve host postgres'. Koja dopuna je minimalna i ispravna?",
+    "options": [
+      "Egress prema namespaceSelector: {} na svim portovima",
+      "Egress prema ipBlock 10.96.0.10/32 (ClusterIP servisa kube-dns) na UDP 53",
+      "Egress prema podovima k8s-app=kube-dns u namespaceu kube-system na UDP i TCP 53",
+      "Ingress politika u kube-system koja dozvoljava ulaz iz payments"
+    ],
+    "answer": 2,
+    "explain": "DNS je egress prema CoreDNS podovima na port 53, i UDP i TCP. Politika vidi IP poda nakon prevođenja ClusterIP-a, pa ipBlock na ClusterIP nije pouzdan; namespaceSelector: {} na svim portovima je preširok."
+  },
+  {
+    "obj": "1.1",
+    "q": "Podovi iz drugih namespaceova ne smiju doći do podova u namespaceu prod, ali podovi unutar prod moraju međusobno komunicirati. Koji ingress dio politike (podSelector: {}, policyTypes: [Ingress]) u namespaceu prod je ispravan?",
+    "options": [
+      "ingress: [{from: [{namespaceSelector: {}}]}]",
+      "ingress: [{from: [{podSelector: {}}]}]",
+      "ingress: []",
+      "ingress: [{}]"
+    ],
+    "answer": 1,
+    "explain": "podSelector: {} u from bez namespaceSelectora bira samo podove iz namespacea politike, tj. prod. namespaceSelector: {} dozvoljava sve namespaceove, ingress: [] blokira i unutrašnji saobraćaj, a ingress: [{}] dozvoljava sve."
+  },
+  {
+    "obj": "1.1",
+    "q": "Pišeš politiku koja dozvoljava ulaz samo iz namespacea monitoring. Namespace ima oznake kubernetes.io/metadata.name=monitoring i team=ops. Zašto je bolje koristiti prvu oznaku?",
+    "options": [
+      "Druga oznaka ne radi u namespaceSelectoru jer sadrži riječ team",
+      "namespaceSelector podržava samo oznake sa prefiksom kubernetes.io",
+      "Prva oznaka uključuje i podove sa hostNetwork: true",
+      "Prvu oznaku automatski postavlja API server i ne može se promijeniti, dok team=ops može dodati svako ko smije da mijenja namespace"
+    ],
+    "answer": 3,
+    "explain": "kubernetes.io/metadata.name se postavlja automatski i odgovara imenu namespacea, pa je napadač ne može dodati drugom namespaceu. Proizvoljne oznake rade u selektoru, ali ih je lako lažirati na drugom namespaceu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Pod operator u namespaceu payments mora komunicirati sa API serverom (controlplane IP 192.168.1.10), a namespace ima default deny egress. Koje egress pravilo radi?",
+    "options": [
+      "to: [{ipBlock: {cidr: 192.168.1.10/32}}], ports: [{protocol: TCP, port: 6443}]",
+      "to: [{ipBlock: {cidr: 10.96.0.1/32}}], ports: [{protocol: TCP, port: 443}]",
+      "to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}, podSelector: {matchLabels: {component: kube-apiserver}}}]",
+      "to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: default}}}], ports: [{port: 443}]"
+    ],
+    "answer": 0,
+    "explain": "Saobraćaj prema servisu kubernetes (10.96.0.1:443) se prevodi na IP čvora i port 6443, i politika vidi prevedenu adresu. API server je hostNetwork static Pod, pa ga podSelector ne pogađa pouzdano, a namespace default nema podove API servera."
+  },
+  {
+    "obj": "1.1",
+    "q": "U namespaceu prod je primijenjena default deny ingress politika. Napadač je preuzeo pod u tom namespaceu koji ima hostNetwork: true i i dalje prima konekcije sa svih strana. Najvjerovatniji razlog?",
+    "options": [
+      "Politika mora imati i policyTypes: [Egress]",
+      "NetworkPolicy važi tek za podove kreirane nakon politike",
+      "Pod koristi mrežni stek čvora, a većina CNI-ja ne primjenjuje NetworkPolicy na hostNetwork podove",
+      "Calico ne podržava NetworkPolicy"
+    ],
+    "answer": 2,
+    "explain": "hostNetwork pod dijeli IP i mrežni stek čvora, pa ga politike po pravilu ne filtriraju. Politike djeluju i na postojeće podove, Egress ne utiče na ulaz, a Calico u labu u potpunosti podržava NetworkPolicy."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koja od ovih politika dozvoljava SAV ulazni saobraćaj u izabrane podove?",
+    "options": [
+      "policyTypes: [Ingress] i ingress: []",
+      "policyTypes: [Ingress] bez ingress polja",
+      "policyTypes: [Egress] i egress: [{}]",
+      "policyTypes: [Ingress] i ingress: [{}]"
+    ],
+    "answer": 3,
+    "explain": "Prazno pravilo {} odgovara svakom izvoru i portu, pa dozvoljava sve. Prazna lista ili izostavljeno polje uz Ingress u policyTypes znače da ništa nije dozvoljeno, a egress pravilo ne utiče na ulaz."
+  },
+  {
+    "obj": "1.1",
+    "type": "order",
+    "q": "Poredaj korake za zaključavanje namespacea payments tako da aplikacije ostanu funkcionalne.",
+    "options": [
+      "Dodaj politiku koja dozvoljava egress prema CoreDNS na UDP i TCP 53",
+      "Testiraj iz privremenog poda: nslookup, nc -zv prema dozvoljenim i zabranjenim odredištima",
+      "Pogledaj oznake podova i namespaceova (--show-labels)",
+      "Primijeni default deny za Ingress i Egress",
+      "Dodaj politike koje dozvoljavaju samo potrebne tokove (frontend -> backend, backend -> postgres)"
+    ],
+    "answer": [2, 3, 0, 4, 1],
+    "explain": "Prvo saznaš oznake za selektore, zatim uvodiš default deny, odmah vraćaš DNS, pa dodaješ konkretne dozvole. Na kraju testiraš da dozvoljeno radi, a zabranjeno ne."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na kojem čvoru i kojom komandom provjeravaš CIS preporuke za kubelet na čvoru node01?",
+    "options": [
+      "Na controlplane: kube-bench run --targets node --node node01",
+      "Na node01: kube-bench run --targets node",
+      "Na controlplane: kube-bench run --targets master,node",
+      "Na node01: kube-bench run --targets policies"
+    ],
+    "answer": 1,
+    "explain": "kube-bench čita lokalne procese, flagove i fajlove, pa se pokreće na samom čvoru koji provjerava, sa metom node za worker. Ne postoji flag --node, a policies provjerava Kubernetes objekte (RBAC, PSA), ne kubelet."
+  },
+  {
+    "obj": "1.2",
+    "q": "kube-bench ispisuje: '[WARN] 1.2.1 Ensure that the --anonymous-auth argument is set to false (Manual)'. Šta to znači?",
+    "options": [
+      "Provjera je ručna: alat ne donosi presudu, ti procjenjuješ da li i kako ispraviti",
+      "API server je pao pri provjeri",
+      "Provjera je prošla, ali sa upozorenjem",
+      "Flag ne postoji u verziji 1.35"
+    ],
+    "answer": 0,
+    "explain": "WARN se dobija za Manual provjere i za slučajeve gdje alat ne može sam odlučiti. Na kubeadm klasteru --anonymous-auth=false na API serveru može oboriti liveness probe, pa je baš zato ova preporuka ručna."
+  },
+  {
+    "obj": "1.2",
+    "q": "kube-bench prijavljuje FAIL za '--profiling argument is set to false' u sekcijama 1.2, 1.3 i 1.4. Šta tačno mijenjaš?",
+    "options": [
+      "Dodaješ profiling: false u /var/lib/kubelet/config.yaml na controlplane",
+      "kubectl -n kube-system edit pod za kube-apiserver, kube-controller-manager i kube-scheduler",
+      "Dodaješ --profiling=false u kube-apiserver.yaml, kube-controller-manager.yaml i kube-scheduler.yaml u /etc/kubernetes/manifests",
+      "Dodaješ --profiling=false samo u kube-apiserver.yaml jer on prosljeđuje flagove ostalim komponentama"
+    ],
+    "answer": 2,
+    "explain": "Sekcije 1.2, 1.3 i 1.4 su API server, controller-manager i scheduler, i svaki ima svoj static Pod manifest. Mirror podovi se ne mogu trajno mijenjati preko kubectl edit, a kubelet konfiguracija nema veze sa ovim komponentama."
+  },
+  {
+    "obj": "1.2",
+    "q": "Nakon izmjene /etc/kubernetes/manifests/kube-apiserver.yaml, kubectl vraća 'connection refused', a 'crictl ps -a --name kube-apiserver' ne prikazuje nijedan novi kontejner. Gdje je najvjerovatnije greška i gdje je tražiš?",
+    "options": [
+      "Pogrešan flag; greška je u crictl logs",
+      "etcd je pao; greška je u /var/lib/etcd",
+      "Istekao je certifikat; greška je u kubectl get events",
+      "YAML se ne parsira, pa kubelet ne kreira pod; greška je u journalctl -u kubelet"
+    ],
+    "answer": 3,
+    "explain": "Ako kontejner nije ni kreiran, kubelet nije uspio da pročita manifest, što piše u journalctl -u kubelet. Pogrešan flag bi dao kontejner koji se pokreće i pada (vidljiv u crictl ps -a i crictl logs), a kubectl get events ne radi bez API servera."
+  },
+  {
+    "obj": "1.2",
+    "q": "Prije izmjene static Pod manifesta napravio si backup komandom 'cp kube-apiserver.yaml kube-apiserver.yaml.bak' unutar /etc/kubernetes/manifests. Šta se dešava?",
+    "options": [
+      "Ništa, kubelet čita samo fajlove sa ekstenzijom .yaml",
+      "Kubelet pokušava pokrenuti i kopiju, pa dva API servera se bore za isti port i kontrolna ravan postaje nestabilna",
+      "kubeadm automatski briše backup fajl",
+      "Kubelet koristi backup kao fallback ako novi manifest ne radi"
+    ],
+    "answer": 1,
+    "explain": "Kubelet učitava fajlove iz direktorija manifests bez obzira na ekstenziju (osim skrivenih fajlova), pa može pokrenuti drugi pod sa istim portom. Backup ide van direktorija, npr. u /root."
+  },
+  {
+    "obj": "1.2",
+    "q": "kube-bench na node01 prijavljuje FAIL: 'Ensure that the --anonymous-auth argument is set to false' (sekcija 4.2). Koja izmjena je ispravna?",
+    "options": [
+      "U /var/lib/kubelet/config.yaml postavi authentication.anonymous.enabled: false, pa systemctl restart kubelet",
+      "U /etc/kubernetes/manifests/kube-apiserver.yaml postavi --anonymous-auth=false",
+      "U /var/lib/kubelet/config.yaml postavi authorization.mode: AlwaysAllow, pa systemctl restart kubelet",
+      "U /etc/kubernetes/kubelet.conf postavi anonymous: false"
+    ],
+    "answer": 0,
+    "explain": "Sekcija 4 je worker čvor, a anonimni pristup kubeletu se gasi u KubeletConfiguration i traži restart servisa. API server je druga komponenta, AlwaysAllow je suprotno od preporuke, a kubelet.conf je kubeconfig za vezu sa API serverom."
+  },
+  {
+    "obj": "1.2",
+    "q": "Postavio si authentication.anonymous.enabled: false u /var/lib/kubelet/config.yaml i restartovao kubelet, ali kube-bench i dalje prijavljuje FAIL. 'ps -ef | grep kubelet' prikazuje '--anonymous-auth=true'. Zašto?",
+    "options": [
+      "Kubelet čita config.yaml tek nakon reboota čvora",
+      "Flag iz komandne linije (npr. iz /etc/default/kubelet ili systemd drop-ina) ima prednost nad config.yaml",
+      "kube-bench čita samo config.yaml i ignoriše flagove",
+      "Potrebno je i kubectl drain node01"
+    ],
+    "answer": 1,
+    "explain": "Kad je isti parametar zadat i kao flag i u konfiguracionom fajlu, flag pobjeđuje. Treba ukloniti flag iz KUBELET_EXTRA_ARGS ili drop-ina, uraditi daemon-reload i restart; reboot i drain nisu potrebni."
+  },
+  {
+    "obj": "1.2",
+    "q": "kube-bench prijavljuje FAIL za vlasništvo direktorija /var/lib/etcd (očekuje etcd:etcd). Na kubeadm klasteru 'id etcd' vraća 'no such user'. Šta radiš?",
+    "options": [
+      "Mijenjaš --data-dir u etcd.yaml na /home/etcd",
+      "Ignorišeš nalaz jer kubeadm ne podržava korisnika etcd",
+      "Kreiraš sistemskog korisnika etcd i radiš chown -R etcd:etcd /var/lib/etcd",
+      "Radiš chmod 777 /var/lib/etcd da bi etcd mogao pisati"
+    ],
+    "answer": 2,
+    "explain": "Remedijacija traži vlasnika etcd:etcd, pa korisnika treba prvo napraviti (useradd -r). etcd kontejner radi kao root i nastavlja raditi; promjena data-dir nije tražena, a 777 je suprotno od preporuke 700."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Upari CIS nalaz sa mjestom gdje se ispravlja.",
+    "options": [
+      "kube-scheduler --profiling nije false",
+      "kubelet authorization.mode je AlwaysAllow",
+      "Dozvole na /etc/kubernetes/admin.conf su 644",
+      "kube-controller-manager nema --use-service-account-credentials=true"
+    ],
+    "targets": [
+      "/var/lib/kubelet/config.yaml na čvoru",
+      "/etc/kubernetes/manifests/kube-controller-manager.yaml",
+      "chmod 600 na controlplane čvoru",
+      "/etc/kubernetes/manifests/kube-scheduler.yaml",
+      "/etc/kubernetes/manifests/etcd.yaml"
+    ],
+    "answer": [3, 0, 2, 1],
+    "explain": "Flagovi komponenti kontrolne ravni se mijenjaju u njihovim static Pod manifestima, kubelet postavke u config.yaml, a dozvole fajlova sa chmod. etcd.yaml nije vezan ni za jedan od ovih nalaza."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Poredaj korake za ispravku CIS nalaza '--profiling=false' na API serveru bez rizika.",
+    "options": [
+      "Dodaj --profiling=false u command listu u /etc/kubernetes/manifests/kube-apiserver.yaml",
+      "Ponovo pokreni kube-bench samo za tu provjeru (--check)",
+      "Kopiraj manifest u /root/kube-apiserver.yaml.bak",
+      "Sačekaj da kubelet ponovo kreira pod i provjeri crictl ps i kubectl get pods -n kube-system"
+    ],
+    "answer": [2, 0, 3, 1],
+    "explain": "Backup van direktorija manifests, zatim izmjena, čekanje da API server ustane i na kraju potvrda kroz kube-bench. Ako pod ne ustane, backup omogućava brz povratak."
+  },
+  {
+    "type": "spot",
+    "obj": "1.1",
+    "q": "Politika treba da pusti na backend (TCP 8080) samo podove app=frontend iz namespacea web. Test pokazuje da prolazi i saobraćaj drugih podova. Klikni red koji je uzrok.",
+    "snippet": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: backend-from-frontend\n  namespace: prod\nspec:\n  podSelector:\n    matchLabels: {app: backend}\n  policyTypes: [Ingress]\n  ingress:\n  - from:\n    - namespaceSelector:\n        matchLabels: {kubernetes.io/metadata.name: web}\n    - podSelector:\n        matchLabels: {app: frontend}\n    ports:\n    - {protocol: TCP, port: 8080}",
+    "lang": "yaml",
+    "answer": [
+      13
+    ],
+    "explain": "Crtica ispred podSelector pravi drugi, zaseban element liste from, a elementi liste se vežu sa OR. Politika zato pušta sve podove iz namespacea web i podove app=frontend iz samog namespacea prod. Ispravka: ukloni crticu i poravnaj podSelector ispod namespaceSelector, pa oba selektora čine jedan element (AND): podovi app=frontend u namespaceu web."
+  }
+]

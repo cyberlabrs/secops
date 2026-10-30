@@ -1,0 +1,12 @@
+{
+  "title": "Ingress i Gateway API",
+  "summary": "Ingress resursi i IngressClass, TLS i pathType, status ingress-nginx projekta, te Gateway API (GatewayClass, Gateway, HTTPRoute, filteri, težine, ReferenceGrant) i migracija sa Ingressa.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.4",
+    "3.5"
+  ],
+  "title_en": "Ingress and Gateway API",
+  "summary_en": "Ingress resources and IngressClass, TLS and pathType, the status of the ingress-nginx project, and the Gateway API (GatewayClass, Gateway, HTTPRoute, filters, weights, ReferenceGrant) and migrating from Ingress."
+}

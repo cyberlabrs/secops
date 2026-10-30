@@ -1,0 +1,76 @@
+[
+  {
+    "q": "Which category is number one in the OWASP Top 10:2025?",
+    "options": ["Injection", "Broken Access Control", "Security Misconfiguration", "Cryptographic Failures"],
+    "answer": 1,
+    "explain": "A01:2025 is Broken Access Control, as in 2021. Security Misconfiguration is now second, and Injection dropped to fifth."
+  },
+  {
+    "q": "Which two categories are NEW in the OWASP Top 10:2025? (multiple answers)",
+    "options": ["Software Supply Chain Failures", "Server-Side Request Forgery", "Mishandling of Exceptional Conditions", "Insecure Design"],
+    "answer": [0, 2],
+    "explain": "The new ones are A03 Software Supply Chain Failures and A10 Mishandling of Exceptional Conditions. SSRF was merged into A01, and Insecure Design has existed since 2021."
+  },
+  {
+    "q": "Where is SSRF in the OWASP Top 10:2025?",
+    "options": ["It is still a separate category, A10", "It was merged into A01 Broken Access Control", "It was dropped because it's no longer relevant", "It was merged into A05 Injection"],
+    "answer": 1,
+    "explain": "In the 2025 edition SSRF is part of A01. In the API Security Top 10 (2023) it is still a separate item, API7."
+  },
+  {
+    "q": "What is the correct defense against SQL injection?",
+    "options": ["Stripping apostrophes from input", "Parameterized queries (prepared statements)", "A WAF in front of the application", "Base64-encoding the input"],
+    "answer": 1,
+    "explain": "Parameterization separates code from data at the database driver level. Filtering and WAFs are additional layers and can be bypassed."
+  },
+  {
+    "q": "GET /api/invoices/1043 returns another user's invoice when you change the number. What is this vulnerability called in the API Top 10?",
+    "options": ["API2 Broken Authentication", "API1 Broken Object Level Authorization (BOLA)", "API4 Unrestricted Resource Consumption", "API9 Improper Inventory Management"],
+    "answer": 1,
+    "explain": "BOLA (IDOR in the web context): the API doesn't check whether the object belongs to the user requesting it."
+  },
+  {
+    "q": "A user sends PATCH /api/users/me with {\"role\":\"admin\"} and becomes an admin. Which API Top 10 category?",
+    "options": ["API3 Broken Object Property Level Authorization (mass assignment)", "API7 SSRF", "API10 Unsafe Consumption of APIs", "API6 Sensitive Business Flows"],
+    "answer": 0,
+    "explain": "The API accepts a field the user isn't allowed to change. Defense: an explicit allowlist of fields (DTO), not binding the entire JSON to the model."
+  },
+  {
+    "q": "How should user passwords be stored?",
+    "options": ["AES-256 encryption", "SHA-256 hash", "A slow, salted hash: Argon2id, scrypt or bcrypt", "Base64"],
+    "answer": 2,
+    "explain": "Passwords aren't encrypted, because anything encrypted can be decrypted. A fast hash (SHA-256) allows billions of guesses per second on a GPU. Argon2id/bcrypt are deliberately slow and use a salt."
+  },
+  {
+    "q": "The is_admin() function returns True when the authorization service doesn't respond. Which OWASP Top 10:2025 category?",
+    "options": ["A09 Logging & Alerting Failures", "A10 Mishandling of Exceptional Conditions (fail open)", "A04 Cryptographic Failures", "A03 Supply Chain"],
+    "answer": 1,
+    "explain": "A system that grants access on error fails open. The correct behavior is fail closed: an error means denial."
+  },
+  {
+    "q": "Someone publishes the internal package 'firma-utils' on the public npm registry with a higher version, and the build pulls it in. What is this attack called and which category does it belong to?",
+    "options": ["Typosquatting, A05", "Dependency confusion, A03 Software Supply Chain Failures", "SSRF, A01", "Mass assignment, API3"],
+    "answer": 1,
+    "explain": "Dependency confusion exploits the fact that the package manager prefers the public registry or a higher version. Defense: scoped packages, a private registry as the only source, lock files."
+  },
+  {
+    "q": "Which type of vulnerability is HARDEST for automated scanners (SAST, DAST) to find?",
+    "options": ["Hardcoded secrets", "Vulnerable library versions", "BOLA/IDOR and business logic flaws", "Missing HTTP security headers"],
+    "answer": 2,
+    "explain": "A scanner doesn't know which object belongs to which user or what is correct from a business standpoint. That requires authorization tests, code review and threat modeling."
+  },
+  {
+    "q": "What is the main purpose of the Content-Security-Policy header?",
+    "options": ["It encrypts cookies", "It restricts where a page may load and execute scripts from, mitigating XSS", "It prevents SQL injection", "It enforces HTTPS"],
+    "answer": 1,
+    "explain": "CSP is a second layer of defense against XSS: even if an attacker injects a script, the browser won't execute it if the source isn't allowed. HSTS enforces HTTPS."
+  },
+  {
+    "type": "spot",
+    "q": "Click the lines where user input becomes part of code (A05 Injection).",
+    "lang": "python",
+    "snippet": "from flask import Flask, request\nimport sqlite3, subprocess\n\napp = Flask(__name__)\n\n@app.get(\"/orders\")\ndef orders():\n    name = request.args.get(\"customer\", \"\")\n    db = sqlite3.connect(\"shop.db\")\n    rows = db.execute(f\"SELECT id, total FROM orders WHERE customer = '{name}'\").fetchall()\n    return {\"orders\": rows}\n\n@app.get(\"/ping\")\ndef ping():\n    host = request.args.get(\"host\", \"127.0.0.1\")\n    out = subprocess.run(f\"ping -c 1 {host}\", shell=True, capture_output=True, text=True)\n    return {\"output\": out.stdout}",
+    "answer": [9, 15],
+    "explain": "Line 10 puts the customer parameter straight into SQL with an f-string: ' OR '1'='1 returns all orders. Fix: a parameterized query, db.execute(\"... WHERE customer = ?\", (name,)). Line 16 passes host to a shell (shell=True), so 127.0.0.1; cat /etc/passwd runs a second command. Fix: subprocess.run([\"ping\", \"-c\", \"1\", host]) without a shell, plus validating that host is an IP or a hostname."
+  }
+]

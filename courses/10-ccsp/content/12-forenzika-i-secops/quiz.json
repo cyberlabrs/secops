@@ -1,0 +1,304 @@
+[
+  {
+    "obj": "5.4",
+    "q": "Organizacija koristi IaaS. EDR alarm pokazuje da je web server kompromitovan, a instanca je u auto scaling grupi koja gasi nezdrave instance. Šta incident response tim treba uraditi PRVO?",
+    "options": [
+      "Odmah ugasiti instancu da se zaustavi dalja šteta.",
+      "Obrisati instancu i pokrenuti novu iz provjerenog templatea.",
+      "Izuzeti instancu iz auto scaling grupe i mrežno je izolovati, pa prikupiti memoriju i snapshot diska.",
+      "Zatražiti od provajdera fizičku kopiju diska hosta."
+    ],
+    "answer": 2,
+    "explain": "Prvo se mora spriječiti da auto scaling uništi dokaz i zaustaviti šteta izolacijom, pa se po redoslijedu volatilnosti uzima memorija i disk. Gašenje i brisanje uništavaju volatilne dokaze, a CSP zbog multitenancyja ne daje fizički disk hosta."
+  },
+  {
+    "obj": "5.4",
+    "q": "Koja aktivnost NAJBOLJE dokazuje da snapshot diska koji je predat pravnoj službi nije mijenjan od trenutka akvizicije?",
+    "options": [
+      "Kriptografski hash izračunat pri akviziciji i upisan u chain of custody, ponovo izračunat pri predaji.",
+      "Šifrovanje snapshota ključem forenzičkog tima.",
+      "Čuvanje snapshota u istom nalogu u kojem je nastao incident.",
+      "Pisana izjava administratora da snapshot niko nije otvarao."
+    ],
+    "answer": 0,
+    "explain": "Integritet se dokazuje poređenjem hash vrijednosti zabilježenih u lancu nadzora. Šifrovanje štiti povjerljivost, ne dokazuje nepromijenjenost; čuvanje u kompromitovanom nalogu je loša praksa, a izjava bez tehničkog dokaza je slaba."
+  },
+  {
+    "obj": "5.4",
+    "q": "Kompanija koristi SaaS CRM. Pravna služba traži forenzičke podatke o pristupu određenim zapisima koji nisu dostupni u audit logu aplikacije. Šta je NAJBOLJI izvor rješenja?",
+    "options": [
+      "Pokrenuti forenzički alat na serverima SaaS provajdera.",
+      "Penetracionim testom dobiti pristup logovima provajdera.",
+      "Rekonstruisati pristup iz logova lokalnog proxyja kao jedinog dokaza.",
+      "Osloniti se na ugovorne odredbe o saradnji u istragama i zatražiti podatke od provajdera po ugovorenoj proceduri."
+    ],
+    "answer": 3,
+    "explain": "U SaaS-u korisnik nema pristup infrastrukturi, pa forenzika zavisi od ugovora (dostupnost logova, retencija, saradnja). Pristup serverima provajdera ili test bez ovlaštenja je nedozvoljen, a proxy logovi su korisna dopuna, ali ne vide aktivnost unutar aplikacije."
+  },
+  {
+    "obj": "5.4",
+    "q": "Šta je MOST important za forenzičku spremnost (forensic readiness) cloud okruženja?",
+    "options": [
+      "Kupovina najnovijeg alata za analizu memorije.",
+      "Unaprijed uključeni i centralno, nepromjenljivo sačuvani logovi, definisana retencija i ugovorena saradnja CSP-a.",
+      "Obuka svih developera za korištenje forenzičkih alata.",
+      "Mjesečni penetracioni testovi."
+    ],
+    "answer": 1,
+    "explain": "Forensic readiness znači da su dokazi dostupni kada zatrebaju: logovi uključeni, zaštićeni od brisanja, sačuvani dovoljno dugo i ugovorne obaveze CSP-a jasne. Alati i obuka bez podataka ne pomažu, a pentest nije forenzička priprema."
+  },
+  {
+    "obj": "5.4",
+    "q": "Istražitelj kopira logove na prenosni disk, analizira ih kod kuće i vraća ih sljedećeg dana, ali to nigdje ne bilježi. Koji princip upravljanja dokazima je NAJVIŠE narušen?",
+    "options": [
+      "Order of volatility",
+      "Data minimization",
+      "Least functionality",
+      "Chain of custody"
+    ],
+    "answer": 3,
+    "explain": "Lanac nadzora zahtijeva neprekidan zapis ko je imao dokaz, kada i gdje. Nezabilježen prenos izvan kontrolisanog okruženja stvara prekid koji protivna strana može iskoristiti da ospori autentičnost dokaza."
+  },
+  {
+    "obj": "5.4",
+    "q": "Po redoslijedu volatilnosti, koji od navedenih izvora treba prikupiti PRVI sa kompromitovane cloud instance?",
+    "options": [
+      "Snapshot root volumena",
+      "Sadržaj RAM memorije i aktivne mrežne konekcije",
+      "Logovi control planea u centralnom log nalogu",
+      "Noćni backup instance"
+    ],
+    "answer": 1,
+    "explain": "Memorija i stanje konekcija nestaju pri gašenju ili restartu. Disk, centralni logovi i backup su postojaniji i mogu se uzeti kasnije."
+  },
+  {
+    "obj": "5.4",
+    "q": "Organizacija očekuje tužbu bivšeg zaposlenog. Politika retencije automatski briše e-mailove starije od 90 dana. Šta treba uraditi?",
+    "options": [
+      "Primijeniti legal hold na relevantne sandučiće i podatke, čime se obustavlja automatsko brisanje.",
+      "Ostaviti politiku retencije jer je dokumentovana i odobrena.",
+      "Exportovati sve e-mailove cijele kompanije na lokalni disk.",
+      "Sačekati sudski nalog prije bilo kakve akcije."
+    ],
+    "answer": 0,
+    "explain": "Kad se postupak razumno očekuje, nastaje obaveza očuvanja (duty to preserve), pa se legal hold primjenjuje ciljano. Nastavak brisanja može se tretirati kao uništavanje dokaza (spoliation), masovni export krši minimizaciju, a čekanje naloga je prekasno."
+  },
+  {
+    "obj": "5.5",
+    "q": "Cloud provajder obavještava kupca da je incident u njegovoj infrastrukturi možda izložio lične podatke kupčevih klijenata u EU. Ko je odgovoran za prijavu nadzornom organu po GDPR-u?",
+    "options": [
+      "Cloud provajder, jer se incident dogodio kod njega.",
+      "Niko, dok forenzika ne potvrdi exfiltraciju.",
+      "Kupac kao kontroler, uz obavezu provajdera kao obrađivača da ga obavijesti bez nepotrebnog odlaganja.",
+      "Nacionalni CERT provajdera."
+    ],
+    "answer": 2,
+    "explain": "Po GDPR-u kontroler prijavljuje povredu nadzornom organu (čl. 33), a obrađivač mora bez nepotrebnog odlaganja obavijestiti kontrolera. Rok od 72 sata teče od saznanja kontrolera, ne od završetka forenzike."
+  },
+  {
+    "obj": "5.5",
+    "q": "Tokom ozbiljnog incidenta novinar zove inženjera iz SOC-a i traži komentar. Šta inženjer treba uraditi?",
+    "options": [
+      "Dati kratku tehničku izjavu da bi umirio javnost.",
+      "Uputiti novinara na ovlaštenu osobu prema komunikacionom planu i ne davati izjavu.",
+      "Potvrditi incident, ali ne navoditi detalje.",
+      "Negirati da se incident dogodio dok se ne završi istraga."
+    ],
+    "answer": 1,
+    "explain": "Javna komunikacija ide samo preko ovlaštenih osoba (PR, pravna služba), da poruka bude jedinstvena i pravno provjerena. Svaka izjava pojedinca, čak i potvrda, može naštetiti istrazi i pravnom položaju firme."
+  },
+  {
+    "obj": "5.5",
+    "q": "Napadač je kompromitovao e-mail tenant kompanije. Kako IR tim treba komunicirati tokom incidenta?",
+    "options": [
+      "Preko istog e-mail sistema, ali sa šifrovanim porukama.",
+      "Preko javnih društvenih mreža radi brzine.",
+      "Preko kanala za saradnju u istom kompromitovanom tenantu.",
+      "Preko unaprijed pripremljenog out-of-band kanala koji ne zavisi od kompromitovanog okruženja."
+    ],
+    "answer": 3,
+    "explain": "Ako je komunikaciona platforma kompromitovana, napadač može čitati planove odgovora. Komunikacioni plan zato predviđa alternativni (out-of-band) kanal. Šifrovanje ne pomaže ako napadač kontroliše nalog."
+  },
+  {
+    "obj": "5.5",
+    "q": "Kompanija je otkrila da kompromitovani OAuth token omogućava pristup API-ju poslovnog partnera sa kojim je integrisana. Šta je NAJBOLJI sljedeći korak komunikacije?",
+    "options": [
+      "Odmah obavijestiti partnera preko dogovorenog sigurnosnog kontakta i podijeliti relevantne indikatore kompromitacije.",
+      "Ne obavještavati partnera dok se ne završi interna istraga.",
+      "Objaviti indikatore javno na blogu.",
+      "Obavijestiti samo regulatora, koji će dalje obavijestiti partnera."
+    ],
+    "answer": 0,
+    "explain": "Partner je direktno ugrožen, pa ga treba obavijestiti brzo, preko dogovorenog kanala i na osnovu ugovora/NDA, uz IoC kako bi opozvao token i provjerio svoje logove. Čekanje omogućava širenje, a javna objava nije primjerena."
+  },
+  {
+    "obj": "5.5",
+    "q": "Organizacija ima cyber osiguranje. Tokom incidenta IR menadžer želi odmah angažovati vanjsku IR firmu. Šta je važno provjeriti PRVO?",
+    "options": [
+      "Da li vanjska firma ima najniži dnevni honorar.",
+      "Da li firma ima kancelariju u istom gradu.",
+      "Uslove polise: obavezu i rok obavještavanja osiguravača i da li osiguravač mora odobriti izbor IR firme.",
+      "Da li je incident već objavljen u medijima."
+    ],
+    "answer": 2,
+    "explain": "Polise često traže brzo obavještenje i korištenje odobrenih (panel) dobavljača. Propust može dovesti do gubitka pokrića. Osiguravač je stakeholder koji mora biti u komunikacionom planu."
+  },
+  {
+    "obj": "5.5",
+    "q": "Državni organ je od cloud provajdera zatražio podatke korisnika uz zabranu obavještavanja korisnika. Šta korisnik NAJBOLJE može uraditi da upravlja ovim rizikom?",
+    "options": [
+      "Zahtijevati od provajdera da prekrši zabranu i obavijesti ga.",
+      "Unaprijed ugovorom regulisati postupanje provajdera sa zahtjevima vlasti (transparentnost u granicama zakona, osporavanje preširokih zahtjeva) i šifrovati podatke ključevima pod svojom kontrolom.",
+      "Prebaciti sve podatke u drugi region istog provajdera.",
+      "Ništa, jer je to isključivo rizik provajdera."
+    ],
+    "answer": 1,
+    "explain": "Provajder može biti zakonski spriječen da obavijesti korisnika. Korisnik upravlja rizikom unaprijed: ugovornim odredbama o postupanju sa zahtjevima vlasti i tehničkim kontrolama kao što su ključevi pod njegovom kontrolom. Promjena regiona istog provajdera ne mijenja nadležnost nad provajderom."
+  },
+  {
+    "obj": "5.6",
+    "q": "Mala firma bez sigurnosnog tima želi 24/7 nadzor svog cloud okruženja. Koji model je NAJPRIKLADNIJI i šta mora ostati kod firme?",
+    "options": [
+      "Outsourced SOC (MSSP/MDR); odgovornost za rizik i odluke ostaje kod firme, uz jasan SLA i pravila eskalacije.",
+      "Interni SOC sa tri smjene; odgovornost se dijeli sa CSP-om.",
+      "Outsourced SOC; odgovornost za incidente prelazi na MSSP.",
+      "Bez SOC-a, jer CSP nadzire cijelo okruženje po shared responsibility modelu."
+    ],
+    "answer": 0,
+    "explain": "Za malu firmu MSSP/MDR daje 24/7 pokrivenost, ali se odgovornost (accountability) ne može outsourcati. CSP nadzire svoju infrastrukturu, ne konfiguraciju i identitete korisnika."
+  },
+  {
+    "obj": "5.6",
+    "q": "Sigurnosni tim želi otkriti napadača koji se lateralno kreće unutar okruženja, uz NAJMANJI broj lažnih pozitiva. Koja kontrola je NAJBOLJA?",
+    "options": [
+      "Signature-based IDS na perimetru",
+      "Anomaly-based IDS sa niskim pragom",
+      "Honeytokeni (lažni kredencijali i resursi) čije svako korištenje generiše alarm",
+      "Dodatna pravila u WAF-u"
+    ],
+    "answer": 2,
+    "explain": "Legitimni korisnici ne koriste mamce, pa je svaki pristup honeytokenu alarm visoke pouzdanosti. Anomaly IDS sa niskim pragom stvara mnogo lažnih pozitiva, perimetarski IDS i WAF ne vide unutrašnje kretanje."
+  },
+  {
+    "obj": "5.6",
+    "q": "Novi skup pravila treba uvesti u inline IPS koji štiti produkcionu aplikaciju. Koji pristup NAJBOLJE balansira sigurnost i dostupnost?",
+    "options": [
+      "Uključiti sva pravila odmah u blok modu.",
+      "Ne uvoditi nova pravila jer IPS ugrožava dostupnost.",
+      "Pravila uvesti samo u testnom okruženju i nikad u produkciji.",
+      "Pravila prvo pokrenuti u detection (alert-only) modu, analizirati lažne pozitive, pa ih kontrolisano prebaciti u blok mod kroz change management."
+    ],
+    "answer": 3,
+    "explain": "Inline IPS može blokirati legitiman saobraćaj. Postepeno uvođenje kroz detection mod i change management smanjuje rizik prekida, a da se zaštita ipak uvede."
+  },
+  {
+    "obj": "5.6",
+    "q": "Napadač sa kompromitovanim administratorskim nalogom u produkcionom nalogu pokušava obrisati tragove. Koja arhitektura logovanja NAJBOLJE štiti dokaze?",
+    "options": [
+      "Logovi se čuvaju lokalno na svakoj instanci.",
+      "Logovi se šalju u poseban log archive nalog sa ograničenim pristupom, u nepromjenljiv (WORM) storage, uz validaciju integriteta.",
+      "Logovi se čuvaju u bucketu produkcionog naloga sa uključenim verzioniranjem.",
+      "Logovi se brišu nakon 7 dana da bi se smanjila izloženost."
+    ],
+    "answer": 1,
+    "explain": "Odvajanje u poseban nalog i WORM sprečavaju da administrator kompromitovanog naloga obriše logove. Verzioniranje u istom nalogu admin može isključiti, lokalni logovi nestaju sa instancom."
+  },
+  {
+    "obj": "5.6",
+    "q": "SOC dobija hiljade alarma dnevno i analitičari propuštaju stvarne incidente. Koja mjera NAJVIŠE pomaže?",
+    "options": [
+      "Zaposliti još Tier 1 analitičara bez drugih promjena.",
+      "Isključiti sve alarme niske ozbiljnosti.",
+      "Podesiti detekcije prema use case-ovima i kontekstu, uvesti korelaciju, obogaćivanje i SOAR automatizaciju trijaže, uz AI asistenciju pod nadzorom analitičara.",
+      "Prebaciti sve logove u jeftiniji storage."
+    ],
+    "answer": 2,
+    "explain": "Zamor od alarma rješava se kvalitetom detekcija, korelacijom i automatizacijom, a AI pomaže grupisanjem i sažimanjem uz ljudsku odluku. Slijepo isključivanje alarma stvara slijepe tačke, a samo više ljudi ne skalira."
+  },
+  {
+    "obj": "5.6",
+    "q": "Organizacija želi testirati sigurnost svog IaaS okruženja kod javnog provajdera. Šta treba uraditi PRVO?",
+    "options": [
+      "Pokrenuti DoS test da se provjeri otpornost.",
+      "Testirati i servise provajdera da se vidi da li je infrastruktura sigurna.",
+      "Angažovati testera i odmah početi, jer je okruženje u vlasništvu organizacije.",
+      "Pregledati politiku penetracionog testiranja provajdera i ugovor, definisati obim i pribaviti pisano ovlaštenje."
+    ],
+    "answer": 3,
+    "explain": "Pentest u cloudu mora poštovati politiku CSP-a (npr. zabranu DoS testova i testiranja infrastrukture provajdera) i imati rules of engagement. Bez toga se krši ugovor i rizikuje uticaj na druge tenante."
+  },
+  {
+    "obj": "5.6",
+    "q": "Skener je prijavio 4.000 ranjivosti u cloud okruženju. Kako NAJBOLJE prioritizovati otklanjanje?",
+    "options": [
+      "Po CVSS base ocjeni, od najviše ka najnižoj, bez drugog konteksta.",
+      "Po kombinaciji ozbiljnosti, izloženosti (javno dostupno), dokaza o aktivnom iskorištavanju (npr. KEV, EPSS) i kritičnosti resursa.",
+      "Abecednim redom po imenu resursa.",
+      "Prvo one koje je najlakše zakrpiti."
+    ],
+    "answer": 1,
+    "explain": "CVSS mjeri ozbiljnost, a prioritet treba odražavati rizik: vjerovatnoću iskorištavanja i uticaj na poslovanje. Javno izložen sistem sa aktivno iskorištavanom ranjivošću ide prije interne ranjivosti visoke ocjene."
+  },
+  {
+    "obj": "5.6",
+    "q": "Koja je NAJBOLJA razlika između procjene ranjivosti i penetracionog testa?",
+    "options": [
+      "Procjena ranjivosti identifikuje i rangira poznate slabosti, a pentest pokušava da ih iskoristi i pokaže stvarni uticaj.",
+      "Procjena ranjivosti je uvijek ručna, a pentest uvijek automatizovan.",
+      "Pentest se radi kontinuirano, a procjena ranjivosti jednom godišnje.",
+      "Između njih nema razlike osim u cijeni."
+    ],
+    "answer": 0,
+    "explain": "Vulnerability assessment je širok i uglavnom automatizovan, pentest je uzak, dubok i dokazuje iskoristivost. Procjena je češća, pentest periodičan."
+  },
+  {
+    "obj": "5.4",
+    "type": "order",
+    "q": "Poredaj faze forenzičkog procesa za kompromitovanu cloud instancu, od prve do posljednje.",
+    "options": [
+      "Analiza i izrada vremenske linije na kopiji",
+      "Identifikacija potencijalnih dokaza (nalog, region, resursi, logovi)",
+      "Izvještaj sa dokumentovanom, ponovljivom metodom",
+      "Akvizicija: memory dump i snapshot diska, export logova",
+      "Očuvanje: hash, WORM storage u forenzičkom nalogu, upis u chain of custody"
+    ],
+    "answer": [1, 3, 4, 0, 2],
+    "explain": "Prema ISO/IEC 27037 prvo se identifikuju dokazi, zatim se akviziraju i čuvaju (hash, WORM, lanac nadzora). Analiza se radi na kopiji (ISO/IEC 27042), a izvještaj je posljednji."
+  },
+  {
+    "obj": "5.6",
+    "type": "match",
+    "q": "Upari opis sa sigurnosnom kontrolom ili alatom.",
+    "options": [
+      "Otkriva napad i samo generiše alarm, bez blokiranja.",
+      "Mamac koji legitimni korisnici ne koriste, svaki pristup je sumnjiv.",
+      "Korelira logove iz više izvora i generiše alarme za analitičare.",
+      "Automatizuje odgovor kroz playbookove (izolacija, tiket, obogaćivanje).",
+      "Stateful filtriranje saobraćaja na nivou instance ili mrežnog interfejsa."
+    ],
+    "targets": [
+      "SOAR",
+      "IPS",
+      "Network security group",
+      "IDS",
+      "Honeypot",
+      "SIEM"
+    ],
+    "answer": [3, 4, 5, 0, 2],
+    "explain": "IDS samo alarmira (IPS blokira), honeypot je mamac, SIEM korelira logove, SOAR automatizuje odgovor, a NSG je stateful filter na nivou instance ili interfejsa. IPS je ovdje distraktor."
+  },
+  {
+    "obj": "5.6",
+    "q": "SOC je dobio alarm o neuobičajenim troškovima. Na osnovu ovih događaja, koji zaključak i prvi korak su NAJPRIKLADNIJI?",
+    "snippet": "# CloudTrail Event history (90 dana, ne zavisi od trailova)\neventTime             eventName        user               sourceIP       region          detail\n2026-10-24T02:11:05Z  ConsoleLogin     IAMUser/dev-jovan  185.220.101.7  eu-central-1    MFAUsed=No\n2026-10-24T02:12:47Z  CreateAccessKey  IAMUser/dev-jovan  185.220.101.7  eu-central-1    for=dev-jovan\n2026-10-24T02:13:30Z  CreateUser       IAMUser/dev-jovan  185.220.101.7  us-east-1       userName=backup-svc2\n2026-10-24T02:14:02Z  StopLogging      IAMUser/dev-jovan  185.220.101.7  eu-central-1    trail=org-trail\n2026-10-24T02:16:30Z  RunInstances     IAMUser/dev-jovan  185.220.101.7  ap-southeast-1  40 x p4d.24xlarge",
+    "lang": "log",
+    "options": [
+      "Kompromitovan nalog dev-jovan: napadač je napravio trajni pristup (ključ, novi korisnik), ugasio logovanje i pokrenuo instance (vjerovatno kriptomajning); onemogućiti ključeve i sesije, ukloniti backup-svc2, ponovo uključiti trail i sačuvati dokaze",
+      "Odmah obrisati nalog dev-jovan i sve instance u ap-southeast-1 da se zaustavi trošak, pa zatvoriti incident",
+      "Zatražiti od provajdera forenzičku sliku hipervizora prije bilo kakve druge radnje",
+      "Lažno pozitivan alarm: StopLogging je uobičajeno održavanje, a developer testira GPU instance"
+    ],
+    "answer": 0,
+    "explain": "Prijava bez MFA sa nepoznate adrese, pa odmah CreateAccessKey i CreateUser (persistence), StopLogging (defense evasion) i 40 GPU instanci u neobičnom regionu je tipičan obrazac kompromitovanih kredencijala i kriptomajninga. Prvo se obuzdava (onemogućiti ključeve, opozvati sesije, ukloniti novog korisnika, ponovo uključiti logovanje) i čuvaju dokazi (snapshot diskova, izvoz logova) prije čišćenja. Brisanje bez čuvanja uništava dokaze i propušta drugi nalog za persistence, CSP ne daje forenziku hipervizora u IaaS modelu, a StopLogging od developerskog naloga u 2 ujutro nije rutina."
+  }
+]

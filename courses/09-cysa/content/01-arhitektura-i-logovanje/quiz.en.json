@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "1.1",
+    "q": "An analyst builds an incident timeline from firewall, domain controller and web server logs. The connection to the C2 server appears in the timeline 3 minutes BEFORE the successful user logon that caused it. What should be checked FIRST?",
+    "options": [
+      "Log retention on the web server",
+      "Whether the SIEM parser correctly mapped the src_ip field",
+      "Time synchronization (NTP) between the log sources",
+      "Whether the Security log on the DC was cleared"
+    ],
+    "answer": 2,
+    "explain": "An illogical order of events from different systems is a typical symptom of unsynchronized clocks. Without a common NTP source and UTC timestamps, correlation does not work. Retention, the parser and log clearing would not change the order of events that do exist."
+  },
+  {
+    "obj": "1.1",
+    "q": "During a ransomware investigation, an analyst sees Event ID 4688 for the launch of powershell.exe, but the Process Command Line field is empty on all hosts. What is the BEST solution for future incidents?",
+    "options": [
+      "Enable \"Include command line in process creation events\" through GPO",
+      "Increase Security log retention to 180 days",
+      "Install a different SIEM that parses EVTX better",
+      "Switch from agent-based to agentless log collection"
+    ],
+    "answer": 0,
+    "explain": "The command line in 4688 is not logged by default and must be enabled with a separate policy. The problem is in the source configuration, so neither longer retention nor a different SIEM solves it: the data is never generated."
+  },
+  {
+    "obj": "1.1",
+    "q": "An attacker with administrative rights on a server cleared the local Windows Security logs (Event ID 1102). Which control would help MOST to ensure the evidence is still preserved?",
+    "options": [
+      "Increasing the maximum size of the Security log",
+      "Disk encryption with BitLocker",
+      "Enabling auditing of failed logons",
+      "Real-time log forwarding to a SIEM with immutable storage"
+    ],
+    "answer": 3,
+    "explain": "If events are sent off the host immediately to storage the attacker cannot modify (WORM, a separate account), clearing the local log does not remove the evidence. A larger log and BitLocker do not stop an admin from clearing the log, and auditing failed logons is unrelated."
+  },
+  {
+    "obj": "1.1",
+    "q": "An organization processes payment card data and must align log retention with PCI DSS. Which requirement is correct?",
+    "options": [
+      "Keep logs for 30 days in the SIEM, then delete them",
+      "Retain audit logs for at least 12 months, with at least 3 months immediately available for analysis",
+      "Keep logs for 7 years in the hot tier",
+      "Retention is not prescribed; the team decides"
+    ],
+    "answer": 1,
+    "explain": "PCI DSS requires an audit log history of at least 12 months, with the most recent 3 months immediately available. The rest can be in a cheaper archive tier. Seven years in the hot tier is unnecessarily expensive and is not a requirement of the standard."
+  },
+  {
+    "obj": "1.1",
+    "q": "On a Windows server, the EDR reports a svchost.exe process launched from C:\\Users\\Public\\svchost.exe, whose parent is winword.exe. What is MOST likely?",
+    "options": [
+      "A normal Windows service launched through Office integration",
+      "A false positive because svchost.exe is always legitimate",
+      "A malicious process masquerading as a system process",
+      "A process created because of a Windows update error"
+    ],
+    "answer": 2,
+    "explain": "The legitimate svchost.exe is located in System32 and its parent is services.exe. The wrong path (a world-writable folder) and Word as the parent are a clear sign of masquerading malware that most likely arrived through a malicious document."
+  },
+  {
+    "obj": "1.1",
+    "q": "On a Linux server, an analyst runs awk -F: '$3 == 0 {print $1}' /etc/passwd and gets root and sysbackup. What does this mean?",
+    "options": [
+      "sysbackup is a backup service account, which is standard practice",
+      "The command lists accounts without a password",
+      "sysbackup is a member of the sudo group",
+      "There is a second account with root privileges, which is a likely backdoor"
+    ],
+    "answer": 3,
+    "explain": "UID 0 means full root privileges regardless of the account name. On a hardened system only root has UID 0, so an additional account with UID 0 indicates attacker persistence. The command does not check passwords or groups."
+  },
+  {
+    "obj": "1.1",
+    "q": "A company wants remote employees to access only the internal HR application, and only after identity and device posture verification, without network access to the rest of the internal network. Which solution BEST meets this?",
+    "options": [
+      "Zero Trust Network Access (ZTNA)",
+      "Site-to-site IPsec VPN",
+      "Full-tunnel SSL VPN",
+      "A DMZ with a reverse proxy without authentication"
+    ],
+    "answer": 0,
+    "explain": "ZTNA grants access to an individual application after continuous identity and device verification, while the rest of the network stays invisible. VPN solutions drop the user into the network and make lateral movement easier, and a reverse proxy without authentication does not even verify identity."
+  },
+  {
+    "obj": "1.1",
+    "q": "A firm with 40 small branch offices wants to replace local firewalls, web proxy, CASB and VPN with a single cloud service, along with SD-WAN connectivity. What should it choose?",
+    "options": [
+      "A UTM appliance in each branch",
+      "SASE",
+      "Hybrid cloud",
+      "Microsegmentation in the data center"
+    ],
+    "answer": 1,
+    "explain": "SASE combines SD-WAN and security functions (SWG, CASB, ZTNA, FWaaS) delivered from the cloud. UTM is a local appliance per site, hybrid cloud is a hosting model, and microsegmentation solves a different problem."
+  },
+  {
+    "obj": "1.1",
+    "q": "An audit showed that five administrators are permanently assigned to the Domain Admins group and that their passwords have not changed in years. What is the BEST solution?",
+    "options": [
+      "Enable account lockout after 5 incorrect passwords",
+      "Move the passwords into an application secrets manager",
+      "Implement PAM with just-in-time access, a vault and password rotation",
+      "Require passwords longer than 20 characters"
+    ],
+    "answer": 2,
+    "explain": "Standing privileges of human admin accounts are solved by PAM: rights are granted temporarily with approval, passwords are in a vault and rotated, sessions are recorded. A secrets manager is intended for machine secrets, and longer passwords and lockout do not remove standing privileges."
+  },
+  {
+    "obj": "1.1",
+    "q": "Developers keep the production database password in an environment variable in the Dockerfile and in the git repository. Which control BEST solves the problem?",
+    "options": [
+      "Base64-encoding the password in the Dockerfile",
+      "Moving the password into a private git repository",
+      "Encrypting the build server's disk",
+      "A secrets manager with dynamic or rotated credentials that the application reads at runtime"
+    ],
+    "answer": 3,
+    "explain": "Secrets must not be in the image or the code. A secrets manager (Vault, AWS Secrets Manager, Key Vault) delivers them at runtime, with auditing and rotation. Base64 is not encryption, a private repo still keeps the secret in its history, and disk encryption does not protect against reading the repository."
+  },
+  {
+    "obj": "1.1",
+    "q": "An engineer proposes that the weekly credentialed vulnerability scanner also be run against the water utility's SCADA network. What is the analyst's BEST recommendation?",
+    "options": [
+      "Use passive network monitoring and the vendor's inventory, with segmentation instead of active scanning",
+      "Run the scan at night when water consumption is lowest",
+      "Scan with the maximum number of parallel threads to finish faster",
+      "Install an EDR agent on all PLC devices"
+    ],
+    "answer": 0,
+    "explain": "Active scanning can crash a PLC and stop a physical process, and in OT availability is what matters most. Passive monitoring of industrial protocols and segmentation are accepted practice. PLC devices do not support classic EDR agents."
+  },
+  {
+    "obj": "1.1",
+    "q": "In which model is availability usually the highest priority, patches are installed rarely, and protocols such as Modbus have no built-in authentication?",
+    "options": [
+      "SaaS applications",
+      "Containerized microservices",
+      "OT/ICS environments",
+      "Serverless functions"
+    ],
+    "answer": 2,
+    "explain": "OT/ICS systems control physical processes, run for decades and use industrial protocols without authentication. Their order of priorities is availability, integrity, then confidentiality. The other models are classic IT with frequent updates."
+  },
+  {
+    "obj": "1.1",
+    "q": "The incident response team needs to investigate a compromised pod in a Kubernetes cluster, but the deployment has meanwhile replaced the pod with a new one and the old one was deleted. Which architectural measure would BEST prevent loss of evidence in the future?",
+    "options": [
+      "Disable autoscaling of the deployment",
+      "Send stdout, runtime (Falco) and audit logs immediately to a central SIEM",
+      "Use larger worker nodes",
+      "Prohibit immutable containers"
+    ],
+    "answer": 1,
+    "explain": "Containers are short-lived, so evidence that stays only in the pod disappears with it. The solution is for telemetry to leave the pod in real time. Disabling scaling or larger nodes do not preserve evidence, and immutability is a good practice that should not be abolished."
+  },
+  {
+    "obj": "1.1",
+    "q": "The perimeter IDS no longer recognizes attacks on a web application because all traffic has moved to TLS 1.3. What is the BEST option for the SOC to regain visibility?",
+    "options": [
+      "Revert the application to HTTP",
+      "Turn off the IDS because the traffic is encrypted",
+      "Use TLS inspection on the reverse proxy or WAF and metadata analysis (SNI, JA4)",
+      "Downgrade to SSL 3.0"
+    ],
+    "answer": 2,
+    "explain": "Terminating TLS at a proxy or WAF in front of the application allows content inspection, and metadata provides additional context. Reverting to HTTP or SSL 3.0 introduces serious vulnerabilities, and turning off the IDS removes a control."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which TWO files or locations are the MOST common targets of an attacker who wants persistent access to a Linux server? (Choose TWO.)",
+    "options": [
+      "~/.ssh/authorized_keys",
+      "/usr/share/doc/",
+      "/etc/crontab and /etc/systemd/system/",
+      "/proc/cpuinfo"
+    ],
+    "answer": [0, 2],
+    "explain": "A public key added to authorized_keys gives access without a password, and cron jobs and systemd unit files run the attacker's code at every boot or periodically. Documentation and /proc/cpuinfo are not persistence mechanisms."
+  },
+  {
+    "obj": "1.1",
+    "q": "The SIEM receives logs from a new firewall, but a rule that looks for blocked connections from a specific IP address never fires, even though the analyst can see those connections in the raw logs. What is the MOST likely cause?",
+    "options": [
+      "The firewall does not log blocked connections",
+      "Retention in the SIEM is too short",
+      "NTP is not configured on the firewall",
+      "The parser does not extract the source IP address field from the new log format"
+    ],
+    "answer": 3,
+    "explain": "The raw events exist, so the source and ingestion are working. If the rule filters on a field the parser does not populate, the rule will never fire. After adding a source, field normalization should always be verified."
+  },
+  {
+    "obj": "1.1",
+    "q": "A user signs in to a SaaS application through the corporate identity provider, and the application receives an XML assertion with the user's attributes. Which protocol is being used?",
+    "options": [
+      "SAML",
+      "OAuth 2.0 without OIDC",
+      "Kerberos",
+      "RADIUS"
+    ],
+    "answer": 0,
+    "explain": "SAML uses an XML assertion signed by the identity provider. OAuth 2.0 issues an access token for delegated authorization, OIDC adds an ID token in JWT format, Kerberos works with tickets in an AD domain, and RADIUS is for network access."
+  },
+  {
+    "obj": "1.1",
+    "q": "Because of a lawsuit, the legal team requires that email access logs for certain users be preserved, even though the retention policy mandates deletion after 90 days. What should be applied?",
+    "options": [
+      "Log compression",
+      "A legal hold on the relevant logs",
+      "Log anonymization",
+      "Raising the logging verbosity level"
+    ],
+    "answer": 1,
+    "explain": "A legal hold temporarily suspends routine deletion for data relevant to the dispute and takes precedence over the retention policy. Anonymization would destroy the evidentiary value, and compression and verbosity do not address deletion."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match each problem with the logging concept it relates to.",
+    "options": [
+      "Events from two servers are in the wrong order",
+      "CloudTrail validate-logs reports one invalid file",
+      "A regulator requests 11-month-old logs, but the SIEM keeps 90 days",
+      "A Linux server does not record changes to /etc/sudoers because auditd has no rule",
+      "Syslog over UDP loses messages during peak load"
+    ],
+    "targets": [
+      "Ingestion",
+      "Configuration",
+      "Integrity and security",
+      "Time synchronization",
+      "Retention"
+    ],
+    "answer": [3, 2, 4, 1, 0],
+    "explain": "The wrong order is a time problem (NTP), an invalid file indicates compromised integrity, keeping logs too briefly is retention, a missing audit rule is source configuration, and message loss in transport is an ingestion problem (solution: TCP/TLS or an agent with buffering)."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match each technology or concept with the description that BEST fits it.",
+    "options": [
+      "Access to an individual application after identity and device verification",
+      "Temporary admin rights with approval and session recording",
+      "Short-lived database credentials the application obtains at runtime",
+      "Enforcing a PIN, encryption and remote wipe of a phone",
+      "Supervision of geographically distributed facilities via RTU devices",
+      "SD-WAN and security functions delivered from the cloud"
+    ],
+    "targets": [
+      "SASE",
+      "ZTNA",
+      "PAM",
+      "Secrets management",
+      "MDM",
+      "SCADA"
+    ],
+    "answer": [1, 2, 3, 4, 5, 0],
+    "explain": "ZTNA grants per-application access, PAM manages privileged human access (JIT, recording), secrets management issues dynamic credentials, MDM manages mobile devices, SCADA supervises remote facilities, and SASE combines networking and security into a cloud service."
+  }
+]

@@ -1,0 +1,254 @@
+[
+  {
+    "obj": "3.2",
+    "q": "The osv-scanner job in the pipeline is green, but the log shows no scanned lockfile and the exit code is 128. The job has `allow_failure: exit_codes: [128]`. What is the problem?",
+    "options": [
+      "There are no vulnerabilities, so 128 is an expected success",
+      "The offline database is outdated",
+      "The job is scanning nothing (wrong path or no lockfile), and the pipeline treats that as a pass",
+      "osv-scanner doesn't support requirements.txt"
+    ],
+    "answer": 2,
+    "explain": "Exit 128 means no packages were found; a job that allows it gives a false sense of security. Without vulnerabilities the exit code is 0, an outdated database still finds packages, and requirements.txt is supported."
+  },
+  {
+    "obj": "3.2",
+    "q": "Trivy on `kurs-shop` reports vulnerabilities only in flask, werkzeug, jinja2, requests, PyYAML and gunicorn, and none in itsdangerous or MarkupSafe, even though the application uses them. Why?",
+    "options": [
+      "itsdangerous and MarkupSafe have no known vulnerabilities in any version",
+      "requirements.txt is hand-written and lists only direct dependencies; Trivy doesn't resolve transitive ones from it",
+      "Trivy doesn't scan Python without --include-dev-deps",
+      "You need to add --scanners license"
+    ],
+    "answer": 1,
+    "explain": "Trivy reads only what is written in requirements.txt (direct, pinned dependencies). A complete lockfile (pip-compile or pip freeze) also gives the transitive ones. --include-dev-deps is for npm/yarn/gradle, and the license scanner doesn't look for vulnerabilities."
+  },
+  {
+    "obj": "3.2",
+    "q": "The team has 69 SCA findings and capacity for 10 fixes this week. Which finding goes FIRST?",
+    "options": [
+      "A CVE with CVSS 9.8, EPSS 0.004, in a library used only in tests",
+      "A CVE with CVSS 6.5 that is in the CISA KEV catalog, in an internet-facing service",
+      "A CVE with CVSS 8.1 with no fix available",
+      "A CVE with CVSS 7.5 in a frontend dev dependency"
+    ],
+    "answer": 1,
+    "explain": "KEV means proven exploitation in real attacks, and internet exposure means the target is reachable; that is the strongest signal regardless of the lower CVSS. A high CVSS with low EPSS in test code, a finding without a fix and a dev dependency are lower priority."
+  },
+  {
+    "obj": "3.2",
+    "q": "A manager asks what EPSS 0.02 and percentile 0.88 mean for a CVE in your library. Which answer is correct?",
+    "options": [
+      "The estimated probability of exploitation activity in the next 30 days is 2%, and the score is greater than or equal to the score of 88% of all CVEs",
+      "The CVE has severity 2 out of 10 and is lower than 88% of CVEs",
+      "2% of systems on the internet have already been compromised through this CVE",
+      "The CVE is in KEV 2% of the time, and 88% of vendors have patched it"
+    ],
+    "answer": 0,
+    "explain": "EPSS gives the probability of exploitation in the next 30 days and the percentile relative to all CVEs; 2% sounds small, but it is higher than 88% of the others. EPSS doesn't measure severity (that's CVSS), doesn't count compromised systems and has nothing to do with KEV status."
+  },
+  {
+    "obj": "3.2",
+    "q": "You must temporarily accept CVE-2020-14343 in PyYAML until a migration is complete. Which entry in osv-scanner.toml is correct and in line with good practice?",
+    "options": [
+      "[[IgnoredVulns]] id = \"CVE-2020-14343\"",
+      "[[PackageOverrides]] name = \"pyyaml\" ignore = true",
+      "[IgnoredVulns] CVE-2020-14343 = \"2026-11-30\"",
+      "[[IgnoredVulns]] with id = \"GHSA-8q59-q68h-6hv4\", ignoreUntil = 2026-11-30 and a reason with a ticket and approval"
+    ],
+    "answer": 3,
+    "explain": "IgnoredVulns with an expiry and a reason is a narrow, temporary and documented exception; ignoring also works via aliases (GHSA/PYSEC/CVE). An entry without an expiry is a permanent acceptance, PackageOverrides ignore silences all findings and licenses for the package, and the third option isn't valid syntax."
+  },
+  {
+    "obj": "3.2",
+    "q": "A new CVE is published in `jinja2 3.1.2`. There have been no commits in the kurs-shop repo for three weeks, and the SCA job runs only in merge request pipelines. When will the team learn about the finding?",
+    "options": [
+      "Immediately, osv-scanner sends notifications",
+      "Only at the next MR; that's why SCA should also run in a scheduled (nightly) pipeline",
+      "Never, because the lockfile didn't change",
+      "At the next Renovate run, which automatically runs osv-scanner"
+    ],
+    "answer": 1,
+    "explain": "New vulnerabilities appear in the database, not in your code; the scanner sees them only when it runs again. A scheduled pipeline (rules: $CI_PIPELINE_SOURCE == \"schedule\") solves this. The osv-scanner CLI doesn't send notifications, and Renovate doesn't run osv-scanner."
+  },
+  {
+    "obj": "3.2",
+    "q": "Werkzeug 2.2.2 has CVE-2024-34069 (a debugger vulnerability). A colleague says it's irrelevant because production doesn't use the debugger. What in kurs-shop changes that assessment?",
+    "options": [
+      "Nothing, the debugger is always disabled in Werkzeug",
+      "The fact that Werkzeug is a transitive dependency of Flask",
+      "app.py runs the application with debug=True, so the vulnerable code really is reachable",
+      "The fact that this CVE's CVSS is higher than 7"
+    ],
+    "answer": 2,
+    "explain": "Context (reachability) is key: debug=True enables exactly the component that contains the vulnerability. Whether the package is transitive or has a high CVSS says nothing about whether the vulnerable code is reachable, and the debugger is not always disabled."
+  },
+  {
+    "obj": "3.3",
+    "q": "A CI job installs internal packages with `pip install --extra-index-url https://pypi.kurs-shop.ba/simple -r requirements.txt`. A package `kurs-shop-utils` version 99.0.0 has appeared on public PyPI. What happens and how do you prevent it?",
+    "options": [
+      "pip always gives precedence to --extra-index-url, so there's no risk",
+      "pip picks the highest version from both indexes and installs the public package; use only --index-url pointing to an internal proxy that never looks up internal names on public PyPI",
+      "pip reports a conflict and stops; adding --no-deps is enough",
+      "The risk exists only for npm, not for pip"
+    ],
+    "answer": 1,
+    "explain": "This is dependency confusion: pip searches all indexes equally and takes the highest version. A single --index-url pointing to a proxy (plus hash checks) closes the attack. pip doesn't prefer the extra index, doesn't report a conflict, and the attack exists in pip, npm and other ecosystems."
+  },
+  {
+    "obj": "3.3",
+    "q": "The pipeline uses `npm install` in the frontend/ job and occasionally gets different versions of transitive packages than developers do locally. What is the correct change?",
+    "options": [
+      "npm ci, which installs exactly what is in package-lock.json and fails if the lock and package.json disagree",
+      "npm install --save-exact",
+      "npm update before the build",
+      "Deleting package-lock.json from git to avoid conflicts"
+    ],
+    "answer": 0,
+    "explain": "npm ci is meant for CI: a reproducible installation from the lockfile. --save-exact affects what is written to package.json when adding a package, npm update deliberately changes versions, and deleting the lockfile removes both reproducibility and the SCA input."
+  },
+  {
+    "obj": "3.3",
+    "q": "After an incident with an infected version of a popular npm package (removed from the registry after 6 hours), the team wants Renovate not to propose versions in the first days after release. Which option does that?",
+    "options": [
+      "prConcurrentLimit: 1",
+      "rangeStrategy: pin",
+      "minimumReleaseAge: \"3 days\"",
+      "lockFileMaintenance: { enabled: true }"
+    ],
+    "answer": 2,
+    "explain": "minimumReleaseAge delays the proposal until the version is older than the given period, so malicious versions that are removed quickly never reach an MR. prConcurrentLimit limits the number of MRs, pin changes how versions are written, and lockFileMaintenance refreshes the lock and may pull in exactly the newest versions."
+  },
+  {
+    "obj": "3.3",
+    "q": "A company uses only self-managed GitLab and wants automatic MRs for updating pip and npm dependencies. What is the natural choice?",
+    "options": [
+      "Dependabot with .github/dependabot.yml in the repo",
+      "The GitLab dependency scanning template",
+      "osv-scanner fix in every MR pipeline",
+      "Renovate run as a scheduled GitLab CI job with RENOVATE_PLATFORM=gitlab and a project access token"
+    ],
+    "answer": 3,
+    "explain": "Renovate supports GitLab and can run as a CI job. Dependabot is built into GitHub, osv-scanner fix only proposes changes (experimental, npm/Maven) and doesn't open MRs, and dependency scanning reports vulnerabilities, it doesn't update dependencies."
+  },
+  {
+    "obj": "3.3",
+    "q": "In an MR, a developer adds the dependency `python-dateutils` instead of the usual `python-dateutil`. SCA reports nothing. What is the most likely risk and the control that catches it?",
+    "options": [
+      "There's no risk because SCA found nothing",
+      "A license conflict; Trivy --scanners license catches it",
+      "Dependency confusion; --extra-index-url catches it",
+      "Typosquatting; review of new dependencies and checking for MAL- records in the OSV database catch it"
+    ],
+    "answer": 3,
+    "explain": "A name resembling a popular package is classic typosquatting; a malicious package often has no CVE, so classic SCA doesn't see it. Reviewing added dependencies and OSV MAL- records are the defense. The license scanner and --extra-index-url (which is actually the cause of confusion attacks) don't help."
+  },
+  {
+    "obj": "3.3",
+    "q": "Which combination in `.gitlab-ci.yml` best prevents a change in someone else's shared template or image from silently appearing in your pipeline?",
+    "options": [
+      "include with ref to a tag or commit SHA and the image pinned to an @sha256 digest",
+      "include with ref: main and image: python:latest",
+      "workflow:rules with $CI_COMMIT_BRANCH == \"main\"",
+      "allow_failure: false on all jobs"
+    ],
+    "answer": 0,
+    "explain": "Pinning to immutable references (SHA, digest) means a change at the source doesn't get in without your commit; Renovate can open MRs for new digests. ref: main and :latest move, workflow:rules decides when the pipeline runs, and allow_failure doesn't affect content."
+  },
+  {
+    "obj": "3.4",
+    "q": "`trivy fs --scanners license .` on the kurs-shop repo doesn't report a single license for the Python and npm packages, even though they are listed in requirements.txt and package-lock.json. Why?",
+    "options": [
+      "Trivy recognizes licenses only for OS packages",
+      "You need to add --license-confidence-level 0.5",
+      "Trivy reads licenses from installed packages (site-packages METADATA, node_modules), and these files contain no license data",
+      "The license scanner works only with --format spdx-json"
+    ],
+    "answer": 2,
+    "explain": "requirements.txt and the lockfile have no license field; Trivy reads licenses from installed packages or from the image, so licenses are checked after installation or on the image. Trivy also works for language packages, the confidence threshold affects text classification, and the output format has nothing to do with detection."
+  },
+  {
+    "obj": "3.4",
+    "q": "A company develops a SaaS application that users access only via the web; the code is never distributed. Which dependency license needs the most attention?",
+    "options": [
+      "MIT",
+      "AGPL-3.0",
+      "Apache-2.0",
+      "BSD-3-Clause"
+    ],
+    "answer": 1,
+    "explain": "AGPL-3.0 extends copyleft to users who use the software over a network, so SaaS without distribution is not exempt. MIT, Apache-2.0 and BSD-3-Clause are permissive and mostly require keeping copyright notices."
+  },
+  {
+    "obj": "3.4",
+    "q": "The legal department has decided: AGPL-3.0 and SSPL-1.0 are forbidden, GPL requires approval. How do you most directly turn this into a Trivy gate in the release pipeline?",
+    "options": [
+      "In trivy.yaml put AGPL-3.0 and SSPL-1.0 under license.forbidden (CRITICAL), GPL under restricted (HIGH), and run trivy image --scanners license --severity CRITICAL --exit-code 1",
+      "--ignored-licenses AGPL-3.0,SSPL-1.0",
+      "osv-scanner --licenses=\"AGPL-3.0,SSPL-1.0\"",
+      "Add AGPL-3.0 to .trivyignore.yaml under licenses"
+    ],
+    "answer": 0,
+    "explain": "Trivy categories map to severity (forbidden = CRITICAL, restricted = HIGH), so the gate works the same as for vulnerabilities. --ignored-licenses and .trivyignore.yaml remove licenses from the results (the opposite of the goal), and osv-scanner --licenses is an allowlist of permitted licenses, not a list of forbidden ones."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Order the steps of SCA finding triage according to the team policy, from first to last.",
+    "options": [
+      "For the remaining findings, check EPSS and CVSS and assign a P2/P3 deadline",
+      "Run the scan over complete lockfiles and merge alias IDs (GHSA/PYSEC/CVE)",
+      "Cross-reference the CVEs with the KEV catalog; hits become P1",
+      "For findings without a fix or with unreachable code, record an exception with an expiry (ignoreUntil / expired_at) or a VEX statement",
+      "Check the context: whether the vulnerable code is reachable (e.g. debug=True, service exposure)"
+    ],
+    "answer": [
+      1,
+      2,
+      4,
+      0,
+      3
+    ],
+    "explain": "First a reliable input (complete lockfile, deduplicated IDs), then KEV as the strongest signal, then context that can raise or lower priority, then EPSS/CVSS for the rest, and exceptions with an expiry come only once the decision has been made."
+  },
+  {
+    "obj": "3.3",
+    "type": "match",
+    "q": "Match each control with the threat it primarily prevents.",
+    "options": [
+      "A single --index-url pointing to an internal proxy",
+      "npm ci --ignore-scripts",
+      "minimumReleaseAge / cooldown on the update bot",
+      "pip install --require-hashes",
+      "Image pinned to an @sha256 digest"
+    ],
+    "targets": [
+      "The base image tag was moved to different content",
+      "A public package with the same name as an internal one and a higher version",
+      "A malicious package's postinstall script steals tokens from the runner",
+      "An infected new version of a popular package, removed after a few hours",
+      "A planted file with the same package version on a mirror",
+      "A GPL component in a closed-source product"
+    ],
+    "answer": [
+      1,
+      2,
+      3,
+      4,
+      0
+    ],
+    "explain": "A single index closes dependency confusion, --ignore-scripts install scripts, waiting on versions quickly removed malicious releases, hash checks a planted file with the same version, and a digest a moved tag. The GPL problem is solved by a license check, which isn't offered."
+  },
+  {
+    "obj": "3.2",
+    "q": "In the lab, osv-scanner prints `GHSA-8q59-q68h-6hv4 and 2 aliases have been filtered out because: Ne koristimo full_load...`. What does this tell you?",
+    "options": [
+      "The vulnerability is fixed in a new version of PyYAML",
+      "osv-scanner found three different vulnerabilities and ignored them all",
+      "The offline database has no data about this CVE",
+      "An entry in osv-scanner.toml ignored the finding together with its aliases (the PYSEC and CVE IDs) and wrote the reason to the log"
+    ],
+    "answer": 3,
+    "explain": "The same vulnerability has several IDs from different databases; an exception for one ID covers all aliases, and the reason is printed in the job log as a trail. The finding is not fixed, these are not three different vulnerabilities, and the database obviously contains it."
+  }
+]

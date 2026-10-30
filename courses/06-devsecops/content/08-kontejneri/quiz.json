@@ -1,0 +1,267 @@
+[
+  {
+    "obj": "4.2",
+    "q": "Dockerfile nema nijednu `USER` instrukciju, pa kontejner radi kao root. `hadolint Dockerfile` ne prijavljuje DL3002. Zašto, i šta će to uhvatiti?",
+    "options": [
+      "hadolint nema pravila o korisnicima; treba `--failure-threshold info`",
+      "DL3002 pali samo kad je zadnji `USER` eksplicitno root; nedostajući `USER` hvataju Trivy (`DS-0002`) i Checkov (`CKV_DOCKER_3`)",
+      "DL3002 je podrazumijevano u listi `ignored`",
+      "DL3002 se provjerava tek nad izgrađenom slikom, sa `hadolint --image`"
+    ],
+    "answer": 1,
+    "explain": "DL3002 („Last user should not be root“) reaguje na eksplicitni `USER root`; odsustvo `USER` instrukcije hadolint ne prijavljuje. Trivy i Checkov imaju provjere upravo za nedostajućeg ne-root korisnika."
+  },
+  {
+    "obj": "4.2",
+    "q": "Želite da `hadolint` u CI-ju ispiše sve nalaze (i warning i info), ali da job padne samo na nalaze ozbiljnosti `error`. Koja komanda?",
+    "options": [
+      "hadolint --failure-threshold error Dockerfile",
+      "hadolint --no-fail Dockerfile",
+      "hadolint --ignore DL3008 --ignore DL3009 Dockerfile",
+      "hadolint -f sarif Dockerfile"
+    ],
+    "answer": 0,
+    "explain": "`--failure-threshold error` (`-t error`) ispisuje sve nalaze, a exit kod različit od nule daje samo za `error` i jače. `--no-fail` nikad ne ruši build, `--ignore` sakriva pravila, a `-f sarif` mijenja samo format."
+  },
+  {
+    "obj": "4.2",
+    "q": "Security tim želi da Dockerfile u bilo kom repou ne smije imati `FROM` sa slikom van `registry.kurs-shop.ba` i `127.0.0.1:5000`. Kako to najjednostavnije provesti hadolintom?",
+    "options": [
+      "`override: error: [DL3007]` u `.hadolint.yaml`",
+      "`ignored: [DL3006]` u `.hadolint.yaml`",
+      "`--failure-threshold style`",
+      "`trustedRegistries` sa ta dva registrija u `.hadolint.yaml` (pravilo DL3026)"
+    ],
+    "answer": 3,
+    "explain": "`trustedRegistries` uključuje DL3026, koje prijavljuje `FROM` sa registrija van liste. DL3007 se odnosi na `latest`, DL3006 na netagovanu sliku, a prag ozbiljnosti ne definiše dozvoljene registrije."
+  },
+  {
+    "obj": "4.2",
+    "q": "Slika `kurs-shop:1.0` sa linijom `ENV API_TOKEN=glpat-...` je dvije sedmice bila u registriju. Developer je obrisao liniju i napravio novu sliku. Šta je PRVI sljedeći korak?",
+    "options": [
+      "Ponovo izgraditi sliku sa `--no-cache`",
+      "Dodati token u `.trivyignore` da novi skenovi ne bi prijavljivali staru sliku",
+      "Opozvati i rotirati GitLab token",
+      "Squashovati slojeve stare slike i ponovo je pushovati pod istim tagom"
+    ],
+    "answer": 2,
+    "explain": "Tajna je bila u konfiguraciji slike dostupnoj svakome sa pristupom registriju, pa je treba smatrati kompromitovanom i opozvati je. Novi build, squash ili ignorisanje nalaza ne poništavaju već procurjeli token."
+  },
+  {
+    "obj": "4.2",
+    "q": "Multi-stage build: build faza je `python:3.13-slim` (`pip install --target /install`), finalna slika `distroless/python3-debian12:nonroot`. Kontejner pada sa greškom pri učitavanju PyYAML C ekstenzije. Šta je uzrok?",
+    "options": [
+      "Distroless nema pip, pa paketi moraju ići kroz `apt`",
+      "Python u build fazi (3.13) ne odgovara runtimeu u `python3-debian12` (3.11)",
+      "Korisnik 65532 nema pravo čitanja `/app/site-packages`",
+      "Distroless slike ne dozvoljavaju `PYTHONPATH`"
+    ],
+    "answer": 1,
+    "explain": "Paketi sa C ekstenzijama vezani su za verziju Pythona za koju su instalirani; `python3-debian12` ima 3.11, a `python3-debian13` 3.13. Rješenje je uskladiti build fazu sa runtimeom."
+  },
+  {
+    "obj": "4.2",
+    "q": "Pod sa `securityContext.runAsNonRoot: true` ne starta: kubelet javlja da slika ima korisnika koji nije numerički (`nonroot`) i ne može provjeriti da nije root. Koja ispravka zadržava zaštitu?",
+    "options": [
+      "U Dockerfileu `USER 65532:65532` (ili `runAsUser: 65532` u Podu)",
+      "Ukloniti `runAsNonRoot` iz manifesta",
+      "Preći na tag `:debug` distroless slike",
+      "Dodati `allowPrivilegeEscalation: false`"
+    ],
+    "answer": 0,
+    "explain": "Kubelet za `runAsNonRoot` provjerava UID, pa mu treba numerički korisnik u slici ili `runAsUser` u Podu. Uklanjanje zaštite nije ispravka, `:debug` dodaje shell, a `allowPrivilegeEscalation` je druga kontrola."
+  },
+  {
+    "obj": "4.2",
+    "q": "Aplikacija u produkciji radi na distroless slici. Treba istražiti problem, ali `kubectl exec -it pod -- sh` javlja da shell ne postoji. Šta je ispravan pristup?",
+    "options": [
+      "Trajno vratiti baznu sliku na `python:3.13-slim`",
+      "Dodati busybox u finalnu fazu Dockerfilea",
+      "Deployovati `:debug` varijantu slike u produkciju",
+      "Koristiti `kubectl debug` sa ephemeral kontejnerom koji ima alate"
+    ],
+    "answer": 3,
+    "explain": "Ephemeral kontejner donosi alate privremeno, bez mijenjanja produkcijske slike. Ostale opcije vraćaju shell i alate u sliku i poništavaju prednost distrolessa."
+  },
+  {
+    "obj": "4.2",
+    "q": "Podovi `kurs-shop` pri svakom deployu čekaju punih 30 sekundi prije gašenja, a aplikacija ne dobija SIGTERM. Dockerfile završava sa `CMD python app.py`, a hadolint prijavljuje DL3025. Šta je ispravka?",
+    "options": [
+      "Dodati `HEALTHCHECK`",
+      "Dodati `STOPSIGNAL SIGKILL`",
+      "Koristiti exec (JSON) formu, npr. `ENTRYPOINT [\"/usr/bin/python3\", \"/app/app.py\"]`",
+      "Postaviti `terminationGracePeriodSeconds: 0`"
+    ],
+    "answer": 2,
+    "explain": "U shell formi PID 1 je `/bin/sh`, koji ne prosljeđuje SIGTERM aplikaciji; exec forma pokreće aplikaciju direktno. SIGKILL i grace period 0 ubijaju proces bez urednog gašenja, a HEALTHCHECK nema veze sa signalima."
+  },
+  {
+    "obj": "4.3",
+    "q": "Gate na MR-u treba da padne samo na CRITICAL ranjivosti za koje postoji popravljena verzija. Koja komanda?",
+    "options": [
+      "trivy image --severity CRITICAL --ignore-unfixed --exit-code 1 \"$IMAGE\"",
+      "trivy image --severity CRITICAL --ignore-unfixed \"$IMAGE\"",
+      "trivy image --severity CRITICAL --ignore-status fixed --exit-code 1 \"$IMAGE\"",
+      "trivy image --severity CRITICAL --exit-code 0 \"$IMAGE\""
+    ],
+    "answer": 0,
+    "explain": "`--ignore-unfixed` ostavlja samo nalaze sa statusom `fixed`, a `--exit-code 1` ruši build. Bez `--exit-code` Trivy vraća 0, `--ignore-status fixed` bi sakrio upravo popravljive nalaze, a `--exit-code 0` nikad ne pada."
+  },
+  {
+    "obj": "4.3",
+    "q": "Job sa `trivy image --severity CRITICAL \"$IMAGE\"` ispisuje tri CRITICAL ranjivosti, a job je zelen. Šta nedostaje?",
+    "options": [
+      "`--ignore-unfixed`, jer bez njega Trivy ne računa nalaze",
+      "`--exit-code 1`; bez njega Trivy završava sa 0 bez obzira na nalaze",
+      "`allow_failure: false` u jobu",
+      "`--format table`"
+    ],
+    "answer": 1,
+    "explain": "Trivy podrazumijevano vraća exit 0. `allow_failure: false` je ionako podrazumijevano i ne pomaže kad komanda uspije, a format izlaza ne utiče na exit kod."
+  },
+  {
+    "obj": "4.3",
+    "q": "U `.trivyignore` stoji `CVE-2020-14343 exp:2026-09-30`. Danas je 16. 10. 2026. i gate odjednom pada na tu ranjivost, bez ikakve izmjene koda. Šta se desilo?",
+    "options": [
+      "Format `exp:` nije podržan, pa Trivy ignoriše cijeli fajl",
+      "`.trivyignore` se čita samo sa `--ignorefile`",
+      "Ažurirana baza je promijenila ID ranjivosti",
+      "Izuzeće je isteklo; rizik treba ponovo procijeniti (upgrade paketa ili novo izuzeće sa obrazloženjem)"
+    ],
+    "answer": 3,
+    "explain": "Kad prođe datum iz `exp:`, Trivy prestaje ignorisati nalaz; to je namjerno ponašanje roka. Obični `.trivyignore` u korijenu projekta Trivy čita automatski, a `exp:` je ispravan format."
+  },
+  {
+    "obj": "4.3",
+    "q": "Koji unos u `.trivyignore.yaml` ignoriše `CVE-2020-14343` samo za PyYAML 5.3.1, sa obrazloženjem i rokom?",
+    "options": [
+      "`vulnerabilities: [{id: CVE-2020-14343, reason: \"SEC-140\", until: 2026-11-15}]`",
+      "`misconfigurations: [{id: CVE-2020-14343, purls: [pkg:pypi/pyyaml@5.3.1], expired_at: 2026-11-15}]`",
+      "`vulnerabilities: [{id: CVE-2020-14343, purls: [pkg:pypi/pyyaml@5.3.1], statement: \"SEC-140\", expired_at: 2026-11-15}]`",
+      "`vulnerabilities: [{cve: CVE-2020-14343, package: pyyaml, statement: \"SEC-140\", exp: 2026-11-15}]`"
+    ],
+    "answer": 2,
+    "explain": "Ranjivosti idu pod `vulnerabilities`, a polja su `id`, `purls`, `statement` i `expired_at`. `reason`/`until` i `cve`/`package`/`exp` nisu polja tog formata, a `misconfigurations` je sekcija za IaC nalaze."
+  },
+  {
+    "obj": "4.3",
+    "q": "Isporučujete sliku kupcima koji je skeniraju Trivyjem i Grypeom. Ranjiva funkcija iz biblioteke u slici se nikad ne poziva i to ste dokazali testom. Kako da im prenesete da proizvod nije pogođen?",
+    "options": [
+      "OpenVEX dokument sa `status: not_affected` i `justification: vulnerable_code_not_in_execute_path`, objavljen uz sliku",
+      "Unos u `.trivyignore` u vašem repou",
+      "Skeniranje sa `--ignore-unfixed` prije objave",
+      "Smanjiti ozbiljnost ranjivosti u SBOM-u"
+    ],
+    "answer": 0,
+    "explain": "VEX je standardna, mašinski čitljiva izjava koju razumiju različiti alati i koja se distribuira uz proizvod. `.trivyignore` važi samo u vašem pipelineu, `--ignore-unfixed` nema veze sa iskoristivošću, a mijenjanje ozbiljnosti u SBOM-u nije standardan mehanizam."
+  },
+  {
+    "obj": "4.3",
+    "q": "Pokrećete `trivy image --vex kurs-shop.openvex.json 127.0.0.1:5000/kurs-shop:1.0`. VEX ima `status: not_affected` za CVE u PyYAML-u, ali Trivy ga i dalje prijavljuje. Šta je najvjerovatniji uzrok?",
+    "options": [
+      "Trivy čita samo CycloneDX VEX, ne OpenVEX",
+      "PURL proizvoda ili subkomponente u VEX-u ne odgovara skeniranoj slici ili paketu",
+      "Status mora biti `fixed` da bi Trivy uklonio nalaz",
+      "`--vex` radi samo uz `--ignore-unfixed`"
+    ],
+    "answer": 1,
+    "explain": "Trivy primjenjuje izjavu samo kad se PURL proizvoda (`pkg:oci/...`) i subkomponente (`pkg:pypi/pyyaml`) poklope sa onim što skenira. Trivy podržava OpenVEX, CycloneDX i CSAF, a `not_affected` je upravo status koji uklanja nalaz."
+  },
+  {
+    "obj": "4.3",
+    "q": "Build job pushuje `kurs-shop:main`, a scan job skenira `127.0.0.1:5000/kurs-shop:main`. Zašto je bolje da scan i sign jobovi koriste digest koji je build job zabilježio?",
+    "options": [
+      "Trivy ne može skenirati sliku po tagu",
+      "Skeniranje po digestu je brže jer se preskače baza ranjivosti",
+      "VEX se može primijeniti samo na digest",
+      "Tag se može pomjeriti između skeniranja i potpisa, pa bi se potpisala slika koja nije skenirana"
+    ],
+    "answer": 3,
+    "explain": "Digest je nepromjenljiv identitet slike, pa garantuje da je skenirana, potpisana i deployovana ista slika. Trivy skenira i po tagu, a brzina i VEX nisu razlog."
+  },
+  {
+    "obj": "4.3",
+    "q": "Kako se ispravno nositi sa ranjivostima bez dostupne popravke u baznoj slici? (Izaberi DVA.)",
+    "options": [
+      "Gate job koristi `--ignore-unfixed`, a izvještajni job bilježi sve nalaze bez tog flaga",
+      "Uvijek rušiti build na svaku CRITICAL ranjivost, i onu bez popravke",
+      "Obrisati ih iz lokalne Trivy baze",
+      "Pratiti ih u triaži i ponovo procijeniti kad izađe popravka (zakazani sken postojećih slika)",
+      "Dodati ih u `.trivyignore` trajno, bez roka"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "Gate ruši build samo na ono što developer može popraviti, a nalazi bez popravke ostaju vidljivi u izvještaju i triaži. Rušenje builda na nepopravljivo uči tim da ignoriše pipeline, a trajno ignorisanje briše rizik iz vida."
+  },
+  {
+    "obj": "4.2",
+    "type": "order",
+    "q": "Poredaj kontrole za kontejner u pipelineu od najranije do najkasnije.",
+    "options": [
+      "Skeniraj sliku po digestu (`trivy image`) i primijeni gate",
+      "Lintuj Dockerfile (`hadolint`)",
+      "Potpiši sliku (`cosign`) i deployuj",
+      "Izgradi sliku (BuildKit, Buildah) i zabilježi digest"
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      2
+    ],
+    "explain": "Lint radi nad izvornim kodom i ide prvi; skeniranje treba izgrađenu sliku i njen digest; potpis dolazi tek za sliku koja je prošla gate."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Upari liniju iz Dockerfilea sa hadolint pravilom koje je prijavljuje.",
+    "options": [
+      "FROM python:latest",
+      "ADD . /app",
+      "CMD python app.py",
+      "RUN pip install -r requirements.txt"
+    ],
+    "targets": [
+      "DL3025",
+      "DL3002",
+      "DL3007",
+      "DL3042",
+      "DL3020"
+    ],
+    "answer": [
+      2,
+      4,
+      0,
+      3
+    ],
+    "explain": "DL3007 je `latest` tag, DL3020 `ADD` umjesto `COPY`, DL3025 shell forma `CMD`, a DL3042 pip bez `--no-cache-dir`. DL3002 se odnosi na eksplicitni `USER root`, koji ovdje ne postoji."
+  },
+  {
+    "type": "spot",
+    "obj": "4.2",
+    "q": "Fajl .npmrc sadrži token za privatni npm registar. Koji redovi unose token u finalnu sliku koja se objavljuje u registar?",
+    "snippet": "FROM node:20.11-alpine AS build\nWORKDIR /app\nCOPY package*.json .npmrc ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM node:20.11-alpine\nWORKDIR /app\nENV NPM_TOKEN=npm_9fQx2LkT7vRb3Wm8YcZ1pHs4KdE6\nCOPY --from=build /app /app\nUSER node\nCMD [\"node\", \"dist/server.js\"]",
+    "lang": "dockerfile",
+    "answer": [
+      9,
+      10
+    ],
+    "explain": "ENV u finalnoj fazi upisuje token u konfiguraciju slike, vidljiv kroz docker inspect i docker history. COPY --from=build /app /app kopira cijeli build direktorij, zajedno sa .npmrc (i dev zavisnostima). Prva faza se ne objavljuje, pa njen COPY ne završava u finalnoj slici. Ispravka: obriši ENV, u finalnu fazu kopiraj samo dist/ i produkcijske node_modules, a u buildu koristi RUN --mount=type=secret,id=npmrc,target=/app/.npmrc npm ci umjesto COPY .npmrc. Token koji je već bio u slici obavezno rotiraj."
+  },
+  {
+    "obj": "4.3",
+    "q": "Gate job (prva komanda) je prošao, a izvještajni scan iste slike (druga komanda) pokazuje CRITICAL nalaz. Šta objašnjava razliku?",
+    "snippet": "$ trivy image --severity CRITICAL --ignore-unfixed --exit-code 1 registry.example.com/kurs-shop:1.8.0\nregistry.example.com/kurs-shop:1.8.0 (debian 12.7)\nTotal: 0 (CRITICAL: 0)\n\n$ trivy image --severity CRITICAL registry.example.com/kurs-shop:1.8.0\nregistry.example.com/kurs-shop:1.8.0 (debian 12.7)\nTotal: 1 (CRITICAL: 1)\n\nLibrary   Vulnerability   Severity  Status        Installed Version  Fixed Version\nzlib1g    CVE-2023-45853  CRITICAL  will_not_fix  1:1.2.13.dfsg-1",
+    "lang": "text",
+    "options": [
+      "Status je will_not_fix, a --ignore-unfixed izbacuje nalaze bez popravke; gate radi kako je zamišljeno, a nalaz ide u izvještaj i triažu",
+      "--exit-code 1 vraća grešku samo za HIGH nalaze, ne za CRITICAL",
+      "--severity CRITICAL u gate jobu skenira samo biblioteke jezika, ne OS pakete",
+      "Trivy ne prijavljuje CRITICAL nalaze u Debian slikama dok se ne ažurira baza"
+    ],
+    "answer": 0,
+    "explain": "Druga komanda pokazuje status will_not_fix i praznu kolonu Fixed Version. --ignore-unfixed ignoriše statuse affected, will_not_fix, fix_deferred i end_of_life, pa gate pada samo na ono što se može popraviti ažuriranjem. To je namjerno, ali nalaz bez popravke nije bez rizika: ostaje u izvještaju i triaži (npr. VEX not_affected ako ranjivi kod nije u upotrebi, ili druga, manja bazna slika). --exit-code i --severity rade nezavisno od tipa paketa."
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "title": "Sigurnost CI/CD platforme",
+  "summary": "Rizici CI/CD platforme po OWASP Top 10 CI/CD, poisoned pipeline execution i izolacija runnera, te identitet pipelinea: GitLab id_tokens prema AWS-u i Vaultu, zaštićene grane, varijable i okruženja i najmanje privilegije po jobu.",
+  "minutes": 75,
+  "domain": 1,
+  "objectives": [
+    "1.3",
+    "1.4"
+  ],
+  "title_en": "CI/CD platform security",
+  "summary_en": "CI/CD platform risks per the OWASP Top 10 CI/CD, poisoned pipeline execution and runner isolation, and pipeline identity: GitLab id_tokens to AWS and Vault, protected branches, variables and environments, and least privilege per job."
+}

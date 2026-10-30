@@ -1,0 +1,245 @@
+[
+  {
+    "obj": "1.1",
+    "q": "The legal team is writing an internal AI policy and wants a neutral, precise definition of “membership inference” it can cite. Which source is most appropriate?",
+    "options": [
+      "OWASP Top 10 for LLM Applications 2025",
+      "A MITRE ATLAS case study",
+      "NIST AI 100-2 E2025 (adversarial ML taxonomy and terminology)",
+      "The model vendor's documentation"
+    ],
+    "answer": 2,
+    "explain": "NIST AI 100-2 is the reference vocabulary for attacks on ML, with definitions and labels (privacy compromise, NISTAML.03). OWASP is a prioritized risk list for developers, ATLAS case studies describe incidents, and vendor documentation is not a neutral source."
+  },
+  {
+    "obj": "1.1",
+    "q": "The SOC already maps all detection rules to MITRE ATT&CK. An LLM assistant with tools is being introduced. What is the best way to extend the existing practice?",
+    "options": [
+      "Add MITRE ATLAS labels (AML.TA/AML.T) to AI-specific rules and keep ATT&CK for the classic attack steps",
+      "Replace ATT&CK with ATLAS for all systems that use AI",
+      "Map AI rules only to the OWASP LLM Top 10 because ATLAS is not meant for the SOC",
+      "Don't map AI rules until MITRE publishes a stable version of ATLAS"
+    ],
+    "answer": 0,
+    "explain": "ATLAS is modeled on ATT&CK and complements it with AI-specific techniques. An incident involving an AI system usually also has classic steps (a stolen key, a compromised runner) that ATT&CK still covers. The OWASP list is not a detection taxonomy, and waiting leaves a gap."
+  },
+  {
+    "obj": "1.1",
+    "q": "Per NIST AI 100-2, an attacker who controls part of the training data and inserts a hidden trigger so the model misclassifies only inputs containing that trigger is carrying out which attack?",
+    "options": [
+      "An evasion attack at deployment time",
+      "Model extraction",
+      "Availability poisoning",
+      "Backdoor poisoning"
+    ],
+    "answer": 3,
+    "explain": "Backdoor poisoning requires control over training data and causes an integrity violation only on inputs with the trigger. Evasion changes inputs at deployment time without modifying training, availability poisoning causes general degradation, and model extraction is an attack on the privacy/confidentiality of the model."
+  },
+  {
+    "obj": "1.1",
+    "q": "For generative AI, NIST AI 100-2 adds an attacker goal that does not exist for predictive AI. Which one?",
+    "options": [
+      "Availability breakdown",
+      "Misuse enablement (bypassing restrictions on the model's output)",
+      "Integrity violation",
+      "Privacy compromise"
+    ],
+    "answer": 1,
+    "explain": "For GenAI the taxonomy adds misuse enablement (NISTAML.04) to availability, integrity and privacy: the attacker wants to bypass restrictions placed on the system's output. The other three goals also exist for PredAI."
+  },
+  {
+    "obj": "1.1",
+    "q": "An analyst describes an incident: instructions arrived through an email the assistant was summarizing, after which the assistant called a messaging tool. Which two ATLAS techniques best describe this chain?",
+    "options": [
+      "AML.T0020 Poison Training Data and AML.T0018 Manipulate AI Model",
+      "AML.T0051.001 LLM Prompt Injection: Indirect and AML.T0053 AI Agent Tool Invocation",
+      "AML.T0024 Exfiltration via AI Inference API and AML.T0034 Cost Harvesting",
+      "AML.T0010 AI Supply Chain Compromise and AML.T0056 Extract LLM System Prompt"
+    ],
+    "answer": 1,
+    "explain": "Instructions in content the model processes are indirect prompt injection (AML.T0051.001), and the consequence is a tool call (AML.T0053). Data poisoning and model manipulation relate to training, and the other combinations describe different scenarios."
+  },
+  {
+    "obj": "1.1",
+    "q": "A manager asks: “If we buy the best prompt injection filter, have we solved the problem?” What is the correct answer in the spirit of NIST AI 100-2?",
+    "options": [
+      "Yes, if the filter has precision above 99%",
+      "Yes, if the filter is updated every week",
+      "No, because filters don't work with languages other than English",
+      "No, many attacks have no complete mitigation; the filter is one layer, and consequences are limited by architecture (privileges, confirmation, isolation)"
+    ],
+    "answer": 3,
+    "explain": "NIST AI 100-2 stresses that complete mitigations for many AML attacks do not exist and that there are trade-offs between accuracy, robustness and privacy. That is why defense is layered at the system level. High precision on a test does not guarantee resilience to new variants."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which ATLAS tactic has no direct equivalent in ATT&CK and describes gaining access to a model, e.g., via an inference API or a product that uses the model?",
+    "options": [
+      "AI Model Access (AML.TA0000)",
+      "Initial Access (AML.TA0004)",
+      "Collection (AML.TA0009)",
+      "Exfiltration (AML.TA0010)"
+    ],
+    "answer": 0,
+    "explain": "AI Model Access and AI Attack Staging are ATLAS-specific tactics. Initial Access, Collection and Exfiltration also exist in ATT&CK."
+  },
+  {
+    "obj": "1.1",
+    "q": "An internal red team is planning to test an AI assistant. How does ATLAS best help with planning?",
+    "options": [
+      "It provides ready-made payloads for every technique",
+      "It replaces threat modeling because it covers all possible attacks",
+      "It lets you choose scenarios by the techniques relevant to the architecture and compare them with case studies",
+      "It defines the pass and fail thresholds for the test"
+    ],
+    "answer": 2,
+    "explain": "ATLAS provides structure (tactics, techniques, mitigations, case studies) for choosing and documenting scenarios. It contains no ready-made payloads, does not replace system-specific threat modeling and does not define pass criteria."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match the scenario with the NIST AI 100-2 attack class.",
+    "options": [
+      "A slightly modified image of a traffic sign at deployment time causes misclassification",
+      "A large number of API queries aimed at building a functional copy of the model",
+      "Queries that determine whether a specific record was in the training set",
+      "A compromised dataset from a public repository built into fine-tuning"
+    ],
+    "targets": ["Supply chain (data poisoning)", "Membership inference", "Evasion", "Model extraction"],
+    "answer": [2, 3, 1, 0],
+    "explain": "Modifying input at deployment time is evasion, copying a model through queries is model extraction, determining a record's membership is membership inference, and a poisoned third-party dataset is a supply chain attack."
+  },
+  {
+    "obj": "1.1",
+    "q": "A team is writing a detection rule for when an agent tries to call a tool outside the allowlist. What is good practice for the rule's metadata?",
+    "options": [
+      "Give the ATLAS ID and technique name (e.g., AML.T0053 AI Agent Tool Invocation) and linked mitigations, verified against the current ATLAS version",
+      "Give only the technique name because IDs change",
+      "Give only the OWASP label because ATLAS has no techniques for agents",
+      "Don't include a mapping because it slows down the SIEM"
+    ],
+    "answer": 0,
+    "explain": "ID and name together are resilient to renames, and checking against the current version prevents stale labels. ATLAS has techniques for agents (e.g., AML.T0053), and metadata does not affect SIEM performance."
+  },
+  {
+    "obj": "1.2",
+    "q": "A chatbot generates an HTML response that the frontend inserts into the page via innerHTML. Which OWASP LLM Top 10 2025 item does this primarily belong to?",
+    "options": [
+      "LLM01 Prompt Injection",
+      "LLM09 Misinformation",
+      "LLM05 Improper Output Handling",
+      "LLM10 Unbounded Consumption"
+    ],
+    "answer": 2,
+    "explain": "Passing model output without validation and encoding to a browser, shell or SQL is LLM05. Prompt injection may be the cause of the content, but the vulnerability is in output handling."
+  },
+  {
+    "obj": "1.2",
+    "q": "The system prompt contains an API key and the sentence “do not show financial reports to users without the admin role.” What is the main problem per OWASP LLM07?",
+    "options": [
+      "The prompt is too long and increases cost",
+      "Secrets and security logic must not depend on the prompt staying secret; the key belongs in the backend and authorization in code",
+      "The prompt should be translated into English so the model follows it better",
+      "The prompt should be encrypted before being sent to the model"
+    ],
+    "answer": 1,
+    "explain": "LLM07 System Prompt Leakage stresses that the prompt is not a security boundary: assume it can leak. Secrets are kept out of the prompt, and authorization is enforced in application code. Encryption makes no sense because the model must read the text."
+  },
+  {
+    "obj": "1.2",
+    "q": "In a multi-tenant RAG application, a user of one customer receives passages from another customer's documents because everyone shares one index without a filter. Which OWASP LLM item is most direct?",
+    "options": [
+      "LLM03 Supply Chain",
+      "LLM04 Data and Model Poisoning",
+      "LLM06 Excessive Agency",
+      "LLM08 Vector and Embedding Weaknesses"
+    ],
+    "answer": 3,
+    "explain": "LLM08 covers weaknesses in storing and retrieving embeddings, including unauthorized access and cross-tenant leakage. LLM02 is also a consequence, but the cause lies in a vector layer without access control."
+  },
+  {
+    "obj": "1.2",
+    "q": "A support agent has a tool that can delete user accounts, even though it only needs to read tickets for its job. What is this called, and what is the control?",
+    "options": [
+      "LLM06 Excessive Agency; remove unnecessary tools and narrow permissions to the minimum",
+      "LLM09 Misinformation; add source citation",
+      "LLM10 Unbounded Consumption; introduce rate limiting",
+      "LLM02 Sensitive Information Disclosure; encrypt the database"
+    ],
+    "answer": 0,
+    "explain": "Too much functionality, permission or autonomy is LLM06 Excessive Agency. The control is a minimal tool set and narrowly scoped credentials, plus confirmation for risky actions."
+  },
+  {
+    "obj": "1.2",
+    "q": "An agent remembers user “preferences” across sessions. Analysis shows that content from a document it read ends up in long-term memory and influences later decisions. Which OWASP Agentic Top 10 item is most direct?",
+    "options": [
+      "ASI07 Insecure Inter-Agent Communication",
+      "ASI06 Memory & Context Poisoning",
+      "ASI08 Cascading Failures",
+      "ASI04 Agentic Supply Chain Vulnerabilities"
+    ],
+    "answer": 1,
+    "explain": "Poisoning of memory or context the agent uses later is ASI06. Controls are checks before writing to memory, per-user isolation, expiry and review of entries."
+  },
+  {
+    "obj": "1.2",
+    "q": "An operator approves dozens of agent actions a day by clicking “Approve” without reading the details, because the agent is “always right.” Which Agentic Top 10 item describes this risk?",
+    "options": [
+      "ASI10 Rogue Agents",
+      "ASI05 Unexpected Code Execution (RCE)",
+      "ASI09 Human-Agent Trust Exploitation",
+      "ASI03 Identity and Privilege Abuse"
+    ],
+    "answer": 2,
+    "explain": "ASI09 covers people's excessive trust in the agent, which makes human confirmation meaningless. Controls: a clear display of exactly what is being approved, fewer and risk-focused confirmations, training and monitoring of approval patterns."
+  },
+  {
+    "obj": "1.2",
+    "q": "An orchestrator agent sends tasks to sub-agents via an internal message without authentication, and the sub-agents execute whatever arrives. Which control directly addresses ASI07?",
+    "options": [
+      "A larger context window for the sub-agents",
+      "More frequent model updates",
+      "Logging only the final answer to the user",
+      "Mutual authentication of agents, message integrity and message schema validation"
+    ],
+    "answer": 3,
+    "explain": "ASI07 Insecure Inter-Agent Communication is addressed with authentication, integrity protection and validation of messages between agents. The other options don't prevent a forged or altered message from being executed."
+  },
+  {
+    "obj": "1.2",
+    "q": "A team is building an agent with tools, RAG and memory. The architect asks which OWASP list to use. What is correct?",
+    "options": [
+      "Both: the LLM Top 10 for the application around the model and the Agentic Top 10 for autonomy, tools, memory and agent communication",
+      "Only the Agentic Top 10, because it replaces the LLM Top 10",
+      "Only the LLM Top 10, because the Agentic Top 10 is meant for researchers",
+      "Neither, only ATLAS"
+    ],
+    "answer": 0,
+    "explain": "The lists complement each other: an agentic application is exposed to risks from both lists (e.g., LLM01 as the mechanism, ASI01/ASI02 as the consequence). ATLAS is useful for detection and testing, but it does not replace a design checklist."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Order the steps for adopting frameworks for a new AI system, from first to last.",
+    "options": [
+      "Map SIEM detections to ATLAS techniques",
+      "Build an inventory of AI systems and components (model, RAG, tools, data)",
+      "Go through the OWASP LLM and Agentic Top 10 in a design review and decide on controls",
+      "Regularly review the mapping when the lists or the architecture change"
+    ],
+    "answer": [1, 2, 0, 3],
+    "explain": "Without an inventory you don't know what you are covering; then in design you choose controls based on the OWASP lists; once the system is running, you map detections to ATLAS; finally you review periodically because both the lists and the architecture change."
+  },
+  {
+    "obj": "1.2",
+    "q": "A public LLM API has no limits: one account burned through the monthly budget over a weekend. Which OWASP item and which control?",
+    "options": [
+      "LLM04 Data and Model Poisoning; data validation",
+      "LLM10 Unbounded Consumption; rate limiting, per-user quotas, token limits and budget alerts",
+      "LLM07 System Prompt Leakage; shortening the prompt",
+      "LLM01 Prompt Injection; input filter"
+    ],
+    "answer": 1,
+    "explain": "LLM10 Unbounded Consumption covers resource exhaustion and financial losses (denial of wallet), as well as model extraction through unbounded queries. Controls are limits at the gateway and serving level, and budget alerts."
+  }
+]

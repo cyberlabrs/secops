@@ -1,0 +1,298 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Nova aplikacija za analitiku obrađuje marketinške podatke (javni), interne finansijske projekcije (sensitive) i plate zaposlenih (private). Sigurnosni arhitekta mora odrediti nivo zaštite za server na kojem aplikacija radi. Koji pristup je ISPRAVAN?",
+    "options": [
+      "Prosjek nivoa svih podataka, da kontrole ne bi bile preskupe",
+      "Najviši nivo bilo kojih podataka koje server obrađuje (high-water mark)",
+      "Nivo podataka kojih ima najviše po količini",
+      "Nivo koji odredi administrator servera prema opterećenju"
+    ],
+    "answer": 1,
+    "explain": "Imovina nasljeđuje najvišu klasifikaciju podataka koje sadrži ili obrađuje (high-water mark). Prosjek ili količina bi ostavili najosjetljivije podatke nedovoljno zaštićenim, a administrator (custodian) ne određuje klasifikaciju."
+  },
+  {
+    "obj": "2.1",
+    "q": "Direktor prodaje traži od IT odjeljenja da „klasifikuje sve podatke u CRM-u kako misli da je najbolje“. Šta je NAJBOLJI odgovor CISO-a?",
+    "options": [
+      "IT će klasifikovati podatke jer najbolje poznaje sisteme",
+      "Sigurnosni tim će klasifikovati podatke prema najstrožem nivou",
+      "Klasifikaciju određuje direktor prodaje kao vlasnik podataka, uz šemu i savjete sigurnosnog tima",
+      "Klasifikacija se može preskočiti ako su svi podaci šifrovani"
+    ],
+    "answer": 2,
+    "explain": "Data owner (rukovodilac poslovne funkcije) određuje klasifikaciju jer zna vrijednost i osjetljivost podataka. Sigurnosni tim definiše šemu i savjetuje, IT kao custodian implementira kontrole. Šifrovanje ne zamjenjuje klasifikaciju."
+  },
+  {
+    "obj": "2.1",
+    "q": "Organizacija ima osam nivoa klasifikacije i zaposleni ih primjenjuju nedosljedno. Šta je NAJVJEROVATNIJE najbolji korak?",
+    "options": [
+      "Smanjiti broj nivoa na mali broj jasno definisanih (npr. tri do pet) i obučiti zaposlene",
+      "Dodati još nivoa da bi razlike bile preciznije",
+      "Prepustiti klasifikaciju DLP alatu bez ljudskog učešća",
+      "Sve podatke označiti najvišim nivoom"
+    ],
+    "answer": 0,
+    "explain": "Previše nivoa otežava dosljednu primjenu. Mali broj jasno definisanih nivoa uz obuku je najefikasniji. Označavanje svega najvišim nivoom je preskupo i obesmišljava klasifikaciju, a automatizacija bez vlasnika ne rješava problem odgovornosti."
+  },
+  {
+    "obj": "2.1",
+    "q": "Izvještaj o istraživanju tržišta bio je Confidential do objave proizvoda. Nakon objave podaci su javno dostupni. Koji proces treba primijeniti?",
+    "options": [
+      "Sanitizacija",
+      "Scoping",
+      "Tailoring",
+      "Deklasifikacija koju odobrava vlasnik podataka"
+    ],
+    "answer": 3,
+    "explain": "Kada vrijednost ili osjetljivost podataka opadne, vlasnik ih deklasifikuje kako se ne bi trošila sredstva na nepotrebnu zaštitu. Sanitizacija se odnosi na medije, a scoping i tailoring na prilagođavanje kontrola."
+  },
+  {
+    "obj": "2.2",
+    "q": "Tehničar u skladištu pronalazi kutiju USB diskova bez ikakve oznake klasifikacije u prostoriji gdje se čuvaju i Secret mediji. Kako ih treba tretirati dok se ne utvrdi sadržaj?",
+    "options": [
+      "Kao javne, jer nisu označeni",
+      "Kao medije najviše klasifikacije prisutne u okruženju",
+      "Odmah ih formatirati i vratiti u upotrebu",
+      "Predati ih bilo kom zaposlenom kome je potreban USB"
+    ],
+    "answer": 1,
+    "explain": "Neoznačen medij se tretira kao da ima najvišu klasifikaciju u okruženju dok se ne utvrdi suprotno. Formatiranje nije sanitizacija i uništilo bi informaciju potrebnu za procjenu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Laptopovi sa SSD diskovima na kojima su bili zdravstveni podaci prodaju se nakon otpisa vanjskom kupcu. Koji pristup je NAJPRIKLADNIJI?",
+    "options": [
+      "Degaussing svih diskova",
+      "Brzo formatiranje i ponovna instalacija OS-a",
+      "Višestruko prepisivanje alatom iz operativnog sistema",
+      "Cryptographic erase ili Secure Erase proizvođača uz verifikaciju, a za najosjetljivije podatke fizičko uništenje diska"
+    ],
+    "answer": 3,
+    "explain": "Degaussing ne djeluje na SSD, formatiranje ostavlja podatke, a prepisivanje ne dohvata rezervne blokove zbog wear levelinga. Purge metode za flash (crypto erase, Secure Erase) uz verifikaciju su ispravne; ako je rizik visok, fizičko uništenje."
+  },
+  {
+    "obj": "2.2",
+    "q": "Napadač je ukrao laptop sa uključenim full disk encryption-om dok je laptop bio isključen. Nekoliko dana kasnije drugi napadač dobija udaljen pristup prijavljenoj sesiji korisnika na drugom laptopu sa istom zaštitom. Šta je TAČNO?",
+    "options": [
+      "FDE štiti u prvom slučaju, ali ne i u drugom, jer su podaci dešifrovani dok je korisnik prijavljen",
+      "FDE štiti u oba slučaja jednako",
+      "FDE ne štiti ni u jednom slučaju",
+      "FDE štiti samo u drugom slučaju"
+    ],
+    "answer": 0,
+    "explain": "FDE štiti podatke at rest kada je uređaj isključen ili zaključan. Kada je sistem pokrenut i korisnik prijavljen, volumen je otključan, pa napadač sa pristupom sesiji vidi podatke. Za to su potrebne kontrole pristupa, EDR ili šifrovanje na nivou aplikacije."
+  },
+  {
+    "obj": "2.2",
+    "q": "Organizacija mora sanitizovati hard diskove koji ostaju u upotrebi unutar iste organizacije, ali prelaze u odjeljenje nižeg nivoa povjerljivosti. Podaci moraju biti zaštićeni od laboratorijskih tehnika oporavka. Koji nivo iz NIST SP 800-88 odgovara?",
+    "options": [
+      "Clear",
+      "Destroy",
+      "Purge",
+      "Deletion"
+    ],
+    "answer": 2,
+    "explain": "Purge štiti od laboratorijskih tehnika oporavka, a medij se (osim nakon degaussinga HDD-a) može ponovo koristiti. Clear štiti samo od jednostavnih alata, Destroy onemogućava ponovnu upotrebu, a brisanje nije nivo sanitizacije."
+  },
+  {
+    "obj": "2.3",
+    "q": "Nakon akvizicije druge firme, skeniranje mreže pronalazi stotine uređaja koje niko ne prepoznaje. Šta je PRVI korak?",
+    "options": [
+      "Odmah isključiti sve nepoznate uređaje",
+      "Uvesti NAC i blokirati sve što nije u Active Directoryju",
+      "Pokrenuti penetracijski test na nepoznatim uređajima",
+      "Napraviti tačan inventar i svakom uređaju dodijeliti vlasnika i klasifikaciju"
+    ],
+    "answer": 3,
+    "explain": "Ne možeš zaštititi ono što ne znaš. Inventar sa vlasnicima je preduslov za odluke o kontrolama. Isključivanje ili blokiranje bez znanja šta uređaji rade može zaustaviti kritične poslovne procese."
+  },
+  {
+    "obj": "2.3",
+    "q": "Koja od navedenih stavki je NEMATERIJALNA (intangible) imovina koju treba uključiti u inventar?",
+    "options": [
+      "Rack server u data centru",
+      "Backup trake u sefu",
+      "Registrovani domeni, softverske licence i TLS certifikati",
+      "Mrežni prekidači u wiring closetu"
+    ],
+    "answer": 2,
+    "explain": "Domeni, licence, certifikati, intelektualna svojina i podaci su nematerijalna imovina. Isteknuti certifikat ili izgubljen domen mogu izazvati ozbiljan prekid, pa moraju biti u inventaru sa vlasnikom. Ostale opcije su materijalna imovina."
+  },
+  {
+    "obj": "2.3",
+    "q": "Rukovodilac odjeljenja je delegirao svakodnevno upravljanje pristupom bazom DBA timu. Dolazi do curenja zbog pretjeranih prava. Ko snosi krajnju odgovornost (accountability) za podatke?",
+    "options": [
+      "Rukovodilac odjeljenja kao vlasnik podataka",
+      "DBA tim kao custodian",
+      "Korisnik koji je imao pretjerana prava",
+      "Vanjski auditor koji nije uočio problem"
+    ],
+    "answer": 0,
+    "explain": "Vlasnik može delegirati zadatke (responsibility), ali ne i odgovornost (accountability). DBA je odgovoran za izvršenje, ali krajnja odgovornost ostaje na vlasniku, koji je trebao da sprovodi periodičnu reviziju prava."
+  },
+  {
+    "obj": "2.4",
+    "q": "Evropska firma koristi američkog SaaS provajdera za obradu plata. Provajder obrađuje lične podatke isključivo prema uputstvima firme. Kako su uloge raspoređene po GDPR-u?",
+    "options": [
+      "Provajder je controller jer posjeduje infrastrukturu",
+      "Firma je controller, provajder je processor",
+      "Oboje su data subjects",
+      "Firma je custodian, provajder je owner"
+    ],
+    "answer": 1,
+    "explain": "Controller određuje svrhu i način obrade (firma), a processor obrađuje u ime kontrolora po uputstvima (provajder). Vlasništvo nad infrastrukturom ne čini nekoga controllerom. Firma ostaje odgovorna regulatoru i za izbor provajdera."
+  },
+  {
+    "obj": "2.4",
+    "q": "Retention politika propisuje brisanje email arhive starije od sedam godina. Pravni tim obavještava da je pokrenut sudski spor u kojem su relevantni emailovi stari osam godina. Šta treba uraditi?",
+    "options": [
+      "Obrisati emailove prema politici, jer je politika obavezujuća",
+      "Premjestiti emailove u lični arhiv pravnika",
+      "Primijeniti legal hold i suspendovati brisanje relevantnih emailova",
+      "Anonimizovati emailove pa ih zadržati"
+    ],
+    "answer": 2,
+    "explain": "Legal hold ima prednost nad redovnim retention rasporedom. Brisanje podataka relevantnih za spor može biti uništavanje dokaza (spoliation). Anonimizacija bi promijenila dokaze."
+  },
+  {
+    "obj": "2.4",
+    "q": "Marketing tim želi da u registracionu formu doda polja za datum rođenja, adresu i broj lične karte „jer bi moglo biti korisno kasnije“. Koji princip je NAJRELEVANTNIJI?",
+    "options": [
+      "Data remanence",
+      "Data sovereignty",
+      "Tailoring",
+      "Minimizacija podataka i ograničenje svrhe"
+    ],
+    "answer": 3,
+    "explain": "Prikupljaju se samo podaci neophodni za definisanu svrhu. Podatak koji nemaš ne može procuriti, a prikupljanje „za svaki slučaj“ krši GDPR principe minimizacije i ograničenja svrhe."
+  },
+  {
+    "obj": "2.4",
+    "q": "Zakon države X zahtijeva da lični podaci njenih građana budu čuvani isključivo na serverima unutar te države. Kako se zove ovaj zahtjev?",
+    "options": [
+      "Data localization",
+      "Data remanence",
+      "Data minimization",
+      "Data maintenance"
+    ],
+    "answer": 0,
+    "explain": "Data localization je zakonski zahtjev da podaci ostanu u određenoj državi. Data sovereignty znači da podaci podliježu zakonima države u kojoj se nalaze, a data residency je fizička lokacija čuvanja. Ostale opcije nisu vezane za lokaciju."
+  },
+  {
+    "obj": "2.4",
+    "q": "Ko je TIPIČNO odgovoran za izvršavanje backupa, primjenu šifrovanja i održavanje integriteta baze podataka prema zahtjevima vlasnika?",
+    "options": [
+      "Data subject",
+      "Data custodian",
+      "Data controller",
+      "Data owner"
+    ],
+    "answer": 1,
+    "explain": "Custodian (IT, DBA, cloud ops) sprovodi tehničke kontrole koje je odredio vlasnik: backup, šifrovanje, patchovanje. Owner i controller odlučuju, subject je osoba na koju se podaci odnose."
+  },
+  {
+    "obj": "2.5",
+    "q": "Proizvodna linija zavisi od kontrolnog računara sa operativnim sistemom koji je prošao End of Support. Zamjena linije je planirana za dvije godine. Šta je NAJBOLJI pristup?",
+    "options": [
+      "Nastaviti rad bez promjena, jer sistem do sada nije napadnut",
+      "Odmah ugasiti računar dok se linija ne zamijeni",
+      "Izolovati sistem, primijeniti kompenzacijske kontrole i dokumentovati formalno prihvatanje rizika od strane vlasnika uz plan zamjene",
+      "Instalirati najnoviji OS bez testiranja kompatibilnosti"
+    ],
+    "answer": 2,
+    "explain": "Sigurnost služi poslovanju: gašenje zaustavlja proizvodnju, a ignorisanje ostavlja nezakrpljene ranjivosti. Segmentacija, allowlisting, monitoring i formalno prihvatanje rizika uz rok zamjene su ravnoteža. Nadogradnja bez testiranja može oboriti liniju."
+  },
+  {
+    "obj": "2.5",
+    "q": "Koji datum je sa sigurnosnog aspekta NAJKRITIČNIJI za planiranje zamjene softvera?",
+    "options": [
+      "Datum kada proizvođač prestaje da izdaje sigurnosne zakrpe",
+      "Datum prestanka prodaje novih licenci",
+      "Datum isteka garancije za hardver",
+      "Datum izlaska nove glavne verzije"
+    ],
+    "answer": 0,
+    "explain": "Kraj sigurnosnih zakrpa (End of Support / End of Service Life) znači da nove ranjivosti ostaju otvorene. Prestanak prodaje (često EOL) ne mijenja odmah sigurnosni položaj, a izlazak nove verzije sam po sebi ne ukida podršku."
+  },
+  {
+    "obj": "2.5",
+    "q": "Tim povlači iz upotrebe web aplikaciju u cloudu. Diskovi su obrisani crypto-shreddingom. Koji korak je NAJVJEROVATNIJE izostavljen ako se mjesec dana kasnije pojavi lažni sadržaj na poddomenu aplikacije?",
+    "options": [
+      "Izdavanje certifikata o uništenju",
+      "Arhiviranje logova",
+      "Revizija klasifikacije podataka",
+      "Uklanjanje DNS zapisa i ostalih referenci na povučene resurse"
+    ],
+    "answer": 3,
+    "explain": "Viseći DNS zapis koji pokazuje na obrisan cloud resurs omogućava preuzimanje poddomena (subdomain takeover). Povlačenje imovine obuhvata ukidanje DNS zapisa, certifikata, naloga i pravila, a ne samo sanitizaciju podataka."
+  },
+  {
+    "obj": "2.6",
+    "q": "Organizacija usvaja NIST SP 800-53 moderate baseline. Sistem nema bežičnu mrežu, pa tim izbacuje kontrole za bežični pristup, a umjesto jedne kontrole koja nije izvodljiva uvodi kompenzacijsku. Kako se zovu ove dvije aktivnosti?",
+    "options": [
+      "Supplementation i scoping",
+      "Scoping (izbacivanje nerelevantnih) i tailoring (prilagođavanje, uključujući kompenzacijske kontrole)",
+      "Tailoring i deklasifikacija",
+      "Kategorizacija i akreditacija"
+    ],
+    "answer": 1,
+    "explain": "Scoping određuje koje kontrole iz baselinea se primjenjuju na sistem, a tailoring ih prilagođava okruženju i riziku, uključujući parametre i kompenzacijske kontrole. Supplementation je dodavanje kontrola iznad baselinea."
+  },
+  {
+    "obj": "2.6",
+    "q": "Pravna firma šalje ugovore klijentima i želi da klijent može dokument pročitati, ali ne štampati ni proslijediti, i da pristup automatski istekne nakon 30 dana. Koja tehnologija NAJBOLJE ispunjava zahtjev?",
+    "options": [
+      "Mrežni DLP",
+      "CASB u API režimu",
+      "DRM/IRM",
+      "TLS 1.3"
+    ],
+    "answer": 2,
+    "explain": "DRM/IRM prati sam dokument i van organizacije, sa pravima (čitanje, štampa, prosljeđivanje) i istekom. DLP štiti granicu organizacije, CASB kontroliše SaaS korištenje, a TLS štiti samo prenos."
+  },
+  {
+    "obj": "2.6",
+    "q": "Sigurnosni tim treba jedinstven pregled pogrešnih konfiguracija, pretjeranih IAM prava i ranjivih kontejnerskih image-a kroz više cloud naloga i provajdera. Koja kategorija alata NAJBOLJE odgovara?",
+    "options": [
+      "CNAPP",
+      "DRM",
+      "Endpoint DLP",
+      "SIEM bez integracija"
+    ],
+    "answer": 0,
+    "explain": "CNAPP objedinjuje CSPM (konfiguracija), CIEM (prava) i CWPP/skeniranje image-a (radna opterećenja). DRM štiti dokumente, endpoint DLP sprječava curenje sa uređaja, a SIEM agregira logove ali sam ne procjenjuje konfiguraciju i prava."
+  },
+  {
+    "obj": "2.6",
+    "type": "match",
+    "q": "Upari scenarij sa stanjem podataka i kontrolom koja ga NAJBOLJE štiti.",
+    "options": [
+      "Baza sa brojevima kartica na disku u data centru koji može biti ukraden",
+      "Podaci se šalju između dva data centra preko interneta",
+      "Analitički model obrađuje osjetljive podatke kod cloud provajdera kojem se ne vjeruje u potpunosti",
+      "Korisnik pokušava kopirati Confidential fajl na lični USB"
+    ],
+    "targets": [
+      "In transit: IPsec/TLS tunel",
+      "In use: endpoint DLP",
+      "At rest: TDE/šifrovanje storagea",
+      "In use: confidential computing (TEE)"
+    ],
+    "answer": [2, 0, 3, 1],
+    "explain": "Podaci na disku su at rest (TDE, FDE), prenos između lokacija je in transit (IPsec/TLS), obrada kod nepouzdanog provajdera traži zaštitu in use (TEE), a kopiranje sa endpointa sprječava endpoint DLP."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Poredaj metode sanitizacije hard diska (HDD) od NAJSLABIJE do NAJJAČE zaštite od oporavka podataka.",
+    "options": [
+      "Degaussing (purge)",
+      "Brisanje fajlova (deletion)",
+      "Pulverizacija (destroy)",
+      "Jednokratno prepisivanje svih logičkih sektora (clear)"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Brisanje samo uklanja pokazivače; clear (prepisivanje) štiti od jednostavnih alata; purge (degaussing) od laboratorijskog oporavka; destroy (pulverizacija) fizički onemogućava oporavak."
+  }
+]

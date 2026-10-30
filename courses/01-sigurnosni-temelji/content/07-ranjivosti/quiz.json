@@ -1,0 +1,76 @@
+[
+  {
+    "q": "Koja je razlika između CVE i CWE?",
+    "options": ["Nema razlike", "CVE je konkretna ranjivost u proizvodu, CWE je vrsta (kategorija) slabosti", "CWE je ocjena ozbiljnosti", "CVE koristi samo NIST"],
+    "answer": 1,
+    "explain": "CVE-2021-44228 je konkretna ranjivost u Log4j. CWE-502 ili CWE-917 opisuju vrstu slabosti iza nje."
+  },
+  {
+    "q": "Šta mjeri EPSS?",
+    "options": ["Ozbiljnost ranjivosti od 0 do 10", "Vjerovatnoću da će CVE biti iskorišten u stvarnim napadima u narednih 30 dana", "Broj pogođenih sistema", "Cijenu popravke"],
+    "answer": 1,
+    "explain": "EPSS je vjerovatnoća od 0 do 1, objavljuje se dnevno. CVSS mjeri ozbiljnost, a EPSS vjerovatnoću iskorištavanja."
+  },
+  {
+    "q": "CVE A: CVSS 9.8, EPSS 0.002, interni sistem bez mrežnog pristupa. CVE B: CVSS 7.5, u CISA KEV, na javnom VPN uređaju. Šta krpiš prvo?",
+    "options": ["A, jer ima viši CVSS", "B, jer se aktivno iskorištava i izložen je internetu", "Oba istovremeno, prema CVSS-u", "Nijedan dok ne izađe CVSS 5.0"],
+    "answer": 1,
+    "explain": "KEV znači dokazano iskorištavanje, a izloženost internetu znači da je meta dostupna. CVSS sam po sebi ne odražava rizik u tvom okruženju."
+  },
+  {
+    "q": "Koje su četiri grupe metrika u CVSS 4.0?",
+    "options": ["Base, Temporal, Environmental, Scope", "Base, Threat, Environmental, Supplemental", "Impact, Exploitability, Scope, Threat", "Low, Medium, High, Critical"],
+    "answer": 1,
+    "explain": "Temporal je u 4.0 preimenovan u Threat, a dodata je Supplemental grupa koja ne mijenja ocjenu. Scope je zamijenjen odvojenim metrikama uticaja na naredne sisteme."
+  },
+  {
+    "q": "Šta označava CVSS-BT ocjena?",
+    "options": ["Base + Temporal (3.1)", "Base + Threat metrike u CVSS 4.0", "Bez tehničkih detalja", "Ocjenu proizvođača"],
+    "answer": 1,
+    "explain": "CVSS 4.0 eksplicitno navodi koje grupe su uključene: CVSS-B, CVSS-BT, CVSS-BE, CVSS-BTE."
+  },
+  {
+    "q": "Šta znači da je CVE u CISA KEV katalogu?",
+    "options": ["Ima CVSS 10", "Postoje dokazi da se aktivno iskorištava u stvarnim napadima", "Zakrpa još ne postoji", "Pogađa samo američku vladu"],
+    "answer": 1,
+    "explain": "KEV sadrži samo ranjivosti sa potvrđenim iskorištavanjem. Zato je to najjači signal za prioritet, posebno na izloženim sistemima."
+  },
+  {
+    "q": "Novi kritični CVE je objavljen u popularnoj biblioteci. Šta ti najbrže kaže u kojim servisima je imaš?",
+    "options": ["CVSS kalkulator", "SBOM-ovi tvojih artefakata", "EPSS", "WAF logovi"],
+    "answer": 1,
+    "explain": "SBOM je popis komponenti i verzija. Sa SBOM-ovima u centralnom alatu (npr. Dependency-Track) pretraga traje minut."
+  },
+  {
+    "q": "Proizvođač kaže da CVE u njihovoj biblioteci ne pogađa njihov proizvod jer se ranjiva funkcija nikad ne poziva. Kako se ta izjava standardizovano prenosi?",
+    "options": ["SBOM", "VEX sa statusom not_affected i obrazloženjem", "CVSS Environmental", "KEV"],
+    "answer": 1,
+    "explain": "VEX opisuje da li je proizvod stvarno pogođen. Skeneri koji podržavaju VEX tada mogu sakriti takve lažne pozitive."
+  },
+  {
+    "q": "EPSS score je 0.10. Šta je tačno o percentilu?",
+    "options": ["Percentil je uvijek 10", "Percentil je visok (oko 88.), jer većina CVE-ova ima mnogo nižu vjerovatnoću", "Percentil nije povezan sa ocjenom", "Percentil je 50"],
+    "answer": 1,
+    "explain": "Raspodjela EPSS ocjena je jako nakrivljena prema nuli, pa već 10% vjerovatnoće stavlja CVE u gornjih ~12%. FIRST preporučuje da se prikazuju oba broja."
+  },
+  {
+    "q": "Koje metrike pokazuju da program upravljanja ranjivostima radi? (više odgovora)",
+    "options": ["MTTR po prioritetu", "Procenat nalaza riješenih u SLA roku", "Ukupan broj nalaza skenera", "Broj izloženih sistema sa KEV ranjivostima"],
+    "answer": [0, 1, 3],
+    "explain": "Ukupan broj nalaza raste sa svakim novim skenerom i ne govori ništa o riziku. Bitni su brzina, poštovanje rokova i izloženost na ono što se stvarno napada."
+  },
+  {
+    "q": "Zašto treba redovno praviti (rebuild) Docker sliku i kad se kod ne mijenja?",
+    "options": ["Zbog veličine slike", "Bazna slika i paketi dobijaju sigurnosne zakrpe koje stara slika nema", "Docker to zahtijeva", "Zbog licenci"],
+    "answer": 1,
+    "explain": "Slika napravljena prije šest mjeseci sadrži pakete od prije šest mjeseci. Redovan rebuild i skeniranje u registru hvataju nove CVE-ove."
+  },
+  {
+    "q": "Primijeni tabelu prioriteta iz lekcije (P1: u KEV-u ili EPSS ≥ 0.1 na sistemu izloženom internetu). Koji nalaz iz izvještaja skenera je P1?",
+    "lang": "text",
+    "snippet": "ID      CVE              PAKET       CVSS  EPSS    KEV  IZLOŽENOST\nF-101   CVE-2025-31001   openssl     9.8   0.003   ne   interni batch server\nF-102   CVE-2025-31002   jenkins     8.8   0.020   ne   internet\nF-103   CVE-2025-31003   confluence  6.5   0.350   ne   internet\nF-104   CVE-2025-31004   libxml2     7.5   0.0005  ne   interni API\nF-105   CVE-2025-31005   bash        4.2   0.001   ne   interni API",
+    "options": ["F-101 (najveći CVSS)", "F-102", "F-103", "F-104"],
+    "answer": 2,
+    "explain": "F-103 ima EPSS 0.35 (35% vjerovatnoće iskorištavanja u 30 dana) na sistemu izloženom internetu, pa je P1 iako mu je CVSS najniži od ponuđenih. F-102 je P2 (CVSS ≥ 7 i izložen), F-101 i F-104 su P3 (visok CVSS, interni, nizak EPSS). CVSS kaže koliko bi bilo loše, EPSS koliko je vjerovatno da će se desiti."
+  }
+]

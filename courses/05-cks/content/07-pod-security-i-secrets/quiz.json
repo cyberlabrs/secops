@@ -1,0 +1,280 @@
+[
+  {
+    "obj": "4.1",
+    "q": "Namespace prod ima oznaku pod-security.kubernetes.io/enforce=restricted. Primijeniš Deployment čiji template nema securityContext. kubectl apply prolazi, ali READY je 0/3. Zašto?",
+    "options": [
+      "enforce se primjenjuje samo na Pod objekte: Deployment je prihvaćen, a ReplicaSet ne može napraviti Podove (FailedCreate)",
+      "enforce odbija Deployment, ali kubectl apply ne prikazuje grešku",
+      "Scheduler ne može naći čvor koji zadovoljava restricted nivo",
+      "Kubelet odbija da pokrene kontejnere jer nemaju runAsUser"
+    ],
+    "answer": 0,
+    "explain": "PSA enforce provjerava samo Podove; workload resursi dobijaju samo warn/audit. Razlog vidiš u kubectl describe rs kao FailedCreate sa porukom violates PodSecurity. Scheduler i kubelet ne učestvuju jer Pod nikad nije kreiran."
+  },
+  {
+    "obj": "4.1",
+    "q": "Zadatak: namespace team-a mora odbijati Podove koji krše baseline, a korisnici trebaju dobiti upozorenje za sve što krši restricted. Koja komanda to radi?",
+    "options": [
+      "kubectl label ns team-a pod-security.kubernetes.io/enforce=restricted pod-security.kubernetes.io/warn=baseline",
+      "kubectl label ns team-a pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/warn=restricted",
+      "kubectl annotate ns team-a pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/warn=restricted",
+      "kubectl label ns team-a pod-security.kubernetes.io/audit=baseline pod-security.kubernetes.io/warn=restricted"
+    ],
+    "answer": 1,
+    "explain": "PSA čita oznake (labels), ne anotacije, a odbijanje radi samo mod enforce. Prva opcija ima obrnute nivoe, a audit samo bilježi u audit log i ne odbija."
+  },
+  {
+    "obj": "4.1",
+    "q": "U namespaceu sa enforce=restricted Pod ima pod-nivo runAsNonRoot: true i seccompProfile RuntimeDefault, a kontejner ima capabilities.drop: [ALL]. Pod je odbijen. Šta još nedostaje?",
+    "options": [
+      "readOnlyRootFilesystem: true na kontejneru",
+      "runAsUser različit od 0 na nivou Poda",
+      "privileged: false na kontejneru",
+      "allowPrivilegeEscalation: false na kontejneru"
+    ],
+    "answer": 3,
+    "explain": "Restricted traži da allowPrivilegeEscalation bude eksplicitno false; neodređeno ne prolazi. runAsUser smije biti neodređen, privileged izostavljeno je već u redu, a readOnlyRootFilesystem nije dio PSS restricted (to je preporuka alata za analizu)."
+  },
+  {
+    "obj": "4.1",
+    "q": "Koji od ovih Podova bi prošao baseline, ali bi ga restricted odbio? (Izaberi DVA.)",
+    "options": [
+      "Pod sa capabilities.add: [NET_ADMIN]",
+      "Pod sa volumenom hostPath: /var/log",
+      "Pod bez ikakvog securityContext-a koji koristi samo emptyDir",
+      "Pod sa hostNetwork: true",
+      "Pod sa capabilities.add: [CHOWN] i bez drop: [ALL]"
+    ],
+    "answer": [
+      2,
+      4
+    ],
+    "explain": "Baseline dozvoljava Pod bez securityContext-a i dodavanje CHOWN (sigurna lista), ali restricted traži runAsNonRoot, seccomp, allowPrivilegeEscalation: false i drop ALL. NET_ADMIN, hostPath i hostNetwork pada već baseline."
+  },
+  {
+    "obj": "4.1",
+    "q": "Pod sa securityContext.runAsNonRoot: true (bez runAsUser) koristi sliku nginx:1.27 koja radi kao root. Kakvo stanje ćeš vidjeti?",
+    "options": [
+      "Pod je odbijen u admissionu sa porukom violates PodSecurity",
+      "Pod radi, ali kubelet automatski mijenja UID u 65534",
+      "Pod je u stanju CreateContainerConfigError, događaj kaže da će slika raditi kao root",
+      "Pod je Pending jer nijedan čvor ne podržava non-root"
+    ],
+    "answer": 2,
+    "explain": "runAsNonRoot provjerava kubelet u trenutku pokretanja: ako bi efektivni UID bio 0, kontejner se ne kreira i Pod ostaje u CreateContainerConfigError. PSA provjerava samo da je polje postavljeno, a kubelet ne mijenja UID sam."
+  },
+  {
+    "obj": "4.1",
+    "q": "Pod u namespaceu sa enforce=restricted je odbijen sa porukom: allowPrivilegeEscalation != false (container \"init-perms\" must set securityContext.allowPrivilegeEscalation=false). Glavni kontejner app već ima potpun securityContext. Šta popravljaš?",
+    "options": [
+      "Dodaješ allowPrivilegeEscalation: false u spec.securityContext na nivou Poda",
+      "Mijenjaš oznaku namespacea na enforce=baseline",
+      "Uklanjaš init kontejner jer restricted ne dozvoljava initContainers",
+      "Dodaješ isti securityContext (allowPrivilegeEscalation: false, drop ALL…) i init kontejneru init-perms"
+    ],
+    "answer": 3,
+    "explain": "PSS pravila važe za containers, initContainers i ephemeralContainers, a poruka imenuje init kontejner. allowPrivilegeEscalation ne postoji na nivou Poda, initContainers su dozvoljeni, a snižavanje nivoa nije rješenje zadatka."
+  },
+  {
+    "obj": "4.1",
+    "q": "Želiš da svi namespacei bez PSA oznaka podrazumijevano imaju enforce=baseline, osim kube-system. Gdje se to podešava?",
+    "options": [
+      "U AdmissionConfiguration sa PodSecurityConfiguration (defaults i exemptions.namespaces), koji kube-apiserver čita preko --admission-control-config-file",
+      "U KubeletConfiguration na svakom čvoru, polje podSecurityDefaults",
+      "Flagom --enable-admission-plugins=PodSecurity=baseline na kube-apiserveru",
+      "Oznakom pod-security.kubernetes.io/enforce=baseline na default namespaceu"
+    ],
+    "answer": 0,
+    "explain": "Klasterske podrazumijevane vrijednosti i izuzeci se postavljaju u PodSecurityConfiguration (pod-security.admission.config.k8s.io/v1) unutar AdmissionConfiguration. Kubelet nema takvo polje, --enable-admission-plugins ne prima nivo, a oznaka na default namespaceu važi samo za njega."
+  },
+  {
+    "obj": "4.1",
+    "q": "Prije nego postaviš enforce=restricted na namespace sa 40 Podova, želiš vidjeti koji postojeći Podovi bi kršili politiku, bez ikakve izmjene. Koja komanda?",
+    "options": [
+      "kubectl label ns app pod-security.kubernetes.io/audit=restricted",
+      "kubectl auth can-i create pods -n app --as=restricted",
+      "kubectl label --dry-run=client ns app pod-security.kubernetes.io/enforce=restricted",
+      "kubectl label --dry-run=server --overwrite ns app pod-security.kubernetes.io/enforce=restricted"
+    ],
+    "answer": 3,
+    "explain": "Server-side dry run prolazi kroz admission na API serveru i vraća upozorenja za postojeće Podove koji krše nivo, bez upisa. Client dry run ne kontaktira server, audit oznaka zaista mijenja namespace, a auth can-i provjerava RBAC."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari polje securityContext-a sa efektom.",
+    "options": [
+      "allowPrivilegeEscalation: false",
+      "readOnlyRootFilesystem: true",
+      "capabilities.drop: [ALL]",
+      "runAsNonRoot: true"
+    ],
+    "targets": [
+      "Kubelet odbija start ako bi proces radio kao UID 0",
+      "Postavlja no_new_privs, setuid binarni fajl ne podiže privilegije",
+      "Mijenja korisnika u slici na UID 1000",
+      "Proces nema nijednu Linux capability",
+      "Pisanje u root fajl sistem kontejnera vraća grešku"
+    ],
+    "answer": [
+      1,
+      4,
+      3,
+      0
+    ],
+    "explain": "allowPrivilegeEscalation kontroliše no_new_privs, readOnlyRootFilesystem montira root FS kao read-only, drop ALL uklanja capabilities, a runAsNonRoot samo provjerava UID i ne mijenja ga (za to služi runAsUser)."
+  },
+  {
+    "obj": "4.2",
+    "q": "Developer jane ima u namespaceu app Role sa resources: [pods] i verbs: [create, get, list], a nema nikakva prava na secrets. Može li pročitati Secret db-creds iz tog namespacea?",
+    "options": [
+      "Ne, jer kubectl get secret vraća Forbidden",
+      "Da: može napraviti Pod koji montira db-creds kao volumen ili env i ispisati vrijednost",
+      "Samo ako je Secret označen sa immutable: false",
+      "Samo ako je namespace označen sa pod-security enforce=privileged"
+    ],
+    "answer": 1,
+    "explain": "Montiranje Secreta u Pod ne traži get secrets za korisnika; kubelet čita Secret svojim identitetom. Zato create pods u namespaceu znači pristup svim Secretima tog namespacea. immutable i PSA nivo to ne sprječavaju."
+  },
+  {
+    "obj": "4.2",
+    "q": "ServiceAccount monitor ima ClusterRole sa resources: [secrets] i verbs: [list]. Tim kaže da je to bezbjedno jer list vraća samo imena. Šta je tačno?",
+    "options": [
+      "Tačno, list vraća samo metadata, za vrijednosti treba get",
+      "Tačno, ali samo ako je uključena enkripcija u mirovanju",
+      "Netačno: list vraća cijele objekte uključujući data, pa SA može pročitati sve Secrete u klasteru",
+      "Netačno, ali samo za Secrete tipa kubernetes.io/service-account-token"
+    ],
+    "answer": 2,
+    "explain": "list (i watch) vraća pune objekte sa poljem data. Enkripcija u mirovanju štiti etcd, a ne API odgovor, pa ne pomaže protiv korisnika sa RBAC pravom."
+  },
+  {
+    "obj": "4.2",
+    "q": "EncryptionConfiguration za secrets ima providers redom: identity: {}, pa aescbc sa ključem key1. API server je restartovan i uradio si replace svih Secreta. Šta vidiš u etcdctl get /registry/secrets/app/db-creds?",
+    "options": [
+      "Lozinku kao čist tekst, jer prvi provider (identity) se koristi za upis",
+      "Prefiks k8s:enc:aescbc:v1:key1 i šifrovane bajtove",
+      "Grešku, jer identity i aescbc ne smiju biti u istoj listi",
+      "Base64 kodiranu vrijednost iz polja data"
+    ],
+    "answer": 0,
+    "explain": "Upis uvijek koristi prvi provider; ovdje je to identity, pa replace ponovo upisuje nešifrovano. aescbc služi samo za čitanje. Kombinacija je dozvoljena (tako se i isključuje enkripcija), a etcd ne čuva base64 nego binarni zapis."
+  },
+  {
+    "obj": "4.2",
+    "type": "order",
+    "q": "Poredaj korake za uključivanje aescbc enkripcije Secreta na kubeadm klasteru tako da su na kraju i postojeći Secreti šifrovani.",
+    "options": [
+      "kubectl get secrets -A -o json | kubectl replace -f -",
+      "Napraviti /etc/kubernetes/enc/enc.yaml sa aescbc kao prvim providerom i ključem iz head -c 32 /dev/urandom | base64",
+      "Provjeriti etcdctl get i prefiks k8s:enc:aescbc:v1:",
+      "U kube-apiserver.yaml dodati --encryption-provider-config, volumeMount i hostPath volumen",
+      "Sačekati da se static Pod kube-apiserver restartuje i da kubectl ponovo radi"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "Prvo fajl, pa izmjena manifesta (flag + mount), pa čekanje restarta. Tek tada replace upisuje postojeće Secrete kroz novi provider, a provjera u etcd-u ide na kraju."
+  },
+  {
+    "obj": "4.2",
+    "q": "Nakon dodavanja --encryption-provider-config=/etc/kubernetes/enc/enc.yaml kube-apiserver se ne vraća. crictl logs pokazuje: open /etc/kubernetes/enc/enc.yaml: no such file or directory. Fajl postoji na čvoru. Šta je uzrok?",
+    "options": [
+      "Ključ u fajlu nije dužine 32 bajta",
+      "Fajl mora biti u /etc/kubernetes/pki",
+      "Nedostaje feature gate EncryptionAtRest=true",
+      "U manifestu nedostaje volumeMount/hostPath volumen za /etc/kubernetes/enc, pa kontejner ne vidi fajl"
+    ],
+    "answer": 3,
+    "explain": "kube-apiserver radi u kontejneru i vidi samo montirane putanje sa hosta. Pogrešan ključ daje drugačiju grešku pri parsiranju, putanja nije propisana, a takav feature gate ne postoji."
+  },
+  {
+    "obj": "4.2",
+    "q": "Uključio si enkripciju i restartovao API server, ali etcdctl i dalje prikazuje lozinku starog Secreta db-creds kao čist tekst. Novi Secreti su šifrovani. Šta trebaš uraditi?",
+    "options": [
+      "Restartovati etcd static Pod",
+      "Ponovo upisati postojeće Secrete: kubectl get secrets -A -o json | kubectl replace -f -",
+      "Dodati secrets u --encryption-provider-config-automatic-reload",
+      "Obrisati identity iz liste providera"
+    ],
+    "answer": 1,
+    "explain": "Enkripcija se primjenjuje pri upisu; postojeći zapisi ostaju kakvi jesu dok ih ne upišeš ponovo. Restart etcd-a ne mijenja podatke, a brisanje identity bi samo onemogućilo čitanje još nešifrovanih zapisa."
+  },
+  {
+    "obj": "4.2",
+    "q": "Koji provider u EncryptionConfiguration drži glavni ključ van control plane čvora, tako da root na controlplane ne može pročitati ključ iz fajla?",
+    "options": [
+      "secretbox",
+      "aesgcm",
+      "kms sa apiVersion: v2",
+      "aescbc sa dva ključa"
+    ],
+    "answer": 2,
+    "explain": "KMS v2 koristi envelope enkripciju: ključ za podatke šifruje eksterni KMS preko plugina na UNIX socketu. aescbc, aesgcm i secretbox drže ključ u samom konfiguracionom fajlu na čvoru."
+  },
+  {
+    "obj": "4.2",
+    "q": "Zadatak traži da Pod api više ne koristi Secret preko env varijabli. Koja izmjena je ispravna i najbezbjednija?",
+    "options": [
+      "Zamijeniti env.valueFrom.secretKeyRef sa envFrom.secretRef",
+      "Ukloniti env i dodati volumes[].secret.secretName: api-creds sa volumeMount readOnly: true",
+      "Prebaciti vrijednosti u ConfigMap i montirati ga kao volumen",
+      "Ostaviti env, ali postaviti immutable: true na Secret"
+    ],
+    "answer": 1,
+    "explain": "Secret volumen je fajl u tmpfs-u, nije vidljiv u okruženju procesa i osvježava se pri promjeni. envFrom je i dalje env, ConfigMap nije namijenjen tajnama, a immutable ne utiče na curenje kroz env."
+  },
+  {
+    "obj": "4.2",
+    "q": "Na controlplane čvoru treba pročitati Secret token iz namespacea billing direktno iz etcd-a. Koja komanda je ispravna (certifikati su kubeadm podrazumijevani)?",
+    "options": [
+      "ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key get /registry/secrets/billing/token",
+      "ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/ca.crt --cert=/etc/kubernetes/pki/apiserver.crt --key=/etc/kubernetes/pki/apiserver.key get /secrets/billing/token",
+      "etcdutl snapshot status /registry/secrets/billing/token",
+      "ETCDCTL_API=3 etcdctl get /registry/billing/secrets/token --insecure-skip-tls-verify"
+    ],
+    "answer": 0,
+    "explain": "Ključevi su u obliku /registry/secrets/<namespace>/<ime>, a etcd traži klijentski certifikat koji potpisuje etcd CA (/etc/kubernetes/pki/etcd/). Druga opcija koristi pogrešan CA i putanju, etcdutl radi sa snapshot fajlovima, a četvrta ima obrnut redoslijed u ključu i bez certifikata."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Upari provider iz EncryptionConfiguration sa opisom.",
+    "options": [
+      "identity",
+      "aescbc",
+      "secretbox",
+      "kms (apiVersion: v2)"
+    ],
+    "targets": [
+      "XSalsa20 i Poly1305, lokalni ključ od 32 bajta",
+      "Envelope enkripcija preko eksternog KMS plugina na UNIX socketu",
+      "Šifruje samo vrijednosti u polju stringData",
+      "Bez enkripcije; kao prvi provider znači da se piše čist tekst",
+      "AES-CBC sa PKCS#7 paddingom, ključ u fajlu na čvoru"
+    ],
+    "answer": [
+      3,
+      4,
+      0,
+      1
+    ],
+    "explain": "identity ne šifruje, aescbc koristi AES-CBC sa lokalnim ključem, secretbox XSalsa20+Poly1305, a kms v2 delegira zaštitu ključa eksternom KMS-u. Nijedan provider ne šifruje samo stringData; to polje je samo pogodnost pri pisanju."
+  },
+  {
+    "type": "spot",
+    "obj": "4.1",
+    "q": "Namespace prod ima oznaku pod-security.kubernetes.io/enforce=restricted i ovaj Pod se odbija. Označi redove koji krše restricted profil.",
+    "snippet": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: api\n  namespace: prod\nspec:\n  securityContext:\n    runAsNonRoot: true\n    seccompProfile: {type: RuntimeDefault}\n  containers:\n  - name: api\n    image: registry.example.com/api:1.4.2\n    securityContext:\n      allowPrivilegeEscalation: true\n      capabilities: {drop: [\"ALL\"], add: [\"NET_ADMIN\"]}\n      readOnlyRootFilesystem: true",
+    "lang": "yaml",
+    "answer": [
+      13,
+      14
+    ],
+    "explain": "restricted traži allowPrivilegeEscalation: false, pa je true kršenje. Od capabilities restricted dozvoljava samo drop ALL i eventualno add NET_BIND_SERVICE, pa NET_ADMIN ne prolazi. Ispravka: allowPrivilegeEscalation: false i ukloni add (ili ostavi samo NET_BIND_SERVICE). runAsNonRoot, seccompProfile RuntimeDefault i drop ALL su upravo ono što restricted zahtijeva; readOnlyRootFilesystem nije uslov profila, ali ne smeta."
+  }
+]

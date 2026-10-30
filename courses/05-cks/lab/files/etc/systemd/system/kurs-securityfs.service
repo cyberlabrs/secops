@@ -1,0 +1,13 @@
+[Unit]
+Description=securityfs i podrazumijevani AppArmor profil za kontejnere
+DefaultDependencies=no
+After=local-fs.target
+Before=containerd.service kubelet.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/kurs-apparmor-init
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

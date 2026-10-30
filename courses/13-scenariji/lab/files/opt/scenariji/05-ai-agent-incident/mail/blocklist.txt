@@ -1,0 +1,3 @@
+# domene blokirane na e-mail gateway-u (jedna po redu)
+free-gift-cards.example
+paypa1-secure.example

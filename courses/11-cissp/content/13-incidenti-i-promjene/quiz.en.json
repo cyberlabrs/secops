@@ -1,0 +1,344 @@
+[
+  {
+    "obj": "7.6",
+    "q": "A SOC analyst sees a SIEM alert about 40 failed VPN logins from a single IP address in one minute, with no successful login afterwards. How is this MOST accurately classified?",
+    "options": [
+      "As an alert that should be verified through triage before being declared an incident.",
+      "As a security incident requiring activation of the CSIRT.",
+      "As a data breach that must be reported to the regulator.",
+      "As a false positive that should be ignored."
+    ],
+    "answer": 0,
+    "explain": "An alert is a tool's notification that an event may be suspicious. Without a successful login there is no evidence that CIA has been compromised, so triage comes first. A breach requires confirmed disclosure of data, and ignoring it without checking is not professional."
+  },
+  {
+    "obj": "7.6",
+    "q": "EDR reports that a process on a server is mass-encrypting shared folders. What should the incident response team do FIRST after confirming the alert?",
+    "options": [
+      "Cut power to the server.",
+      "Restore the folders from backup.",
+      "Start a root cause analysis to determine the entry point.",
+      "Isolate the server from the network, leaving it powered on."
+    ],
+    "answer": 3,
+    "explain": "Containment (mitigation) stops the spread, and network isolation preserves memory as evidence. Shutting down destroys volatile evidence; restoration and RCA come later (recovery, remediation)."
+  },
+  {
+    "obj": "7.6",
+    "q": "After a ransomware incident, the team restored servers from immutable backups, then patched the VPN appliance the attacker came in through and introduced MFA. What is this SECOND step called?",
+    "options": [
+      "Recovery",
+      "Remediation",
+      "Mitigation",
+      "Detection"
+    ],
+    "answer": 1,
+    "explain": "Remediation removes the root cause so the incident does not recur. Recovery is restoring from backup, mitigation limits the damage while the incident is ongoing."
+  },
+  {
+    "obj": "7.6",
+    "q": "What is the PRIMARY goal of a lessons learned meeting after an incident?",
+    "options": [
+      "To improve processes, controls and the IR plan so the incident does not recur.",
+      "To determine which employee is responsible and propose disciplinary action.",
+      "To prepare evidence for criminal proceedings.",
+      "To calculate the exact financial loss for the insurer."
+    ],
+    "answer": 0,
+    "explain": "Lessons learned is a blameless review focused on improvement. Evidence, disciplinary proceedings and damage calculation are separate activities."
+  },
+  {
+    "obj": "7.6",
+    "q": "During an incident, the technical team determined that customer data was probably exfiltrated. Who should make the decision to notify the regulator and the public?",
+    "options": [
+      "The SOC lead, because they best understand the technical details.",
+      "The CISO alone, without involving other functions.",
+      "Senior management with advice from legal, according to the IR and communications plan.",
+      "The analyst who discovered the incident, so the 72-hour deadline is met."
+    ],
+    "answer": 2,
+    "explain": "Notification has legal and reputational consequences, so the decision is made by senior management with legal. The technical team provides the facts, and deadlines are met through a predefined process."
+  },
+  {
+    "obj": "7.6",
+    "q": "An incident went chaotically: no one knew who was allowed to isolate production servers or whom to call in legal. What would help MOST in the future?",
+    "options": [
+      "Purchasing an XDR platform with automated response.",
+      "Engaging an external forensic team after every incident.",
+      "Increasing the number of SIEM rules.",
+      "An approved IR plan with defined roles, authorities and contacts, along with regular exercises."
+    ],
+    "answer": 3,
+    "explain": "The problem lies in preparation: roles, authorities and contacts. Tools do not solve a lack of process and authority."
+  },
+  {
+    "obj": "7.6",
+    "type": "order",
+    "q": "Order the incident management steps according to the ISC2 CBK, from first to last.",
+    "options": [
+      "Recovery",
+      "Detection",
+      "Lessons learned",
+      "Mitigation",
+      "Reporting",
+      "Response",
+      "Remediation"
+    ],
+    "answer": [
+      1,
+      5,
+      3,
+      4,
+      0,
+      6,
+      2
+    ],
+    "explain": "ISC2 order: Detection, Response, Mitigation, Reporting, Recovery, Remediation, Lessons learned. In practice reporting runs throughout the incident, and preparation is a prerequisite that is not in the list."
+  },
+  {
+    "obj": "7.7",
+    "q": "An organization wants to block SQL injection attacks against an old web application until the development team rewrites the code. Which control is MOST appropriate as a temporary measure?",
+    "options": [
+      "A web application firewall (WAF) with SQL injection rules.",
+      "A stateful network firewall that allows only port 443.",
+      "A network IDS on a SPAN port.",
+      "Antivirus on the web server."
+    ],
+    "answer": 0,
+    "explain": "A WAF analyzes HTTP requests at layer 7 and serves as a compensating control (virtual patch). A stateful firewall does not see content, an IDS only alerts, and antivirus does not protect against SQLi."
+  },
+  {
+    "obj": "7.7",
+    "q": "The security team places an IPS inline in front of a critical payment application whose availability is the most important business requirement. How should the device's failure behavior be configured?",
+    "options": [
+      "Fail-closed, because security always takes precedence over availability.",
+      "Fail-secure, so that all traffic goes to quarantine.",
+      "Fail-open, with compensating controls and a failure alert, because availability is the priority.",
+      "No special configuration, because an IPS never interrupts traffic."
+    ],
+    "answer": 2,
+    "explain": "The choice of fail-open or fail-closed is a risk-based business decision. When availability is the most important business requirement, fail-open with an alert and other layers of protection is justified. An inline IPS can interrupt traffic when it fails."
+  },
+  {
+    "obj": "7.7",
+    "q": "Which IDS outcome represents the GREATEST risk to the organization?",
+    "options": [
+      "False positive",
+      "True negative",
+      "False negative",
+      "True positive"
+    ],
+    "answer": 2,
+    "explain": "A false negative means an attack passes without an alert. A false positive wastes analyst time, but the attack is not missed."
+  },
+  {
+    "obj": "7.7",
+    "q": "A honeypot exposed on the internet has a vulnerable SSH service with no advertising whatsoever. A second honeypot has a public banner offering free pirated software to attract visitors. What is TRUE?",
+    "options": [
+      "The first is enticement, and the second may be entrapment.",
+      "Both are entrapment and unacceptable.",
+      "Both are enticement and fully acceptable.",
+      "The first is entrapment because the service intentionally contains a vulnerability."
+    ],
+    "answer": 0,
+    "explain": "Enticement provides a target to an attacker who already intended to attack. Actively inducing people who had no intent to commit a crime is entrapment, which can make evidence inadmissible."
+  },
+  {
+    "obj": "7.7",
+    "q": "A factory has ICS workstations whose software changes once a year and which cannot receive new antivirus signatures. Which control BEST protects against unknown malware?",
+    "options": [
+      "A denylist of known malicious files.",
+      "Application allowlisting based on hash or publisher signature.",
+      "Anti-malware with signature updates once a month via USB.",
+      "A honeypot in the ICS network."
+    ],
+    "answer": 1,
+    "explain": "Allowlisting (default deny) is the most effective for static systems and protects against unknown code. Denylists and signatures do not see unknown malware, and a honeypot is a detective, not a preventive, control."
+  },
+  {
+    "obj": "7.7",
+    "q": "How does EDR PRIMARILY differ from a traditional anti-malware solution?",
+    "options": [
+      "It uses only signatures of known malware.",
+      "It correlates events from e-mail, network, identity and cloud in a single platform.",
+      "It works only at the network perimeter.",
+      "It collects behavioral telemetry on the endpoint and enables investigation and response, e.g. host isolation."
+    ],
+    "answer": 3,
+    "explain": "EDR monitors behavior and provides response on the endpoint. Correlation across multiple layers is XDR, and signatures are a characteristic of classic anti-malware."
+  },
+  {
+    "obj": "7.7",
+    "q": "An organization engages an MSSP for a 24/7 SOC. After a breach, the regulator asks who is accountable for protecting customer data. What is the MOST accurate answer?",
+    "options": [
+      "The MSSP, because it took over security operations.",
+      "The organization, as the data owner; the MSSP is liable only under the contract.",
+      "Accountability is split in half by law.",
+      "The vendor of the SIEM the MSSP used."
+    ],
+    "answer": 1,
+    "explain": "Execution can be transferred, accountability cannot. The organization remains accountable and needs a contract, an SLA and a right to audit."
+  },
+  {
+    "obj": "7.7",
+    "q": "A company plans to introduce an AI tool that automatically blocks accounts based on behavioral anomalies. What is MOST important to consider before introducing it?",
+    "options": [
+      "Whether the tool uses the latest language model.",
+      "The risk of wrong decisions and the need for human oversight over high-impact actions.",
+      "Whether the tool can replace all SOC analysts.",
+      "Whether the tool has more rules than the existing SIEM."
+    ],
+    "answer": 1,
+    "explain": "ML tools produce false positives and are susceptible to adversarial attacks, so high-impact actions require a human in the loop and tuning. Replacing people and the number of rules are not the right criteria."
+  },
+  {
+    "obj": "7.7",
+    "type": "match",
+    "q": "Match the description with the control.",
+    "options": [
+      "Executes an unknown attachment in an isolated environment and observes its behavior.",
+      "An inline device that blocks traffic matching an attack signature.",
+      "A fake database record whose use triggers an alert.",
+      "Correlates telemetry from the endpoint, e-mail, network and identity.",
+      "Redirects traffic through the provider's center, which removes a volumetric attack."
+    ],
+    "targets": [
+      "IDS",
+      "IPS",
+      "Sandbox",
+      "XDR",
+      "Honeytoken",
+      "DDoS scrubbing"
+    ],
+    "answer": [
+      2,
+      1,
+      4,
+      3,
+      5
+    ],
+    "explain": "A sandbox detonates unknown code, an IPS is inline and blocks (an IDS only alerts and is a distractor here), a honeytoken is fake data, XDR correlates multiple layers, and DDoS scrubbing cleans traffic at the provider."
+  },
+  {
+    "obj": "7.8",
+    "q": "A scanner found two vulnerabilities: CVSS 9.8 on an isolated test server and CVSS 7.5 on an internet-exposed VPN appliance that is on the CISA KEV list. What should be addressed as a priority?",
+    "options": [
+      "The vulnerability on the test server, because it has a higher CVSS score.",
+      "Both at the same time, because a CVSS above 7 always means the same priority.",
+      "The vulnerability on the VPN appliance, because it is actively exploited and the system is exposed.",
+      "Neither until the vendor releases a service pack."
+    ],
+    "answer": 2,
+    "explain": "Prioritization takes into account likelihood (KEV, EPSS), exposure and criticality, not just CVSS. Risk is likelihood times impact."
+  },
+  {
+    "obj": "7.8",
+    "q": "A vendor has released a critical patch for a database. There is no evidence of active exploitation. What is the BEST next step?",
+    "options": [
+      "Immediately apply the patch to all production servers.",
+      "Wait for the next annual maintenance window.",
+      "Apply the patch only if the scanner reports it as critical.",
+      "Test the patch in an environment matching production and submit a change request."
+    ],
+    "answer": 3,
+    "explain": "Patches are tested and applied through change management. Urgent application without testing carries an availability risk, and postponing for a year leaves a critical vulnerability open."
+  },
+  {
+    "obj": "7.8",
+    "q": "A medical device runs on an unsupported operating system and the vendor does not allow patches. What is the MOST appropriate approach?",
+    "options": [
+      "Install unofficial operating system patches.",
+      "Take the device out of service without consulting the business.",
+      "Segment the device, apply compensating controls and document an exception approved by the risk owner.",
+      "Ignore the vulnerability because the vendor bears responsibility."
+    ],
+    "answer": 2,
+    "explain": "When patching is not possible, compensating controls are used (segmentation, virtual patching, monitoring), and the residual risk is formally accepted by the owner. Unofficial patches can endanger patient safety and support."
+  },
+  {
+    "obj": "7.8",
+    "q": "What is the FIRST prerequisite of an effective vulnerability management program?",
+    "options": [
+      "An accurate and up-to-date asset inventory.",
+      "Penetration testing of all systems.",
+      "Purchasing an automated patching tool.",
+      "A bug bounty program."
+    ],
+    "answer": 0,
+    "explain": "You cannot scan or patch what the organization does not know about. The inventory (CMDB, discovery) is the first step."
+  },
+  {
+    "obj": "7.8",
+    "q": "After applying patches, the team updated the ticket and closed it. Which step was skipped?",
+    "options": [
+      "Assessing the vulnerability with a CVSS score.",
+      "Notifying the vendor of the application.",
+      "A lessons learned meeting.",
+      "Verification by rescanning that the vulnerability was really remediated."
+    ],
+    "answer": 3,
+    "explain": "Closing without verification leaves the possibility that the patch was not applied or failed. Rescanning confirms remediation."
+  },
+  {
+    "obj": "7.9",
+    "q": "During the night, without a change request, an administrator modified a firewall rule to solve a user's problem. The problem was solved and there were no negative consequences. How is this BEST characterized?",
+    "options": [
+      "As acceptable practice because the problem was solved.",
+      "As an unauthorized change that should be recorded, reviewed and escalated, regardless of the outcome.",
+      "As a standard change that requires no documentation.",
+      "As an emergency change that does not need to be documented afterwards."
+    ],
+    "answer": 1,
+    "explain": "Changes outside the process break the baseline and auditability. Even emergency changes are documented and reviewed afterwards."
+  },
+  {
+    "obj": "7.9",
+    "q": "During active exploitation of a zero-day, a patch must be applied to production immediately. How should this be handled in change management?",
+    "options": [
+      "Apply it without any record because this is an incident.",
+      "As an emergency change approved by the ECAB or an authorized person, with documentation and review afterwards.",
+      "As a normal change at the next CAB meeting.",
+      "As a standard change because patches are always pre-approved."
+    ],
+    "answer": 1,
+    "explain": "An emergency change follows an expedited procedure, but not outside the process. Waiting for the regular CAB leaves the system exposed."
+  },
+  {
+    "obj": "7.9",
+    "q": "What MUST exist before the CAB approves a change to a critical system?",
+    "options": [
+      "A backout/rollback plan and an impact assessment, including security impact.",
+      "The software vendor's signature.",
+      "The result of a penetration test after the change.",
+      "Approval from all end users of the system."
+    ],
+    "answer": 0,
+    "explain": "The impact analysis and backout plan are part of the RFC before approval. A pentest after the change cannot be a prerequisite for approval."
+  },
+  {
+    "obj": "7.9",
+    "q": "A DevOps team delivers changes several times a day through a CI/CD pipeline. An auditor claims the organization has no change management because the CAB does not approve every release. What is the security manager's BEST response?",
+    "options": [
+      "Introduce a CAB meeting for every commit to satisfy the auditor.",
+      "Exclude production releases from change management because they are automated.",
+      "Show that controls are built into the pipeline: mandatory peer review, automated tests and security scanners, an audit trail and separation of duties.",
+      "Ban CI/CD and return to quarterly releases."
+    ],
+    "answer": 2,
+    "explain": "Change management in DevOps is automated: a reviewed pull request is the approval, quality gates are the testing, and the repository provides the audit trail. A CAB for every commit is impractical, and excluding releases from the process or banning CI/CD are not answers that serve the business."
+  },
+  {
+    "obj": "7.9",
+    "q": "During the night, FIM reported a configuration change on a production web server. Based on these records, what is the CORRECT next step?",
+    "snippet": "2026-10-27 02:41:13 UTC  FIM     web-prod-02  /etc/nginx/conf.d/app.conf MODIFIED sha256 1f9a..->7c42..\n2026-10-27 02:41:13 UTC  auditd  web-prod-02  user=ops-admin (sudo) vim /etc/nginx/conf.d/app.conf\n2026-10-27 02:43:50 UTC  syslog  web-prod-02  systemctl reload nginx (user=ops-admin)\nITSM search: CI=web-prod-02, period 2026-10-26 .. 2026-10-28\n  CHG-4471  \"TLS certificate rotation\"  status=Approved  window=2026-10-29 22:00-23:00\n  (no other change or incident records)",
+    "lang": "log",
+    "options": [
+      "Treat it as an unauthorized change and a potential incident: compare the file with the baseline, determine who changed it and why, restore the approved state through the process and escalate",
+      "Close the alert, because the change was made by a legitimate administrator account",
+      "Retroactively attach the change to CHG-4471, because it is for the same server",
+      "Immediately reinstall the server from the golden image without further analysis"
+    ],
+    "answer": 0,
+    "explain": "The change at 02:41 has no approved RFC: CHG-4471 is for a different change and a different window. A change without approval violates change management and is a potential incident until proven otherwise, because the ops-admin account may be compromised. Compare with the baseline, establish the circumstances through the audit trail and an interview, restore the approved state through the process and escalate. A legitimate account does not mean a legitimate change, attaching it to someone else's RFC falsifies records, and reinstalling without analysis destroys evidence and does not reveal the cause."
+  }
+]

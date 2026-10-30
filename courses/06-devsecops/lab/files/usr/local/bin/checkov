@@ -1,0 +1,4 @@
+#!/bin/sh
+# lab radi bez mreže: ne preuzimaj pravila ni mapiranja sa interneta
+export BC_SKIP_MAPPING=TRUE
+exec /opt/checkov/bin/checkov --skip-download "$@"

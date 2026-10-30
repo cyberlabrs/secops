@@ -1,0 +1,13 @@
+{
+  "title": "Ingress sa TLS-om, zaštita metadata servisa i provjera binarnih fajlova",
+  "summary": "Ingress sa TLS-om i HTTPS redirectom, blokada cloud metadata servisa i zaštita kubelet API-ja, te provjera binarnih fajlova Kubernetesa preko SHA512 i cosign potpisa.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.3",
+    "1.4",
+    "1.5"
+  ],
+  "title_en": "Ingress with TLS, metadata service protection and binary verification",
+  "summary_en": "Ingress with TLS and HTTPS redirect, blocking the cloud metadata service and protecting the kubelet API, plus verifying Kubernetes binaries with SHA512 and cosign signatures."
+}

@@ -1,0 +1,236 @@
+[
+  {
+    "obj": "3.3",
+    "q": "Deployment web ima podove sa oznakom app=frontend i kontejner koji sluša na 8080. Napravio si servis komandom kubectl create service clusterip web --tcp=80:8080. kubectl get endpointslices -l kubernetes.io/service-name=web ne pokazuje nijednu adresu. Šta je uzrok?",
+    "options": [
+      "Servis ima selector app=web, a podovi imaju oznaku app=frontend",
+      "targetPort 8080 ne odgovara portu servisa 80",
+      "ClusterIP servis ne pravi EndpointSlice, potreban je NodePort",
+      "EndpointSlice se pravi tek kad prvi klijent pošalje zahtjev"
+    ],
+    "answer": 0,
+    "explain": "kubectl create service postavlja selector app=<ime servisa>, pa ne nalazi podove sa app=frontend. Različiti port i targetPort su normalni, a EndpointSlice se pravi za svaki tip servisa sa selektorom odmah, bez obzira na saobraćaj."
+  },
+  {
+    "obj": "3.3",
+    "q": "Treba izložiti Deployment api kao NodePort servis tačno na portu 30080 (servis na portu 80, kontejner na 8080), uz selector kopiran iz Deploymenta. Koji je najbrži ispravan postupak?",
+    "options": [
+      "kubectl expose deployment api --type=NodePort --port=80 --target-port=8080 --node-port=30080",
+      "kubectl create service nodeport api --tcp=80:8080 --node-port=30080 i ništa više",
+      "kubectl expose deployment api --type=NodePort --port=80 --target-port=8080 --dry-run=client -o yaml > s.yaml, dopisati nodePort: 30080 i kubectl apply -f s.yaml",
+      "kubectl expose deployment api --port=30080 --target-port=8080"
+    ],
+    "answer": 2,
+    "explain": "kubectl expose nema flag --node-port, ali kopira selector iz Deploymenta; nodePort se dopiše u generisani YAML. kubectl create service nodeport ima --node-port, ali postavlja selector app=api koji ne mora odgovarati podovima, a --port=30080 mijenja port servisa, ne nodePort."
+  },
+  {
+    "obj": "3.3",
+    "q": "Servis db ima ispravan selector i EndpointSlice sa tri adrese, ali sve imaju ready: false. Podovi su Running. Šta je najvjerovatniji uzrok što servis ne vraća odgovor?",
+    "options": [
+      "kube-proxy nije pokrenut na čvorovima",
+      "Readiness proba podova ne prolazi, pa se ne šalje saobraćaj na njih",
+      "Servis mora imati sessionAffinity: ClientIP",
+      "targetPort je naveden kao ime porta umjesto broja"
+    ],
+    "answer": 1,
+    "explain": "Pod koji je Running ali nije Ready ostaje u EndpointSliceu sa ready: false i kube-proxy ga ne koristi. Stanje kube-proxyja ne utiče na ready polje, a imenovani targetPort je potpuno ispravan."
+  },
+  {
+    "obj": "3.3",
+    "q": "Servis web tipa NodePort ima nodePort 30080 i externalTrafficPolicy: Local. Jedini pod radi na node01. curl node01:30080 radi, a curl controlplane:30080 ne vraća odgovor. Šta je tačno?",
+    "options": [
+      "NodePort se otvara samo na čvoru gdje radi pod",
+      "kube-proxy na controlplane čvoru ne radi i treba ga restartovati",
+      "Taint na controlplane čvoru blokira NodePort saobraćaj",
+      "To je očekivano: sa Local politikom čvor bez lokalnog poda ne prosljeđuje saobraćaj; za prosljeđivanje treba vratiti Cluster"
+    ],
+    "answer": 3,
+    "explain": "externalTrafficPolicy: Local šalje saobraćaj samo na lokalne Ready podove i čuva izvornu IP klijenta, pa čvor bez poda ne odgovara. NodePort se inače otvara na svim čvorovima, a taint utiče na raspoređivanje podova, ne na mrežu."
+  },
+  {
+    "obj": "3.3",
+    "q": "Aplikacija u klasteru treba da pristupa PostgreSQL bazi na 192.168.10.50:5432 van klastera preko imena ext-db. Napravio si Service ext-db bez selektora sa portom 5432 (name: pg). Šta još treba?",
+    "options": [
+      "EndpointSlice sa oznakom kubernetes.io/service-name: ext-db, addressType IPv4, portom pg/5432 i adresom 192.168.10.50",
+      "Dodati spec.externalIPs: [192.168.10.50] u servis",
+      "Promijeniti tip servisa u LoadBalancer sa loadBalancerIP 192.168.10.50",
+      "Ništa, EndpointSlice controller će pronaći adresu preko DNS-a"
+    ],
+    "answer": 0,
+    "explain": "Za servis bez selektora endpointe upisuješ sam, a EndpointSlice se veže za servis oznakom kubernetes.io/service-name. externalIPs i LoadBalancer služe za ulazni saobraćaj u klaster, a controller ne pravi endpointe kad selector ne postoji."
+  },
+  {
+    "obj": "3.3",
+    "q": "Pokrenuo si kubectl get svc i vidiš da LoadBalancer servis u labu (kubeadm klaster bez cloud providera i bez MetalLB-a) ima EXTERNAL-IP <pending>. Da li je servis ipak dostupan spolja?",
+    "options": [
+      "Ne, servis je potpuno nefunkcionalan dok ne dobije EXTERNAL-IP",
+      "Da, preko <IP čvora>:<nodePort>, jer LoadBalancer servis uključuje NodePort i ClusterIP",
+      "Da, ali samo preko ClusterIP-a sa bilo kojeg računara u mreži",
+      "Ne, prvo treba ručno upisati status.loadBalancer.ingress"
+    ],
+    "answer": 1,
+    "explain": "LoadBalancer gradi na NodePortu, pa nodePort radi na svim čvorovima i bez eksternog balansera. ClusterIP je dostupan samo iz klastera, a status polje popunjava kontroler, ne korisnik."
+  },
+  {
+    "obj": "3.1",
+    "q": "Pod a na controlplane čvoru ne može da dođe do poda b (10.244.1.7) na node01, a podovi na istom čvoru međusobno komuniciraju. NetworkPolicy ne postoji. Šta prvo provjeravaš?",
+    "options": [
+      "Da li servis za pod b ima ispravan selector",
+      "CoreDNS logove u kube-system",
+      "Da li CNI pod (kindnet) radi na oba čvora: kubectl -n kube-system get pods -o wide, pa logove CNI poda na node01",
+      "Da li je kube-proxy u ipvs modu"
+    ],
+    "answer": 2,
+    "explain": "Saobraćaj pod-pod direktno na IP ne ide kroz servis, kube-proxy ni DNS; rute među čvorovima postavlja CNI plugin. Ako CNI ne radi na jednom čvoru, padaju baš veze preko čvorova."
+  },
+  {
+    "obj": "3.1",
+    "q": "Kojom komandom najbrže vidiš koji opseg IP adresa za podove je dodijeljen svakom čvoru?",
+    "options": [
+      "kubectl get nodes -o custom-columns=NAME:.metadata.name,CIDR:.spec.podCIDR",
+      "kubectl get svc -A -o wide",
+      "kubectl -n kube-system get cm kube-proxy -o yaml",
+      "kubectl describe node | grep InternalIP"
+    ],
+    "answer": 0,
+    "explain": "kube-controller-manager upisuje dodijeljeni podopseg u .spec.podCIDR svakog čvora. Servisi pokazuju ClusterIP adrese, a InternalIP je adresa samog čvora, ne opseg podova."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koja tvrdnja o Kubernetes mrežnom modelu je TAČNA?",
+    "options": [
+      "Podovi na različitim čvorovima komuniciraju preko NAT-a na IP adresi čvora",
+      "Kontejneri u istom podu imaju različite IP adrese i komuniciraju preko servisa",
+      "kube-proxy dodjeljuje IP adrese podovima",
+      "Svaki pod ima svoju IP adresu i dolazi do svakog drugog poda bez NAT-a; to ostvaruje CNI plugin"
+    ],
+    "answer": 3,
+    "explain": "Model traži IP po podu i komunikaciju pod-pod bez NAT-a, a CNI plugin to implementira. Kontejneri u podu dijele mrežni namespace (isti IP, localhost), a kube-proxy samo programira pravila za servise."
+  },
+  {
+    "obj": "3.3",
+    "q": "Koji je status kube-proxy modova u Kubernetes 1.35?",
+    "options": [
+      "nftables je podrazumijevani, iptables je uklonjen",
+      "iptables je podrazumijevani, nftables je GA (od 1.33), ipvs je deprecated",
+      "ipvs je podrazumijevani, nftables je alpha",
+      "Sva tri moda su deprecated u korist eBPF moda"
+    ],
+    "answer": 1,
+    "explain": "U 1.35 podrazumijevani mod na Linuxu je i dalje iptables, nftables je stable od 1.33 (kernel 5.13+), a ipvs je označen kao deprecated u 1.35. Promjena podrazumijevanog moda na nftables je tek najavljena za buduću verziju."
+  },
+  {
+    "obj": "3.6",
+    "q": "Pod u namespaceu dev treba da pristupi servisu db u namespaceu prod. Koje ime će raditi uz podrazumijevani resolv.conf?",
+    "options": [
+      "db",
+      "db.svc.cluster.local",
+      "db.prod",
+      "prod.db.cluster.local"
+    ],
+    "answer": 2,
+    "explain": "Search lista sadrži svc.cluster.local, pa se db.prod dopuni u db.prod.svc.cluster.local. Samo db bi se razriješilo u namespaceu dev, a db.svc.cluster.local i prod.db.cluster.local nisu ispravna struktura imena."
+  },
+  {
+    "obj": "3.6",
+    "q": "Nakon izmjene ConfigMapa coredns svi podovi coredns su u CrashLoopBackOff, a logovi kažu da je otkrivena petlja (Loop … detected). Šta je najvjerovatnije uzrok?",
+    "options": [
+      "forward plugin šalje upite resolveru koji ih vraća nazad CoreDNS-u (npr. upstream je adresa samog kube-dns ili 127.0.0.53 na čvoru)",
+      "Servis kube-dns nema endpointe",
+      "ndots u podovima je postavljen na 5",
+      "cache plugin ima prekratak TTL"
+    ],
+    "answer": 0,
+    "explain": "Plugin loop zaustavlja CoreDNS kad otkrije da upit putuje nazad njemu, što je tipično za pogrešan forward cilj. Servis bez endpointa i ndots ne ruše CoreDNS podove, a TTL keša ne pravi petlju."
+  },
+  {
+    "obj": "3.6",
+    "q": "Pod koristi hostNetwork: true, a aplikacija u njemu mora razrješavati imena servisa tipa web.default.svc.cluster.local. Koju dnsPolicy treba postaviti?",
+    "options": [
+      "Default",
+      "ClusterFirst",
+      "None bez dnsConfig",
+      "ClusterFirstWithHostNet"
+    ],
+    "answer": 3,
+    "explain": "Pod na mreži čvora sa ClusterFirst u praksi dobija DNS čvora; ClusterFirstWithHostNet ga usmjerava na CoreDNS. Default eksplicitno koristi resolv.conf čvora, a None traži dnsConfig sa serverima."
+  },
+  {
+    "obj": "3.6",
+    "q": "Iz poda svaki upit za api.github.com prvo pravi više neuspješnih upita (api.github.com.default.svc.cluster.local itd.). Zašto?",
+    "options": [
+      "CoreDNS nema forward plugin",
+      "options ndots:5: ime sa manje od 5 tačaka prvo se proba sa svim search domenima",
+      "Pod ima dnsPolicy: Default",
+      "Servis kube-dns je headless"
+    ],
+    "answer": 1,
+    "explain": "Sa ndots:5 resolver dodaje search domene imenima koja imaju manje od 5 tačaka, pa tek onda šalje ime kakvo jeste; tačka na kraju imena to zaobilazi. Bez forward plugina eksterno ime uopšte ne bi radilo, a dnsPolicy: Default ne koristi klasterske search domene."
+  },
+  {
+    "obj": "3.6",
+    "q": "Kako se zove servis preko kojeg podovi u kubeadm klasteru šalju DNS upite CoreDNS-u i gdje je konfiguracija CoreDNS-a?",
+    "options": [
+      "Servis coredns u kube-system; konfiguracija u /etc/coredns/Corefile na controlplane čvoru",
+      "Servis kube-dns u default namespaceu; konfiguracija u kubelet config.yaml",
+      "Servis kube-dns u kube-system; konfiguracija u ConfigMapu coredns (ključ Corefile)",
+      "Servis dns u kube-public; konfiguracija u Secretu coredns"
+    ],
+    "answer": 2,
+    "explain": "Deployment se zove coredns, ali servis se iz kompatibilnosti zove kube-dns u kube-system, a Corefile je u ConfigMapu coredns. U kubelet konfiguraciji je samo clusterDNS adresa koju kubelet upisuje podovima."
+  },
+  {
+    "obj": "3.6",
+    "q": "Poredaj korake troubleshootinga kad podovi ne razrješavaju imena servisa.",
+    "type": "order",
+    "options": [
+      "Pogledaj podove i logove CoreDNS-a: kubectl -n kube-system get pods -l k8s-app=kube-dns i logs",
+      "Iz jednokratnog busybox poda pokreni nslookup kubernetes.default",
+      "Pregledaj Corefile u ConfigMapu coredns",
+      "Provjeri servis kube-dns i njegov EndpointSlice"
+    ],
+    "answer": [1, 0, 3, 2],
+    "explain": "Prvo potvrdi simptom iz poda, zatim provjeri da li CoreDNS radi, pa da li servis kube-dns ima endpointe, i na kraju konfiguraciju. Tako ideš od klijenta prema serveru i ne mijenjaš konfiguraciju prije nego znaš da je problem u njoj."
+  },
+  {
+    "obj": "3.3",
+    "q": "Upari tip servisa sa ponašanjem.",
+    "type": "match",
+    "options": ["ClusterIP", "NodePort", "ExternalName", "Headless (clusterIP: None)"],
+    "targets": [
+      "DNS vraća CNAME na eksterno ime, bez proxyja",
+      "DNS vraća IP adrese pojedinačnih podova, nema virtuelnog IP-a",
+      "Virtuelni IP dostupan samo iz klastera",
+      "Port iz opsega 30000-32767 otvoren na svakom čvoru",
+      "Eksterni balanser dodijeljen od cloud providera"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "ClusterIP je interni virtuelni IP, NodePort dodaje port na svim čvorovima, ExternalName je samo CNAME, a headless servis vraća IP podova. Eksterni balanser opisuje LoadBalancer koji nije u listi."
+  },
+  {
+    "obj": "3.6",
+    "q": "Moraš zapisati u /root/pod-dns.txt DNS ime poda sa IP 10.244.1.7 u namespaceu web, uz podrazumijevani Corefile (pods insecure). Koje ime je ispravno?",
+    "options": [
+      "10.244.1.7.web.svc.cluster.local",
+      "pod-10-244-1-7.web.cluster.local",
+      "10-244-1-7.web.svc.cluster.local",
+      "10-244-1-7.web.pod.cluster.local"
+    ],
+    "answer": 3,
+    "explain": "Pod A zapis ima oblik IP-sa-crticama.namespace.pod.cluster.local. Domen svc služi za servise i podove iza headless servisa, a tačke u IP adresi bi napravile pogrešnu hijerarhiju imena."
+  },
+  {
+    "obj": "3.3",
+    "q": "curl http://web.shop iz drugog poda vraća connection refused. Na osnovu izlaza, šta je uzrok?",
+    "lang": "bash",
+    "snippet": "$ kubectl -n shop get svc web -o wide\nNAME   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE   SELECTOR\nweb    ClusterIP   10.96.41.207   <none>        80/TCP    12m   app=web,tier=frontend\n$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=web\nNAME        ADDRESSTYPE   PORTS     ENDPOINTS   AGE\nweb-7kq2d   IPv4          <unset>   <unset>     12m\n$ kubectl -n shop get pods --show-labels\nNAME                  READY   STATUS    RESTARTS   AGE   LABELS\nweb-5d8f7c9b6-2xkqp   1/1     Running   0          12m   app=web,pod-template-hash=5d8f7c9b6\nweb-5d8f7c9b6-9mzt4   1/1     Running   0          12m   app=web,pod-template-hash=5d8f7c9b6",
+    "options": [
+      "CoreDNS ne razrješava ime web.shop",
+      "Podovi nisu Ready, pa ne ulaze u EndpointSlice",
+      "Selektor servisa traži i tier=frontend, a podovi tu oznaku nemaju, pa servis nema nijedan endpoint",
+      "targetPort servisa je pogrešan"
+    ],
+    "answer": 2,
+    "explain": "EndpointSlice je prazan (ENDPOINTS <unset>), a podovi su 1/1 Running i Ready. Selektor app=web,tier=frontend zahtijeva obje oznake, a podovi imaju samo app=web. Popravka: uskladi selektor servisa (kubectl edit svc web) ili dodaj oznaku u pod šablon Deploymenta. DNS radi, jer bez imena ne bi bilo ni pokušaja konekcije; pogrešan targetPort bi i dalje dao endpointe, samo sa pogrešnim portom."
+  }
+]

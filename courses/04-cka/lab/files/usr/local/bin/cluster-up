@@ -1,0 +1,59 @@
+#!/bin/bash
+# Podiže kubeadm klaster u lab okruženju (pokreće se na controlplane čvoru, iz setup bloka laba).
+#   cluster-up              controlplane + svi radni čvorovi (node01)
+#   cluster-up --no-join    samo controlplane; node01 ostaje spreman za ručni "kubeadm join"
+#   cluster-up --bare       ništa ne instalira: čvorovi su spremni za ručni "kubeadm init"
+set -euo pipefail
+MODE=${1:-all}
+WORKERS=(node01)
+log() { echo "[cluster-up] $*"; }
+
+wait_systemd() { # $1 = prazno (lokalno) ili ime čvora
+  for _ in $(seq 90); do
+    if [ -z "${1:-}" ]; then s=$(systemctl is-system-running 2>/dev/null || true)
+    else s=$(ssh -o ConnectTimeout=2 "$1" systemctl is-system-running 2>/dev/null || true); fi
+    case "$s" in running|degraded) return 0 ;; esac
+    sleep 1
+  done
+  echo "čvor ${1:-controlplane} se nije podigao" >&2; return 1
+}
+
+wait_systemd
+for w in "${WORKERS[@]}"; do getent hosts "$w" >/dev/null && wait_systemd "$w"; done
+[ "$MODE" = "--bare" ] && { log "čvorovi su spremni (bez klastera)"; exit 0; }
+
+log "kubeadm init"
+kubeadm init --config /etc/kurs/kubeadm-init.yaml --ignore-preflight-errors=all >/var/log/kubeadm-init.log 2>&1 \
+  || { tail -30 /var/log/kubeadm-init.log; exit 1; }
+mkdir -p /root/.kube && cp /etc/kubernetes/admin.conf /root/.kube/config
+export KUBECONFIG=/root/.kube/config
+
+# CNI: kindnet (podrazumijevano) ili calico (CKS: potpunija NetworkPolicy podrška); bira se u /etc/kurs/cni
+CNI=$(cat /etc/kurs/cni 2>/dev/null || echo kindnet)
+log "CNI ($CNI) i local-path storage"
+if [ "$CNI" = calico ]; then
+  kubectl apply -f /opt/kurs/manifests/calico.yaml >/dev/null
+else
+  sed "s#{{ .PodSubnet }}#10.244.0.0/16#" /kind/manifests/default-cni.yaml | kubectl apply -f - >/dev/null
+fi
+kubectl apply -f /kind/manifests/default-storage.yaml >/dev/null
+kubectl annotate sc standard storageclass.kubernetes.io/is-default-class- >/dev/null
+kubectl get sc standard -o json | jq '.metadata.name="local-path" | .metadata.annotations["storageclass.kubernetes.io/is-default-class"]="true" | del(.metadata.resourceVersion,.metadata.uid,.metadata.creationTimestamp)' | kubectl apply -f - >/dev/null
+kubectl delete sc standard >/dev/null
+
+if [ "$MODE" != "--no-join" ]; then
+  JOIN=$(kubeadm token create --print-join-command)
+  for w in "${WORKERS[@]}"; do
+    getent hosts "$w" >/dev/null || continue
+    log "kubeadm join $w"
+    ssh "$w" "$JOIN --ignore-preflight-errors=all >/var/log/kubeadm-join.log 2>&1" || { ssh "$w" tail -20 /var/log/kubeadm-join.log; exit 1; }
+  done
+fi
+
+log "čekam da čvorovi i sistemski podovi budu spremni"
+kubectl wait --for=condition=Ready node --all --timeout=180s >/dev/null
+kubectl -n kube-system rollout status deploy/coredns --timeout=180s >/dev/null
+kubectl -n kube-system rollout status ds/kube-proxy --timeout=180s >/dev/null
+[ "$CNI" = calico ] && kubectl -n kube-system rollout status ds/calico-node --timeout=240s >/dev/null
+for _ in $(seq 60); do kubectl get sa default >/dev/null 2>&1 && break; sleep 1; done
+kubectl get nodes

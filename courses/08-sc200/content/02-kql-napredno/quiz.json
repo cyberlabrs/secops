@@ -1,0 +1,157 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Trebate pronaći uređaje iz DeviceInfo koji u posljednjih 7 dana NISU imali nijedan zapis u DeviceProcessEvents. Kako dopuniti upit?\n\nDeviceInfo\n| where Timestamp > ago(7d)\n| distinct DeviceId, DeviceName\n| join kind=??? (DeviceProcessEvents | where Timestamp > ago(7d) | distinct DeviceId) on DeviceId",
+    "options": ["leftouter", "inner", "leftsemi", "leftanti"],
+    "answer": 3,
+    "explain": "leftanti vraća redove lijeve tabele koji nemaju par u desnoj, dakle uređaje bez događaja. leftsemi vraća suprotno (uređaje koji imaju događaje), inner vraća parove, a leftouter vraća sve uređaje bez obzira na par."
+  },
+  {
+    "obj": "3.1",
+    "q": "Analitičar spaja EmailAttachmentInfo i DeviceFileEvents po SHA256 bez navođenja kind. Zlonamjerni prilog je stigao u 12 različitih mailova, a rezultat prikazuje samo jedan mail. Šta je uzrok i rješenje?",
+    "options": ["Podrazumijevani kind=innerunique deduplicira lijevu tabelu po ključu; treba koristiti kind=inner.", "Podrazumijevani kind=leftsemi vraća samo lijeve kolone; treba koristiti kind=fullouter.", "join vraća najviše jedan red po ključu; treba koristiti union.", "SHA256 nije indeksiran; treba spajati po FileName."],
+    "answer": 0,
+    "explain": "Podrazumijevana vrsta join-a je innerunique, koja zadrži jedan red lijeve tabele po vrijednosti ključa. Microsoft za hunting preporučuje kind=inner da se vide svi redovi. union ne spaja po ključu, a spajanje po imenu fajla daje lažne pogotke."
+  },
+  {
+    "obj": "3.1",
+    "q": "Za svaki uređaj trebate prikazati samo NAJNOVIJI zapis iz DeviceInfo, sa svim kolonama. Koji izraz treba koristiti?",
+    "options": ["DeviceInfo | top 1 by Timestamp desc", "DeviceInfo | summarize max(Timestamp) by DeviceId", "DeviceInfo | summarize arg_max(Timestamp, *) by DeviceId", "DeviceInfo | distinct DeviceId"],
+    "answer": 2,
+    "explain": "arg_max(Timestamp, *) vraća cijeli red sa najvećim Timestamp za svaku grupu. top 1 vraća jedan red za sve uređaje ukupno, max(Timestamp) vraća samo vrijeme bez ostalih kolona, a distinct samo listu ID-jeva."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imate upit:\n\nlet Prag = 20;\nlet LoseIP = SecurityEvent | where EventID == 4625 | summarize C = count() by IpAddress | where C > Prag | project IpAddress\nSecurityEvent\n| where EventID == 4624 and IpAddress in (LoseIP)\n\nUpit javlja sintaksnu grešku. Šta treba ispraviti?",
+    "options": ["Prag mora biti deklarisan kao dynamic(20).", "Na kraju druge let naredbe nedostaje tačka-zarez.", "in (LoseIP) treba zamijeniti sa == LoseIP.", "let se ne može koristiti za tabelarne izraze."],
+    "answer": 1,
+    "explain": "Svaka let naredba mora završiti sa ;. Tabelarni let se ispravno koristi sa in (...), a == bi očekivao skalar. Skalar 20 ne treba dynamic."
+  },
+  {
+    "obj": "3.1",
+    "q": "Trebate u jednom rezultatu prikazati sve događaje uređaja ws-fin-042 iz DeviceProcessEvents, DeviceNetworkEvents i DeviceFileEvents, sa kolonom koja pokazuje iz koje tabele je red. Koji operator to radi?",
+    "options": ["union withsource=Izvor DeviceProcessEvents, DeviceNetworkEvents, DeviceFileEvents", "DeviceProcessEvents | join kind=fullouter DeviceNetworkEvents on DeviceId", "DeviceProcessEvents | lookup DeviceFileEvents on DeviceName", "DeviceProcessEvents | mv-expand DeviceNetworkEvents, DeviceFileEvents"],
+    "answer": 0,
+    "explain": "union slaže redove više tabela jednu ispod druge, a withsource dodaje kolonu sa imenom izvorne tabele. join i lookup spajaju kolone po ključu, a mv-expand razvija nizove u redove."
+  },
+  {
+    "obj": "3.1",
+    "q": "Syslog poruka ima oblik: \"Failed password for invalid user admin from 203.0.113.7 port 51522 ssh2\". Trebate izdvojiti korisnika i IP adresu uz NAJMANJU potrošnju resursa. Šta treba koristiti?",
+    "options": ["extract() sa dva regularna izraza", "where SyslogMessage matches regex i zatim split()", "parse SyslogMessage with * \"user \" Korisnik \" from \" IzvorIP \" port \" *", "parse_json(SyslogMessage)"],
+    "answer": 2,
+    "explain": "Za tekst stalnog oblika Microsoft preporučuje parse (\"parse, don't extract\"), koji je jeftiniji od regularnih izraza. parse_json radi samo nad JSON-om, a poruka nije JSON."
+  },
+  {
+    "obj": "3.1",
+    "q": "Kolona AttackTechniques u AlertInfo sadrži JSON niz tehnika, npr. [\"Valid Accounts (T1078)\", \"Phishing (T1566)\"]. Trebate broj alarma po pojedinačnoj tehnici. Koji operator treba primijeniti prije summarize?",
+    "options": ["make_set()", "mv-expand", "parse kind=regex", "arg_max()"],
+    "answer": 1,
+    "explain": "mv-expand razvija niz tako da svaki element postane poseban red, pa se zatim može grupisati po tehnici. make_set radi suprotno (redove pretvara u niz), a arg_max bira red sa najvećom vrijednošću."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Poredaj korake upita koji pronalazi dane sa neuobičajeno velikim brojem neuspjelih prijava po računaru.",
+    "options": ["| extend (Anomalije, Skor, Ocekivano) = series_decompose_anomalies(Neuspjelih, 2.5)", "| where Anomalije == 1", "SecurityEvent | where TimeGenerated between (Pocetak .. Kraj) and EventID == 4625", "| mv-expand TimeGenerated to typeof(datetime), Neuspjelih to typeof(long), Anomalije to typeof(int)", "| make-series Neuspjelih = count() default=0 on TimeGenerated from Pocetak to Kraj step 1d by Computer"],
+    "answer": [2, 4, 0, 3, 1],
+    "explain": "Prvo filtriraj izvor, zatim make-series napravi kontinualnu seriju sa nulama, series_decompose_anomalies označi anomalije u nizu, mv-expand vrati nizove u redove, i tek onda filtriraj skokove (oznaka 1)."
+  },
+  {
+    "obj": "3.1",
+    "q": "Kolega je napisao:\n\nSecurityEvent\n| where EventID == 4625\n| summarize Neuspjelih = count() by bin(TimeGenerated, 1d), Computer\n| extend A = series_decompose_anomalies(Neuspjelih)\n\nUpit ne daje očekivani rezultat. Zašto?",
+    "options": ["series_decompose_anomalies traži parametar praga, bez njega javlja grešku.", "bin sa korakom od 1d nije dozvoljen za anomalije.", "Treba koristiti render anomalychart umjesto extend.", "series_decompose_anomalies radi nad nizom (serijom), a summarize daje skalar po redu; treba koristiti make-series."],
+    "answer": 3,
+    "explain": "Funkcije series_* očekuju dynamic niz koji pravi make-series. summarize daje jedan broj po redu i ne popunjava praznine nulama. Prag je opcionalan (podrazumijevano 1.5), a render samo prikazuje podatke."
+  },
+  {
+    "obj": "3.1",
+    "q": "Šta vraća series_decompose_anomalies u prvom izlaznom nizu za tačku koja je znatno ISPOD očekivane vrijednosti?",
+    "options": ["-1", "0", "1", "null"],
+    "answer": 0,
+    "explain": "Oznaka anomalije je +1 za skok iznad očekivanog, -1 za pad ispod očekivanog i 0 za normalnu tačku. Druga dva izlaza su skor i očekivana (baseline) vrijednost."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imate malu listu od 5 kritičnih servera sa vlasnicima. Želite svaki događaj iz SecurityEvent za te servere obogatiti kolonom Vlasnik, uz najbolje performanse. Koja kombinacija je NAJPRIKLADNIJA?",
+    "options": ["union SecurityEvent i datatable sa listom", "datatable sa listom i lookup kind=inner on Computer", "join kind=fullouter sa datatable", "mv-expand nad listom servera"],
+    "answer": 1,
+    "explain": "lookup je optimizovan za obogaćivanje velike tabele malom dimenzionom tabelom, a kind=inner zadržava samo događaje kritičnih servera. union ne spaja kolone, fullouter vraća i nepotrebne redove, a mv-expand ne spaja tabele."
+  },
+  {
+    "obj": "3.1",
+    "q": "Pravite analytics pravilo koje koristi union više tabela. Neke tabele ne postoje u svim workspaceovima u kojima će se pravilo koristiti. Kako spriječiti da upit pada?",
+    "options": ["Dodati hint.strategy=broadcast", "Koristiti join kind=leftouter umjesto union", "Koristiti union isfuzzy=true", "Dodati materialize() oko svake tabele"],
+    "answer": 2,
+    "explain": "isfuzzy=true dozvoljava da union uspije i kada neka od navedenih tabela ne postoji ili nije dostupna. Ostale opcije ne rješavaju nepostojeće tabele."
+  },
+  {
+    "obj": "3.1",
+    "q": "Spajate malu listu od nekoliko stotina sumnjivih mailova (lijevo) sa cijelom tabelom EmailUrlInfo (desno, stotine miliona redova). Koje DVIJE mjere poboljšavaju performanse? (Izaberi DVA.)",
+    "options": ["Dodati hint.strategy = broadcast u join.", "Zamijeniti strane tako da EmailUrlInfo bude lijevo.", "Primijeniti vremenski filter i na desnu tabelu unutar join-a.", "Ukloniti project da bi join imao sve kolone za poređenje."],
+    "answer": [0, 2],
+    "explain": "broadcast hint pomaže kada je lijeva strana mala, a desna ogromna, a vremenski filter na obje strane smanjuje broj redova za poređenje. Manja tabela treba biti lijevo, a project prije join-a smanjuje, ne povećava, potrošnju."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Upari zadatak sa vrstom join-a koju treba koristiti.",
+    "options": ["Prikazati sve korisnike iz SigninLogs i, ako postoji, njihov odjel iz IdentityInfo.", "Prikazati samo IP adrese iz SecurityEvent koje se nalaze i u listi indikatora, bez kolona iz liste.", "Prikazati SVAKI par mail–uređaj gdje je isti zlonamjerni prilog zapisan na disk.", "Pronaći naloge koji se danas prijavljuju, a nisu se prijavljivali prethodnih 14 dana."],
+    "targets": ["kind=leftanti", "kind=leftsemi", "kind=inner", "kind=leftouter", "kind=rightouter"],
+    "answer": [3, 1, 2, 0],
+    "explain": "Obogaćivanje uz zadržavanje svih lijevih redova je leftouter. Filter po postojanju para bez desnih kolona je leftsemi. Svi parovi bez deduplikacije su inner. Redovi lijevo bez para desno (novi nalozi) su leftanti."
+  },
+  {
+    "obj": "3.1",
+    "q": "Istražujete incident u Microsoft Defender portalu u kojem je kompromitovan korisnički nalog. Trebate brzo vidjeti do kojih kritičnih resursa napadač potencijalno može stići sa tog naloga. Šta treba uraditi?",
+    "options": ["U advanced huntingu napisati join između IdentityInfo i AzureActivity.", "Otvoriti Threat analytics izvještaj za incident.", "Pokrenuti automated investigation za nalog.", "U grafu incidenta izabrati čvor naloga i View blast radius."],
+    "answer": 3,
+    "explain": "Blast radius u incident grafu prikazuje moguće putanje od izabranog entiteta do kritičnih ciljeva (osam najbolje rangiranih, uz punu listu). Ručni KQL je mnogo sporiji, a threat analytics i AIR ne prikazuju putanje do kritičnih resursa."
+  },
+  {
+    "obj": "3.1",
+    "q": "Bez aktivnog incidenta, sigurnosni tim želi proaktivno utvrditi koji uređaji, korisnici i servisi imaju direktan ili indirektan pristup određenom Azure key vaultu. Šta je NAJBRŽI pristup?",
+    "options": ["Hunting graph u advanced huntingu sa predefinisanim scenarijem Access to key vaults.", "Workbook sa AzureActivity upitima nad key vault operacijama.", "Analytics pravilo koje prati pristup key vaultu.", "Blast radius u incident grafu."],
+    "answer": 0,
+    "explain": "Hunting graph ima predefinisani scenarij Access to key vaults koji prikazuje putanje od entiteta do zadatog key vaulta. AzureActivity pokazuje operacije koje su se desile, ne potencijalan pristup, a blast radius traži incident."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koje DVIJE tvrdnje o Microsoft Sentinel graph su tačne? (Izaberi DVA.)",
+    "options": ["Pokreće hunting graph i blast radius iskustva u Defender portalu.", "Zamjenjuje KQL u analytics pravilima.", "Custom grafovi se upituju jezikom GQL na stranici Graphs u Defender portalu.", "Radi samo nad podacima u analytics tieru Log Analytics workspacea."],
+    "answer": [0, 2],
+    "explain": "Sentinel graph je osnova za hunting graph, blast radius i druge grafovske prikaze, a custom grafovi (preview) se prave u notebooku, objavljuju graph jobom i upituju sa GQL. Graf se oslanja na Sentinel data lake, a analytics pravila i dalje koriste KQL."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imate upit:\n\nlet SprayIP = SecurityEvent\n    | where EventID == 4625\n    | summarize Naloga = dcount(Account) by IpAddress\n    | where Naloga > 15\n    | project IpAddress;\nSecurityEvent\n| where EventID == 4624 and IpAddress in (SprayIP)\n| summarize arg_max(TimeGenerated, Computer) by Account, IpAddress\n\nŠta upit vraća?",
+    "options": ["Sve neuspjele prijave sa IP adresa koje su probale više od 15 naloga.", "Posljednju uspješnu prijavu svakog naloga sa IP adrese koja je pokušala više od 15 različitih naloga.", "Broj uspješnih prijava po IP adresi.", "Prvu uspješnu prijavu nakon posljednjeg neuspjeha."],
+    "answer": 1,
+    "explain": "let izdvaja IP adrese sa neuspjelim prijavama na više od 15 različitih naloga, a glavni upit traži uspješne prijave (4624) sa tih adresa i arg_max vraća najnoviju po paru nalog–IP, uz računar. Upit ne poredi vrijeme sa neuspjesima."
+  },
+  {
+    "obj": "3.1",
+    "q": "AdditionalFields kolona u DeviceEvents sadrži JSON tekst sa poljem DriveLetter. Kako ispravno izdvojiti vrijednost za grupisanje?",
+    "options": ["extend Slovo = AdditionalFields.DriveLetter", "parse AdditionalFields with \"DriveLetter\" Slovo", "extend Slovo = tostring(parse_json(AdditionalFields).DriveLetter)", "mv-expand AdditionalFields.DriveLetter"],
+    "answer": 2,
+    "explain": "parse_json pretvara JSON string u dynamic, pristupa se polju tačkom, a tostring pretvara vrijednost u string pogodan za grupisanje i poređenje. Pristup tačkom direktno na string kolonu ne radi, a mv-expand razvija nizove."
+  },
+  {
+    "obj": "3.1",
+    "q": "Vaš upit u advanced huntingu koristi let tabelarni izraz koji se poziva tri puta u istom upitu i svaki put ponovo čita velike količine podataka. Šta smanjuje potrošnju resursa?",
+    "options": ["Zamijeniti let sa union", "Dodati hint.shufflekey u let", "Pretvoriti izraz u datatable", "Omotati izraz sa materialize()"],
+    "answer": 3,
+    "explain": "materialize() izračuna rezultat let izraza jednom i kešira ga za ostatak upita. datatable služi za ručno unesene vrijednosti, a union i shufflekey ne rješavaju ponovno čitanje."
+  },
+  {
+    "type": "spot",
+    "obj": "3.1",
+    "q": "Upit treba da nađe uspješnu prijavu poslije više od 20 neuspjelih sa iste adrese. Umjesto toga vraća same neuspjele pokušaje. Označi pogrešne redove.",
+    "snippet": "// uspješna prijava poslije više od 20 neuspjelih sa iste adrese\nlet Neuspjesi = SecurityEvent\n    | where TimeGenerated > ago(1d) and EventID == 4625\n    | summarize Neuspjelih = count(), Zadnji = max(TimeGenerated) by Account, IpAddress\n    | where Neuspjelih > 20;\nlet Uspjesi = SecurityEvent\n    | where TimeGenerated > ago(1d) and EventID == 4625\n    | project Uspjeh = TimeGenerated, Account, IpAddress, Computer;\nNeuspjesi\n| join kind=inner Uspjesi on Account, IpAddress\n| where Uspjeh < Zadnji\n| project Account, IpAddress, Computer, Neuspjelih, Zadnji, Uspjeh",
+    "lang": "kql",
+    "answer": [
+      6,
+      10
+    ],
+    "explain": "Drugi let mora birati uspješne prijave, EventID 4624; sa 4625 se neuspjesi spajaju sa neuspjesima. Filter poslije join-a mora biti Uspjeh > Zadnji: tražiš uspjeh koji je došao poslije posljednjeg neuspjeha, a ne prije njega. join kind=inner i ključevi Account, IpAddress su ispravni."
+  }
+]

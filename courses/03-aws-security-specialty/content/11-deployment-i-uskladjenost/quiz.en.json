@@ -1,0 +1,299 @@
+[
+  {
+    "obj": "6.2",
+    "q": "The security team must deploy an IAM role for the SOC and EventBridge rules that send events to the security account in all accounts of the production OU. Accounts added to the OU later must automatically get the same resources. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "A CloudFormation StackSet with service-managed permissions, targeting the OU, with automatic deployment enabled",
+      "A CloudFormation StackSet with self-managed permissions and a list of account IDs",
+      "A Terraform workspace per account, run manually after an account is created",
+      "A Lambda function that creates the resources through the SDK on the CreateAccount event"
+    ],
+    "answer": 0,
+    "explain": "A service-managed StackSet targets the OU and automatically deploys the stack to new accounts in that OU. Self-managed requires manually adding accounts and roles, and Terraform per account and the Lambda solution require additional work and maintenance."
+  },
+  {
+    "obj": "6.2",
+    "q": "The platform team wants the Security Tooling account to manage StackSets for the entire organization without using the management account. What should be done?",
+    "options": [
+      "Create AWSCloudFormationStackSetExecutionRole in the Security Tooling account",
+      "Register the Security Tooling account as the delegated administrator for CloudFormation StackSets and use --call-as DELEGATED_ADMIN",
+      "Give the Security Tooling account AdministratorAccess in the management account",
+      "Move the Security Tooling account to the root OU"
+    ],
+    "answer": 1,
+    "explain": "A delegated administrator for StackSets can create service-managed StackSets for the organization without working from the management account. Granting administrator rights in the management account violates the principle of minimal use of that account."
+  },
+  {
+    "obj": "6.2",
+    "q": "A production CloudFormation stack contains an RDS database. After a template mistake, an update nearly replaced the database with a new instance. The team wants to prevent any stack update from replacing or deleting that database, while other resources can still be updated. What is the BEST solution?",
+    "options": [
+      "Enable termination protection on the stack",
+      "Add DeletionPolicy: Snapshot to the database",
+      "Set a stack policy that denies Update:Replace and Update:Delete for the database's logical ID",
+      "Enable drift detection on the stack"
+    ],
+    "answer": 2,
+    "explain": "A stack policy controls which updates are allowed per resource, so it can deny replacing and deleting the database. Termination protection only protects against deleting the entire stack, DeletionPolicy acts on deletion, and drift detection only detects manual changes."
+  },
+  {
+    "obj": "6.2",
+    "q": "An auditor suspects that administrators manually changed security groups created by CloudFormation in production. Which tool shows the FASTEST which values differ from the template?",
+    "options": [
+      "cfn-lint on the template",
+      "CloudFormation Guard on the template",
+      "An AWS Artifact report",
+      "CloudFormation drift detection on the stack"
+    ],
+    "answer": 3,
+    "explain": "Drift detection compares the actual resource configuration with the template and shows changed properties. cfn-lint and Guard check the template, not the actual state of the resources."
+  },
+  {
+    "obj": "6.2",
+    "q": "The DevSecOps team wants the CI pipeline to reject any CloudFormation template that creates an S3 bucket without encryption or without blocked public access, according to rules the security team writes as policy-as-code. Which tool meets the requirement?",
+    "options": [
+      "AWS CloudFormation Guard (cfn-guard validate) with the security team's rules",
+      "cfn-lint with the default rules",
+      "The AWS Config managed rule s3-bucket-server-side-encryption-enabled",
+      "Amazon Inspector template scanning"
+    ],
+    "answer": 0,
+    "explain": "CloudFormation Guard checks templates against your own policy-as-code rules before deployment. cfn-lint checks template correctness, Config evaluates resources only after they are created, and Inspector does not scan CloudFormation templates."
+  },
+  {
+    "obj": "6.2",
+    "q": "Some teams deploy CloudFormation stacks directly from the console, bypassing the CI pipeline with the cfn-guard check. The security team must prevent the creation of unencrypted EBS volumes through CloudFormation regardless of where the deployment is started. Which solution meets the requirement?",
+    "options": [
+      "Add cfn-lint to a pre-commit hook",
+      "Activate a CloudFormation Hook (e.g., a Guard hook) in FAIL mode that checks AWS::EC2::Volume before creation",
+      "Enable the AWS Config rule encrypted-volumes without remediation",
+      "Write a wiki page with the rules"
+    ],
+    "answer": 1,
+    "explain": "A hook runs inside the CloudFormation service before a resource is created, so it also applies to deployments from the console. Pre-commit and CI checks can be bypassed, and Config only detects after creation."
+  },
+  {
+    "obj": "6.2",
+    "q": "A company uses Terraform for all infrastructure. The security team wants a pull request to be blocked if the code opens SSH to 0.0.0.0/0 or creates an unencrypted RDS instance. Which solution is the MOST APPROPRIATE?",
+    "options": [
+      "CloudFormation StackSets drift detection",
+      "An AWS Firewall Manager security group policy",
+      "Run Checkov (or tfsec/Trivy) on the Terraform code in CI and stop the build on findings",
+      "Amazon GuardDuty"
+    ],
+    "answer": 2,
+    "explain": "Checkov and similar scanners check Terraform code before apply and can block a pull request. Firewall Manager and GuardDuty work on existing resources or activity, and drift detection is for CloudFormation stacks."
+  },
+  {
+    "obj": "6.2",
+    "q": "Billing reports show costs under the tags costcenter, CostCenter, and cost-center, with invalid values. Finance wants one standard key and values from an approved list in all accounts. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "A Lambda function that fixes tags every night",
+      "The AWS Config rule required-tags in every account",
+      "Manual fixes through Tag Editor once a month",
+      "A tag policy in AWS Organizations with the CostCenter key defined, allowed values, and enforced_for for key resource types"
+    ],
+    "answer": 3,
+    "explain": "A tag policy standardizes key spelling and values across the organization and can reject noncompliant tagging. The Config rule only checks for presence, and Lambda and manual work require constant maintenance."
+  },
+  {
+    "obj": "6.2",
+    "q": "A company uses ABAC: developers may stop EC2 instances whose Team tag matches their Team tag from the IdP. The security team notices that a developer can give themselves access to someone else's instance. What is the MOST LIKELY flaw?",
+    "options": [
+      "Developers can change the Team tag on instances because the policy does not deny ec2:CreateTags for that key",
+      "The policy uses aws:ResourceTag instead of aws:RequestTag",
+      "IAM Identity Center does not support session tags",
+      "EC2 does not support ABAC"
+    ],
+    "answer": 0,
+    "explain": "ABAC is secure only if the user cannot change the tag that decides access; you need a Deny for ec2:CreateTags and DeleteTags for the Team key. aws:ResourceTag is the correct key for existing resources, and EC2 and Identity Center support ABAC."
+  },
+  {
+    "obj": "6.2",
+    "q": "A company has 150 accounts. Every ALB and API Gateway in the production accounts must have a web ACL with AWS Managed Rules (Core rule set and Known bad inputs), including resources and accounts created later. Application teams may add their own rules. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "A CloudFormation StackSet that creates a web ACL in every account",
+      "An AWS Firewall Manager WAF policy with the mandatory rule groups as first rule groups and a scope on the production OU",
+      "An AWS Config rule that detects ALBs without a web ACL",
+      "Shield Advanced on all ALBs"
+    ],
+    "answer": 1,
+    "explain": "A Firewall Manager WAF policy automatically attaches a web ACL to existing and new resources in scope, and teams can add rules between the mandatory groups. A StackSet does not attach the ACL to new resources, Config only detects, and Shield Advanced does not replace WAF rules."
+  },
+  {
+    "obj": "6.2",
+    "q": "The security team wants to automatically find and remove security group rules that allow SSH and RDP from 0.0.0.0/0 in all accounts. What is the BEST solution?",
+    "options": [
+      "A Route 53 Resolver DNS Firewall policy",
+      "AWS Network Firewall in every VPC",
+      "A Firewall Manager security group content audit policy with automatic remediation",
+      "A Trusted Advisor security group check"
+    ],
+    "answer": 2,
+    "explain": "A content audit policy in Firewall Manager checks SG rules against forbidden patterns in all accounts and can remove them automatically. DNS Firewall and Network Firewall do not change SG rules, and Trusted Advisor only reports."
+  },
+  {
+    "obj": "6.2",
+    "q": "An administrator tries to create the first AWS Firewall Manager policy, but the policy does not show resource compliance in member accounts. Organizations with all features and the Firewall Manager administrator are set up. What is MOST LIKELY missing?",
+    "options": [
+      "An AWS Shield Advanced subscription",
+      "IAM Identity Center",
+      "Amazon GuardDuty in all accounts",
+      "AWS Config enabled in the member accounts and Regions the policy covers"
+    ],
+    "answer": 3,
+    "explain": "Firewall Manager uses AWS Config to track resources, so Config must be enabled in the accounts and Regions in scope. Shield Advanced is needed only for Shield policies, and GuardDuty and Identity Center are not prerequisites."
+  },
+  {
+    "obj": "6.2",
+    "q": "Developers must be able to create approved RDS databases (encrypted, private, with backup) themselves, but the security team does not want them to have direct IAM permissions for rds:CreateDBInstance. Which solution meets the requirements?",
+    "options": [
+      "An AWS Service Catalog product with an RDS template and a launch constraint that uses a role with the required permissions",
+      "Give developers rds:* with a permissions boundary",
+      "AWS RAM sharing of an RDS database from a central account",
+      "An SCP that allows rds:CreateDBInstance only with encryption"
+    ],
+    "answer": 0,
+    "explain": "A launch constraint lets Service Catalog create the resource using a dedicated role, so the user needs only the permission to launch the product. rds:* with a boundary still grants direct permissions, RAM shares existing resources, and an SCP does not grant permissions."
+  },
+  {
+    "obj": "6.2",
+    "q": "The network team manages VPCs in a central Network account. Application accounts need to launch EC2 and EKS nodes in those subnets, without their own VPCs and without peering, and must not change routes or NACLs. Which solution meets the requirements?",
+    "options": [
+      "A Transit Gateway attachment from every account",
+      "VPC sharing: share the subnets through AWS RAM with the application OU",
+      "An AWS Service Catalog product that creates a VPC in every account",
+      "VPC peering between the Network account and every application account"
+    ],
+    "answer": 1,
+    "explain": "VPC sharing through RAM lets participants create resources in shared subnets, while the owner keeps control over the VPC, routes, and NACLs. TGW and peering require their own VPCs, and Service Catalog would create separate networks."
+  },
+  {
+    "obj": "6.3",
+    "q": "Compliance requires that any S3 bucket that becomes publicly readable be automatically reverted to private within a few minutes, with a record of the action. Which solution meets the requirement with the LEAST development?",
+    "options": [
+      "Amazon Macie with a daily discovery job",
+      "The AWS Config rule s3-bucket-public-read-prohibited with automatic remediation through the SSM Automation runbook AWS-DisableS3BucketPublicReadWrite",
+      "A Lambda function run every hour that checks all buckets",
+      "An AWS Artifact S3 compliance report"
+    ],
+    "answer": 1,
+    "explain": "The Config rule reacts to a configuration change, and automatic remediation runs a ready-made SSM runbook and records the execution. Macie and a scheduled Lambda are not near real time, and Artifact contains AWS's reports."
+  },
+  {
+    "obj": "6.3",
+    "q": "The security team wants a single view of AWS Config rule compliance across all 200 accounts and 4 Regions, from the Security Tooling account. Which solution meets the requirement?",
+    "options": [
+      "A Config conformance pack in the Security Tooling account",
+      "A CloudTrail organization trail",
+      "An organization Config aggregator in the Security Tooling account registered as the delegated administrator for Config",
+      "Copying Config snapshots to S3 and running Athena queries every week"
+    ],
+    "answer": 2,
+    "explain": "An organization aggregator consolidates configuration and compliance from all accounts and Regions into one account. A conformance pack is a set of rules, not an aggregation, CloudTrail records API calls, and the Athena solution requires manual work."
+  },
+  {
+    "obj": "6.3",
+    "q": "A company must demonstrate compliance with the CIS AWS Foundations Benchmark for all accounts in the organization, with automatic inclusion of new accounts and a central view of findings. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "Manually run CIS scripts in every account once a month",
+      "A Well-Architected Tool review for every account",
+      "Amazon Inspector with CIS scanning of EC2 instances",
+      "Security Hub CSPM with a delegated administrator and a central configuration policy that enables the CIS AWS Foundations Benchmark standard for all accounts"
+    ],
+    "answer": 3,
+    "explain": "Security Hub CSPM with central configuration enables the CIS standard in all accounts, including new ones, and aggregates findings at the delegated admin. Inspector CIS scanning is for the instances' operating system, and the Well-Architected Tool is not a continuous control check."
+  },
+  {
+    "obj": "6.3",
+    "q": "Security Hub CSPM generates findings for a development account that is officially exempt from one control, and for production accounts the severity must automatically be raised to CRITICAL. Which solution meets the requirements with the LEAST development?",
+    "options": [
+      "Security Hub automation rules that suppress findings for the dev account and change the severity for production accounts",
+      "Disable Security Hub in the development account",
+      "A Lambda function triggered by an EventBridge rule that calls BatchUpdateFindings",
+      "Export the findings to CSV and filter them manually"
+    ],
+    "answer": 0,
+    "explain": "Automation rules automatically modify finding fields based on criteria such as account and control, with no code. The Lambda solution works but requires development, and disabling Security Hub also removes all the other controls."
+  },
+  {
+    "obj": "6.3",
+    "q": "Ahead of a PCI DSS audit, a company must continuously collect evidence about its controls (Config evaluations, CloudTrail activity, manually submitted policies) mapped to the standard's requirements and hand a report to the auditor. Which two steps meet the requirement? (Choose TWO.)",
+    "options": [
+      "Create an AWS Audit Manager assessment based on the PCI DSS framework for the relevant accounts",
+      "Download AWS's PCI DSS Attestation of Compliance from AWS Artifact as evidence for the part of the responsibility that belongs to AWS",
+      "Enable Amazon Detective",
+      "Enable AWS Shield Advanced",
+      "Use Well-Architected Tool milestones as the only evidence"
+    ],
+    "answer": [0, 1],
+    "explain": "Audit Manager collects and maps evidence about the company's controls, and Artifact provides AWS's AOC for the infrastructure that AWS maintains (shared responsibility). Detective, Shield, and the Well-Architected Tool do not collect audit evidence for PCI."
+  },
+  {
+    "obj": "6.3",
+    "q": "An architect needs to evaluate a new workload against AWS security best practices, get a list of high-risk issues with an improvement plan, and track progress over quarters. Which solution meets the requirement?",
+    "options": [
+      "AWS Trusted Advisor",
+      "AWS Audit Manager",
+      "An AWS Well-Architected Tool review with Security pillar questions and milestones",
+      "An AWS Config conformance pack"
+    ],
+    "answer": 2,
+    "explain": "The Well-Architected Tool provides high-risk issues, an improvement plan, and milestones for tracking a workload's progress. Trusted Advisor and Config perform automated resource checks, and Audit Manager collects evidence for audits."
+  },
+  {
+    "obj": "6.3",
+    "type": "order",
+    "q": "Put the steps for introducing automatic remediation of noncompliant resources through AWS Config in the correct order.",
+    "options": [
+      "Create the IAM role that SSM Automation assumes to modify resources",
+      "Enable the AWS Config recorder in the account and Region",
+      "Associate an SSM Automation runbook with the rule, with Automatic=true and a number of retries",
+      "Add a managed Config rule that detects noncompliance",
+      "Create an EventBridge rule on Config Rules Compliance Change to notify the team"
+    ],
+    "answer": [1, 3, 0, 2, 4],
+    "explain": "Without the recorder there is no data for the rules; then the rule is added, the role for the runbook is prepared, and automatic remediation is configured. The notification about compliance changes is added last."
+  },
+  {
+    "obj": "6.2",
+    "type": "match",
+    "q": "Match the requirement with the MOST APPROPRIATE tool.",
+    "options": [
+      "Check that a template has no nonexistent properties or wrong types",
+      "Write your own policy-as-code rules for CloudFormation templates in CI",
+      "Block a noncompliant resource inside CloudFormation even when the deployment is started from the console",
+      "Scan Terraform code in a pull request",
+      "Find manual changes to resources after deployment"
+    ],
+    "targets": [
+      "Drift detection",
+      "Checkov",
+      "cfn-lint",
+      "CloudFormation Hooks",
+      "AWS Artifact",
+      "CloudFormation Guard"
+    ],
+    "answer": [2, 5, 3, 1, 0],
+    "explain": "cfn-lint checks template correctness, Guard runs your own rules, Hooks block inside the service itself, Checkov scans Terraform, and drift detection shows manual changes. Artifact has nothing to do with IaC."
+  },
+  {
+    "obj": "6.3",
+    "type": "match",
+    "q": "Match the auditor's or security team's requirement with the service.",
+    "options": [
+      "AWS's SOC 2 Type II report",
+      "Sign a HIPAA BAA for all accounts in the organization",
+      "Continuous evidence about our controls mapped to a framework",
+      "Compliance with the FSBP standard in all accounts"
+    ],
+    "targets": [
+      "AWS Audit Manager",
+      "Security Hub CSPM",
+      "AWS Artifact (reports)",
+      "AWS Artifact (organization agreements)",
+      "Amazon Detective"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Artifact reports provide AWS's reports, and Artifact organization agreements allow accepting a BAA for the entire organization. Audit Manager collects evidence about the company's controls, and Security Hub CSPM measures compliance with FSBP."
+  }
+]

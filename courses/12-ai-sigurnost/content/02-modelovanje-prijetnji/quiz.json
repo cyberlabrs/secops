@@ -1,0 +1,245 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Tim crta DFD za LLM asistenta i označava izlaz modela kao „povjerljiv, jer ga generiše naš sistem“. U kontekst ulaze i dokumenti koje šalju klijenti. Šta je greška?",
+    "options": [
+      "Izlaz modela treba označiti kao tajan, ne kao povjerljiv",
+      "Dokumente klijenata ne treba crtati na DFD-u",
+      "Povjerenje se prenosi kroz model: izlaz je povjerljiv koliko i najmanje povjerljiv ulaz u kontekstu, pa je ovdje nepovjerljiv",
+      "LLM proces treba označiti kao granicu povjerenja koja čisti podatke"
+    ],
+    "answer": 2,
+    "explain": "Model ne „čisti“ ulaz: ako u kontekst uđe nepovjerljiv sadržaj, izlaz nosi njegov uticaj. Zato se izlaz tretira kao nepovjerljiv podatak (granica B). Dokumenti klijenata su upravo granica C koju treba nacrtati."
+  },
+  {
+    "obj": "1.3",
+    "q": "Na radionici niko nije ucrtao log platformu u koju aplikacija šalje pune promptove i odgovore. Zašto je to važan propust?",
+    "options": [
+      "Logovi često sadrže lične podatke i tajne, a log platforma ima širi krug pristupa od aplikacije, pa je to tok za curenje informacija",
+      "Logovi utiču na kvalitet odgovora modela",
+      "Log platforma je dio modela dobavljača",
+      "Logove ne treba nikad čuvati, pa ih nema smisla crtati"
+    ],
+    "answer": 0,
+    "explain": "Telemetrija je tok podataka kao i svaki drugi i često se zaboravi. Promptovi i odgovori u logovima nose osjetljive podatke, a pristup log platformi je obično širi. Logovi su ipak potrebni (repudiation, IR), pa ih treba crtati i zaštititi, ne ukinuti."
+  },
+  {
+    "obj": "1.3",
+    "q": "Koja kombinacija sposobnosti agenta čini „lethal trifecta“?",
+    "options": [
+      "Veliki model, dugačak kontekst i niska temperatura",
+      "Pristup internetu, GPU i memorija",
+      "Više agenata, memorija i RAG",
+      "Pristup privatnim podacima, izloženost nepovjerljivom sadržaju i mogućnost komunikacije prema van"
+    ],
+    "answer": 3,
+    "explain": "Lethal trifecta (Simon Willison) je kombinacija privatnih podataka, nepovjerljivog sadržaja i izlaznog kanala. Tada indirektna prompt injection može dovesti do izvlačenja podataka. Odbrana je uklanjanje barem jedne od tri sposobnosti za dati tok."
+  },
+  {
+    "obj": "1.3",
+    "q": "Agent čita dolazne e-mailove (nepovjerljiv ulaz), ima pristup CRM-u sa podacima klijenata i može slati e-mail. Šta preporučuje Agents Rule of Two?",
+    "options": [
+      "Ništa, pravilo važi samo za agente sa memorijom",
+      "Agent ima sve tri osobine (A, B, C), pa ne smije raditi autonomno: treba ljudska potvrda ili druga pouzdana validacija, razdvajanje komponenti ili nova sesija",
+      "Dovoljno je dodati u sistemski prompt da ne šalje podatke van",
+      "Zamijeniti model većim jer je otporniji na injection"
+    ],
+    "answer": 1,
+    "explain": "Rule of Two kaže da agent u sesiji treba imati najviše dvije od tri osobine (nepovjerljiv ulaz, pristup osjetljivim podacima, promjena stanja/komunikacija van). Kad trebaju sve tri, potreban je nadzor ili redizajn. Instrukcija u promptu i veći model nisu pouzdana kontrola."
+  },
+  {
+    "obj": "1.3",
+    "q": "Kako treba zapisati prijetnju u modelu prijetnji za AI sistem?",
+    "options": [
+      "Kao abuse case: akter, granica, preduslov, posljedica, mapiranje na OWASP/ATLAS i kontrole",
+      "Kao tačan tekst napada koji je red team koristio",
+      "Samo kao OWASP oznaku, npr. „LLM01“",
+      "Kao CVSS ocjenu bez opisa"
+    ],
+    "answer": 0,
+    "explain": "Abuse case opisuje uslove i posljedice koje ostaju iste i kad se konkretne tehnike promijene, i direktno vodi do kontrola. Konkretan payload brzo zastari i nije potreban za odluku. Sama oznaka ili ocjena ne govori šta treba uraditi."
+  },
+  {
+    "obj": "1.3",
+    "q": "Dva agenta koriste isti model i istu bazu znanja. Prvi ima alat samo za čitanje tiketa, drugi alat za izdavanje povrata novca. Šta najviše određuje razliku u riziku?",
+    "options": [
+      "Veličina sistemskog prompta",
+      "Broj korisnika koji koriste agenta",
+      "Granica D (akcije): posljedica uspješne manipulacije je potpuno različita",
+      "Temperatura modela"
+    ],
+    "answer": 2,
+    "explain": "Uticaj u AI sistemima najviše određuju akcije koje sistem može izvesti. Isti model i ista vjerovatnoća manipulacije daju potpuno različit rizik zavisno od toga da li alat samo čita ili pokreće finansijsku transakciju."
+  },
+  {
+    "obj": "1.3",
+    "q": "Jedina kontrola za prijetnju „agent šalje interne podatke van“ je rečenica u sistemskom promptu „nikad ne šalji podatke van firme“. Kako je evidentirati u registru?",
+    "options": [
+      "Kao zatvorenu, jer kontrola postoji",
+      "Kao prihvaćen rizik, jer je model dobavljača siguran",
+      "Kao nisku vjerovatnoću, jer modeli uglavnom slušaju instrukcije",
+      "Kao praktično nekontrolisanu (otvorenu) dok se ne uvede arhitekturna ili deterministička kontrola"
+    ],
+    "answer": 3,
+    "explain": "Instrukcija u promptu je probabilistička i može se zaobići. Za prijetnju visokog uticaja potrebna je kontrola koja ne zavisi od modela: allowlista primalaca, potvrda korisnika, uklanjanje alata."
+  },
+  {
+    "obj": "1.3",
+    "q": "Koji je ispravan redoslijed jačine kontrola, od najjače ka najslabijoj, kad se bira odgovor na prijetnju visokog uticaja?",
+    "options": [
+      "Guardrail model → instrukcija u promptu → allowlista → razdvajanje privilegija",
+      "Arhitekturne (razdvajanje, uklanjanje alata) → deterministične provjere u kodu → probabilistički klasifikatori",
+      "Probabilistički klasifikatori → arhitekturne → deterministične",
+      "Sve kontrole su jednako jake ako su dokumentovane"
+    ],
+    "answer": 1,
+    "explain": "Arhitekturne kontrole uklanjaju mogućnost, deterministične provjere u kodu je pouzdano sprovode, a probabilistički filteri smanjuju vjerovatnoću, ali mogu biti zaobiđeni. Zato su filteri dodatni sloj, ne jedina kontrola."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari primjer prijetnje u AI sistemu sa STRIDE kategorijom.",
+    "options": [
+      "Nema zapisa koji retrieval i koji prompt su doveli do akcije agenta",
+      "Agent sa ovlašćenjima servisnog naloga izvršava akciju koju korisnik ne smije",
+      "Zatrovan dokument u RAG korpusu mijenja odgovore",
+      "Agent ulazi u petlju poziva alata i iscrpljuje kvotu"
+    ],
+    "targets": ["Tampering", "Denial of service", "Repudiation", "Elevation of privilege", "Spoofing"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Nedostatak tragova je repudiation, akcija iznad ovlašćenja korisnika je elevation of privilege, izmjena korpusa je tampering, a iscrpljivanje kvota je denial of service. Spoofing je distraktor."
+  },
+  {
+    "obj": "1.3",
+    "q": "Asistent treba slati e-mail klijentu. U dizajnu je predloženo da model iz teksta tiketa izvuče adresu primaoca. Koja promjena dizajna najviše smanjuje rizik?",
+    "options": [
+      "Dodati filter koji traži sumnjive riječi u tiketu",
+      "Povećati kontekstni prozor da model bolje razumije tiket",
+      "Adresu uzimati iz evidencije klijenta u sistemu tiketa, ne od modela, uz pregled prije slanja",
+      "Logovati sve poslate e-mailove"
+    ],
+    "answer": 2,
+    "explain": "Kad parametar sa velikim uticajem (primalac) ne dolazi od modela nego iz pouzdanog izvora, cijela klasa rizika nestaje. Filter je probabilistički, logovanje je samo detektivno, a veći kontekst ne utiče na rizik."
+  },
+  {
+    "obj": "1.3",
+    "q": "Koji od sljedećih događaja NE zahtijeva nužno reviziju modela prijetnji agenta?",
+    "options": [
+      "Dodavanje alata za brisanje zapisa",
+      "Novi izvor dokumenata u RAG indeksu",
+      "Prelazak na model drugog dobavljača",
+      "Promjena boje dugmeta u korisničkom interfejsu"
+    ],
+    "answer": 3,
+    "explain": "Novi alati, novi izvori podataka i promjena modela ili dobavljača mijenjaju tokove i granice, pa su okidači za reviziju. Kozmetička promjena UI-ja ne mijenja tokove podataka ni ovlašćenja."
+  },
+  {
+    "obj": "1.3",
+    "q": "Tim želi da model prijetnji ne zastari. Šta je najefikasniji mehanizam?",
+    "options": [
+      "Čuvati model prijetnji kao kod u repou i u CI-ju tražiti njegovu izmjenu kad se promijene alati, izvori podataka ili konfiguracija modela",
+      "Jednom godišnje održati radionicu",
+      "Poslati PDF svim developerima",
+      "Zadužiti dobavljača modela da ga održava"
+    ],
+    "answer": 0,
+    "explain": "Model prijetnji kao kod prolazi review zajedno sa promjenama, a CI pravilo vezano za ključne fajlove (alati, izvori, model) automatski podsjeća na reviziju. Godišnja radionica je prespora za agente i RAG koji se brzo mijenjaju."
+  },
+  {
+    "obj": "1.3",
+    "q": "Kako se OWASP i ATLAS uklapaju u STRIDE pri modelovanju prijetnji AI sistema?",
+    "options": [
+      "Zamjenjuju STRIDE jer je STRIDE zastario",
+      "STRIDE daje strukturu po elementima i granicama, a OWASP i ATLAS konkretne AI prijetnje koje bi inače bile propuštene",
+      "Koriste se samo nakon incidenta",
+      "OWASP se koristi za treniranje, a ATLAS samo za serving"
+    ],
+    "answer": 1,
+    "explain": "STRIDE je generički i daje sistematičan prolaz, a AI liste dopunjuju specifične prijetnje (indirektna injection, trovanje korpusa, zloupotreba alata). Nijedna lista ne zamjenjuje drugu."
+  },
+  {
+    "obj": "1.3",
+    "q": "Organizacija fino podešava model na CI runneru koji ima pristup produkcijskim tajnama, a bazni model preuzima sa javnog huba. Koja granica na DFD-u je najkritičnija za ovaj tok?",
+    "options": [
+      "Granica E (lanac snabdijevanja): artefakt spolja se učitava u okruženje sa tajnama",
+      "Granica A (korisnik → aplikacija)",
+      "Granica B (izlaz modela → UI)",
+      "Nijedna, jer pipeline nije dio aplikacije"
+    ],
+    "answer": 0,
+    "explain": "Učitavanje vanjskog artefakta u okruženje sa produkcijskim tajnama je klasičan lanac snabdijevanja (LLM03, AML.T0010). Kontrole: odobreni izvori, sigurni formati, izolovan runner bez produkcijskih tajni, potpisi. Pipeline je dio sistema i crta se."
+  },
+  {
+    "obj": "1.3",
+    "q": "Procjena vjerovatnoće indirektne prompt injection za asistenta koji sažima e-mailove od bilo koga. Koji pristup je ispravan?",
+    "options": [
+      "Niska, dok red team ne dokaže eksploataciju",
+      "Zavisi od veličine modela",
+      "Visoka čim postoji granica C (nepovjerljiv sadržaj u kontekstu); tretirati je kao pretpostavku",
+      "Nula, ako model dobavljača ima ugrađene zaštite"
+    ],
+    "answer": 2,
+    "explain": "Kad bilo ko može ubaciti sadržaj u kontekst, napadaču nije potreban nalog ni posebno znanje. Zato se vjerovatnoća tretira kao visoka, a kontrole se biraju po uticaju. Zaštite dobavljača smanjuju, ali ne uklanjaju rizik."
+  },
+  {
+    "obj": "1.3",
+    "q": "Agent koristi dugoročnu memoriju i spaja podatke iz HR i finansijskog sistema za odgovore menadžerima. Koji dodatni pogled je najkorisniji uz STRIDE?",
+    "options": [
+      "Samo provjera latencije",
+      "Pitanja o privatnosti (npr. LINDDUN): svrha, povezivanje podataka, zadržavanje, transparentnost",
+      "Benchmark tačnosti modela",
+      "Provjera licenci biblioteka"
+    ],
+    "answer": 1,
+    "explain": "STRIDE curenje svodi na jedno slovo. Kad agent povezuje lične podatke iz više izvora i pamti ih, pitanja o svrsi, povezivanju, zadržavanju i transparentnosti otkrivaju rizike koje STRIDE ne ističe."
+  },
+  {
+    "obj": "1.3",
+    "q": "Chatbot bez alata i bez RAG-a, sa javnim pristupom. Koje prijetnje imaju prioritet u modelu?",
+    "options": [
+      "Zloupotreba alata i eskalacija privilegija agenta",
+      "Trovanje RAG korpusa",
+      "Lažne poruke između agenata",
+      "Nesigurna obrada izlaza, curenje sistemskog prompta, jailbreak i neograničena potrošnja"
+    ],
+    "answer": 3,
+    "explain": "Bez alata, RAG-a i više agenata ostaju granice A i B: izlaz koji se renderuje, prompt koji može procuriti, pokušaji zaobilaženja ograničenja i trošak javnog pristupa. Ostale prijetnje traže komponente koje sistem nema."
+  },
+  {
+    "obj": "1.3",
+    "type": "order",
+    "q": "Poredaj aktivnosti modelovanja prijetnji po pristupu „četiri pitanja“.",
+    "options": [
+      "Odrediti kontrole, vlasnike i rokove ili prihvatiti rizik",
+      "Testovima i red teamom provjeriti da kontrole rade i ažurirati model",
+      "Nacrtati DFD sa AI granicama povjerenja i imovinom",
+      "Proći STRIDE, OWASP i ATLAS po elementima i granicama"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Na čemu radimo (DFD) → šta može poći naopako (STRIDE/OWASP/ATLAS) → šta ćemo uraditi (kontrole) → jesmo li dobro uradili posao (provjera i ažuriranje)."
+  },
+  {
+    "obj": "1.3",
+    "q": "Agent za sažimanje javnih vijesti objavljuje sažetke na javni kanal. Nema pristup internim podacima. Kako ga ocjenjuje Rule of Two?",
+    "options": [
+      "Ima A (nepovjerljiv ulaz) i C (komunikacija van), ali ne i B, pa je prihvatljiv bez dodatnog nadzora po ovom pravilu",
+      "Ima sve tri osobine i mora imati potvrdu za svaku objavu",
+      "Pravilo se ne primjenjuje na javne podatke",
+      "Ima samo B, pa je potpuno bez rizika"
+    ],
+    "answer": 0,
+    "explain": "Bez pristupa osjetljivim podacima (B) agent ima dvije od tri osobine. To ne znači nula rizika (npr. reputaciona šteta), ali po pravilu nije potreban obavezan nadzor svake akcije."
+  },
+  {
+    "obj": "1.3",
+    "q": "Ko treba učestvovati u radionici modelovanja prijetnji za RAG asistenta nad dokumentima sa ličnim podacima?",
+    "options": [
+      "Samo SecOps, da proces bude brz",
+      "Samo dobavljač modela",
+      "Vlasnik proizvoda, developer orkestratora, neko ko poznaje podatke, SecOps i po potrebi DPO/pravnik",
+      "Samo data science tim"
+    ],
+    "answer": 2,
+    "explain": "Model prijetnji traži znanje o proizvodu, kodu, podacima i sigurnosti; kad su u igri lični podaci, i o zakonskim obavezama. Jedan tim sam ne vidi sve tokove i odluke."
+  }
+]

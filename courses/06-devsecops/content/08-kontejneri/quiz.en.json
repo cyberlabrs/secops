@@ -1,0 +1,267 @@
+[
+  {
+    "obj": "4.2",
+    "q": "The Dockerfile has no `USER` instruction at all, so the container runs as root. `hadolint Dockerfile` does not report DL3002. Why, and what will catch it?",
+    "options": [
+      "hadolint has no rules about users; you need `--failure-threshold info`",
+      "DL3002 fires only when the last `USER` is explicitly root; a missing `USER` is caught by Trivy (`DS-0002`) and Checkov (`CKV_DOCKER_3`)",
+      "DL3002 is in the `ignored` list by default",
+      "DL3002 is checked only against the built image, with `hadolint --image`"
+    ],
+    "answer": 1,
+    "explain": "DL3002 (\"Last user should not be root\") reacts to an explicit `USER root`; hadolint does not report the absence of a `USER` instruction. Trivy and Checkov have checks precisely for a missing non-root user."
+  },
+  {
+    "obj": "4.2",
+    "q": "You want `hadolint` in CI to print all findings (warning and info too), but the job should fail only on findings of severity `error`. Which command?",
+    "options": [
+      "hadolint --failure-threshold error Dockerfile",
+      "hadolint --no-fail Dockerfile",
+      "hadolint --ignore DL3008 --ignore DL3009 Dockerfile",
+      "hadolint -f sarif Dockerfile"
+    ],
+    "answer": 0,
+    "explain": "`--failure-threshold error` (`-t error`) prints all findings but gives a non-zero exit code only for `error` and above. `--no-fail` never breaks the build, `--ignore` hides rules, and `-f sarif` only changes the format."
+  },
+  {
+    "obj": "4.2",
+    "q": "The security team wants no Dockerfile in any repo to have a `FROM` with an image outside `registry.kurs-shop.ba` and `127.0.0.1:5000`. What is the simplest way to enforce this with hadolint?",
+    "options": [
+      "`override: error: [DL3007]` in `.hadolint.yaml`",
+      "`ignored: [DL3006]` in `.hadolint.yaml`",
+      "`--failure-threshold style`",
+      "`trustedRegistries` with those two registries in `.hadolint.yaml` (rule DL3026)"
+    ],
+    "answer": 3,
+    "explain": "`trustedRegistries` enables DL3026, which reports a `FROM` from a registry outside the list. DL3007 is about `latest`, DL3006 about an untagged image, and a severity threshold does not define allowed registries."
+  },
+  {
+    "obj": "4.2",
+    "q": "The image `kurs-shop:1.0` with the line `ENV API_TOKEN=glpat-...` was in the registry for two weeks. A developer deleted the line and built a new image. What is the FIRST next step?",
+    "options": [
+      "Rebuild the image with `--no-cache`",
+      "Add the token to `.trivyignore` so new scans don't report the old image",
+      "Revoke and rotate the GitLab token",
+      "Squash the layers of the old image and push it again under the same tag"
+    ],
+    "answer": 2,
+    "explain": "The secret was in the image configuration, available to anyone with access to the registry, so it must be considered compromised and revoked. A new build, squashing or ignoring the finding does not undo an already leaked token."
+  },
+  {
+    "obj": "4.2",
+    "q": "Multi-stage build: the build stage is `python:3.13-slim` (`pip install --target /install`), the final image `distroless/python3-debian12:nonroot`. The container fails with an error loading the PyYAML C extension. What is the cause?",
+    "options": [
+      "Distroless has no pip, so packages must go through `apt`",
+      "The Python in the build stage (3.13) does not match the runtime in `python3-debian12` (3.11)",
+      "User 65532 has no permission to read `/app/site-packages`",
+      "Distroless images do not allow `PYTHONPATH`"
+    ],
+    "answer": 1,
+    "explain": "Packages with C extensions are tied to the Python version they were installed for; `python3-debian12` has 3.11 and `python3-debian13` has 3.13. The solution is to align the build stage with the runtime."
+  },
+  {
+    "obj": "4.2",
+    "q": "A Pod with `securityContext.runAsNonRoot: true` does not start: the kubelet reports that the image has a non-numeric user (`nonroot`) and cannot verify it is not root. Which fix keeps the protection?",
+    "options": [
+      "In the Dockerfile `USER 65532:65532` (or `runAsUser: 65532` in the Pod)",
+      "Remove `runAsNonRoot` from the manifest",
+      "Switch to the `:debug` tag of the distroless image",
+      "Add `allowPrivilegeEscalation: false`"
+    ],
+    "answer": 0,
+    "explain": "For `runAsNonRoot` the kubelet checks the UID, so it needs a numeric user in the image or `runAsUser` in the Pod. Removing the protection is not a fix, `:debug` adds a shell, and `allowPrivilegeEscalation` is a different control."
+  },
+  {
+    "obj": "4.2",
+    "q": "An application in production runs on a distroless image. You need to investigate a problem, but `kubectl exec -it pod -- sh` reports that no shell exists. What is the right approach?",
+    "options": [
+      "Permanently revert the base image to `python:3.13-slim`",
+      "Add busybox to the final stage of the Dockerfile",
+      "Deploy the `:debug` variant of the image to production",
+      "Use `kubectl debug` with an ephemeral container that has the tools"
+    ],
+    "answer": 3,
+    "explain": "An ephemeral container brings tools temporarily, without changing the production image. The other options put a shell and tools back into the image and cancel out the advantage of distroless."
+  },
+  {
+    "obj": "4.2",
+    "q": "On every deploy the `kurs-shop` Pods wait a full 30 seconds before shutting down, and the application does not receive SIGTERM. The Dockerfile ends with `CMD python app.py`, and hadolint reports DL3025. What is the fix?",
+    "options": [
+      "Add a `HEALTHCHECK`",
+      "Add `STOPSIGNAL SIGKILL`",
+      "Use the exec (JSON) form, e.g. `ENTRYPOINT [\"/usr/bin/python3\", \"/app/app.py\"]`",
+      "Set `terminationGracePeriodSeconds: 0`"
+    ],
+    "answer": 2,
+    "explain": "In the shell form PID 1 is `/bin/sh`, which does not forward SIGTERM to the application; the exec form starts the application directly. SIGKILL and a grace period of 0 kill the process without a clean shutdown, and HEALTHCHECK has nothing to do with signals."
+  },
+  {
+    "obj": "4.3",
+    "q": "The MR gate should fail only on CRITICAL vulnerabilities for which a fixed version exists. Which command?",
+    "options": [
+      "trivy image --severity CRITICAL --ignore-unfixed --exit-code 1 \"$IMAGE\"",
+      "trivy image --severity CRITICAL --ignore-unfixed \"$IMAGE\"",
+      "trivy image --severity CRITICAL --ignore-status fixed --exit-code 1 \"$IMAGE\"",
+      "trivy image --severity CRITICAL --exit-code 0 \"$IMAGE\""
+    ],
+    "answer": 0,
+    "explain": "`--ignore-unfixed` keeps only findings with the status `fixed`, and `--exit-code 1` breaks the build. Without `--exit-code` Trivy returns 0, `--ignore-status fixed` would hide exactly the fixable findings, and `--exit-code 0` never fails."
+  },
+  {
+    "obj": "4.3",
+    "q": "A job with `trivy image --severity CRITICAL \"$IMAGE\"` prints three CRITICAL vulnerabilities, and the job is green. What is missing?",
+    "options": [
+      "`--ignore-unfixed`, because without it Trivy does not count findings",
+      "`--exit-code 1`; without it Trivy exits with 0 regardless of findings",
+      "`allow_failure: false` in the job",
+      "`--format table`"
+    ],
+    "answer": 1,
+    "explain": "Trivy returns exit 0 by default. `allow_failure: false` is the default anyway and does not help when the command succeeds, and the output format does not affect the exit code."
+  },
+  {
+    "obj": "4.3",
+    "q": "`.trivyignore` contains `CVE-2020-14343 exp:2026-09-30`. Today is 16 Oct 2026 and the gate suddenly fails on that vulnerability, without any code change. What happened?",
+    "options": [
+      "The `exp:` format is not supported, so Trivy ignores the whole file",
+      "`.trivyignore` is read only with `--ignorefile`",
+      "The updated database changed the vulnerability ID",
+      "The exception expired; the risk needs to be reassessed (upgrade the package or a new exception with a justification)"
+    ],
+    "answer": 3,
+    "explain": "When the `exp:` date passes, Trivy stops ignoring the finding; that is the intended behavior of an expiry. Trivy reads a plain `.trivyignore` in the project root automatically, and `exp:` is a valid format."
+  },
+  {
+    "obj": "4.3",
+    "q": "Which entry in `.trivyignore.yaml` ignores `CVE-2020-14343` only for PyYAML 5.3.1, with a justification and an expiry?",
+    "options": [
+      "`vulnerabilities: [{id: CVE-2020-14343, reason: \"SEC-140\", until: 2026-11-15}]`",
+      "`misconfigurations: [{id: CVE-2020-14343, purls: [pkg:pypi/pyyaml@5.3.1], expired_at: 2026-11-15}]`",
+      "`vulnerabilities: [{id: CVE-2020-14343, purls: [pkg:pypi/pyyaml@5.3.1], statement: \"SEC-140\", expired_at: 2026-11-15}]`",
+      "`vulnerabilities: [{cve: CVE-2020-14343, package: pyyaml, statement: \"SEC-140\", exp: 2026-11-15}]`"
+    ],
+    "answer": 2,
+    "explain": "Vulnerabilities go under `vulnerabilities`, and the fields are `id`, `purls`, `statement` and `expired_at`. `reason`/`until` and `cve`/`package`/`exp` are not fields of that format, and `misconfigurations` is the section for IaC findings."
+  },
+  {
+    "obj": "4.3",
+    "q": "You ship an image to customers who scan it with Trivy and Grype. The vulnerable function from a library in the image is never called, and you have proven this with a test. How do you tell them the product is not affected?",
+    "options": [
+      "An OpenVEX document with `status: not_affected` and `justification: vulnerable_code_not_in_execute_path`, published with the image",
+      "An entry in `.trivyignore` in your repo",
+      "Scanning with `--ignore-unfixed` before release",
+      "Lower the vulnerability's severity in the SBOM"
+    ],
+    "answer": 0,
+    "explain": "VEX is a standard, machine-readable statement that different tools understand and that is distributed with the product. `.trivyignore` applies only in your pipeline, `--ignore-unfixed` has nothing to do with exploitability, and changing the severity in the SBOM is not a standard mechanism."
+  },
+  {
+    "obj": "4.3",
+    "q": "You run `trivy image --vex kurs-shop.openvex.json 127.0.0.1:5000/kurs-shop:1.0`. The VEX has `status: not_affected` for a CVE in PyYAML, but Trivy still reports it. What is the most likely cause?",
+    "options": [
+      "Trivy reads only CycloneDX VEX, not OpenVEX",
+      "The PURL of the product or subcomponent in the VEX does not match the scanned image or package",
+      "The status must be `fixed` for Trivy to remove the finding",
+      "`--vex` works only together with `--ignore-unfixed`"
+    ],
+    "answer": 1,
+    "explain": "Trivy applies a statement only when the PURL of the product (`pkg:oci/...`) and of the subcomponent (`pkg:pypi/pyyaml`) match what it scans. Trivy supports OpenVEX, CycloneDX and CSAF, and `not_affected` is precisely the status that removes a finding."
+  },
+  {
+    "obj": "4.3",
+    "q": "The build job pushes `kurs-shop:main`, and the scan job scans `127.0.0.1:5000/kurs-shop:main`. Why is it better for the scan and sign jobs to use the digest the build job recorded?",
+    "options": [
+      "Trivy cannot scan an image by tag",
+      "Scanning by digest is faster because the vulnerability database is skipped",
+      "VEX can only be applied to a digest",
+      "The tag can move between scanning and signing, so an image that was not scanned could be signed"
+    ],
+    "answer": 3,
+    "explain": "A digest is the immutable identity of an image, so it guarantees that the same image is scanned, signed and deployed. Trivy also scans by tag, and speed and VEX are not the reason."
+  },
+  {
+    "obj": "4.3",
+    "q": "How do you correctly deal with vulnerabilities in the base image for which no fix is available? (Choose TWO.)",
+    "options": [
+      "The gate job uses `--ignore-unfixed`, and the reporting job records all findings without that flag",
+      "Always break the build on every CRITICAL vulnerability, including those without a fix",
+      "Delete them from the local Trivy database",
+      "Track them in triage and reassess when a fix is released (a scheduled scan of existing images)",
+      "Add them to `.trivyignore` permanently, without an expiry"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "The gate breaks the build only on what a developer can fix, while unfixed findings remain visible in the report and in triage. Breaking the build on the unfixable teaches the team to ignore the pipeline, and permanent ignoring takes the risk out of sight."
+  },
+  {
+    "obj": "4.2",
+    "type": "order",
+    "q": "Order the container controls in the pipeline from earliest to latest.",
+    "options": [
+      "Scan the image by digest (`trivy image`) and apply the gate",
+      "Lint the Dockerfile (`hadolint`)",
+      "Sign the image (`cosign`) and deploy",
+      "Build the image (BuildKit, Buildah) and record the digest"
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      2
+    ],
+    "explain": "Linting runs on source code and comes first; scanning needs the built image and its digest; signing comes only for an image that has passed the gate."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Match the Dockerfile line with the hadolint rule that reports it.",
+    "options": [
+      "FROM python:latest",
+      "ADD . /app",
+      "CMD python app.py",
+      "RUN pip install -r requirements.txt"
+    ],
+    "targets": [
+      "DL3025",
+      "DL3002",
+      "DL3007",
+      "DL3042",
+      "DL3020"
+    ],
+    "answer": [
+      2,
+      4,
+      0,
+      3
+    ],
+    "explain": "DL3007 is the `latest` tag, DL3020 `ADD` instead of `COPY`, DL3025 the shell form of `CMD`, and DL3042 pip without `--no-cache-dir`. DL3002 refers to an explicit `USER root`, which does not exist here."
+  },
+  {
+    "type": "spot",
+    "obj": "4.2",
+    "q": "The .npmrc file contains a token for the private npm registry. Which lines put the token into the final image that is pushed to the registry?",
+    "snippet": "FROM node:20.11-alpine AS build\nWORKDIR /app\nCOPY package*.json .npmrc ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM node:20.11-alpine\nWORKDIR /app\nENV NPM_TOKEN=npm_9fQx2LkT7vRb3Wm8YcZ1pHs4KdE6\nCOPY --from=build /app /app\nUSER node\nCMD [\"node\", \"dist/server.js\"]",
+    "lang": "dockerfile",
+    "answer": [
+      9,
+      10
+    ],
+    "explain": "ENV in the final stage writes the token into the image config, visible through docker inspect and docker history. COPY --from=build /app /app copies the whole build directory, including .npmrc (and dev dependencies). The first stage is not published, so its COPY does not end up in the final image. Fix: remove the ENV, copy only dist/ and production node_modules into the final stage, and in the build use RUN --mount=type=secret,id=npmrc,target=/app/.npmrc npm ci instead of COPY .npmrc. A token that was already in an image must be rotated."
+  },
+  {
+    "obj": "4.3",
+    "q": "The gate job (first command) passed, while the reporting scan of the same image (second command) shows a CRITICAL finding. What explains the difference?",
+    "snippet": "$ trivy image --severity CRITICAL --ignore-unfixed --exit-code 1 registry.example.com/kurs-shop:1.8.0\nregistry.example.com/kurs-shop:1.8.0 (debian 12.7)\nTotal: 0 (CRITICAL: 0)\n\n$ trivy image --severity CRITICAL registry.example.com/kurs-shop:1.8.0\nregistry.example.com/kurs-shop:1.8.0 (debian 12.7)\nTotal: 1 (CRITICAL: 1)\n\nLibrary   Vulnerability   Severity  Status        Installed Version  Fixed Version\nzlib1g    CVE-2023-45853  CRITICAL  will_not_fix  1:1.2.13.dfsg-1",
+    "lang": "text",
+    "options": [
+      "The status is will_not_fix and --ignore-unfixed drops findings without a fix; the gate works as designed, and the finding goes to the report and triage",
+      "--exit-code 1 fails only on HIGH findings, not on CRITICAL",
+      "--severity CRITICAL in the gate job scans only language libraries, not OS packages",
+      "Trivy does not report CRITICAL findings in Debian images until the database is updated"
+    ],
+    "answer": 0,
+    "explain": "The second command shows status will_not_fix and an empty Fixed Version column. --ignore-unfixed ignores the statuses affected, will_not_fix, fix_deferred and end_of_life, so the gate fails only on what can be fixed by updating. That is intended, but an unfixed finding is not risk-free: it stays in the report and triage (e.g. VEX not_affected if the vulnerable code is not used, or a different, smaller base image). --exit-code and --severity work regardless of package type."
+  }
+]

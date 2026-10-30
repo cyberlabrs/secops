@@ -1,0 +1,76 @@
+[
+  {
+    "q": "A user logged in successfully, but can delete other people's orders. Which control failed?",
+    "options": ["Authentication", "Authorization", "Audit", "Encryption"],
+    "answer": 1,
+    "explain": "Login (AuthN) worked correctly. The problem is authorization: the system didn't check whether this user is allowed to work with that resource."
+  },
+  {
+    "q": "Which statement about OAuth 2.0 is true?",
+    "options": ["OAuth 2.0 is a user login protocol", "OAuth 2.0 is a framework for delegated authorization; OIDC is layered on top of it for identity", "OAuth 2.0 uses XML assertions", "OAuth 2.0 replaces MFA"],
+    "answer": 1,
+    "explain": "OAuth 2.0 issues access tokens for accessing resources on behalf of a user. OIDC adds the ID token and standardizes login. XML assertions are SAML."
+  },
+  {
+    "q": "Which MFA method is phishing-resistant?",
+    "options": ["SMS code", "TOTP from an app", "Push notification without number matching", "FIDO2 security key / passkey"],
+    "answer": 3,
+    "explain": "FIDO2/WebAuthn signs a challenge bound to the exact domain, so a fake site can't obtain a usable response. SMS and TOTP codes can be typed into a fake page by the user."
+  },
+  {
+    "q": "What does NIST SP 800-63B recommend for passwords? (multiple answers)",
+    "options": ["Mandatory change every 90 days", "Checking new passwords against breached-password lists", "Allowing long passwords and passphrases", "Mandatory special characters and uppercase letters"],
+    "answer": [1, 2],
+    "explain": "NIST rejects periodic changes without reason and arbitrary complexity rules, and requires checking against breached passwords and supporting long passphrases."
+  },
+  {
+    "q": "An employee moved from development to sales and still has access to production databases. What is this problem called?",
+    "options": ["Separation of duties", "Privilege creep in the Mover phase", "Break-glass", "Federation"],
+    "answer": 1,
+    "explain": "When a role changes, the old rights must be removed. Otherwise the user accumulates rights they don't need over time."
+  },
+  {
+    "q": "GitHub Actions uses OIDC to assume an AWS role. What must be restricted in the role's trust policy?",
+    "options": ["Nothing, OIDC is secure by itself", "The 'sub' (and 'aud') claim to the exact repository and branch/environment", "Only GitHub's IP address", "The token size"],
+    "answer": 1,
+    "explain": "Without a condition on 'sub', any repository on GitHub could obtain a token AWS accepts and assume the role."
+  },
+  {
+    "q": "A JWT payload contains the user's email and role. Who can read them?",
+    "options": ["Only the server holding the secret key", "Anyone who has the token, because the payload is only base64url-encoded", "No one, the payload is encrypted", "Only the IdP"],
+    "answer": 1,
+    "explain": "The signature protects integrity, not confidentiality. A standard JWS JWT is readable; JWE exists for confidentiality, or you simply don't put secrets in the token."
+  },
+  {
+    "q": "Which access control model makes decisions based on resource tags, user attributes and context (e.g. time, IP)?",
+    "options": ["DAC", "RBAC", "ABAC", "MAC"],
+    "answer": 2,
+    "explain": "ABAC (attribute-based) uses attributes. AWS policies with Condition blocks and tags are the classic example."
+  },
+  {
+    "q": "Why should every service have its own identity instead of a shared service account?",
+    "options": ["For speed", "So that rights are minimal per service and the audit trail shows which service did what", "Because the cloud doesn't support shared accounts", "Because of cost"],
+    "answer": 1,
+    "explain": "A shared account has the union of all needed rights and doesn't distinguish services in the logs. Compromising one service then opens everything."
+  },
+  {
+    "q": "What is a break-glass account?",
+    "options": ["A testing account", "An emergency admin account independent of SSO, tightly guarded, with an alert on every use", "A former employee's account", "An account without a password"],
+    "answer": 1,
+    "explain": "If the IdP or Conditional Access fails or is misconfigured, a break-glass account enables recovery. That's why it's kept offline and monitored."
+  },
+  {
+    "q": "An employee has left the company. What is MOST important to do immediately? (multiple answers)",
+    "options": ["Lock the account in the IdP", "Revoke their SSH keys, API tokens and active sessions", "Delete all logs of their activity", "Wait for the next quarterly review"],
+    "answer": [0, 1],
+    "explain": "A locked SSO account doesn't disable local SSH keys, personal access tokens or already-issued sessions. Logs should be preserved, not deleted."
+  },
+  {
+    "type": "spot",
+    "q": "The API validates JWTs issued by the company IdP (RS256). Click the lines that make token validation incorrect.",
+    "lang": "python",
+    "snippet": "import jwt  # PyJWT\n\nPUBLIC_KEY = open(\"/etc/app/idp_public.pem\").read()\n\ndef current_user(token: str) -> dict:\n    claims = jwt.decode(\n        token,\n        PUBLIC_KEY,\n        algorithms=[\"RS256\", \"none\"],\n        audience=\"orders-api\",\n        issuer=\"https://idp.example.com\",\n        options={\"verify_exp\": False},\n    )\n    return {\"id\": claims[\"sub\"], \"role\": claims[\"role\"]}",
+    "answer": [8, 11],
+    "explain": "algorithms must not contain \"none\": an unsigned token could then pass and the attacker writes the role into the payload himself. Allow only the expected algorithm: algorithms=[\"RS256\"]. verify_exp: False disables expiry checking, so a stolen token is valid forever; remove that option. Checking aud and iss is correct, and the role in the payload is not a secret."
+  }
+]

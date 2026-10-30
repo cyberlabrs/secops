@@ -1,0 +1,29 @@
+Oct 12 17:51:40 db01 sshd[30551]: Accepted publickey for jkovac from 10.20.0.10 port 41002 ssh2: ED25519 SHA256:DI0iATFMzCbnJ5DljqIW3W7xjjSrq6vm26IDIM6hpGI
+Oct 12 17:51:40 db01 sshd[30551]: pam_unix(sshd:session): session opened for user jkovac(uid=1003) by (uid=0)
+Oct 12 17:51:40 db01 systemd-logind[612]: New session 188 of user jkovac.
+Oct 12 17:55:02 db01 sudo:   jkovac : TTY=pts/0 ; PWD=/home/jkovac ; USER=root ; COMMAND=/usr/bin/systemctl restart postgresql
+Oct 12 17:55:02 db01 sudo: pam_unix(sudo:session): session opened for user root(uid=0) by jkovac(uid=1003)
+Oct 12 17:55:04 db01 sudo: pam_unix(sudo:session): session closed for user root
+Oct 12 18:20:12 db01 sshd[30551]: Received disconnect from 10.20.0.10 port 41002:11: disconnected by user
+Oct 12 18:20:12 db01 sshd[30551]: Disconnected from user jkovac 10.20.0.10 port 41002
+Oct 12 18:20:12 db01 sshd[30551]: pam_unix(sshd:session): session closed for user jkovac
+Oct 12 18:20:12 db01 systemd-logind[612]: Session 188 logged out. Waiting for processes to exit.
+Oct 13 03:00:01 db01 CRON[31877]: pam_unix(cron:session): session opened for user postgres(uid=113) by (uid=0)
+Oct 13 03:04:39 db01 CRON[31877]: pam_unix(cron:session): session closed for user postgres
+Oct 13 08:30:58 db01 sshd[32210]: Accepted publickey for jkovac from 10.20.0.10 port 41876 ssh2: ED25519 SHA256:DI0iATFMzCbnJ5DljqIW3W7xjjSrq6vm26IDIM6hpGI
+Oct 13 08:30:58 db01 sshd[32210]: pam_unix(sshd:session): session opened for user jkovac(uid=1003) by (uid=0)
+Oct 13 08:30:58 db01 systemd-logind[612]: New session 192 of user jkovac.
+Oct 13 08:33:40 db01 sudo:   jkovac : TTY=pts/0 ; PWD=/home/jkovac ; USER=postgres ; COMMAND=/usr/bin/pg_dump -d crm -f /tmp/.cache.sql
+Oct 13 08:33:40 db01 sudo: pam_unix(sudo:session): session opened for user postgres(uid=113) by jkovac(uid=1003)
+Oct 13 08:34:12 db01 sudo: pam_unix(sudo:session): session closed for user postgres
+Oct 13 08:36:05 db01 sshd[32210]: Received disconnect from 10.20.0.10 port 41876:11: disconnected by user
+Oct 13 08:36:05 db01 sshd[32210]: Disconnected from user jkovac 10.20.0.10 port 41876
+Oct 13 08:36:05 db01 sshd[32210]: pam_unix(sshd:session): session closed for user jkovac
+Oct 13 08:36:05 db01 systemd-logind[612]: Session 192 logged out. Waiting for processes to exit.
+Oct 13 08:36:31 db01 sshd[32291]: Accepted publickey for jkovac from 10.20.0.10 port 41890 ssh2: ED25519 SHA256:DI0iATFMzCbnJ5DljqIW3W7xjjSrq6vm26IDIM6hpGI
+Oct 13 08:36:31 db01 sshd[32291]: pam_unix(sshd:session): session opened for user jkovac(uid=1003) by (uid=0)
+Oct 13 08:36:31 db01 systemd-logind[612]: New session 193 of user jkovac.
+Oct 13 08:36:34 db01 sshd[32291]: Received disconnect from 10.20.0.10 port 41890:11: disconnected by user
+Oct 13 08:36:34 db01 sshd[32291]: Disconnected from user jkovac 10.20.0.10 port 41890
+Oct 13 08:36:34 db01 sshd[32291]: pam_unix(sshd:session): session closed for user jkovac
+Oct 13 08:36:34 db01 systemd-logind[612]: Session 193 logged out. Waiting for processes to exit.

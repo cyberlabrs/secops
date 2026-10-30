@@ -1,0 +1,245 @@
+[
+  {
+    "obj": "1.4",
+    "q": "The cluster is on v1.35.0. The team wants to go straight to v1.37.2 because it is the latest version. What is the correct path with kubeadm?",
+    "options": [
+      "kubeadm upgrade apply v1.37.2 on controlplane, then the kubelet on all nodes",
+      "First a complete upgrade to 1.36.x, then to 1.37.2",
+      "First the kubelet on all nodes to 1.37.2, then the control plane",
+      "kubeadm upgrade apply v1.37.2 --force"
+    ],
+    "answer": 1,
+    "explain": "Skipping minor versions is not supported, so the path is 1.35 → 1.36 → 1.37. The kubelet must not be newer than the API server, and `--force` does not make an unsupported jump safe."
+  },
+  {
+    "obj": "1.4",
+    "q": "On controlplane you run `apt-get install -y kubeadm='1.36.5-1.1'` and get `E: Held packages were changed and -y was used without --allow-change-held-packages`. What did you skip?",
+    "options": [
+      "apt-get update",
+      "kubeadm upgrade plan",
+      "apt-mark unhold kubeadm",
+      "kubectl drain controlplane"
+    ],
+    "answer": 2,
+    "explain": "The packages are pinned with `apt-mark hold`, so they need to be unpinned before installing and pinned again afterwards. `apt-get update` refreshes the package list, and `upgrade plan` and `drain` do not affect apt."
+  },
+  {
+    "obj": "1.4",
+    "q": "On node01 you installed kubelet 1.36.5 and ran `uncordon`, but `kubectl get nodes` still shows v1.35.0 for node01. What is missing?",
+    "options": [
+      "kubeadm upgrade apply v1.36.5 on node01",
+      "kubectl rollout restart daemonset kube-proxy -n kube-system",
+      "kubeadm certs renew all on node01",
+      "systemctl daemon-reload and systemctl restart kubelet on node01"
+    ],
+    "answer": 3,
+    "explain": "The new binary is used only once the kubelet is restarted, and it is the kubelet that reports the node version. `upgrade apply` is run only on the first control plane node, and kube-proxy and certificates do not change the kubelet version."
+  },
+  {
+    "obj": "1.4",
+    "q": "You have an HA cluster with three control plane nodes. cp1 was upgraded with `kubeadm upgrade apply v1.36.5`. Which kubeadm command do you run on cp2 after upgrading the kubeadm package?",
+    "options": [
+      "kubeadm upgrade node",
+      "kubeadm upgrade apply v1.36.5",
+      "kubeadm upgrade plan",
+      "kubeadm join --control-plane"
+    ],
+    "answer": 0,
+    "explain": "On the other control plane nodes and on workers you use `kubeadm upgrade node`, which upgrades the local manifests and kubelet configuration. `apply` is run only once, `plan` is not needed, and cp2 is already in the cluster."
+  },
+  {
+    "obj": "1.4",
+    "q": "The API server is on v1.36. Which kubelet version on a worker is NOT supported by the version skew policy?",
+    "options": [
+      "1.34",
+      "1.33",
+      "1.37",
+      "1.35"
+    ],
+    "answer": 2,
+    "explain": "The kubelet must not be newer than kube-apiserver, and it may be up to three minor versions older (1.33–1.36). So 1.37 is the only unsupported option."
+  },
+  {
+    "obj": "1.4",
+    "q": "`kubectl drain node01 --ignore-daemonsets` stops with the message `cannot delete Pods with local storage`. Which flag do you add and what is the consequence?",
+    "options": [
+      "--force; a Pod without a controller is deleted",
+      "--delete-emptydir-data; data in those Pods' emptyDir volumes is lost",
+      "--disable-eviction; bypasses the PodDisruptionBudget",
+      "--grace-period=0; the Pod is stopped immediately without data loss"
+    ],
+    "answer": 1,
+    "explain": "The message refers to emptyDir volumes, which drain does not delete without `--delete-emptydir-data`. `--force` is for Pods without a controller, and `--disable-eviction` and `--grace-period` do not deal with local data."
+  },
+  {
+    "obj": "1.4",
+    "q": "Draining node01 keeps repeating `Cannot evict pod as it would violate the pod's disruption budget`. Deployment `api` has 2 replicas, both on node01, and the PDB has `minAvailable: 2`. What is the reason?",
+    "options": [
+      "Drain does not support Deployments with multiple replicas",
+      "The --ignore-daemonsets flag is missing",
+      "The node was not cordoned first",
+      "Eviction would drop the number of available replicas below minAvailable, so the API refuses it until the condition is met"
+    ],
+    "answer": 3,
+    "explain": "Drain uses the Eviction API, which respects the PodDisruptionBudget; with minAvailable equal to the number of replicas no Pod may be evicted. The fix is to scale up or change the PDB. Drain cordons by itself, and the DaemonSet flag is unrelated to the PDB."
+  },
+  {
+    "obj": "1.4",
+    "q": "Task: create an etcd snapshot at /opt/etcd-backup.db. Which command is correct on a kubeadm controlplane node?",
+    "options": [
+      "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /opt/etcd-backup.db",
+      "etcdutl --data-dir /var/lib/etcd snapshot save /opt/etcd-backup.db",
+      "etcdctl --endpoints=http://127.0.0.1:2379 snapshot save /opt/etcd-backup.db",
+      "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/ca.crt --cert=/etc/kubernetes/pki/apiserver.crt --key=/etc/kubernetes/pki/apiserver.key snapshot save /opt/etcd-backup.db"
+    ],
+    "answer": 0,
+    "explain": "etcd listens on HTTPS and requires a client certificate signed by the etcd CA from /etc/kubernetes/pki/etcd/. `etcdutl` has no `snapshot save`, http does not work, and the cluster CA and API server certificate are not signed by the etcd CA."
+  },
+  {
+    "obj": "1.4",
+    "q": "On etcd 3.6 you run `etcdctl snapshot restore /opt/etcd-backup.db --data-dir /var/lib/etcd-restore` and the command does not exist. What do you use?",
+    "options": [
+      "ETCDCTL_API=3 etcdctl snapshot restore ...",
+      "etcdctl member restore --from-snapshot /opt/etcd-backup.db",
+      "etcdutl --data-dir /var/lib/etcd-restore snapshot restore /opt/etcd-backup.db",
+      "kubeadm init phase etcd local --snapshot /opt/etcd-backup.db"
+    ],
+    "answer": 2,
+    "explain": "In etcd 3.6, restore and status were removed from etcdctl and are done with etcdutl, which works directly on files. ETCDCTL_API does not bring back a removed command, and `member restore` and kubeadm `--snapshot` do not exist."
+  },
+  {
+    "obj": "1.4",
+    "q": "You ran `etcdutl --data-dir /var/lib/etcd-restore snapshot restore /opt/etcd-backup.db`. What do you change in /etc/kubernetes/manifests/etcd.yaml so etcd uses the restored data?",
+    "options": [
+      "Only the --data-dir=/var/lib/etcd-restore flag",
+      "Only volumeMounts.mountPath for etcd-data",
+      "The --initial-cluster-state=existing flag",
+      "The hostPath.path of the etcd-data volume to /var/lib/etcd-restore"
+    ],
+    "answer": 3,
+    "explain": "Inside the container etcd still uses /var/lib/etcd, and the hostPath decides which host directory is mounted there. Changing only --data-dir or only mountPath separates the paths so etcd starts with an empty database; initial-cluster-state does not choose the directory."
+  },
+  {
+    "obj": "1.4",
+    "q": "You run `etcdutl --data-dir /var/lib/etcd snapshot restore /opt/etcd-backup.db` and get an error that the data-dir is not empty. What is the correct fix?",
+    "options": [
+      "Add ETCDCTL_API=3 in front of the command",
+      "Restore into a new directory (e.g. /var/lib/etcd-restore) and point the etcd-data hostPath at it",
+      "Repeat snapshot save with the correct certificates",
+      "Restart kube-apiserver and repeat the same command"
+    ],
+    "answer": 1,
+    "explain": "etcdutl refuses to write into an existing data directory, and /var/lib/etcd is used by the live etcd. The restore goes into a new directory that is then mounted via hostPath. ETCDCTL_API does not affect etcdutl, and certificates and the API server have nothing to do with this error."
+  },
+  {
+    "obj": "1.4",
+    "q": "Put the steps of an etcd restore on a kubeadm cluster with one control plane node in order.",
+    "type": "order",
+    "options": [
+      "Change the hostPath of the etcd-data volume in /etc/kubernetes/manifests/etcd.yaml",
+      "Move kube-apiserver.yaml out of /etc/kubernetes/manifests to stop the API server",
+      "Move kube-apiserver.yaml back and check kubectl get pods -A",
+      "etcdutl --data-dir /var/lib/etcd-restore snapshot restore /opt/etcd-backup.db"
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      2
+    ],
+    "explain": "The documentation requires the API servers to be stopped during the restore. Then the data is restored into a new directory, etcd is pointed at it, and only then is the API server started again."
+  },
+  {
+    "obj": "1.4",
+    "q": "Put the steps for upgrading worker node node01 from 1.35 to 1.36.5 in order (the control plane is already upgraded).",
+    "type": "order",
+    "options": [
+      "On node01: apt-mark unhold kubelet kubectl, install 1.36.5-1.1, apt-mark hold",
+      "From controlplane: kubectl uncordon node01",
+      "On node01: upgrade the kubeadm package and run kubeadm upgrade node",
+      "From controlplane: kubectl drain node01 --ignore-daemonsets",
+      "On node01: systemctl daemon-reload and systemctl restart kubelet"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      4,
+      1
+    ],
+    "explain": "First kubeadm and `upgrade node` (upgrades the kubelet configuration), then drain, then the kubelet/kubectl packages and a kubelet restart, and finally uncordon."
+  },
+  {
+    "obj": "1.4",
+    "q": "Match each task with the command that solves it fastest.",
+    "type": "match",
+    "options": [
+      "Overview of the expiry of all certificates managed by kubeadm",
+      "Renewing all control plane certificates",
+      "The exact expiry date of the API server certificate",
+      "Checking an etcd snapshot file"
+    ],
+    "targets": [
+      "kubeadm certs renew all",
+      "etcdutl --write-out=table snapshot status /opt/etcd-backup.db",
+      "kubeadm certs check-expiration",
+      "openssl x509 -in /etc/kubernetes/pki/apiserver.crt -noout -enddate",
+      "kubeadm token list"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1
+    ],
+    "explain": "check-expiration gives the overview, renew all renews, openssl -enddate gives the exact date for one file, and etcdutl snapshot status checks the backup. `token list` shows bootstrap tokens and has nothing to do with certificates."
+  },
+  {
+    "obj": "1.4",
+    "q": "You ran `kubeadm certs renew all`, but `openssl s_client -connect 127.0.0.1:6443` still returns the old certificate with the old expiry date. What is missing?",
+    "options": [
+      "Restarting the control plane static Pods (temporarily moving the manifests out of /etc/kubernetes/manifests and back)",
+      "kubectl -n kube-system delete pod kube-apiserver-controlplane",
+      "kubeadm certs renew ca",
+      "systemctl restart containerd"
+    ],
+    "answer": 0,
+    "explain": "Components do not load new certificates automatically, so the API server has to be restarted via its manifest. Deleting the mirror Pod does not restart the static Pod, the CA is not renewed with `certs renew`, and restarting containerd is not the recommended procedure."
+  },
+  {
+    "obj": "1.4",
+    "q": "After renewing certificates, `kubectl` on controlplane reports `x509: certificate has expired or is not yet valid`, while `kubectl --kubeconfig /etc/kubernetes/admin.conf get nodes` works. What do you do?",
+    "options": [
+      "kubeadm certs renew admin.conf once more",
+      "systemctl restart kubelet",
+      "Copy /etc/kubernetes/admin.conf to ~/.kube/config",
+      "Delete /etc/kubernetes/pki/ca.crt"
+    ],
+    "answer": 2,
+    "explain": "~/.kube/config is an old copy with an expired client certificate, while admin.conf has already been renewed. Renewing again or restarting the kubelet does not change your copy, and deleting the CA breaks the cluster."
+  },
+  {
+    "obj": "1.4",
+    "q": "Which statement about `kubeadm upgrade apply v1.36.5` is true?",
+    "options": [
+      "It also upgrades the CNI plugin installed in the cluster",
+      "It upgrades the kubelet on all nodes",
+      "It must be run on every control plane node",
+      "It automatically renews the certificates managed by kubeadm, unless --certificate-renewal=false is used"
+    ],
+    "answer": 3,
+    "explain": "Upgrading the control plane renews kubeadm certificates, so clusters that are upgraded every year never reach expiry. The CNI and kubelet are upgraded separately, and `apply` is run only on the first control plane node."
+  },
+  {
+    "obj": "1.4",
+    "q": "Task: remove all application Pods from node01 for maintenance and prevent new ones from being scheduled, but do not delete DaemonSet Pods. A bare Pod `debug` (no controller) also runs on node01, and you are allowed to lose it. Which command?",
+    "options": [
+      "kubectl cordon node01",
+      "kubectl drain node01 --ignore-daemonsets --force",
+      "kubectl taint node node01 maintenance=true:NoSchedule",
+      "kubectl delete pods --field-selector spec.nodeName=node01 --all-namespaces"
+    ],
+    "answer": 1,
+    "explain": "Drain cordons and evicts, `--ignore-daemonsets` leaves the DaemonSet Pods, and `--force` allows deleting the bare Pod. cordon and a NoSchedule taint do not remove existing Pods, and deleting all Pods also deletes DaemonSet Pods and does not prevent scheduling."
+  }
+]

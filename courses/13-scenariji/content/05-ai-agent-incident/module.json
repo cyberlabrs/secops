@@ -1,0 +1,14 @@
+{
+  "title": "Scenarij 4: incident sa AI agentom za podršku",
+  "summary": "Indirektni prompt injection kroz otrovani dokument u bazi znanja preuzima agenta za podršku, koji izvlači podatke kupaca kroz run_sql i šalje ih napolje preko send_email i http_get: istraga tragova agenta i loga e-mail gateway-a, obuzdavanje, politika čuvara alata i mapiranje na OWASP LLM Top 10 i MITRE ATLAS.",
+  "minutes": 120,
+  "domain": 4,
+  "objectives": [
+    "4.1",
+    "4.2",
+    "4.3",
+    "4.4"
+  ],
+  "title_en": "Scenario 4: An incident with an AI support agent",
+  "summary_en": "An indirect prompt injection in a poisoned knowledge base document hijacks a support agent, which pulls customer data with run_sql and sends it out through send_email and http_get: investigating agent traces and the email gateway log, containment, a tool guard policy and mapping to the OWASP LLM Top 10 and MITRE ATLAS."
+}

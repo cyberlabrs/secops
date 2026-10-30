@@ -1,0 +1,251 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Before every transaction, a payment gateway must verify that the client certificate hasn't been revoked, using the freshest possible data and without downloading a large list. Which solution fits BEST?",
+    "options": [
+      "A CRL downloaded once a day",
+      "OCSP",
+      "Certificate pinning",
+      "Key escrow"
+    ],
+    "answer": 1,
+    "explain": "OCSP returns the status of a single certificate in near real time. A CRL is a periodic list of all revoked certificates; it can be large and stale until the next publication. Pinning and escrow don't check revocation."
+  },
+  {
+    "obj": "1.3",
+    "q": "A company bought a wildcard certificate for *.example.com. For which of the following names will the certificate NOT be valid?",
+    "options": [
+      "api.example.com",
+      "www.example.com",
+      "mail.example.com",
+      "api.dev.example.com"
+    ],
+    "answer": 3,
+    "explain": "A wildcard covers only one subdomain level, so api.dev.example.com (two levels) is not covered. It needs a separate certificate, a *.dev.example.com wildcard, or a SAN entry."
+  },
+  {
+    "obj": "1.3",
+    "q": "An engineer generates a CSR for a new API server. Which of the following is sent to the certificate authority as part of the CSR?",
+    "options": [
+      "The public key and identity details (CN, SAN)",
+      "The private key and the public key",
+      "The private key encrypted with a password",
+      "The organization's root certificate"
+    ],
+    "answer": 0,
+    "explain": "A CSR contains the public key and identifying details, signed with the private key. The private key never leaves the server, and the CA doesn't need it to sign the certificate."
+  },
+  {
+    "obj": "1.3",
+    "q": "An employee left the company, and their laptop and several encrypted archives contain business data. The company wants to always be able to recover such data in the future without the user's cooperation. What should it introduce?",
+    "options": [
+      "OCSP stapling",
+      "Perfect forward secrecy",
+      "Key escrow",
+      "Steganography"
+    ],
+    "answer": 2,
+    "explain": "Key escrow keeps a copy of keys in a trusted system or with a third party (e.g., BitLocker recovery keys in Entra ID), so data can be recovered. PFS and OCSP stapling relate to TLS, and steganography is about hiding data."
+  },
+  {
+    "obj": "1.3",
+    "q": "After a database leak, the attacker immediately recognized the passwords of several thousand users because their SHA-256 hashes matched entries in precomputed tables. Which measure would MOST directly have prevented this attack?",
+    "options": [
+      "Switching to MD5",
+      "Adding a unique salt to each password before hashing",
+      "Encrypting passwords with AES using a key stored in a configuration file",
+      "Truncating hash values to save space"
+    ],
+    "answer": 1,
+    "explain": "A unique salt per user makes rainbow tables useless and produces different hashes for identical passwords. MD5 is weaker, and reversible password encryption with the key next to the database is bad practice."
+  },
+  {
+    "obj": "1.3",
+    "q": "A release pipeline signs a container image before publishing it to the registry. Which key signs the image, and which key verifies the signature in the cluster?",
+    "options": [
+      "It is signed with the public key and verified with the private key",
+      "It is signed and verified with the same symmetric key",
+      "It is signed with the cluster's public key and verified with the pipeline's private key",
+      "It is signed with the pipeline's private key and verified with the pipeline's public key"
+    ],
+    "answer": 3,
+    "explain": "A digital signature is created with the signer's private key and verified with their public key, which anyone can have. This provides integrity, authenticity, and non-repudiation. A symmetric key doesn't provide non-repudiation."
+  },
+  {
+    "obj": "1.3",
+    "q": "The sales team travels often and laptops occasionally get lost. Which measure BEST protects all data on a lost laptop, including temporary files and swap?",
+    "options": [
+      "Full disk encryption with the key in the TPM",
+      "Encryption of individual documents",
+      "Data masking",
+      "TLS 1.3 for all traffic"
+    ],
+    "answer": 0,
+    "explain": "Full disk encryption encrypts the entire disk including the OS, swap, and temporary files, so a stolen device reveals nothing. File encryption leaves the rest of the data unprotected, and TLS only protects data in transit."
+  },
+  {
+    "obj": "1.3",
+    "q": "In a customer database, only the passport number column must be encrypted so that even database administrators can't read it. The other columns must remain available for reporting. Which encryption level is MOST appropriate?",
+    "options": [
+      "Full disk",
+      "Volume",
+      "Record (column/field)",
+      "Transparent database encryption of the whole database"
+    ],
+    "answer": 2,
+    "explain": "Record- or column-level encryption protects only the sensitive fields, and the key doesn't have to be available to the DBA. TDE and disk encryption are transparent to anyone with database access, so they don't protect against administrators."
+  },
+  {
+    "obj": "1.3",
+    "q": "An auditor requires that a compromise of the web server's private key must not allow decryption of previously captured TLS traffic. Which key exchange should be used?",
+    "options": [
+      "RSA key transport",
+      "ECDHE",
+      "Static Diffie-Hellman",
+      "A pre-shared key shared with all clients"
+    ],
+    "answer": 1,
+    "explain": "Ephemeral Diffie-Hellman (ECDHE) creates a new key for every session and provides Perfect Forward Secrecy. With RSA key transport and static DH, the same long-term key also unlocks old captured sessions."
+  },
+  {
+    "obj": "1.3",
+    "q": "A vulnerability scanner reports that an internal API gateway accepts connections over TLS 1.0 and SSLv3. What is the BEST recommendation?",
+    "options": [
+      "Move the API to HTTP and use a VPN",
+      "Replace the certificate with a wildcard certificate",
+      "Enable OCSP stapling",
+      "Disable the obsolete versions and allow only TLS 1.2 and TLS 1.3"
+    ],
+    "answer": 3,
+    "explain": "SSL and TLS 1.0/1.1 have known weaknesses and should be disabled, keeping TLS 1.2 and 1.3. A wildcard and OCSP stapling don't affect the protocol version, and HTTP removes transport encryption."
+  },
+  {
+    "obj": "1.3",
+    "q": "A team is building a new application and choosing how to store user passwords. Which approach is BEST?",
+    "options": [
+      "Argon2 or bcrypt with a unique salt per user",
+      "SHA-256 without a salt because it's fast",
+      "AES-256 encryption of passwords",
+      "MD5 with a shared salt for all users"
+    ],
+    "answer": 0,
+    "explain": "Argon2, bcrypt, scrypt, and PBKDF2 are key stretching algorithms: intentionally slow, which slows down brute force, while the salt prevents rainbow tables. Fast SHA-256 and MD5 are bad for passwords, and encryption is reversible."
+  },
+  {
+    "obj": "1.3",
+    "q": "IoT sensors have a weak processor and little memory, but they must use asymmetric cryptography to authenticate to the cloud. Which choice provides strong security with the fewest resources?",
+    "options": [
+      "RSA with a 4096-bit key",
+      "3DES",
+      "ECC (e.g., P-256)",
+      "RSA with a 1024-bit key"
+    ],
+    "answer": 2,
+    "explain": "ECC provides security similar to RSA with a much shorter key (256-bit ECC is roughly like RSA 3072), so it uses fewer resources. RSA 4096 is heavy for a weak device, RSA 1024 is insecure, and 3DES is an obsolete symmetric algorithm."
+  },
+  {
+    "obj": "1.3",
+    "q": "Employees get a \"certificate is not trusted\" warning when they open the internal wiki. The certificate is valid, but it was issued by the company's internal CA. What is the BEST solution?",
+    "options": [
+      "Distribute the internal CA's root certificate to the trust store of all devices (e.g., via GPO/MDM)",
+      "Tell users to ignore the warning",
+      "Replace the certificate with a self-signed certificate",
+      "Disable HTTPS on the wiki"
+    ],
+    "answer": 0,
+    "explain": "A browser trusts a certificate only if the chain leads to a root of trust in the trust store. Adding the internal root CA certificate to devices makes the chain trusted. A self-signed certificate would have the same problem, and ignoring warnings teaches users bad habits."
+  },
+  {
+    "obj": "1.3",
+    "q": "During a review of the crypto configuration, which TWO algorithms should be flagged as obsolete for security use? Choose TWO.",
+    "options": [
+      "MD5",
+      "AES-256-GCM",
+      "SHA-1",
+      "SHA-384"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "MD5 and SHA-1 have practical collisions and must not be used for signatures or integrity. AES-256-GCM and SHA-384 (SHA-2 family) are current standards."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match each algorithm with its category.",
+    "options": [
+      "AES-256",
+      "RSA",
+      "SHA-256",
+      "ECDHE",
+      "ChaCha20",
+      "ECDSA",
+      "bcrypt"
+    ],
+    "targets": [
+      "Symmetric encryption",
+      "Asymmetric encryption / signature",
+      "Hashing",
+      "Key exchange",
+      "Key stretching for passwords"
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      3,
+      0,
+      1,
+      4
+    ],
+    "explain": "AES and ChaCha20 are symmetric. RSA and ECDSA are asymmetric (ECDSA for signatures). SHA-256 is a hash. ECDHE is used for key exchange and provides PFS. bcrypt is a slow password hashing algorithm (key stretching)."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match each scenario with the technology that fits it BEST.",
+    "options": [
+      "A web shop replaces the card number with a random value and keeps the original in a separate vault",
+      "A support agent sees only the last 4 digits of the card number",
+      "Malware fetches commands hidden in the pixels of a seemingly ordinary image",
+      "The private key of an offline root CA must be in tamper-resistant dedicated hardware",
+      "The disk encryption key is bound to the motherboard of a single laptop",
+      "Central creation, rotation, and access policies for the keys of all S3 buckets",
+      "Processing of sensitive data isolated from the operating system during execution"
+    ],
+    "targets": [
+      "Data masking",
+      "KMS",
+      "HSM",
+      "Steganography",
+      "Secure enclave",
+      "TPM",
+      "Tokenization"
+    ],
+    "answer": [
+      6,
+      0,
+      3,
+      2,
+      5,
+      1,
+      4
+    ],
+    "explain": "Replacement with a token plus a vault is tokenization, showing the last 4 digits is masking, hiding in an image is steganography. The root CA key goes in an HSM, a key bound to one device in a TPM, central management and rotation is KMS, and protecting data in use is a secure enclave."
+  },
+  {
+    "obj": "1.3",
+    "q": "https://www.example.com works, but https://example.com shows a certificate error in the browser. Today is 30 October 2026. Based on the output, what is the cause?",
+    "lang": "bash",
+    "snippet": "$ openssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null \\\n    | openssl x509 -noout -subject -issuer -dates -ext subjectAltName\nsubject=CN = *.example.com\nissuer=C = US, O = Let's Encrypt, CN = R11\nnotBefore=Sep 30 06:12:44 2026 GMT\nnotAfter=Dec 29 06:12:43 2026 GMT\nX509v3 Subject Alternative Name:\n    DNS:*.example.com",
+    "options": [
+      "The certificate has expired",
+      "The certificate is self-signed",
+      "The wildcard *.example.com does not cover the bare domain example.com; DNS:example.com must be added to the SAN",
+      "Let's Encrypt does not issue wildcard certificates"
+    ],
+    "answer": 2,
+    "explain": "A wildcard covers exactly one level below the domain (www.example.com, api.example.com), but not example.com itself. The fix is a certificate whose SAN contains both DNS:example.com and DNS:*.example.com. The certificate is valid until 29 December 2026 and was issued by a public CA (Let's Encrypt R11), so it is neither expired nor self-signed."
+  }
+]

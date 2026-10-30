@@ -1,0 +1,247 @@
+[
+  {
+    "obj": "2.5",
+    "q": "Pod api je Pending. Events: 0/2 nodes are available: 1 Insufficient cpu, 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }. Pod traži requests.cpu: 4, a node01 ima 2 CPU. Koja izmjena rješava problem bez diranja control-plane čvora?",
+    "options": [
+      "Povećati limits.cpu na 8",
+      "Smanjiti requests.cpu tako da stane u slobodan allocatable na node01",
+      "Dodati nodeSelector kubernetes.io/hostname: node01",
+      "Postaviti priorityClassName: system-node-critical"
+    ],
+    "answer": 1,
+    "explain": "Scheduler poredi requests sa slobodnim allocatable; node01 ne može primiti 4 CPU. Limits ne utiču na filter, nodeSelector ne dodaje resurse, a system klase su rezervisane za komponente klastera."
+  },
+  {
+    "obj": "2.5",
+    "q": "Pod ima jedan kontejner sa resources.limits: cpu: 500m, memory: 256Mi i bez polja requests. Koja će biti status.qosClass?",
+    "options": [
+      "BestEffort, jer requests nisu navedeni",
+      "Burstable, jer su postavljeni samo limits",
+      "Burstable, jer CPU i memorija imaju različite vrijednosti",
+      "Guaranteed, jer se requests automatski postavljaju na vrijednosti limits"
+    ],
+    "answer": 3,
+    "explain": "Kad su navedeni samo limits, requests dobijaju iste vrijednosti, pa su requests = limits za CPU i memoriju i klasa je Guaranteed. CPU i memorija ne moraju biti jednaki međusobno."
+  },
+  {
+    "obj": "2.5",
+    "q": "U namespace-u dev postoji ResourceQuota sa limits.memory: 4Gi. Napraviš Deployment web sa 3 replike bez resources. kubectl get deploy pokazuje READY 0/3, a kubectl get pods ne prikazuje nijedan Pod. Šta je najvjerovatnije?",
+    "options": [
+      "ReplicaSet ne može napraviti Podove jer quota traži limits.memory; greška FailedCreate je u kubectl describe rs",
+      "Scheduler odbija Podove sa porukom Insufficient memory",
+      "Podovi su u Pending i treba ih tražiti sa kubectl get pods -A",
+      "Kubelet na node01 odbija Podove sa OutOfmemory"
+    ],
+    "answer": 0,
+    "explain": "Quota se provodi u admissionu: Pod bez limits.memory se odbija pa nikad ne nastaje, a greška se vidi na ReplicaSetu. Scheduler i kubelet ne vide Pod koji nije kreiran."
+  },
+  {
+    "obj": "2.5",
+    "q": "Na node01 rade Podovi raznih aplikacija bez tolerancija. Pokreneš kubectl taint nodes node01 maintenance=true:NoExecute. Šta se dešava sa tim Podovima?",
+    "options": [
+      "Ostaju da rade, a samo novi Podovi se ne raspoređuju na node01",
+      "Ostaju da rade dok se čvor ne restartuje",
+      "Izbacuju se sa čvora; Podovi pod kontrolerima se ponovo prave tamo gdje mogu stati",
+      "Izbacuju se tek nakon 300 sekundi zbog podrazumijevane tolerancije"
+    ],
+    "answer": 2,
+    "explain": "NoExecute izbacuje postojeće Podove koji ga ne tolerišu. Ostajanje postojećih je ponašanje NoSchedule, a podrazumijevanih 300s važi samo za taints not-ready i unreachable."
+  },
+  {
+    "obj": "2.5",
+    "q": "node01 ima taint gpu=true:NoSchedule i labelu gpu=true. Pod ml mora raditi ISKLJUČIVO na node01. Šta mora biti u specifikaciji Poda? (Izaberi DVA.)",
+    "options": [
+      "toleration sa key: gpu, value: \"true\", effect: NoSchedule",
+      "priorityClassName sa visokom vrijednošću",
+      "toleration sa effect: NoExecute i tolerationSeconds: 0",
+      "resources.requests sa nvidia.com/gpu: 0",
+      "nodeSelector: gpu: \"true\" (ili ekvivalentan node affinity)"
+    ],
+    "answer": [0, 4],
+    "explain": "Toleration samo dozvoljava ulazak na čvor sa taintom, ali ne tjera Pod tamo; za to treba nodeSelector ili node affinity. Prioritet i NoExecute tolerancija ne određuju čvor."
+  },
+  {
+    "obj": "2.5",
+    "q": "Zadatak traži da se Podovi mogu raspoređivati i na controlplane čvor kubeadm klastera. Koja komanda uklanja odgovarajući taint?",
+    "options": [
+      "kubectl uncordon controlplane",
+      "kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoSchedule-",
+      "kubectl label nodes controlplane node-role.kubernetes.io/control-plane-",
+      "kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoExecute-"
+    ],
+    "answer": 1,
+    "explain": "kubeadm postavlja taint node-role.kubernetes.io/control-plane sa efektom NoSchedule, a crtica na kraju ga uklanja. uncordon skida unschedulable stanje, labela nije taint, a taint sa efektom NoExecute ne postoji na čvoru."
+  },
+  {
+    "obj": "2.5",
+    "q": "U lab klasteru (controlplane sa podrazumijevanim taintom, node01 bez tainta) napraviš Deployment sa 3 replike i requiredDuringSchedulingIgnoredDuringExecution podAntiAffinity na svoju labelu app=web, topologyKey: kubernetes.io/hostname. Kakvo je stanje?",
+    "options": [
+      "3 Poda Running na node01",
+      "2 Poda Running (po jedan na svakom čvoru), 1 Pending",
+      "Deployment se odbija pri kreiranju jer je replicas veći od broja čvorova",
+      "1 Pod Running na node01, 2 Poda Pending"
+    ],
+    "answer": 3,
+    "explain": "Obavezni anti-affinity po hostname-u dozvoljava najviše jednu repliku po čvoru, a controlplane otpada zbog tainta, pa ostaje samo node01. Validacija ne poredi replike sa brojem čvorova."
+  },
+  {
+    "obj": "2.5",
+    "q": "Pod ima nodeAffinity required sa dva nodeSelectorTerms: prvi traži disk In [ssd], drugi traži zone In [zone-a]. Na koje čvorove scheduler smije staviti Pod?",
+    "options": [
+      "Na čvorove koji imaju disk=ssd ILI zone=zone-a",
+      "Samo na čvorove koji imaju i disk=ssd i zone=zone-a",
+      "Samo na čvorove koji odgovaraju prvom termu; drugi se ignoriše",
+      "Na bilo koji čvor, uz prednost za one koji odgovaraju termima"
+    ],
+    "answer": 0,
+    "explain": "Više nodeSelectorTerms se kombinuje kao ILI, a više matchExpressions unutar jednog terma kao I. Prednost bez obaveze je ponašanje preferred pravila."
+  },
+  {
+    "obj": "2.5",
+    "q": "node01 ima taint dedicated=db:NoSchedule. Napraviš Pod sa spec.nodeName: node01 i bez tolerancija. Šta se dešava?",
+    "options": [
+      "Pod ostaje Pending sa porukom untolerated taint",
+      "API server odbija Pod jer nema toleraciju",
+      "Pod se pokreće na node01, jer nodeName zaobilazi scheduler, a NoSchedule provjerava samo scheduler",
+      "Scheduler premješta Pod na controlplane"
+    ],
+    "answer": 2,
+    "explain": "Sa nodeName Pod ide direktno kubeletu, bez filtera scheduler-a, pa NoSchedule taint ne djeluje (NoExecute bi ga izbacio). API server ne provjerava taints."
+  },
+  {
+    "obj": "2.5",
+    "q": "Klaster je pun. Pod report ima priorityClassName batch-urgent (value: 900000, preemptionPolicy: Never) i ostaje Pending, iako na node01 rade Podovi sa prioritetom 0. Zašto?",
+    "options": [
+      "Preemption radi samo za klase system-cluster-critical i system-node-critical",
+      "preemptionPolicy: Never znači da Pod ide ispred u redu čekanja, ali ne izbacuje druge Podove",
+      "Vrijednost prioriteta mora biti veća od 1000000 za preemption",
+      "PriorityClass važi samo za Podove kreirane prije same klase"
+    ],
+    "answer": 1,
+    "explain": "Sa preemptionPolicy: Never Pod čeka da se mjesto oslobodi i nikad ne izbacuje Podove nižeg prioriteta. Preemption radi za korisničke klase, a vrijednost ne mora biti tako velika."
+  },
+  {
+    "obj": "2.5",
+    "q": "U namespace-u dev rade Podovi sa limits.memory: 2Gi. Zatim napraviš LimitRange sa max.memory: 1Gi za Container. Šta se dešava?",
+    "options": [
+      "Postojeći Podovi nastavljaju da rade; novi Podovi sa limitom većim od 1Gi se odbijaju",
+      "Postojeći Podovi se odmah izbacuju sa čvora",
+      "Postojećim Podovima se limit automatski smanjuje na 1Gi",
+      "LimitRange se odbija jer u namespace-u postoje Podovi iznad maksimuma"
+    ],
+    "answer": 0,
+    "explain": "LimitRange provodi admission samo pri kreiranju ili izmjeni Podova i ne mijenja Podove koji već rade. Eviction i automatsko smanjenje se ne dešavaju."
+  },
+  {
+    "obj": "2.5",
+    "q": "Deployment web ima topologySpreadConstraints: maxSkew: 1, topologyKey: kubernetes.io/hostname, whenUnsatisfiable: DoNotSchedule, labelSelector app=web. Raspoloživa su dva čvora: čvor A ima 2 Poda app=web, čvor B ima 1. Gdje ide sljedeća replika?",
+    "options": [
+      "Na A, jer scheduler preferira čvor gdje image već postoji",
+      "Na B, jer bi na A razlika bila 3-1=2, što prelazi maxSkew",
+      "Ostaje Pending, jer je skew već 1",
+      "Na bilo koji, jer DoNotSchedule važi samo za prvi rollout"
+    ],
+    "answer": 1,
+    "explain": "Sa DoNotSchedule scheduler dozvoljava samo čvorove na kojima skew poslije raspoređivanja ostaje unutar maxSkew; na B bi bilo 2 i 2. Skew od 1 je dozvoljen, a scoring po image-u ne može preskočiti filter."
+  },
+  {
+    "obj": "2.3",
+    "q": "kubectl get hpa web pokazuje TARGETS <unknown>/70%, a describe hpa: FailedGetResourceMetric. metrics-server radi i kubectl top pods prikazuje potrošnju Podova web. Šta je najvjerovatniji uzrok?",
+    "options": [
+      "HPA mora biti verzije autoscaling/v1 za CPU metriku",
+      "Deployment web nema spec.replicas",
+      "minReplicas je veći od trenutnog broja replika",
+      "Kontejneri u Podovima web nemaju resources.requests.cpu, pa utilization ne može da se izračuna"
+    ],
+    "answer": 3,
+    "explain": "Utilization je procenat od requests; bez CPU requesta HPA ne može izračunati vrijednost. autoscaling/v2 podržava CPU, a broj replika i minReplicas ne utiču na čitanje metrike."
+  },
+  {
+    "obj": "2.3",
+    "q": "Zadatak: napravi HPA za Deployment web, najmanje 2 i najviše 6 replika, cilj prosječna CPU utilization 70%. Klaster i kubectl su v1.35. Koja komanda?",
+    "options": [
+      "kubectl create hpa web --min=2 --max=6 --cpu=70%",
+      "kubectl scale deployment web --min=2 --max=6 --cpu=70%",
+      "kubectl autoscale deployment web --min=2 --max=6 --cpu=70%",
+      "kubectl autoscale deployment web --replicas=2-6 --target=70%"
+    ],
+    "answer": 2,
+    "explain": "kubectl autoscale pravi HPA, a u v1.35 cilj se zadaje sa --cpu (procenat znači utilization). Ne postoji kubectl create hpa, scale samo postavlja fiksan broj replika, a --replicas=2-6 i --target nisu flagovi autoscale."
+  },
+  {
+    "obj": "2.3",
+    "q": "HPA cilja CPU utilization od 60%. Deployment trenutno ima 4 replike sa prosječnom utilization 90%. Koliko replika HPA želi (bez ograničenja maxReplicas i behavior)?",
+    "options": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "answer": 1,
+    "explain": "desiredReplicas = ceil(4 × 90 / 60) = ceil(6) = 6. Odnos 1,5 je izvan tolerancije od 10%, pa HPA skalira."
+  },
+  {
+    "obj": "2.3",
+    "q": "Nakon što opterećenje padne, HPA smanjuje broj replika tek nakon oko 5 minuta, iako je CPU odmah nizak. Behavior nije podešavan. Zašto?",
+    "options": [
+      "Podrazumijevani scaleDown stabilizationWindowSeconds je 300 sekundi",
+      "metrics-server skuplja metrike samo svakih 5 minuta",
+      "HPA kontroler se izvršava svakih 300 sekundi",
+      "Deployment ima minReadySeconds: 300"
+    ],
+    "answer": 0,
+    "explain": "Za scale-down HPA uzima najveću preporuku iz zadnjih 300 sekundi da izbjegne oscilacije; scale-up nema prozor. Kontroler računa svakih 15 sekundi, a minReadySeconds utiče na rollout, ne na HPA."
+  },
+  {
+    "obj": "2.3",
+    "q": "Pod web (kontejner nginx, QoS Burstable, resizePolicy za cpu NotRequired) radi u v1.35 klasteru. Treba povećati CPU limit na 800m bez ponovnog kreiranja Poda. Koja komanda?",
+    "options": [
+      "kubectl set resources pod web -c nginx --limits=cpu=800m",
+      "kubectl rollout restart pod/web",
+      "kubectl edit pod web pa izmijeniti limits",
+      "kubectl patch pod web --subresource resize --patch '{\"spec\":{\"containers\":[{\"name\":\"nginx\",\"resources\":{\"limits\":{\"cpu\":\"800m\"}}}]}}'"
+    ],
+    "answer": 3,
+    "explain": "In-place resize (GA u v1.35) ide preko resize subresource-a, a sa NotRequired se kontejner ne restartuje. Izmjena resursa kroz običan update Poda se odbija, a rollout restart ne radi nad Podom."
+  },
+  {
+    "obj": "2.3",
+    "q": "Pod je Guaranteed (cpu requests = limits = 500m). Pokušaš resize koji mijenja samo requests.cpu na 250m, a limit ostaje 500m. Šta se dešava?",
+    "options": [
+      "Resize uspijeva i Pod postaje Burstable",
+      "Resize uspijeva, ali tek nakon restarta kontejnera",
+      "Zahtjev se odbija jer bi resize promijenio QoS klasu, a ona je fiksna",
+      "Pod dobija uslov PodResizePending sa reason Deferred"
+    ],
+    "answer": 2,
+    "explain": "QoS klasa se određuje pri kreiranju i resize je ne smije promijeniti; Guaranteed Pod mora zadržati requests = limits. Deferred se odnosi na nedostatak mjesta na čvoru, ne na nedozvoljenu izmjenu."
+  },
+  {
+    "obj": "2.5",
+    "type": "match",
+    "q": "Upari efekat tainta sa ponašanjem prema Podovima koji ga ne tolerišu.",
+    "options": ["NoSchedule", "PreferNoSchedule", "NoExecute"],
+    "targets": [
+      "Novi Podovi se ne raspoređuju, a postojeći se izbacuju",
+      "Scheduler izbjegava čvor, ali ga koristi ako nema drugog izbora",
+      "Novi Podovi se ne raspoređuju, a postojeći ostaju",
+      "Čvor se automatski cordon-uje i drain-uje"
+    ],
+    "answer": [2, 1, 0],
+    "explain": "NoSchedule utiče samo na nove Podove, PreferNoSchedule je meka preporuka scheduler-u, a NoExecute izbacuje i postojeće Podove. Taint sam ne pokreće drain."
+  },
+  {
+    "obj": "2.5",
+    "type": "order",
+    "q": "Poredaj korake od kubectl apply za Pod do pokretanja kontejnera.",
+    "options": [
+      "Kubelet na izabranom čvoru pokreće kontejnere",
+      "Scheduler upisuje spec.nodeName (binding)",
+      "Filtering: izbacuju se čvorovi koji ne zadovoljavaju uslove",
+      "Admission (npr. LimitRange, ResourceQuota) prihvata Pod u API serveru",
+      "Scoring: preostali čvorovi se boduju i bira se najbolji"
+    ],
+    "answer": [3, 2, 4, 1, 0],
+    "explain": "Pod prvo prolazi admission i upisuje se u etcd, zatim scheduler filtrira i boduje čvorove, upisuje nodeName, a kubelet tog čvora pokreće kontejnere."
+  }
+]

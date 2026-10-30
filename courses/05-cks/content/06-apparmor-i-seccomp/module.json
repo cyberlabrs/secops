@@ -1,0 +1,11 @@
+{
+  "title": "AppArmor i seccomp",
+  "summary": "Ograničavanje kontejnera kernel alatima: učitavanje AppArmor profila i seccomp profila na čvorove, primjena preko securityContext polja appArmorProfile i seccompProfile, seccompDefault i otkrivanje potrebnih syscall-ova.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.4"
+  ],
+  "title_en": "AppArmor and seccomp",
+  "summary_en": "Confining containers with kernel tools: loading AppArmor and seccomp profiles onto nodes, applying them through the securityContext fields appArmorProfile and seccompProfile, seccompDefault, and discovering which syscalls are needed."
+}

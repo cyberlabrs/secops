@@ -1,0 +1,24 @@
+#!/bin/bash
+# Pravi git repo /root/kurs-shop sa istorijom (u jednom od ranijih commitova su procurili kredencijali).
+# Upotreba: kurs-repo [direktorij]
+set -e
+grep -q "$(hostname)" /etc/hosts 2>/dev/null || echo "127.0.1.1 $(hostname)" >> /etc/hosts
+D=${1:-/root/kurs-shop}
+registry-up
+rm -rf "$D" && mkdir -p "$D" && cd "$D"
+S=/opt/kurs/kurs-shop
+git init -q
+git remote add origin https://gitlab.kurs-shop.ba/shop/kurs-shop.git
+c() { GIT_AUTHOR_DATE="$1" GIT_COMMITTER_DATE="$1" git commit -q -m "$2"; }
+cp $S/app.py $S/requirements.txt $S/README.md $S/.gitignore . && mkdir -p tests config
+cp $S/tests/test_app.py tests/ && cp /opt/kurs/history/settings-v1.py config/settings.py
+git add -A && c "2026-09-01T09:00:00" "Početna verzija API-ja"
+cp -r $S/frontend $S/infra $S/k8s $S/Dockerfile .
+git add -A && c "2026-09-08T10:30:00" "Frontend zavisnosti, Terraform i Kubernetes manifest"
+cp $S/config/settings.py config/settings.py
+git add -A && c "2026-09-15T14:10:00" "Kredencijali se čitaju iz varijabli okruženja"
+cp $S/.gitlab-ci.yml .
+git add -A && c "2026-09-22T11:45:00" "CI pipeline"
+git update-ref refs/remotes/origin/main HEAD
+git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/main
+git branch -q -u origin/main 2>/dev/null || true

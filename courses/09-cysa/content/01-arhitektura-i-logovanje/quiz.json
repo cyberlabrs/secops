@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Analitičar pravi timeline incidenta iz logova firewall-a, domain controllera i web servera. Konekcija na C2 server se u timeline-u pojavljuje 3 minute PRIJE uspješne prijave korisnika koja ju je izazvala. Šta treba provjeriti PRVO?",
+    "options": [
+      "Retenciju logova na web serveru",
+      "Da li je SIEM parser ispravno mapirao polje src_ip",
+      "Sinhronizaciju vremena (NTP) između izvora logova",
+      "Da li je Security log na DC-u očišćen"
+    ],
+    "answer": 2,
+    "explain": "Nelogičan redoslijed događaja sa različitih sistema je tipičan simptom nesinhronizovanih satova. Bez zajedničkog NTP izvora i UTC zapisa korelacija ne radi. Retencija, parser i brisanje loga ne bi promijenili redoslijed događaja koji postoje."
+  },
+  {
+    "obj": "1.1",
+    "q": "Tokom istrage ransomware incidenta analitičar vidi Event ID 4688 za pokretanje powershell.exe, ali polje Process Command Line je prazno na svim hostovima. Koje je BEST rješenje za buduće incidente?",
+    "options": [
+      "Uključiti „Include command line in process creation events“ kroz GPO",
+      "Povećati retenciju Security loga na 180 dana",
+      "Instalirati drugi SIEM koji bolje parsira EVTX",
+      "Preći sa agenta na agentless prikupljanje logova"
+    ],
+    "answer": 0,
+    "explain": "Komandna linija u 4688 se ne loguje po defaultu i mora se uključiti posebnom politikom. Problem je u konfiguraciji izvora, pa ga ni duža retencija ni drugi SIEM ne rješavaju: podatak se uopšte ne generiše."
+  },
+  {
+    "obj": "1.1",
+    "q": "Napadač sa administratorskim pravima na serveru je obrisao lokalne Windows Security logove (Event ID 1102). Koja kontrola bi NAJVIŠE pomogla da dokazi ipak budu sačuvani?",
+    "options": [
+      "Povećanje maksimalne veličine Security loga",
+      "Enkripcija diska BitLockerom",
+      "Uključivanje auditovanja neuspjelih prijava",
+      "Prosljeđivanje logova u realnom vremenu u SIEM sa nepromjenjivim skladištem"
+    ],
+    "answer": 3,
+    "explain": "Ako se događaji odmah šalju van hosta u skladište koje napadač ne može mijenjati (WORM, odvojen nalog), brisanje lokalnog loga ne uklanja dokaze. Veći log i BitLocker ne sprječavaju admina da obriše log, a audit neuspjelih prijava je nevezan."
+  },
+  {
+    "obj": "1.1",
+    "q": "Organizacija obrađuje podatke o platnim karticama i mora uskladiti retenciju logova sa PCI DSS. Koji zahtjev je ispravan?",
+    "options": [
+      "Čuvati logove 30 dana u SIEM-u, nakon toga brisati",
+      "Čuvati audit logove najmanje 12 mjeseci, od toga najmanje 3 mjeseca odmah dostupno za analizu",
+      "Čuvati logove 7 godina u hot sloju",
+      "Retencija nije propisana, odlučuje tim"
+    ],
+    "answer": 1,
+    "explain": "PCI DSS traži istoriju audit logova od najmanje 12 mjeseci, pri čemu su zadnja 3 mjeseca odmah dostupna. Ostatak može biti u jeftinijem arhivskom sloju. Sedam godina u hot sloju je nepotrebno skupo i nije zahtjev standarda."
+  },
+  {
+    "obj": "1.1",
+    "q": "Na Windows serveru EDR prijavljuje proces svchost.exe pokrenut iz C:\\Users\\Public\\svchost.exe, čiji je roditelj winword.exe. Šta je NAJVJEROVATNIJE?",
+    "options": [
+      "Normalan Windows servis pokrenut kroz Office integraciju",
+      "Lažni pozitivni alarm jer je svchost.exe uvijek legitiman",
+      "Zlonamjeran proces koji se maskira kao sistemski proces",
+      "Proces nastao zbog greške u ažuriranju Windowsa"
+    ],
+    "answer": 2,
+    "explain": "Legitimni svchost.exe se nalazi u System32 i njegov roditelj je services.exe. Pogrešna putanja (folder u koji svi mogu pisati) i Word kao roditelj su jasan znak maskiranja malvera koji je vjerovatno došao kroz zlonamjeran dokument."
+  },
+  {
+    "obj": "1.1",
+    "q": "Na Linux serveru analitičar pokreće awk -F: '$3 == 0 {print $1}' /etc/passwd i dobija root i sysbackup. Šta ovo znači?",
+    "options": [
+      "sysbackup je servisni nalog za backup, što je standardna praksa",
+      "Komanda prikazuje naloge bez lozinke",
+      "sysbackup je član sudo grupe",
+      "Postoji drugi nalog sa root privilegijama, što je vjerovatan backdoor"
+    ],
+    "answer": 3,
+    "explain": "UID 0 znači pune root privilegije bez obzira na ime naloga. Na hardenovanom sistemu samo root ima UID 0, pa dodatni nalog sa UID 0 ukazuje na perzistenciju napadača. Komanda ne provjerava lozinke ni grupe."
+  },
+  {
+    "obj": "1.1",
+    "q": "Kompanija želi da udaljeni zaposleni pristupaju samo internoj HR aplikaciji, i to tek nakon provjere identiteta i stanja uređaja, bez mrežnog pristupa ostatku interne mreže. Koje rješenje to NAJBOLJE ispunjava?",
+    "options": [
+      "Zero Trust Network Access (ZTNA)",
+      "Site-to-site IPsec VPN",
+      "Full-tunnel SSL VPN",
+      "DMZ sa reverse proxy-jem bez autentikacije"
+    ],
+    "answer": 0,
+    "explain": "ZTNA daje pristup pojedinačnoj aplikaciji nakon kontinuirane provjere identiteta i uređaja, a ostatak mreže ostaje nevidljiv. VPN rješenja spuštaju korisnika u mrežu i olakšavaju lateral movement, a reverse proxy bez autentikacije ne provjerava ni identitet."
+  },
+  {
+    "obj": "1.1",
+    "q": "Firma sa 40 malih poslovnica želi jednim cloud servisom zamijeniti lokalne firewall-e, web proxy, CASB i VPN, uz SD-WAN povezivanje. Šta treba izabrati?",
+    "options": [
+      "UTM uređaj u svakoj poslovnici",
+      "SASE",
+      "Hibridni cloud",
+      "Mikrosegmentaciju u data centru"
+    ],
+    "answer": 1,
+    "explain": "SASE spaja SD-WAN i sigurnosne funkcije (SWG, CASB, ZTNA, FWaaS) isporučene iz clouda. UTM je lokalni uređaj po lokaciji, hibridni cloud je model hostinga, a mikrosegmentacija rješava drugi problem."
+  },
+  {
+    "obj": "1.1",
+    "q": "Revizija je pokazala da pet administratora ima trajno dodijeljenu Domain Admins grupu i da se njihove lozinke ne mijenjaju godinama. Koje je BEST rješenje?",
+    "options": [
+      "Uključiti zaključavanje naloga nakon 5 pogrešnih lozinki",
+      "Premjestiti lozinke u secrets manager za aplikacije",
+      "Uvesti PAM sa just-in-time pristupom, vaultom i rotacijom lozinki",
+      "Zahtijevati duže lozinke od 20 znakova"
+    ],
+    "answer": 2,
+    "explain": "Trajne privilegije ljudskih admin naloga rješava PAM: prava se dobijaju privremeno uz odobrenje, lozinke su u vaultu i rotiraju se, sesije se snimaju. Secrets manager je namijenjen mašinskim tajnama, a duže lozinke i lockout ne uklanjaju trajne privilegije."
+  },
+  {
+    "obj": "1.1",
+    "q": "Developeri drže lozinku produkcione baze u varijabli okruženja u Dockerfile-u i u git repozitoriju. Koja kontrola NAJBOLJE rješava problem?",
+    "options": [
+      "Base64 enkodiranje lozinke u Dockerfile-u",
+      "Premještanje lozinke u privatni git repozitorij",
+      "Enkripcija diska build servera",
+      "Secrets manager sa dinamičkim ili rotiranim kredencijalima koje aplikacija čita u runtime-u"
+    ],
+    "answer": 3,
+    "explain": "Tajne ne smiju biti u slici ni u kodu. Secrets manager (Vault, AWS Secrets Manager, Key Vault) ih isporučuje u runtime-u, uz reviziju i rotaciju. Base64 nije enkripcija, privatni repo i dalje čuva tajnu u istoriji, a enkripcija diska ne štiti od čitanja repozitorija."
+  },
+  {
+    "obj": "1.1",
+    "q": "Inženjer predlaže da se nedjeljni autentikovani skener ranjivosti pokreće i nad SCADA mrežom vodovoda. Koja je BEST preporuka analitičara?",
+    "options": [
+      "Koristiti pasivni monitoring mreže i inventar od proizvođača, uz segmentaciju umjesto aktivnog skeniranja",
+      "Pokrenuti skeniranje noću kada je potrošnja vode najmanja",
+      "Skenirati sa maksimalnim brojem paralelnih niti da se završi brže",
+      "Instalirati EDR agent na sve PLC uređaje"
+    ],
+    "answer": 0,
+    "explain": "Aktivno skeniranje može oboriti PLC i zaustaviti fizički proces, a u OT-u je dostupnost najvažnija. Pasivni monitoring industrijskih protokola i segmentacija su prihvaćena praksa. PLC uređaji ne podržavaju klasične EDR agente."
+  },
+  {
+    "obj": "1.1",
+    "q": "U kojem modelu je dostupnost obično najviši prioritet, zakrpe se instaliraju rijetko, a protokoli poput Modbusa nemaju ugrađenu autentikaciju?",
+    "options": [
+      "SaaS aplikacije",
+      "Kontejnerizovani mikroservisi",
+      "OT/ICS okruženja",
+      "Serverless funkcije"
+    ],
+    "answer": 2,
+    "explain": "OT/ICS sistemi upravljaju fizičkim procesima, rade decenijama i koriste industrijske protokole bez autentikacije. Kod njih je redoslijed prioriteta dostupnost, integritet pa povjerljivost. Ostali modeli su klasični IT sa čestim ažuriranjem."
+  },
+  {
+    "obj": "1.1",
+    "q": "Tim za incidente treba da istraži kompromitovan pod u Kubernetes klasteru, ali je deployment u međuvremenu zamijenio pod novim i stari je obrisan. Koja arhitektonska mjera bi NAJBOLJE spriječila gubitak dokaza ubuduće?",
+    "options": [
+      "Isključiti automatsko skaliranje deploymenta",
+      "Slati stdout, runtime (Falco) i audit logove odmah u centralni SIEM",
+      "Koristiti veće worker čvorove",
+      "Zabraniti imutabilne kontejnere"
+    ],
+    "answer": 1,
+    "explain": "Kontejneri su kratkotrajni, pa dokazi koji ostaju samo u podu nestaju sa njim. Rješenje je da telemetrija napušta pod u realnom vremenu. Gašenje skaliranja ili veći čvorovi ne čuvaju dokaze, a imutabilnost je dobra praksa koju ne treba ukidati."
+  },
+  {
+    "obj": "1.1",
+    "q": "IDS na perimetru više ne prepoznaje napade na web aplikaciju jer je sav saobraćaj prešao na TLS 1.3. Koja je BEST opcija da SOC vrati vidljivost?",
+    "options": [
+      "Vratiti aplikaciju na HTTP",
+      "Isključiti IDS jer je saobraćaj šifrovan",
+      "Koristiti TLS inspekciju na reverse proxy-ju ili WAF-u i analizu metapodataka (SNI, JA4)",
+      "Smanjiti verziju na SSL 3.0"
+    ],
+    "answer": 2,
+    "explain": "Terminacija TLS-a na proxy-ju ili WAF-u ispred aplikacije omogućava inspekciju sadržaja, a metapodaci daju dodatni kontekst. Vraćanje na HTTP ili SSL 3.0 uvodi ozbiljne ranjivosti, a gašenje IDS-a uklanja kontrolu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koja DVA fajla ili lokacije su NAJČEŠĆA meta napadača koji želi trajan pristup Linux serveru? (Izaberi DVA.)",
+    "options": [
+      "~/.ssh/authorized_keys",
+      "/usr/share/doc/",
+      "/etc/crontab i /etc/systemd/system/",
+      "/proc/cpuinfo"
+    ],
+    "answer": [0, 2],
+    "explain": "Dodat javni ključ u authorized_keys daje pristup bez lozinke, a cron poslovi i systemd unit fajlovi pokreću kod napadača pri svakom startu ili periodično. Dokumentacija i /proc/cpuinfo nisu mehanizmi perzistencije."
+  },
+  {
+    "obj": "1.1",
+    "q": "SIEM prima logove novog firewall-a, ali pravilo koje traži blokirane konekcije sa određene IP adrese nikad ne okida, iako analitičar u sirovim logovima vidi te konekcije. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Firewall ne loguje blokirane konekcije",
+      "Retencija u SIEM-u je prekratka",
+      "NTP nije podešen na firewall-u",
+      "Parser ne izdvaja polje sa izvornom IP adresom iz novog formata loga"
+    ],
+    "answer": 3,
+    "explain": "Sirovi događaji postoje, dakle izvor i ingestion rade. Ako pravilo filtrira po polju koje parser ne popunjava, pravilo nikad neće okinuti. Nakon dodavanja izvora uvijek se provjerava normalizacija polja."
+  },
+  {
+    "obj": "1.1",
+    "q": "Korisnik se prijavljuje u SaaS aplikaciju preko korporativnog identity providera, a aplikacija dobija XML assertion sa atributima korisnika. Koji protokol se koristi?",
+    "options": [
+      "SAML",
+      "OAuth 2.0 bez OIDC-a",
+      "Kerberos",
+      "RADIUS"
+    ],
+    "answer": 0,
+    "explain": "SAML koristi XML assertion koju potpisuje identity provider. OAuth 2.0 izdaje access token za delegiranu autorizaciju, OIDC dodaje ID token u JWT formatu, Kerberos radi sa tiketima u AD domenu, a RADIUS je za mrežni pristup."
+  },
+  {
+    "obj": "1.1",
+    "q": "Pravni tim traži da se zbog sudskog spora sačuvaju logovi pristupa e-pošti za određene korisnike, iako politika retencije nalaže brisanje nakon 90 dana. Šta treba primijeniti?",
+    "options": [
+      "Kompresiju logova",
+      "Legal hold nad relevantnim logovima",
+      "Anonimizaciju logova",
+      "Povećanje verbosity nivoa logovanja"
+    ],
+    "answer": 1,
+    "explain": "Legal hold privremeno suspenduje redovno brisanje za podatke relevantne za spor i ima prednost nad politikom retencije. Anonimizacija bi uništila dokaznu vrijednost, a kompresija i verbosity ne rješavaju brisanje."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari svaki problem sa konceptom logovanja na koji se odnosi.",
+    "options": [
+      "Događaji sa dva servera su u pogrešnom redoslijedu",
+      "CloudTrail validate-logs prijavljuje jedan nevalidan fajl",
+      "Regulator traži logove stare 11 mjeseci, a SIEM čuva 90 dana",
+      "Linux server ne bilježi izmjene /etc/sudoers jer auditd nema pravilo",
+      "Syslog preko UDP-a gubi poruke tokom vršnog opterećenja"
+    ],
+    "targets": [
+      "Ingestion",
+      "Configuration",
+      "Integrity and security",
+      "Time synchronization",
+      "Retention"
+    ],
+    "answer": [3, 2, 4, 1, 0],
+    "explain": "Pogrešan redoslijed je problem vremena (NTP), nevalidan fajl ukazuje na narušen integritet, prekratko čuvanje je retencija, nedostatak audit pravila je konfiguracija izvora, a gubitak poruka u transportu je problem ingestiona (rješenje: TCP/TLS ili agent sa baferom)."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari svaku tehnologiju ili koncept sa opisom koji mu NAJBOLJE odgovara.",
+    "options": [
+      "Pristup pojedinačnoj aplikaciji nakon provjere identiteta i uređaja",
+      "Privremena admin prava uz odobrenje i snimanje sesije",
+      "Kratkotrajni kredencijali za bazu koje aplikacija dobija u runtime-u",
+      "Nametanje PIN-a, enkripcije i daljinsko brisanje telefona",
+      "Nadzor geografski raspoređenih postrojenja preko RTU uređaja",
+      "SD-WAN i sigurnosne funkcije isporučene iz clouda"
+    ],
+    "targets": [
+      "SASE",
+      "ZTNA",
+      "PAM",
+      "Secrets management",
+      "MDM",
+      "SCADA"
+    ],
+    "answer": [1, 2, 3, 4, 5, 0],
+    "explain": "ZTNA daje pristup po aplikaciji, PAM upravlja privilegovanim ljudskim pristupom (JIT, snimanje), secrets management izdaje dinamičke kredencijale, MDM upravlja mobilnim uređajima, SCADA nadzire udaljena postrojenja, a SASE spaja mrežu i sigurnost u cloud servis."
+  }
+]

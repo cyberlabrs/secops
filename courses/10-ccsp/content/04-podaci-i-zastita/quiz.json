@@ -1,0 +1,312 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Organizacija uvodi program zaštite podataka u cloudu i želi da se kontrole primjenjuju dosljedno kroz cijeli životni ciklus. U kojoj fazi je NAJVAŽNIJE dodijeliti klasifikaciju podatku?",
+    "options": [
+      "Store",
+      "Create",
+      "Share",
+      "Archive"
+    ],
+    "answer": 1,
+    "explain": "Klasifikacija pri nastanku (Create) određuje kontrole u svim narednim fazama. Klasifikacija kasnije znači da je podatak već bio čuvan i korišten bez odgovarajućih kontrola."
+  },
+  {
+    "obj": "2.1",
+    "q": "Ugovor o saradnji je poslat partnerskoj firmi i organizacija više nema kontrolu nad infrastrukturom na kojoj se dokument nalazi. U kojoj fazi životnog ciklusa se nalazi podatak i koja kontrola je NAJRELEVANTNIJA?",
+    "options": [
+      "Use; šifrovanje volumena",
+      "Archive; WORM skladište",
+      "Share; Information Rights Management",
+      "Destroy; crypto-shredding"
+    ],
+    "answer": 2,
+    "explain": "Dijeljenje van organizacije je faza Share. IRM prati dokument i nakon što napusti organizaciju (ko smije otvoriti, štampati, prosljeđivati, kada pristup ističe). Šifrovanje volumena ne štiti kopiju kod partnera."
+  },
+  {
+    "obj": "2.1",
+    "q": "Analitičar otvara izvještaj sa ličnim podacima u aplikaciji i pregleda ga na ekranu, bez izmjena. U kojoj fazi životnog ciklusa je podatak?",
+    "options": [
+      "Use",
+      "Create",
+      "Store",
+      "Share"
+    ],
+    "answer": 0,
+    "explain": "Use obuhvata pregled i obradu bez trajne izmjene. Izmjena sadržaja bi bila Create (modifikacija), a čini ga dostupnim drugima Share."
+  },
+  {
+    "obj": "2.1",
+    "q": "Objektni storage provajdera dijeli svaki objekat na fragmente sa paritetom raspoređene kroz tri zone dostupnosti, tako da se objekat može rekonstruisati i nakon gubitka cijele zone. Kako se zove ova tehnika?",
+    "options": [
+      "Bit splitting",
+      "Tokenizacija",
+      "Sinhrona replikacija",
+      "Erasure coding"
+    ],
+    "answer": 3,
+    "explain": "Erasure coding dijeli podatke na fragmente i paritetne fragmente, pa se original može rekonstruisati iz podskupa uz manje prostora nego punom replikacijom. Bit splitting je usmjeren na povjerljivost (nijedna lokacija nema upotrebljiv podatak)."
+  },
+  {
+    "obj": "2.1",
+    "q": "Firma želi da nijedan pojedinačni cloud provajder ne posjeduje upotrebljiv dio njenih najosjetljivijih podataka. Koji pristup NAJBOLJE ispunjava zahtjev?",
+    "options": [
+      "Replikacija kompletnih kopija kod tri provajdera",
+      "Bit splitting: šifrovani podaci podijeljeni na dijelove koji se čuvaju kod različitih provajdera",
+      "Šifrovanje ključem provajdera kod jednog provajdera",
+      "Arhiviranje u long-term storage jednog provajdera"
+    ],
+    "answer": 1,
+    "explain": "Bit splitting raspoređuje šifrovane dijelove tako da nijedna lokacija nema upotrebljiv podatak. Puna replikacija daje svakom provajderu kompletnu kopiju, a ostale opcije drže sve kod jednog provajdera."
+  },
+  {
+    "obj": "2.1",
+    "q": "Prilikom pripreme za GDPR audit, organizacija ne zna u koje sve sisteme trećih strana odlaze lični podaci kupaca iz web shopa. Šta treba uraditi PRVO?",
+    "options": [
+      "Uključiti DLP u režimu blokiranja na svim izlaznim vezama",
+      "Šifrovati sve baze podataka",
+      "Mapirati tokove podataka (DFD) uključujući granice povjerenja, treće strane i prekogranične prenose",
+      "Raskinuti ugovore sa svim SaaS provajderima"
+    ],
+    "answer": 2,
+    "explain": "Bez mape tokova ne zna se gdje su podaci, ko ih prima i koji prenosi traže pravni osnov. DLP i šifrovanje dolaze nakon razumijevanja tokova, a raskid ugovora je nesrazmjeran."
+  },
+  {
+    "obj": "2.1",
+    "q": "Ko je, po pravilu, odgovoran za određivanje klasifikacije podatka i odobravanje pristupa?",
+    "options": [
+      "Data custodian",
+      "Cloud service provider",
+      "Data steward",
+      "Data owner"
+    ],
+    "answer": 3,
+    "explain": "Data owner (poslovna uloga) odgovara za podatak, određuje klasifikaciju i ko smije pristupiti. Custodian sprovodi kontrole, steward brine o kvalitetu i metapodacima, a CSP je obično custodian/processor."
+  },
+  {
+    "obj": "2.1",
+    "q": "Aplikacija u EU regionu replicira bazu sa ličnim podacima u region u Aziji radi disaster recoveryja. Koji rizik je NAJZNAČAJNIJI iz ugla upravljanja rizikom?",
+    "options": [
+      "Povećano kašnjenje upisa",
+      "Prekogranični prenos ličnih podataka i pitanje jurisdikcije bez odgovarajućeg pravnog osnova",
+      "Veći trošak storagea",
+      "Složenije monitorisanje performansi"
+    ],
+    "answer": 1,
+    "explain": "Data dispersion preko granica uvodi regulatorni rizik (GDPR prenos van EEA, druga jurisdikcija). Trošak i kašnjenje su operativna pitanja manjeg značaja za menadžera rizika."
+  },
+  {
+    "obj": "2.2",
+    "q": "Aplikacija na virtualnoj mašini upisuje privremene fajlove obrade na lokalni instance store disk. Šta se dešava sa tim podacima kada se instanca zaustavi i šta to znači za dizajn?",
+    "options": [
+      "Podaci se gube; na ephemeral storageu se ne smiju čuvati podaci koji moraju preživjeti instancu, uključujući logove",
+      "Podaci se automatski kopiraju u object storage",
+      "Podaci ostaju i prelaze na novu instancu",
+      "Podaci se arhiviraju u long-term storage"
+    ],
+    "answer": 0,
+    "explain": "Ephemeral storage je vezan za život instance i nestaje pri zaustavljanju ili kvaru. Trajni podaci i logovi moraju ići na volume ili object storage, odnosno u centralno logovanje."
+  },
+  {
+    "obj": "2.2",
+    "q": "Tokom revizije je otkriveno da je snapshot volumena sa bazom kupaca podijeljen kao javan. Kojem tipu storagea pripada ova prijetnja i koja kontrola je NAJBOLJA?",
+    "options": [
+      "Object storage; uključiti verzionisanje",
+      "Ephemeral storage; povećati veličinu diska",
+      "Long-term storage; uključiti object lock",
+      "Volume storage; politikom zabraniti javne snapshote i obavezno šifrovati volumene customer-managed ključem"
+    ],
+    "answer": 3,
+    "explain": "Snapshoti pripadaju volume storageu. Preventivna politika na nivou organizacije sprječava javno dijeljenje, a šifrovanje CMK-om znači da bez prava na ključ snapshot nije upotrebljiv ni ako bude podijeljen."
+  },
+  {
+    "obj": "2.2",
+    "q": "Napadač sa ukradenim administratorskim kredencijalima pokušava obrisati i backupe u object storageu kako bi pojačao ransomware ucjenu. Koja kontrola NAJBOLJE štiti backupe?",
+    "options": [
+      "Češći backupi",
+      "Object lock u compliance (WORM) modu uz verzionisanje i backupe u odvojenom nalogu",
+      "Šifrovanje backupa ključem provajdera",
+      "Premještanje backupa na ephemeral storage"
+    ],
+    "answer": 1,
+    "explain": "WORM/object lock sprječava brisanje i izmjenu i od strane administratora tokom retention perioda, a odvojeni nalog ograničava domet kompromitovanih kredencijala. Češći backupi ne pomažu ako se mogu obrisati, a šifrovanje ne sprječava brisanje."
+  },
+  {
+    "obj": "2.2",
+    "q": "Organizacija mora čuvati finansijske zapise 10 godina, pristupa im rijetko i mora dokazati da nisu mijenjani. Koje rješenje je NAJPRIKLADNIJE?",
+    "options": [
+      "Volume storage sa dnevnim snapshotima",
+      "Ephemeral storage sa replikacijom",
+      "Long-term arhivski storage sa WORM zaštitom i planom upravljanja ključevima kroz cijeli period čuvanja",
+      "Relaciona baza sa column-level šifrovanjem"
+    ],
+    "answer": 2,
+    "explain": "Arhivski storage je ekonomičan za rijetko korištene podatke, WORM dokazuje nepromjenjivost, a ključevi moraju biti dostupni cijelih 10 godina jer gubitak ključa znači gubitak arhive."
+  },
+  {
+    "obj": "2.2",
+    "q": "Koji tip storagea karakteriše ravan namespace, pristup preko HTTP API-ja i metapodaci uz svaku jedinicu podataka?",
+    "options": [
+      "Volume storage",
+      "Raw storage",
+      "File storage",
+      "Object storage"
+    ],
+    "answer": 3,
+    "explain": "Object storage čuva objekte sa metapodacima u ravnom namespaceu i pristupa im se API-jem. Volume i raw su blok uređaji, a file storage koristi hijerarhijski fajl sistem preko NFS/SMB."
+  },
+  {
+    "obj": "2.2",
+    "q": "Koja je NAJVEĆA dugoročna prijetnja specifična za šifrovane podatke u long-term arhivi?",
+    "options": [
+      "Gubitak ili nedostupnost ključeva i zastarjelost formata tokom godina čuvanja",
+      "Noisy neighbor efekat",
+      "Gubitak podataka pri gašenju instance",
+      "SQL injection"
+    ],
+    "answer": 0,
+    "explain": "Arhive žive godinama: ako se ključ izgubi ili format postane nečitljiv, podaci su izgubljeni iako fizički postoje. Gubitak pri gašenju instance se odnosi na ephemeral storage, a SQL injection na baze."
+  },
+  {
+    "obj": "2.2",
+    "q": "U kojem modelu usluga customer tipično koristi raw storage, volume storage i object storage, a u kojem information storage and management i content/file storage?",
+    "options": [
+      "PaaS; IaaS",
+      "IaaS; SaaS",
+      "SaaS; PaaS",
+      "IaaS; PaaS"
+    ],
+    "answer": 1,
+    "explain": "IaaS daje raw, volume, object i ephemeral storage. SaaS customer pristupa podacima kroz aplikaciju (information storage and management, content/file storage). PaaS se veže za structured i unstructured storage."
+  },
+  {
+    "obj": "2.3",
+    "q": "Trgovac želi smanjiti broj sistema u obimu PCI DSS-a, a da CRM i analitika i dalje rade sa vrijednošću istog formata kao broj kartice. Koja tehnika je NAJBOLJA?",
+    "options": [
+      "Šifrovanje brojeva kartica AES-256 ključem iz KMS-a",
+      "Hashovanje brojeva kartica SHA-256",
+      "Tokenizacija sa token vaultom izolovanim od ostalih sistema",
+      "Dynamic masking u CRM-u"
+    ],
+    "answer": 2,
+    "explain": "Token nema matematičku vezu sa brojem kartice, pa sistemi koji vide samo tokene mogu izaći iz PCI obima. Šifrovani PAN i dalje može držati sisteme u obimu, hash brojeva kartica je podložan pogađanju, a masking samo skriva prikaz dok original ostaje u CRM-u."
+  },
+  {
+    "obj": "2.3",
+    "q": "Pravni tim mora moći dokazati da je elektronsku narudžbu poslao baš određeni partner i da sadržaj nije mijenjan. Koji mehanizam to NAJBOLJE obezbjeđuje?",
+    "options": [
+      "SHA-256 hash narudžbe",
+      "HMAC sa ključem dijeljenim između firme i partnera",
+      "Šifrovanje narudžbe javnim ključem firme",
+      "Digitalni potpis partnera njegovim privatnim ključem, uz certifikat iz PKI"
+    ],
+    "answer": 3,
+    "explain": "Digitalni potpis daje integritet i nonrepudiation jer samo vlasnik privatnog ključa može potpisati. Hash daje samo integritet, HMAC koristi dijeljeni ključ pa obje strane mogu napraviti isti MAC, a šifrovanje javnim ključem daje povjerljivost, ne dokaz pošiljaoca."
+  },
+  {
+    "obj": "2.3",
+    "q": "Istraživački institut dobija podatke pacijenata za statističku analizu i ni pod kojim uslovima ne smije moći povezati podatke sa konkretnim osobama. Koja tehnika je NAJPRIKLADNIJA?",
+    "options": [
+      "Anonimizacija, uključujući uklanjanje ili generalizaciju indirektnih identifikatora",
+      "Pseudonimizacija sa tabelom mapiranja kod bolnice",
+      "Dynamic masking imena u aplikaciji",
+      "Tokenizacija JMBG-a"
+    ],
+    "answer": 0,
+    "explain": "Anonimizacija nepovratno uklanja vezu sa osobom, uz pažnju na indirektne identifikatore. Pseudonimizacija i tokenizacija su reverzibilne, a dynamic masking ostavlja originalne podatke u sistemu."
+  },
+  {
+    "obj": "2.3",
+    "q": "Tim podrške treba da u aplikaciji vidi samo zadnje četiri cifre broja računa klijenta, dok obrada plaćanja koristi pun broj iz iste baze. Koja tehnika je NAJBOLJA?",
+    "options": [
+      "Static masking cijele baze",
+      "Dynamic masking prema ulozi korisnika",
+      "Anonimizacija brojeva računa",
+      "Brisanje kolone sa brojem računa"
+    ],
+    "answer": 1,
+    "explain": "Dynamic masking prikazuje maskiranu vrijednost u trenutku pristupa prema ulozi, dok original ostaje za ovlaštene procese. Static masking i anonimizacija bi trajno uništili podatak potreban za plaćanje."
+  },
+  {
+    "obj": "2.3",
+    "q": "Organizacija uvodi DLP za email i SaaS kolaboraciju. Koji pristup uvođenju je NAJBOLJI?",
+    "options": [
+      "Odmah uključiti blokiranje svih poruka sa brojevima",
+      "Uvesti DLP samo na endpointima",
+      "Prvo uspostaviti klasifikaciju podataka, pokrenuti DLP u režimu nadzora, podesiti pravila, pa postepeno uvoditi blokiranje",
+      "Kupiti DLP rješenje sa najviše unaprijed definisanih pravila i uključiti sva"
+    ],
+    "answer": 2,
+    "explain": "DLP zavisi od klasifikacije, a režim nadzora omogućava podešavanje i smanjenje lažno pozitivnih rezultata prije blokiranja koje može ometati posao. Endpoint DLP sam ne pokriva SaaS i email kanale."
+  },
+  {
+    "obj": "2.3",
+    "q": "Developer pita kako aplikacija na Kubernetesu u cloudu treba dobiti lozinku produkcijske baze. Šta je NAJBOLJA preporuka?",
+    "options": [
+      "Lozinka šifrovana u konfiguracionom fajlu, a ključ u environment varijabli",
+      "Lozinka u Kubernetes manifestu u Git repozitorijumu sa ograničenim pristupom",
+      "Lozinka ugrađena u container image tokom builda",
+      "Secrets manager kojem aplikacija pristupa preko workload identiteta, uz automatsku rotaciju lozinke"
+    ],
+    "answer": 3,
+    "explain": "Secrets manager sa identitetom workloada uklanja statične tajne iz koda i imagea, a automatska rotacija smanjuje štetu od curenja. Šifrovana lozinka samo pomjera problem na ključ, a tajne u Gitu ili imageu se lako kopiraju."
+  },
+  {
+    "obj": "2.3",
+    "q": "Organizacija želi da u slučaju zahtjeva za brisanje može trajno učiniti nečitljivim sve podatke jednog klijenta, uključujući kopije u backupima i replikama u cloudu. Koji dizajn to NAJBOLJE omogućava?",
+    "options": [
+      "Envelope encryption sa posebnim ključem podataka po klijentu, tako da uništenje tog ključa čini sve kopije nečitljivim",
+      "Jedan KMS ključ za cijelu bazu sa godišnjom rotacijom",
+      "Prepisivanje zapisa klijenta nulama u produkcijskoj bazi",
+      "Šifrovanje volumena ključem provajdera"
+    ],
+    "answer": 0,
+    "explain": "Ključ po klijentu omogućava selektivni crypto-shredding: uništenjem njegovog ključa sve kopije, uključujući backupe, postaju neupotrebljive. Jedan zajednički ključ se ne može uništiti bez gubitka svih podataka, a prepisivanje ne dopire do backupa."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Upari zahtjev sa tehnikom zaštite podataka koja ga NAJBOLJE ispunjava.",
+    "options": [
+      "Potvrditi da preuzeti instalacioni fajl nije mijenjan u prenosu.",
+      "Testno okruženje sa realističnim, ali lažnim podacima o klijentima.",
+      "Analitika ponašanja korisnika uz mogućnost ponovne identifikacije kod sigurnosnog incidenta.",
+      "Spriječiti slanje fajlova sa JMBG-ovima na lične email adrese.",
+      "Čuvanje korisničkih lozinki u bazi aplikacije."
+    ],
+    "targets": [
+      "Pseudonimizacija",
+      "Sporo hashovanje sa saltom (Argon2/bcrypt)",
+      "DLP za data in motion",
+      "Static masking",
+      "SHA-256 hash",
+      "Tokenizacija"
+    ],
+    "answer": [4, 3, 0, 2, 1],
+    "explain": "Integritet fajla provjerava hash, testni podaci se prave static maskingom, analitika sa mogućom re-identifikacijom koristi pseudonimizaciju, curenje emailom sprječava DLP, a lozinke se čuvaju sporim hashovanjem sa saltom. Tokenizacija je distraktor."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Poredaj faze cloud data lifecyclea po CSA/ISC2 modelu od prve do posljednje.",
+    "options": [
+      "Archive",
+      "Use",
+      "Destroy",
+      "Create",
+      "Share",
+      "Store"
+    ],
+    "answer": [3, 5, 1, 4, 0, 2],
+    "explain": "Redoslijed je Create, Store, Use, Share, Archive, Destroy. Faze u praksi nisu uvijek linearne, ali je ovo referentni model koji ispit koristi."
+  },
+  {
+    "obj": "2.3",
+    "type": "spot",
+    "q": "Key policy za KMS ključ (KEK) kojim se šifruju podaci o naplati. Uloga KeyAdmin upravlja ključem, a aplikacija billing-app šifruje i dešifruje podatke. Označi redove koji krše least privilege ili separation of duties.",
+    "snippet": "{\n  \"Statement\": [\n    {\"Sid\": \"KeyAdmins\", \"Effect\": \"Allow\",\n     \"Principal\": {\"AWS\": \"arn:aws:iam::111122223333:role/KeyAdmin\"},\n     \"Action\": [\"kms:Create*\", \"kms:Describe*\", \"kms:EnableKeyRotation\", \"kms:PutKeyPolicy\"],\n     \"Resource\": \"*\"},\n    {\"Sid\": \"BillingApp\", \"Effect\": \"Allow\",\n     \"Principal\": {\"AWS\": \"arn:aws:iam::111122223333:role/billing-app\"},\n     \"Action\": [\"kms:Encrypt\", \"kms:Decrypt\", \"kms:GenerateDataKey\", \"kms:ScheduleKeyDeletion\"],\n     \"Resource\": \"*\"},\n    {\"Sid\": \"Reporting\", \"Effect\": \"Allow\",\n     \"Principal\": {\"AWS\": \"*\"},\n     \"Action\": \"kms:Decrypt\", \"Resource\": \"*\"}\n  ]\n}",
+    "lang": "json",
+    "answer": [8, 11],
+    "explain": "Red 9: aplikacija koja koristi ključ dobija i kms:ScheduleKeyDeletion. Korisnik ključa ne smije moći uništiti ključ: kompromitovana aplikacija (ili ransomware) bi zakazivanjem brisanja KEK-a crypto-shreddovala sve podatke. Brisanje ključa pripada odvojenoj administratorskoj ulozi uz period čekanja i alarm. Red 12: Principal \"*\" bez uslova daje kms:Decrypt svakom AWS principalu, pa svako ko dođe do šifrovanog DEK-a može dobiti otvoreni ključ. Treba navesti konkretnu ulogu za izvještavanje (i po potrebi uslove). Administratori ključa ne dobijaju Decrypt (dobra SoD), a aplikacija samo Encrypt/Decrypt/GenerateDataKey."
+  }
+]

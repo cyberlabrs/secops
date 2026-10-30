@@ -1,0 +1,307 @@
+[
+  {
+    "obj": "6.3",
+    "q": "Kupac želi dokaz da su sigurnosne kontrole SaaS provajdera bile ne samo dobro dizajnirane, nego i efikasne tokom posljednjih 12 mjeseci. Koji izvještaj je NAJPRIKLADNIJI?",
+    "options": [
+      "SOC 1 Type I",
+      "SOC 3",
+      "SOC 2 Type II",
+      "SOC 2 Type I"
+    ],
+    "answer": 2,
+    "explain": "SOC 2 Type II pokriva Trust Services Criteria (uključujući Security) i testira operativnu efikasnost kroz period. Type I je dizajn u tački, SOC 3 je sažetak bez detalja testova, a SOC 1 se odnosi na finansijsko izvještavanje."
+  },
+  {
+    "obj": "6.3",
+    "q": "Provajder javno objavljuje izvještaj na svom sajtu kao marketinški dokaz sigurnosti, bez NDA. Koji izvještaj je to NAJVJEROVATNIJE?",
+    "options": [
+      "SOC 3",
+      "SOC 2 Type II",
+      "SOC 1 Type II",
+      "ISAE 3402 izvještaj"
+    ],
+    "answer": 0,
+    "explain": "SOC 3 je za opštu upotrebu (general use). SOC 1, SOC 2 i ISAE 3402 su ograničene upotrebe i distribuiraju se korisnicima i njihovim auditorima, obično uz NDA."
+  },
+  {
+    "obj": "6.3",
+    "q": "Finansijski auditor kompanije iz EU treba uvjeravanje o kontrolama cloud provajdera koje utiču na finansijske izvještaje kompanije. Koji međunarodni standard je NAJRELEVANTNIJI?",
+    "options": [
+      "ISO/IEC 27001",
+      "ISAE 3000 za SOC 2",
+      "ISO/IEC 27036",
+      "ISAE 3402"
+    ],
+    "answer": 3,
+    "explain": "ISAE 3402 je međunarodni ekvivalent SOC 1 (SSAE 18 AT-C 320) i fokusira se na kontrole relevantne za finansijsko izvještavanje korisnika. ISO 27001 je certifikacija ISMS-a, a 27036 odnosi sa dobavljačima."
+  },
+  {
+    "obj": "6.3",
+    "q": "Kompanija koristi novi AI servis provajdera u regionu u Aziji. SOC 2 Type II provajdera pokriva IaaS servise u EU i SAD za period koji je završio prije lansiranja tog servisa. Šta je NAJBOLJI zaključak?",
+    "options": [
+      "Izvještaj pokriva sve servise jer je izdat za provajdera kao organizaciju.",
+      "Izvještaj ne daje uvjeravanje za AI servis ni za azijski region; treba tražiti druge dokaze ili sljedeći izvještaj.",
+      "Izvještaj je nevažeći i provajdera treba odbaciti.",
+      "Dovoljno je tražiti bridge letter za postojeći obim."
+    ],
+    "answer": 1,
+    "explain": "Scope statement ograničava uvjeravanje na navedene servise, lokacije i period. Bridge letter pokriva vremenski jaz za isti obim, ne nove servise. Izvještaj nije nevažeći, samo ne pokriva taj servis."
+  },
+  {
+    "obj": "6.3",
+    "q": "SOC 2 izvještaj provajdera navodi niz complementary user entity controls (CUEC). Šta to znači za korisnika?",
+    "options": [
+      "To su kontrole koje provajder planira uvesti sljedeće godine.",
+      "To su kontrole podizvođača provajdera isključene carve-out metodom.",
+      "To su kontrole koje korisnik mora sam provesti da bi kontrole provajdera bile efikasne.",
+      "To su opcionalne preporuke bez uticaja na mišljenje auditora."
+    ],
+    "answer": 2,
+    "explain": "CUEC su pretpostavke auditora o kontrolama na strani korisnika (npr. upravljanje korisničkim nalozima, MFA). Ako ih korisnik ne provede, uvjeravanje iz izvještaja za njega ne važi u potpunosti."
+  },
+  {
+    "obj": "6.3",
+    "q": "Organizacija se priprema za prvu ISO/IEC 27001 certifikaciju svog cloud okruženja. Šta je NAJBOLJI prvi korak?",
+    "options": [
+      "Gap analiza trenutnog stanja u odnosu na zahtjeve standarda.",
+      "Odmah zakazati certifikacioni audit.",
+      "Kupiti CSPM alat.",
+      "Napisati politiku prihvatljivog korištenja."
+    ],
+    "answer": 0,
+    "explain": "Gap analiza pokazuje šta nedostaje (klauzule 4 do 10 i Annex A kontrole) i daje plan. Alat ili jedna politika su dijelovi rješenja, a audit bez pripreme vodi neusklađenostima."
+  },
+  {
+    "obj": "6.3",
+    "q": "Vlasnici poslovnih procesa kroz radionice sami ocjenjuju rizike i efikasnost kontrola u svojim cloud aplikacijama. Kako se zove ova tehnika i koja je njena glavna slabost?",
+    "options": [
+      "Eksterni audit; visoka cijena.",
+      "Penetracioni test; mogući prekidi.",
+      "Baseline poređenje; ne uzima u obzir rizik.",
+      "Risk and Control Self-Assessment (RCSA); manja objektivnost jer se ocjenjuju sami."
+    ],
+    "answer": 3,
+    "explain": "RCSA uključuje prvu liniju i jeftin je, ali procjena je subjektivna. Zato se dopunjava nezavisnim provjerama (druga i treća linija, eksterni audit)."
+  },
+  {
+    "obj": "6.3",
+    "q": "Elektroprivreda u SAD razmatra čuvanje BES Cyber System Information u javnom cloudu. Koji regulatorni okvir je NAJDIREKTNIJE primjenjiv?",
+    "options": [
+      "HITECH",
+      "NERC CIP",
+      "PCI DSS",
+      "FERPA"
+    ],
+    "answer": 1,
+    "explain": "NERC CIP štiti bulk electric system u Sjevernoj Americi, uključujući zaštitu BCSI. HITECH je zdravstvo, PCI DSS kartice, FERPA obrazovanje."
+  },
+  {
+    "obj": "6.3",
+    "q": "Interni auditor treba planirati audit IAM kontrola u multi-cloud okruženju. Šta treba uraditi NAKON definisanja ciljeva audita?",
+    "options": [
+      "Definisati obim: sisteme, provajdere, lokacije, period i šta pokrivaju izvještaji provajdera.",
+      "Odmah izdati nalaze na osnovu prošlogodišnjeg izvještaja.",
+      "Zatražiti fizički pristup data centrima svih provajdera.",
+      "Napisati plan korektivnih mjera."
+    ],
+    "answer": 0,
+    "explain": "Planiranje ide od ciljeva ka obimu, zatim sprovođenju i izvještavanju. Obim u cloudu mora uzeti u obzir šta je pokriveno izvještajima CSP-a i šta je odgovornost korisnika."
+  },
+  {
+    "obj": "6.4",
+    "q": "Koja uloga nad podacima ima krajnju odgovornost (accountability) za klasifikaciju podataka i odluku ko smije da im pristupi?",
+    "options": [
+      "Data custodian",
+      "Data processor",
+      "Data steward",
+      "Data owner"
+    ],
+    "answer": 3,
+    "explain": "Data owner je poslovna uloga sa krajnjom odgovornošću. Custodian sprovodi tehničku zaštitu, steward brine o kvalitetu i značenju, a processor obrađuje u ime kontrolera."
+  },
+  {
+    "obj": "6.4",
+    "q": "IT operativni tim radi backup, šifrovanje i dodjelu pristupa podacima prema uputstvima poslovnog vlasnika. Koju ulogu tim ima?",
+    "options": [
+      "Data controller",
+      "Data custodian",
+      "Data owner",
+      "Data subject"
+    ],
+    "answer": 1,
+    "explain": "Custodian svakodnevno čuva i tehnički štiti podatke prema zahtjevima vlasnika, ali ne odlučuje o klasifikaciji ni svrsi obrade."
+  },
+  {
+    "obj": "6.4",
+    "q": "Kompanija kupuje cyber osiguranje da pokrije troškove eventualne povrede podataka u cloudu. Koja je ovo strategija tretmana rizika i šta ostaje kod kompanije?",
+    "options": [
+      "Avoid; ništa ne ostaje.",
+      "Accept; finansijski gubitak.",
+      "Transfer; odgovornost (accountability), zakonske obaveze i reputacioni rizik ostaju kod kompanije.",
+      "Mitigate; vjerovatnoća povrede se smanjuje."
+    ],
+    "answer": 2,
+    "explain": "Osiguranje prenosi finansijske posljedice, ali kontroler ostaje odgovoran pred regulatorom i ispitanicima, a reputacija se ne može prenijeti. Osiguranje ne smanjuje vjerovatnoću događaja."
+  },
+  {
+    "obj": "6.4",
+    "q": "Banka sa niskim apetitom za rizik procjenjuje provajdera koji često uvodi nove servise u preview fazi i ima agresivan pristup inovacijama. Šta je NAJVAŽNIJE procijeniti?",
+    "options": [
+      "Kompatibilnost risk appetitea i risk profilea provajdera sa apetitom banke, uz kontrole i politike koje to premošćuju.",
+      "Samo cijenu usluga.",
+      "Broj regiona provajdera.",
+      "Da li provajder ima mobilnu aplikaciju za upravljanje."
+    ],
+    "answer": 0,
+    "explain": "Procjena programa upravljanja rizikom provajdera uključuje kontrole, metodologije, politike, risk profile i apetit. Neusklađen apetit znači da banka mora ograničiti korištenje (npr. zabrana preview servisa politikom) ili izabrati drugog provajdera."
+  },
+  {
+    "obj": "6.4",
+    "q": "Sistem vrijedan 400.000 EUR ima faktor izloženosti 25% za određeni scenarij, a scenarij se očekuje jednom u četiri godine. Koliki je ALE?",
+    "options": [
+      "100.000 EUR",
+      "400.000 EUR",
+      "50.000 EUR",
+      "25.000 EUR"
+    ],
+    "answer": 3,
+    "explain": "SLE = 400.000 × 0,25 = 100.000 EUR. ARO = 0,25. ALE = SLE × ARO = 25.000 EUR. Kontrola koja košta više od smanjenja ALE-a nije ekonomski opravdana."
+  },
+  {
+    "obj": "6.4",
+    "q": "CISO želi upravi pokazati rano upozorenje o rastu rizika konfiguracije u cloudu. Koja metrika je NAJPRIKLADNIJA?",
+    "options": [
+      "Ukupan broj logova primljenih u SIEM.",
+      "KRI: broj kritičnih pogrešnih konfiguracija (npr. javno izloženi storage) i njihov trend u odnosu na prag.",
+      "Broj zaposlenih u IT-u.",
+      "Mjesečni trošak clouda."
+    ],
+    "answer": 1,
+    "explain": "Key Risk Indicator mjeri izloženost i upozorava prije incidenta, posebno kad se prikaže trend u odnosu na prag tolerancije. Ostale opcije ne mjere rizik."
+  },
+  {
+    "obj": "6.4",
+    "q": "Javna kompanija u SAD koristi SaaS ERP za finansijsko izvještavanje. Koji zahtjev regulatorne transparentnosti NAJDIREKTNIJE stavlja te cloud kontrole u obim?",
+    "options": [
+      "FERPA",
+      "SOX sekcija 404 (interna kontrola nad finansijskim izvještavanjem)",
+      "GDPR čl. 35",
+      "NERC CIP"
+    ],
+    "answer": 1,
+    "explain": "SOX 404 traži procjenu ICFR-a, pa su sistemi koji utiču na finansijske izvještaje, uključujući SaaS ERP, u obimu; dokaz o kontrolama provajdera obično je SOC 1 izvještaj."
+  },
+  {
+    "obj": "6.5",
+    "q": "Kompanija ima krovni ugovor sa konsultantskom firmom i za svaki novi projekat migracije potpisuje poseban dokument sa isporučevinama, rokovima i cijenom. Kako se zove taj poseban dokument?",
+    "options": [
+      "SLA",
+      "MSA",
+      "SOW",
+      "OLA"
+    ],
+    "answer": 2,
+    "explain": "Statement of Work definiše konkretan posao pod krovnim Master Service Agreementom. SLA definiše mjerljiv nivo usluge, a OLA je interni dogovor između timova."
+  },
+  {
+    "obj": "6.5",
+    "q": "Pri pregovorima sa cloud provajderom, koja klauzula NAJBOLJE štiti korisnika od rizika gubitka podataka pri raskidu ugovora?",
+    "options": [
+      "Klauzula o povratu podataka u dogovorenom, upotrebljivom formatu i roku, pomoći pri tranziciji i potvrđenom brisanju nakon povrata.",
+      "Klauzula o service credits za dostupnost ispod 99,9%.",
+      "Klauzula o nadležnom sudu.",
+      "Klauzula o automatskom produženju ugovora."
+    ],
+    "answer": 0,
+    "explain": "Termination klauzule sa povratom podataka, tranzicijom i brisanjem direktno adresiraju exit rizik i lock-in. Service credits i nadležnost suda ne garantuju pristup podacima."
+  },
+  {
+    "obj": "6.5",
+    "q": "Kompanija zavisi od specijalizovanog softvera malog dobavljača čija je finansijska situacija nesigurna. Koja mjera NAJBOLJE ublažava rizik prestanka rada dobavljača?",
+    "options": [
+      "Duži ugovor sa dobavljačem.",
+      "Viši SLA za dostupnost.",
+      "Right to audit klauzula.",
+      "Escrow aranžman za izvorni kod, podatke i dokumentaciju sa jasnim okidačima za predaju."
+    ],
+    "answer": 3,
+    "explain": "Escrow agent predaje izvorni kod i ostale materijale kod definisanih događaja (stečaj, prestanak podrške). Duži ugovor, SLA i audit ne pomažu ako dobavljač prestane postojati."
+  },
+  {
+    "obj": "6.5",
+    "q": "Veliki javni cloud provajder odbija da kupcu dozvoli fizički audit svojih data centara. Šta je NAJBOLJI pristup kupca koji nije u posebno regulisanom sektoru?",
+    "options": [
+      "Odustati od clouda.",
+      "Ugovorom obezbijediti redovnu dostavu nezavisnih izvještaja (SOC 2 Type II, ISO 27001, CSA STAR) i informacija o incidentima, te ih redovno pregledati.",
+      "Bez dozvole testirati infrastrukturu provajdera.",
+      "Prihvatiti uslugu bez ikakvog uvjeravanja."
+    ],
+    "answer": 1,
+    "explain": "Right to audit se kod velikih CSP-ova najčešće ostvaruje kroz izvještaje treće strane, jer fizički audit hiljada kupaca nije izvodljiv i ugrozio bi druge tenante. Regulisani sektori (npr. po DORA-i) mogu imati jača prava pristupa."
+  },
+  {
+    "obj": "6.5",
+    "q": "Koji dio ISO/IEC 27036 daje smjernice za sigurnost odnosa sa dobavljačima cloud usluga?",
+    "options": [
+      "27036-1",
+      "27036-3",
+      "27036-4",
+      "27036-2"
+    ],
+    "answer": 2,
+    "explain": "27036-4 je posvećen sigurnosti cloud usluga. Dio 1 su pregled i koncepti, dio 2 zahtjevi, dio 3 lanac snabdijevanja hardvera, softvera i usluga."
+  },
+  {
+    "obj": "6.5",
+    "q": "SaaS dobavljač kompanije radi na infrastrukturi drugog javnog cloud provajdera. Kako kompanija NAJBOLJE upravlja ovim rizikom četvrte strane?",
+    "options": [
+      "Ignorisati ga, jer kompanija nema ugovor sa četvrtom stranom.",
+      "Direktno ugovoriti uslugu sa IaaS provajderom.",
+      "Zahtijevati od SaaS dobavljača da pređe na vlastiti data centar.",
+      "Ugovorom tražiti listu podizvođača, flow-down sigurnosnih zahtjeva i obavještenje o promjenama, te pregledati izvještaje koji pokrivaju podizvođače (inclusive ili zasebni izvještaj kod carve-outa)."
+    ],
+    "answer": 3,
+    "explain": "Upravljanje lancem snabdijevanja zahtijeva vidljivost podizvođača i prenos obaveza kroz ugovore. Kompanija nema direktan ugovor sa četvrtom stranom, ali rizik postoji i upravlja se preko dobavljača."
+  },
+  {
+    "obj": "6.4",
+    "type": "match",
+    "q": "Upari primjer sa strategijom tretmana rizika.",
+    "options": [
+      "Odluka da se zdravstveni dosijei ne sele u javni cloud.",
+      "Uvođenje šifrovanja sa ključevima korisnika i multi-region arhitekture.",
+      "Kupovina cyber osiguranja.",
+      "Vlasnik rizika formalno potpisuje da prihvata preostali rizik kratkog prekida internog wikija."
+    ],
+    "targets": [
+      "Mitigate",
+      "Accept",
+      "Avoid",
+      "Transfer"
+    ],
+    "answer": [2, 0, 3, 1],
+    "explain": "Neseljenje podataka je izbjegavanje, kontrole su ublažavanje, osiguranje je prenos finansijskih posljedica, a formalno potpisan preostali rizik je prihvatanje."
+  },
+  {
+    "obj": "6.3",
+    "type": "order",
+    "q": "Poredaj korake planiranja i sprovođenja audita cloud okruženja, od prvog do posljednjeg.",
+    "options": [
+      "Sprovesti audit: prikupiti dokaze, intervjue i automatizovane dokaze iz cloud API-ja",
+      "Izvijestiti o nalazima i pratiti korektivne mjere, uključujući lessons learned",
+      "Definisati ciljeve audita",
+      "Definisati obim, uključujući provajdere, lokacije, period i pokrivenost izvještajima CSP-a"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Audit počinje ciljevima, zatim obimom, slijedi sprovođenje i na kraju izvještavanje i praćenje, uz lessons learned koji ulaze u sljedeći plan."
+  },
+  {
+    "obj": "6.5",
+    "type": "spot",
+    "q": "Bolnica pregovara ugovor sa SaaS provajderom za elektronske zdravstvene kartone. Označi klauzule koje predstavljaju najveći ugovorni rizik za bolnicu.",
+    "snippet": "Član 7. Podaci korisnika\n7.1 Korisnik zadržava vlasništvo nad svim podacima koje unese u Uslugu.\n7.2 Provajder smije koristiti podatke korisnika, metapodatke i logove za treniranje vlastitih AI modela.\n7.3 Podaci se obrađuju i čuvaju isključivo u regionima EU (Frankfurt, Dablin).\nČlan 12. Raskid\n12.1 Svaka strana može raskinuti ugovor uz otkazni rok od 90 dana.\n12.2 Po raskidu provajder u roku od 24 sata trajno briše sve podatke korisnika, bez mogućnosti izvoza.\n12.3 Provajder dostavlja pisanu potvrdu o brisanju podataka.\nČlan 15. Assurance\n15.1 Provajder jednom godišnje dostavlja SOC 2 Type II izvještaj, a po potrebi i bridge letter.",
+    "lang": "text",
+    "answer": [2, 6],
+    "explain": "Red 3 (7.2): provajder dobija pravo da podatke pacijenata, metapodatke i logove koristi za treniranje vlastitih AI modela, što je obrada u drugu svrhu i krši vlasništvo nad podacima i GDPR; klauzula o vlasništvu treba izričito zabraniti takvu upotrebu, uključujući izvedene podatke. Red 7 (12.2): brisanje u roku od 24 sata bez izvoza znači gubitak pristupa podacima pri raskidu i vendor lock-in; ugovor mora garantovati povrat podataka u upotrebljivom formatu u dogovorenom roku i pomoć pri tranziciji, pa tek onda potvrđeno brisanje (12.3). Lokacija u EU, otkazni rok i godišnji SOC 2 Type II su razumne klauzule."
+  }
+]

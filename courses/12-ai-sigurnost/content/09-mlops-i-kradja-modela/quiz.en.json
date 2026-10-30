@@ -1,0 +1,276 @@
+[
+  {
+    "obj": "4.2",
+    "q": "While assessing an ML platform, you find that the MLflow tracking server is reachable from the entire internal network without authentication, and the artifact store contains the weights of all models. What is the first step?",
+    "options": [
+      "Convert all models to safetensors format",
+      "Put authentication (SSO) in front of the server, restrict it to the platform's private network and set per-project ACLs",
+      "Enable differential privacy when training all models",
+      "Add a watermark to all models in the registry"
+    ],
+    "answer": 1,
+    "explain": "The problem is the classic exposure of a management API and artifacts (AML.T0035 AI Artifact Collection). First you close off access. Safetensors solves code loading, DP data privacy, and a watermark only helps prove theft afterwards."
+  },
+  {
+    "obj": "4.2",
+    "q": "Data scientists can register a model from a notebook and assign it the production alias. A CI job signs the model. Why is the signature worth little in this setup?",
+    "options": [
+      "Because cosign doesn't support files larger than 2 GB",
+      "Because a signature only applies to pickle formats",
+      "Because the production alias must be a tag in an OCI registry",
+      "Because a model can reach production by bypassing CI; promotion must go only through a gate with a dedicated role"
+    ],
+    "answer": 3,
+    "explain": "A signature proves an artifact went through the pipeline only if the pipeline is the only path to production. The role that trains must be separated from the role that promotes. The other claims are false."
+  },
+  {
+    "obj": "4.2",
+    "q": "The promotion gate checks the hash of only the model.safetensors file. An attacker with registry access modifies the tokenizer and config.json. How should the gate be fixed?",
+    "options": [
+      "The manifest and signature must cover all files in the model directory, and the gate must reject files not in the manifest",
+      "It's enough to scan model.safetensors with an antivirus",
+      "Switch to pickle because it contains the configuration too",
+      "Check only the file sizes"
+    ],
+    "answer": 0,
+    "explain": "The configuration and tokenizer change model behavior just as much as the weights. That is why OpenSSF model signing signs a manifest of hashes for the whole directory. Pickle would add the risk of code execution, and size is not an integrity check."
+  },
+  {
+    "obj": "4.2",
+    "q": "A training job in Kubernetes uses a service account with read and write access to all of the organization's buckets, because that was easiest. Which control best reduces the risk?",
+    "options": [
+      "Encrypting all buckets with the same KMS key",
+      "Running training only at night",
+      "Workload identity with short-lived tokens: reading only the required dataset version and writing only to its own run's space",
+      "Moving training into a notebook"
+    ],
+    "answer": 2,
+    "explain": "A compromised dependency or code in the training job gets the job's rights. Per-pipeline least privilege limits the damage. Encryption doesn't help if the identity has the right to decrypt, and a notebook is usually even less isolated."
+  },
+  {
+    "obj": "4.2",
+    "q": "A vendor reports that a dataset you downloaded six months ago has been withdrawn due to suspected poisoning. What lets you determine within minutes which models are affected?",
+    "options": [
+      "API gateway logs",
+      "The SBOM of the serving image",
+      "A model card in the repository's README file",
+      "An AI-BOM with every model version, listing datasets as components with dependsOn relationships"
+    ],
+    "answer": 3,
+    "explain": "An AI-BOM (CycloneDX ML-BOM) lists datasets and base models, so affected models are found with a jq query. An image SBOM contains software packages, gateway logs contain queries, and a manual README is neither machine-queryable nor reliably up to date."
+  },
+  {
+    "obj": "4.2",
+    "q": "Which CycloneDX component type (since version 1.5) denotes a model in an AI-BOM?",
+    "options": [
+      "machine-learning-model",
+      "library",
+      "application",
+      "container"
+    ],
+    "answer": 0,
+    "explain": "CycloneDX 1.5 introduced the machine-learning-model and data types, as well as the modelCard field. The other types exist, but they describe software and images."
+  },
+  {
+    "obj": "4.2",
+    "q": "A team manually fills in the AI-BOM once a quarter on a wiki page. What is the main problem?",
+    "options": [
+      "The wiki doesn't support JSON",
+      "CycloneDX forbids writing it by hand",
+      "The AI-BOM quickly goes stale and doesn't match the version in production; it should be generated in the pipeline from the run's metadata and stored with the model version",
+      "An AI-BOM is needed only for models with open weights"
+    ],
+    "answer": 2,
+    "explain": "An AI-BOM is only worth as much as its accuracy for a specific version. It is generated automatically, like an SBOM with a build, and stored in the registry. The other claims are false."
+  },
+  {
+    "obj": "4.2",
+    "q": "A serving pod loads a model from a path it receives as a management API parameter, and the management and inference APIs listen on the same public port. Which change is most important?",
+    "options": [
+      "Increase the number of replicas",
+      "Move the management API to a separate, unreachable network and load only signed models from the registry by version or digest",
+      "Enable gzip compression of responses",
+      "Move the inference API to HTTP/2"
+    ],
+    "answer": 1,
+    "explain": "A management API that loads a model from an arbitrary path means whoever reaches it chooses what gets executed. It must be isolated, and the model source restricted to the verified registry. The rest doesn't affect security."
+  },
+  {
+    "obj": "4.2",
+    "q": "Which ATLAS mitigation directly describes keeping a list of a model's ingredients, datasets and dependencies?",
+    "options": [
+      "AML.M0023 AI Bill of Materials",
+      "AML.M0004 Restrict Number of AI Model Queries",
+      "AML.M0002 Passive AI Output Obfuscation",
+      "AML.M0015 Adversarial Input Detection"
+    ],
+    "answer": 0,
+    "explain": "AML.M0023 is AI Bill of Materials. M0004 limits the number of queries, M0002 reduces information in the output, and M0015 detects adversarial inputs."
+  },
+  {
+    "obj": "4.2",
+    "q": "The security team wants the promotion gate to fail if a model in the AI-BOM has no license listed. Which check does that?",
+    "options": [
+      "syft scan dir:. -o table",
+      "cosign verify-blob on the AI-BOM",
+      "jq -e '[.components[] | select(.type==\"machine-learning-model\" and (.licenses|not))] | length == 0' aibom.cdx.json",
+      "sha256sum aibom.cdx.json"
+    ],
+    "answer": 2,
+    "explain": "jq -e returns an error when the expression isn't true, so the job fails if there is a model without a license. Syft produces a software SBOM, cosign verifies a signature, and a hash proves integrity, not content."
+  },
+  {
+    "obj": "4.3",
+    "q": "A classifier's public API returns the full probability distribution over all classes, and clients are anonymous. Which combination of controls makes model extraction hardest?",
+    "options": [
+      "Encrypting the weights at rest and TLS",
+      "Client authentication, per-identity quotas and returning only the decision (class) instead of probabilities",
+      "A model watermark",
+      "Switching from ONNX to safetensors"
+    ],
+    "answer": 1,
+    "explain": "Extraction (AML.T0024.002) requires many queries and rich output. Authentication and quotas (AML.M0004) and minimal output (AML.M0002) attack both conditions. Encryption protects weights on disk, a watermark is for proof, and the format doesn't affect the API."
+  },
+  {
+    "obj": "4.3",
+    "q": "A researcher wants to determine whether a specific patient's data was in a model's training set, using only API responses. What is this category called, and what is its ATLAS label?",
+    "options": [
+      "Model inversion, AML.T0024.001",
+      "Model extraction, AML.T0024.002",
+      "Data poisoning, AML.T0020",
+      "Membership inference, AML.T0024.000"
+    ],
+    "answer": 3,
+    "explain": "The question “was this record in the set” is membership inference (AML.T0024.000 Infer Training Data Membership). Inversion reconstructs properties of the data, extraction copies the model's behavior, and poisoning changes the dataset."
+  },
+  {
+    "obj": "4.3",
+    "q": "In the OWASP Top 10 for LLM Applications 2025, where does model extraction through mass API queries belong?",
+    "options": [
+      "LLM03 Supply Chain",
+      "LLM05 Improper Output Handling",
+      "LLM08 Vector and Embedding Weaknesses",
+      "LLM10 Unbounded Consumption"
+    ],
+    "answer": 3,
+    "explain": "The 2025 version has no separate Model Theft category (it existed in 2023); extraction via the API is part of LLM10 Unbounded Consumption, together with cost attacks and DoS."
+  },
+  {
+    "obj": "4.3",
+    "q": "A model was fine-tuned on internal documents with different access rights, and all employees use the endpoint. What is the best long-term fix for the risk of content leakage?",
+    "options": [
+      "Add an instruction to the system prompt not to reveal confidential documents",
+      "Use RAG with per-document access control instead of building the content into the weights",
+      "Increase the model's temperature",
+      "Limit the answer length to 100 tokens"
+    ],
+    "answer": 1,
+    "explain": "Once content is in the weights, access rights disappear: anyone who queries the model can get at memorized text (LLM02). RAG enforces access on every query. Prompt instructions are not a security control, and temperature and length only change the form of the answer."
+  },
+  {
+    "obj": "4.3",
+    "q": "Which control in the data preparation stage most reduces the risk that an LLM reproduces personal data from the training set verbatim?",
+    "options": [
+      "Minimization and removal of personal data and secrets, plus deduplication before training",
+      "Encrypting the dataset in the bucket",
+      "Signing the model after training",
+      "Reducing the number of GPUs"
+    ],
+    "answer": 0,
+    "explain": "A model can't memorize what isn't in the dataset, and duplicates increase memorization. Encryption protects the dataset from theft, but the model still learns the content; a signature protects the artifact's integrity, not privacy."
+  },
+  {
+    "obj": "4.3",
+    "q": "A team wants a formal guarantee that an individual record has a bounded influence on the trained model, and accepts somewhat lower accuracy. What should it use?",
+    "options": [
+      "An ensemble of three models",
+      "4-bit quantization",
+      "Differential privacy during training (e.g., DP-SGD)",
+      "A larger batch size"
+    ],
+    "answer": 2,
+    "explain": "Differential privacy provides a formal, measurable bound on the influence of an individual record, at a cost in accuracy and resources. The other techniques give no such guarantee."
+  },
+  {
+    "obj": "4.3",
+    "q": "Management asks whether a watermark in the model's weights protects against theft. What is the correct answer?",
+    "options": [
+      "A watermark doesn't prevent copying; it serves to prove the origin of a stolen model later, so it is a forensic control alongside access protection",
+      "Yes, a watermark encrypts the weights so the attacker can't use them",
+      "Yes, a watermark blocks loading the model on someone else's hardware",
+      "No, watermarks are only for images the model generates"
+    ],
+    "answer": 0,
+    "explain": "Watermarking and fingerprinting help with proof and legal proceedings, but they don't prevent theft. Prevention is IAM, encryption with a KMS key, logging and egress control."
+  },
+  {
+    "obj": "4.3",
+    "q": "Gateway logs show that one partner account sends 200,000 queries a day, systematically spread across the input space, 50 times more than usual. Which mitigation does this finding confirm as useful?",
+    "options": [
+      "AML.M0007 Sanitize Training Data",
+      "AML.M0013 Code Signing",
+      "AML.M0011 Restrict Library Loading",
+      "AML.M0024 AI Telemetry Logging together with per-identity quotas (AML.M0004)"
+    ],
+    "answer": 3,
+    "explain": "The query pattern looks like an extraction attempt; it was detected thanks to telemetry, and quotas limit the volume. Data sanitization, code signing and library restrictions don't address this risk."
+  },
+  {
+    "obj": "4.3",
+    "q": "A mobile app contains a model that runs locally on the device. How should the weights be treated in the risk assessment?",
+    "options": [
+      "As secrets, because they are encrypted in the app package",
+      "As internal, because the user doesn't see them in the interface",
+      "As public: encryption and obfuscation only slow down extraction, so sensitive data and logic shouldn't be kept in that model",
+      "As protected, if the app is signed"
+    ],
+    "answer": 2,
+    "explain": "The decryption key has to be on the device, so a determined attacker gets to the weights. The decision is architectural: only a model whose disclosure is acceptable goes onto the device. App signing protects integrity, not confidentiality."
+  },
+  {
+    "obj": "4.3",
+    "q": "Before promoting an LLM fine-tuned on support tickets, the team inserts a few unique made-up records into the dataset and checks during evaluation that the model doesn't reproduce them. What is this technique called, and where does it belong?",
+    "options": [
+      "Data poisoning, in the collection stage",
+      "A canary memorization test, in the promotion gate",
+      "Adversarial training, in serving",
+      "Model distillation, in the registry"
+    ],
+    "answer": 1,
+    "explain": "Canary records measure whether the model memorizes individual records; the test belongs to evaluation in the gate. It isn't poisoning, because the records are inserted deliberately and in a controlled way for measurement, not to change the model's behavior."
+  },
+  {
+    "obj": "4.2",
+    "type": "order",
+    "q": "Order the steps for promoting a model from candidate to production so that the signature and AI-BOM mean something, and serving doesn't trust the model's name.",
+    "options": [
+      "Serving pulls the model from the registry by version or digest and verifies the signature at load time",
+      "The training job registers the candidate with the dataset hash and run ID in its metadata",
+      "The gate checks the format, manifest and evaluation; only then is the manifest signed",
+      "The pipeline generates the AI-BOM from the metadata and stores it with the version",
+      "The role with promotion rights moves the production alias to the verified version"
+    ],
+    "answer": [1, 3, 2, 4, 0],
+    "explain": "The candidate is created with metadata, the AI-BOM is generated from it, the gate checks everything (including that the AI-BOM exists) before signing, promotion goes only through a dedicated role, and serving loads the verified version and verifies the signature again."
+  },
+  {
+    "obj": "4.3",
+    "type": "match",
+    "q": "Match the risk with the most appropriate primary control.",
+    "options": [
+      "An insider downloads production weights to a personal device",
+      "Anonymous clients send millions of queries and build a substitute model",
+      "The model verbatim repeats email addresses from the training set",
+      "You need to prove in court that a competitor's model is a copy of yours"
+    ],
+    "targets": [
+      "A model fingerprint or watermark",
+      "Model quantization",
+      "Least privilege, download logging and a DLP alert",
+      "Removal of PII and duplicates before training",
+      "Authentication, quotas and minimal output"
+    ],
+    "answer": [2, 4, 3, 0],
+    "explain": "Weight theft is a problem of access and monitoring; extraction via the API is made harder with quotas and less informative output; memorization of personal data is handled before training; a watermark serves as proof. Quantization is not a security control."
+  }
+]

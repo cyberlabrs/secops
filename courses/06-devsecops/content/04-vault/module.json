@@ -1,0 +1,11 @@
+{
+  "title": "Upravljanje tajnama: HashiCorp Vault",
+  "summary": "Vault u pipelineu: KV v2, HCL politike, AppRole i JWT auth za GitLab id_tokens, dinamičke tajne sa lease-om i dostava tajni aplikaciji preko Vault Agenta ili External Secrets Operatora.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.4"
+  ],
+  "title_en": "Secrets management: HashiCorp Vault",
+  "summary_en": "Vault in the pipeline: KV v2, HCL policies, AppRole and JWT auth for GitLab id_tokens, dynamic secrets with leases, and delivering secrets to the application via Vault Agent or the External Secrets Operator."
+}

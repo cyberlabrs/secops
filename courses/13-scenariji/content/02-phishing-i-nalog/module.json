@@ -1,0 +1,14 @@
+{
+  "title": "Scenarij 1: phishing, kompromitovan nalog i lateralno kretanje",
+  "summary": "Phishing poruka sa lažnom stranicom za prijavu, MFA umor i ukradena sesija u Entra ID-u, pivot preko VPN-a na Linux jump host, perzistencija kroz authorized_keys i cron, prelazak na server baze. Zaglavlja i SPF/DKIM/DMARC, KQL nad SigninLogs i AuditLogs, auth.log, Wazuh alarmi, obuzdavanje, vremenska linija i izvještaj.",
+  "minutes": 120,
+  "domain": 1,
+  "objectives": [
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4"
+  ],
+  "title_en": "Scenario 1: phishing, a compromised account and lateral movement",
+  "summary_en": "A phishing email with a fake sign-in page, MFA fatigue and a stolen session in Entra ID, a pivot over VPN to a Linux jump host, persistence through authorized_keys and cron, and a move to the database server. Headers and SPF/DKIM/DMARC, KQL over SigninLogs and AuditLogs, auth.log, Wazuh alerts, containment, timeline and report."
+}

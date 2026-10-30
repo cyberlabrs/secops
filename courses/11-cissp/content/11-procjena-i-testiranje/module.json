@@ -1,0 +1,15 @@
+{
+  "title": "Procjena, testiranje i audit",
+  "summary": "Strategije procjene i audita (interno, eksterno, treća strana, lokacija), vulnerability assessment i pentest, coverage, interface, log review, synthetic transactions, code review, misuse case, attack simulations, KPI/KRI, backup verifikacija, sanacija, izuzeci, responsible disclosure i SOC izvještaji.",
+  "minutes": 90,
+  "domain": 6,
+  "objectives": [
+    "6.1",
+    "6.2",
+    "6.3",
+    "6.4",
+    "6.5"
+  ],
+  "title_en": "Assessment, Testing and Audit",
+  "summary_en": "Assessment and audit strategies (internal, external, third-party, location), vulnerability assessment and penetration testing, coverage and interface testing, log review, synthetic transactions, code review, misuse cases, attack simulations, KPIs/KRIs, backup verification, remediation, exception handling, responsible disclosure and SOC reports."
+}

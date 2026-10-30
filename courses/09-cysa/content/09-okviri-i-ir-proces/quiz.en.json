@@ -1,0 +1,300 @@
+[
+  {
+    "obj": "3.1",
+    "q": "In an incident report, an analyst lists: group FIN-X (attacker), a macro loader (tool), the domain cdn-upd4te.example and IP 203.0.113.45 (C2), the company's accounting department (target). Which framework is the analyst MOST LIKELY using?",
+    "options": [
+      "Cyber Kill Chain",
+      "Diamond Model of Intrusion Analysis",
+      "OWASP Web Security Testing Guide",
+      "NIST CSF 2.0 Govern function"
+    ],
+    "answer": 1,
+    "explain": "The four elements (adversary, capability, infrastructure, victim) are the vertices of the Diamond Model. The Kill Chain describes phases, not those four roles; OWASP WSTG is a web application testing methodology; Govern is a risk management function."
+  },
+  {
+    "obj": "3.1",
+    "q": "An employee opened a Word attachment from a phishing email and enabled a macro, which launched PowerShell. In which Cyber Kill Chain phase is the macro execution?",
+    "options": [
+      "Delivery",
+      "Installation",
+      "Weaponization",
+      "Exploitation"
+    ],
+    "answer": 3,
+    "explain": "Sending the email with the attachment is Delivery, and executing the macro (exploiting the user or a vulnerability) is Exploitation. Installation follows when persistence is established (service, scheduled task). Weaponization is building the document on the attacker's side."
+  },
+  {
+    "obj": "3.1",
+    "q": "In which Cyber Kill Chain phase does the victim organization have the LEAST direct visibility?",
+    "options": [
+      "Weaponization",
+      "Reconnaissance",
+      "Delivery",
+      "Command and Control"
+    ],
+    "answer": 0,
+    "explain": "Weaponization (combining the exploit and payload) happens on the attacker's infrastructure and the defender doesn't see it; it can only be inferred from threat intel. Recon sometimes leaves scanning traces, and Delivery and C2 are visible in email and network logs."
+  },
+  {
+    "obj": "3.1",
+    "q": "A SOC manager wants to determine which attacker behavior the existing SIEM rules do NOT cover, in order to plan new detections. What is the BEST approach?",
+    "options": [
+      "Sort alerts by Cyber Kill Chain phases and count them",
+      "Fill in a Diamond Model for every alert from last month",
+      "Map the existing rules to MITRE ATT&CK techniques in the ATT&CK Navigator and perform a gap analysis",
+      "Run an OSSTMM perimeter test"
+    ],
+    "answer": 2,
+    "explain": "ATT&CK with technique IDs makes it possible to measure detection coverage: techniques without rules are gaps. The Kill Chain is too coarse (7 phases), the Diamond Model analyzes individual events, and OSSTMM is a testing methodology."
+  },
+  {
+    "obj": "3.1",
+    "q": "In MITRE ATT&CK, what does the identifier T1059.001 represent?",
+    "options": [
+      "The Execution tactic",
+      "The procedure of a specific APT group",
+      "Sub-technique (PowerShell) of the Command and Scripting Interpreter technique",
+      "A mitigation for scripting languages"
+    ],
+    "answer": 2,
+    "explain": "An ID with a dot is a sub-technique: T1059 is the Command and Scripting Interpreter technique, and .001 is PowerShell. Tactics have the TA prefix (TA0002 Execution), mitigations the M prefix, and procedures are descriptions of how a group used a technique."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which statement BEST describes the difference between a tactic and a technique in MITRE ATT&CK?",
+    "options": [
+      "A tactic is the attacker's goal (why), and a technique is the way it is achieved (how)",
+      "A tactic is a specific tool, and a technique is an attacker group",
+      "A tactic applies only to cloud, and a technique to endpoints",
+      "Tactics are linear phases as in the Kill Chain, and techniques are not related to tactics"
+    ],
+    "answer": 0,
+    "explain": "Tactic = why (e.g., Persistence), technique = how (e.g., Scheduled Task). A procedure is a group's specific implementation. ATT&CK is not linear, and one technique can belong to several tactics."
+  },
+  {
+    "obj": "3.1",
+    "q": "An analyst has only one C2 IP address from a threat intel report. They search EDR network connections and passive DNS to find other attacker domains and other infected hosts. What is this technique called in the context of the Diamond Model?",
+    "options": [
+      "Weaponization",
+      "Lateral movement",
+      "Sandboxing",
+      "Pivoting from the Infrastructure vertex to the other vertices"
+    ],
+    "answer": 3,
+    "explain": "The Diamond Model is especially useful for pivoting: from a known vertex (infrastructure) you discover the others (other victims, tools, the attacker). Lateral movement is an attacker tactic, and sandboxing is dynamic analysis of a sample."
+  },
+  {
+    "obj": "3.1",
+    "q": "The criticism of the Cyber Kill Chain that analysts MOST OFTEN cite is:",
+    "options": [
+      "It has too many phases to be useful to management",
+      "It is focused on the perimeter and malware, so it describes insiders and attacks with stolen credentials poorly",
+      "It cannot be used for phishing attacks",
+      "It requires a paid Lockheed Martin license"
+    ],
+    "answer": 1,
+    "explain": "The Kill Chain is linear and oriented toward intrusion from outside and malware installation. Malware-free attacks (valid accounts, cloud APIs) and insiders are hard to fit; that's why it's used alongside ATT&CK or the Unified Kill Chain."
+  },
+  {
+    "obj": "3.1",
+    "q": "A team wants to test whether the SIEM detects the techniques used by a ransomware group active in their industry, by executing those techniques in a controlled way in a test environment. What is this approach called?",
+    "options": [
+      "Adversary emulation based on the group's ATT&CK profile",
+      "Diamond activity thread",
+      "OWASP Top 10 assessment",
+      "Authenticated vulnerability scan"
+    ],
+    "answer": 0,
+    "explain": "Adversary emulation (e.g., Atomic Red Team, CALDERA) uses the ATT&CK techniques of a known group to verify detections: threat-informed defense. The other options don't test behavioral detection."
+  },
+  {
+    "obj": "3.2",
+    "q": "EDR has confirmed active ransomware encryption on one file server. What should the incident responder do FIRST?",
+    "options": [
+      "Reimage the server",
+      "Isolate the server from the network to prevent spread",
+      "Restore data from the latest backup",
+      "Write a lessons learned report"
+    ],
+    "answer": 1,
+    "explain": "After confirmation (analysis) comes containment: isolation stops the spread and preserves volatile evidence. Reimage is eradication, restore is recovery, and lessons learned is post-incident."
+  },
+  {
+    "obj": "3.2",
+    "q": "During which phase of the IR process does the team create playbooks, define roles, and hold tabletop exercises?",
+    "options": [
+      "Analysis",
+      "Post-incident",
+      "Recovery",
+      "Preparation"
+    ],
+    "answer": 3,
+    "explain": "Plans, playbooks, roles, tools, and training are preparation. The post-incident phase may update playbooks based on lessons learned, but creating and rehearsing them in advance is Preparation."
+  },
+  {
+    "obj": "3.2",
+    "q": "An analyst determined that the alert is a true positive, that three hosts are affected, and that financial data is at risk, so they assigned the incident a high severity. Which phase has just ended?",
+    "options": [
+      "Detection",
+      "Containment",
+      "Analysis",
+      "Eradication"
+    ],
+    "answer": 2,
+    "explain": "Validating the alert and determining scope, impact, and severity are Analysis. Detection is noticing a possible incident, and containment and eradication follow after analysis."
+  },
+  {
+    "obj": "3.2",
+    "q": "After reimaging a compromised web server, the team restores the application from a clean backup, verifies file hashes, and introduces enhanced monitoring before releasing it to production. Which phase is this?",
+    "options": [
+      "Eradication",
+      "Containment",
+      "Preparation",
+      "Recovery"
+    ],
+    "answer": 3,
+    "explain": "Returning the service to operation with integrity verification and enhanced monitoring is Recovery. The reimage (removing the cause) was Eradication."
+  },
+  {
+    "obj": "3.2",
+    "q": "NIST SP 800-61 Rev. 3 (2025) maps IR activities to the functions of which framework?",
+    "options": [
+      "NIST SP 800-53 Rev. 5 control families",
+      "ISO/IEC 27035",
+      "NIST Cybersecurity Framework (CSF) 2.0",
+      "MITRE ATT&CK tactics"
+    ],
+    "answer": 2,
+    "explain": "Rev. 3 supersedes Rev. 2 and organizes recommendations through the six CSF 2.0 functions: Govern, Identify, Protect, Detect, Respond, Recover, with the Improvement category (ID.IM) for continuous improvement."
+  },
+  {
+    "obj": "3.2",
+    "q": "According to NIST SP 800-61r3, which CSF 2.0 functions correspond to the old Preparation phase?",
+    "options": [
+      "Detect and Respond",
+      "Govern, Identify, and Protect",
+      "Respond and Recover",
+      "Only Identify (Improvement)"
+    ],
+    "answer": 1,
+    "explain": "Rev. 3 maps Preparation to Govern, Identify (all categories), and Protect: broader risk management activities that support IR. Detect, Respond, and Recover are the incident response itself."
+  },
+  {
+    "obj": "3.2",
+    "q": "The attacker was removed, but three weeks later the same malware appears on the same hosts. What was MOST LIKELY missed?",
+    "options": [
+      "Eradication did not remove all persistence mechanisms or the exploited vulnerability",
+      "The Detection phase was too slow",
+      "The communication plan did not include the PR team",
+      "A tabletop exercise was not held"
+    ],
+    "answer": 0,
+    "explain": "Reinfection of the same systems indicates that the cause was not removed: a remaining scheduled task, account, web shell, or unpatched vulnerability. That is the task of the eradication phase, and RCA should confirm the cause."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which TWO statements correctly describe MITRE ATT&CK? Select TWO.",
+    "options": [
+      "It is based on observed adversary behavior in real attacks",
+      "It has exactly seven linear phases",
+      "One technique can belong to several tactics",
+      "It describes only Windows environments"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "ATT&CK is a knowledge base built from real attacks, and a technique like Scheduled Task belongs to Execution, Persistence, and Privilege Escalation. Seven linear phases is the Kill Chain, and ATT&CK covers Windows, Linux, macOS, cloud, containers, network, mobile, and ICS."
+  },
+  {
+    "obj": "3.2",
+    "q": "Which TWO activities belong to the Containment phase? Select TWO.",
+    "options": [
+      "Updating the IR plan after the incident",
+      "Blocking the C2 domain on DNS and the proxy",
+      "Restoring the database from backup",
+      "Disabling the compromised account"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "Blocking C2 communication and disabling the account prevent the attacker from continuing and spreading, which is containment. Updating the plan is post-incident, and restore is recovery."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Order the phases of the Cyber Kill Chain from first to last.",
+    "options": [
+      "Installation",
+      "Delivery",
+      "Actions on Objectives",
+      "Reconnaissance",
+      "Command and Control",
+      "Exploitation",
+      "Weaponization"
+    ],
+    "answer": [
+      3,
+      6,
+      1,
+      5,
+      0,
+      4,
+      2
+    ],
+    "explain": "Reconnaissance → Weaponization → Delivery → Exploitation → Installation → Command and Control → Actions on Objectives."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Match each incident element with its Diamond Model vertex.",
+    "options": [
+      "C2 domain cdn-upd4te.example",
+      "Ransomware affiliate renting RaaS",
+      "Laptop in the accounting department",
+      "Macro loader and Cobalt Strike beacon",
+      "A partner's compromised email server sending phishing",
+      "CFO targeted with the email"
+    ],
+    "targets": [
+      "Adversary",
+      "Capability",
+      "Infrastructure",
+      "Victim"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1,
+      2,
+      3
+    ],
+    "explain": "Domains and servers used for delivery and control are Infrastructure. The actor (affiliate) is the Adversary. Tools and malware are Capability. The target (person or system) is the Victim."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Order the phases of the incident response process from the CS0-004 objectives.",
+    "options": [
+      "Containment",
+      "Post-incident",
+      "Detection",
+      "Recovery",
+      "Preparation",
+      "Eradication",
+      "Analysis"
+    ],
+    "answer": [
+      4,
+      2,
+      6,
+      0,
+      5,
+      3,
+      1
+    ],
+    "explain": "Preparation → Detection → Analysis → Containment → Eradication → Recovery → Post-incident, and lessons from the post-incident phase feed back into preparation."
+  }
+]

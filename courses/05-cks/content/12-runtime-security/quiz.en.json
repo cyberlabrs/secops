@@ -1,0 +1,255 @@
+[
+  {
+    "obj": "6.1",
+    "q": "Task: change the output of the default Falco rule 'Terminal shell in container' to the format time,user,container name. Where and how do you do it?",
+    "options": [
+      "In /etc/falco/falco_rules.local.yaml: same rule name, output: %evt.time,%user.name,%container.name, with override: {output: replace}",
+      "You change the output directly in /etc/falco/falco_rules.yaml",
+      "In /etc/falco/falco.yaml you set json_output: true and output_format",
+      "In /etc/falco/falco_rules.local.yaml you write a rule with append: true and the new output"
+    ],
+    "answer": 0,
+    "explain": "Local changes go into falco_rules.local.yaml, which is loaded afterwards, and the output is replaced with override replace. falco_rules.yaml is overwritten on upgrade, falco.yaml doesn't change the text of an individual rule, and the old append would add text instead of replacing it."
+  },
+  {
+    "obj": "6.1",
+    "q": "In falco_rules.local.yaml you add: '- rule: Terminal shell in container / condition: and not k8s.ns.name = dev / override: {condition: append}'. What is the effect?",
+    "options": [
+      "The rule fires only in the dev namespace",
+      "The rule stops firing for a shell in the dev namespace",
+      "Falco reports an error because a condition must not start with and",
+      "The original rule's condition is replaced with 'not k8s.ns.name = dev'"
+    ],
+    "answer": 1,
+    "explain": "condition: append appends the text to the end of the existing condition, producing '<original> and not k8s.ns.name = dev'. That's why the addition starts with and; replace would give a replacement."
+  },
+  {
+    "obj": "6.1",
+    "q": "You wrote a rule with condition: open_read and container and fd.name = /etc/shadow. You run kubectl exec into a Pod running on node01 and read /etc/shadow, but journalctl -u falco on the controlplane shows nothing. What is most likely?",
+    "options": [
+      "open_read doesn't cover openat",
+      "fd.name doesn't contain the full path",
+      "Falco sees only syscalls on its own node; the alert is in the journal on node01",
+      "Rules from falco_rules.local.yaml are loaded only after a reboot"
+    ],
+    "answer": 2,
+    "explain": "Each Falco process watches the kernel of its own node, so you look for the alert with ssh node01 journalctl -u falco. open_read covers open/openat, fd.name is the full path, and rule changes are loaded on reload or service restart."
+  },
+  {
+    "obj": "6.1",
+    "q": "After changing falco_rules.local.yaml, systemctl status falco shows 'failed'. Which command tells you why the fastest?",
+    "options": [
+      "kubectl -n falco logs ds/falco",
+      "cat /var/log/falco/alerts.log",
+      "crictl logs falco",
+      "journalctl -u falco -n 50"
+    ],
+    "answer": 3,
+    "explain": "In the lab Falco runs as a systemd service, so rule loading errors (YAML, unknown field or macro) go to its journal. It isn't a DaemonSet or a container, and the alerts file doesn't contain startup errors."
+  },
+  {
+    "obj": "6.1",
+    "q": "The task requires Falco to write alerts to /var/log/falco/alerts.log in JSON format. Which combination in /etc/falco/falco.yaml does that?",
+    "options": [
+      "json_output: true and file_output: {enabled: true, filename: /var/log/falco/alerts.log}",
+      "file_output: {enabled: true, format: json, filename: /var/log/falco/alerts.log}",
+      "stdout_output: {enabled: true, filename: /var/log/falco/alerts.log, json: true}",
+      "output: json and rules_files: [/var/log/falco/alerts.log]"
+    ],
+    "answer": 0,
+    "explain": "json_output is a global key that switches all outputs to JSON, and file_output with enabled and filename writes to a file. file_output has no format key, stdout has no filename, and rules_files is a list of rule files."
+  },
+  {
+    "obj": "6.2",
+    "q": "Which Falco field in the output directly gives you the name of the Pod in which the event happened?",
+    "options": [
+      "container.name",
+      "k8s.pod.name",
+      "proc.pname",
+      "container.image.repository"
+    ],
+    "answer": 1,
+    "explain": "k8s.pod.name is the Pod name, and k8s.ns.name goes with it. container.name is the name of the container in the Pod, proc.pname the parent process name, and image.repository the image."
+  },
+  {
+    "obj": "6.2",
+    "q": "You want an alert when apt-get, yum or apk is started in any container. Which condition is correct?",
+    "options": [
+      "open_write and container and fd.name in (apt-get, yum, apk)",
+      "evt.type = connect and container and proc.name in (apt-get, yum, apk)",
+      "spawned_process and container and proc.name in (apt-get, yum, apk)",
+      "spawned_process and not container and proc.cmdline contains install"
+    ],
+    "answer": 2,
+    "explain": "Starting a program is spawned_process, and the program name is proc.name. fd.name is a file path or connection, connect captures networking, and 'not container' would look at processes on the host."
+  },
+  {
+    "obj": "6.2",
+    "q": "A rule for a shell in a container has the condition '... and proc.tty != 0'. An attacker runs kubectl exec web -- sh -c 'id; cat /etc/passwd' (without -it). What happens?",
+    "options": [
+      "The alert fires because sh was started",
+      "The alert fires twice, for id and cat",
+      "Falco blocks the command",
+      "The alert doesn't fire because the process has no terminal"
+    ],
+    "answer": 3,
+    "explain": "Without -t, kubectl exec doesn't allocate a TTY, so proc.tty is 0 and the condition isn't met. That's why rules for non-interactive shells must not depend on a TTY. Falco only detects anyway and never blocks."
+  },
+  {
+    "obj": "6.2",
+    "q": "Which TWO activities in a container would a rule with the condition 'open_write and container and fd.name startswith /etc/' report? (Choose TWO.)",
+    "options": [
+      "echo 'x:x:0:0::/root:/bin/sh' >> /etc/passwd",
+      "cat /etc/shadow",
+      "Creating the file /etc/cron.d/backdoor",
+      "Writing to /tmp/payload",
+      "Running /etc/init.d/nginx"
+    ],
+    "answer": [0, 2],
+    "explain": "Both open a file below /etc for writing. cat only reads (open_read), /tmp isn't below /etc, and running a script is an execve, not an open for writing."
+  },
+  {
+    "obj": "6.3",
+    "q": "A Falco alert contains only container.id=4f1a2b3c4d5e, without the Pod name. On which node and with which command do you find the Pod?",
+    "options": [
+      "On the node where Falco raised the alert: crictl ps --id 4f1a2b3c4d5e, then crictl inspect for the labels io.kubernetes.pod.name and namespace",
+      "On any node: kubectl get pods -A | grep 4f1a2b3c4d5e",
+      "On the controlplane: docker ps | grep 4f1a2b3c4d5e",
+      "kubectl describe node | grep 4f1a2b3c4d5e"
+    ],
+    "answer": 0,
+    "explain": "crictl on the node where the container runs accepts the truncated ID, and inspect shows the Pod labels. kubectl get pods doesn't print container IDs, the cluster uses containerd without Docker, and describe node doesn't list containers."
+  },
+  {
+    "obj": "6.3",
+    "q": "ss -tlnp on node01 shows an nc process (pid=48213) listening on port 6666. How do you determine the fastest which container it's in?",
+    "options": [
+      "kubectl get pods -A -o wide | grep 6666",
+      "cat /proc/48213/cgroup, then look up the container ID from the path with crictl ps",
+      "strace -p 48213 and read the Pod name from the output",
+      "netstat -an | grep 6666"
+    ],
+    "answer": 1,
+    "explain": "The process's cgroup path contains the container ID, and crictl ps maps it to a Pod. kubectl doesn't know about ports a process opens on its own, strace shows syscalls, and netstat without -p doesn't give the PID."
+  },
+  {
+    "obj": "6.3",
+    "q": "The Pod web-7d9c5-abcde in prod is compromised. You want to cut off its network traffic immediately but keep it for forensics. What do you do?",
+    "options": [
+      "kubectl -n prod delete pod web-7d9c5-abcde --grace-period=0 --force",
+      "kubectl -n prod scale deploy web --replicas=0",
+      "You add the label quarantine=true and a NetworkPolicy that selects that label with policyTypes [Ingress, Egress] and no rules",
+      "kubectl cordon node01"
+    ],
+    "answer": 2,
+    "explain": "A policy with both types and no rules isolates the Pod in both directions, and the Pod stays for examination. Deleting and scaling destroy evidence, and cordon only prevents new Pods on the node."
+  },
+  {
+    "obj": "6.3",
+    "q": "After isolating the Pod, you want the Service to stop selecting it and the ReplicaSet to create a healthy replacement, while the compromised Pod remains. What do you do?",
+    "options": [
+      "kubectl annotate pod X kubernetes.io/quarantine=true",
+      "kubectl -n prod delete rs <name>",
+      "kubectl -n prod patch deploy web -p '{\"spec\":{\"paused\":true}}'",
+      "kubectl -n prod label pod X app- (you remove the label used by the Service and the ReplicaSet)"
+    ],
+    "answer": 3,
+    "explain": "Without the app label the Pod doesn't match the selector of the Service or the ReplicaSet: it leaves the endpoints, and the ReplicaSet creates a new Pod. An annotation doesn't affect selectors, deleting the ReplicaSet deletes the Pod too, and pausing doesn't change existing Pods."
+  },
+  {
+    "obj": "6.3",
+    "type": "match",
+    "q": "Match the attacker activity with the MITRE ATT&CK tactic.",
+    "options": [
+      "kubectl exec -it web -- bash",
+      "cat /var/run/secrets/kubernetes.io/serviceaccount/token",
+      "Creating a CronJob that starts a reverse shell every 5 minutes",
+      "Running a crypto miner that consumes the node's CPU"
+    ],
+    "targets": [
+      "Impact",
+      "Persistence",
+      "Execution",
+      "Credential Access",
+      "Initial Access"
+    ],
+    "answer": [2, 3, 1, 0],
+    "explain": "exec into a container is Execution, stealing the SA token is Credential Access, a CronJob that keeps coming back is Persistence, and a miner that consumes resources is Impact. Initial Access is the first entry (e.g. a vulnerable application), which isn't offered here."
+  },
+  {
+    "obj": "6.3",
+    "type": "order",
+    "q": "Order the investigation steps after the Falco alert 'Shell in container'.",
+    "options": [
+      "Isolate the Pod with a quarantine NetworkPolicy",
+      "On the node, map container.id to the Pod and PID (crictl ps, crictl inspect)",
+      "Read the alert in journalctl -u falco on the node where it originated",
+      "Remove the Pod or scale the Deployment to 0 and fix the root cause",
+      "Examine the process: /proc/<pid>/cmdline, ss -tnp, ls -l /proc/<pid>/fd"
+    ],
+    "answer": [2, 1, 4, 0, 3],
+    "explain": "From the alert you move to identification (container.id → Pod and PID), then examine the process while it's still running, isolate the Pod to stop the spread, and only at the end remove it and fix the root cause."
+  },
+  {
+    "obj": "6.4",
+    "q": "The Deployment web needs a read-only root FS. You added readOnlyRootFilesystem: true to spec.template.spec.securityContext and kubectl apply reports the error unknown field. Where does the field belong?",
+    "options": [
+      "spec.template.spec.containers[].securityContext.readOnlyRootFilesystem",
+      "spec.template.metadata.annotations",
+      "spec.securityContext.readOnlyRootFilesystem at the Deployment level",
+      "spec.template.spec.volumes[].readOnly"
+    ],
+    "answer": 0,
+    "explain": "readOnlyRootFilesystem is in the container's SecurityContext, not in the PodSecurityContext. A Deployment has no securityContext of its own, and readOnly on a volume refers to the mount, not the root FS."
+  },
+  {
+    "obj": "6.4",
+    "q": "After readOnlyRootFilesystem: true the nginx Pod is in CrashLoopBackOff, and kubectl logs says: mkdir() \"/var/cache/nginx/client_temp\" failed (30: Read-only file system). How do you fix this properly?",
+    "options": [
+      "You set readOnlyRootFilesystem back to false",
+      "You add an emptyDir volume mounted at /var/cache/nginx (and the other paths nginx writes to, e.g. /var/run)",
+      "You add privileged: true",
+      "You set runAsUser: 0"
+    ],
+    "answer": 1,
+    "explain": "emptyDir provides a writable directory only where the application has to write, and the root FS stays read-only. Setting it back to false or privileged defeats the purpose, and the root user still can't write to a read-only FS."
+  },
+  {
+    "obj": "6.4",
+    "q": "You set immutable: true on the ConfigMap app-config. Now LOG_LEVEL needs to change. What do you do?",
+    "options": [
+      "kubectl edit cm app-config and change the value",
+      "kubectl patch cm app-config -p '{\"immutable\":false}' and then change it",
+      "Delete the ConfigMap, create a new one with the change and restart the Pods that use it",
+      "kubectl replace --force isn't allowed, so the ConfigMap is permanently locked"
+    ],
+    "answer": 2,
+    "explain": "With an immutable ConfigMap, data can't be changed, and immutable can't be set back to false. The only way is to delete and recreate it (which is exactly what replace --force does), plus restarting the Pods."
+  },
+  {
+    "obj": "6.4",
+    "q": "The application image contains /bin/sh, and you're not allowed to change the image. The root FS isn't read-only. Which trick removes the shell right after the container starts?",
+    "options": [
+      "securityContext.capabilities.drop: [ALL]",
+      "readinessProbe with httpGet on /bin/sh",
+      "command: [\"rm\", \"/bin/sh\"] in spec.containers",
+      "startupProbe with exec: command: [\"rm\", \"-f\", \"/bin/sh\", \"/bin/bash\"]"
+    ],
+    "answer": 3,
+    "explain": "The startupProbe runs in the container after the application starts; rm -f returns 0 so the probe succeeds, and the shell is gone. Changing command would replace the application, dropping capabilities doesn't delete files, and an httpGet probe doesn't execute anything in the container."
+  },
+  {
+    "obj": "6.3",
+    "q": "Based on these Falco alerts from the same Pod, which description of the attack is most accurate?",
+    "snippet": "09:41:03.512: Notice A shell was spawned in a container (user=root pod=web-7d9c5-abcde ns=prod cmd=bash)\n09:41:37.090: Warning Sensitive file opened for reading (user=root pod=web-7d9c5-abcde file=/etc/shadow)\n09:42:10.774: Notice Unexpected connection to K8s API Server (pod=web-7d9c5-abcde cmd=curl -sk)\n09:42:58.301: Critical Drop and execute new binary (pod=web-7d9c5-abcde exe=/tmp/kworkerd)\n09:43:05.601: Warning Outbound connection to port 3333 (pod=web-7d9c5-abcde dst=45.9.148.21:3333)\n09:43:06.002: Warning Outbound connection to port 3333 (pod=web-7d9c5-abcde dst=45.9.148.21:3333)",
+    "lang": "log",
+    "options": [
+      "Interactive access to the container, credential reading and API server discovery, then running a dropped binary that connects to a mining pool: a cryptominer",
+      "A regular rolling update: the new binary is part of the new image version, so the alerts are expected",
+      "A container escape to the node, because /etc/shadow was read from the host",
+      "The attack failed: the alerts are Notice, Warning and Critical, which means Falco blocked them"
+    ],
+    "answer": 0,
+    "explain": "The order gives the phases: execution (shell), credential access (/etc/shadow inside the container), discovery (API server call), then execution of a binary not in the image and connections to port 3333, typical for mining pools (impact: resource hijacking). A file in /tmp is not part of the image, so it is not a rolling update; the alert carries the pod, so the container's file was read; and Falco only detects and blocks nothing, regardless of priority. Next step: isolate the Pod (deny NetworkPolicy), investigate, then delete it."
+  }
+]

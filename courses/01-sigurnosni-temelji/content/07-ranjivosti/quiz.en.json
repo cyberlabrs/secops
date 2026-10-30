@@ -1,0 +1,76 @@
+[
+  {
+    "q": "What is the difference between a CVE and a CWE?",
+    "options": ["There is no difference", "A CVE is a specific vulnerability in a product, a CWE is a type (category) of weakness", "A CWE is a severity score", "Only NIST uses CVEs"],
+    "answer": 1,
+    "explain": "CVE-2021-44228 is a specific vulnerability in Log4j. CWE-502 or CWE-917 describe the type of weakness behind it."
+  },
+  {
+    "q": "What does EPSS measure?",
+    "options": ["Vulnerability severity from 0 to 10", "The probability that a CVE will be exploited in real attacks within the next 30 days", "The number of affected systems", "The cost of the fix"],
+    "answer": 1,
+    "explain": "EPSS is a probability from 0 to 1, published daily. CVSS measures severity, EPSS the probability of exploitation."
+  },
+  {
+    "q": "CVE A: CVSS 9.8, EPSS 0.002, internal system without network access. CVE B: CVSS 7.5, in CISA KEV, on an internet-facing VPN appliance. What do you patch first?",
+    "options": ["A, because it has a higher CVSS", "B, because it's actively exploited and exposed to the internet", "Both at once, according to CVSS", "Neither until CVSS 5.0 comes out"],
+    "answer": 1,
+    "explain": "KEV means proven exploitation, and internet exposure means the target is reachable. CVSS by itself doesn't reflect the risk in your environment."
+  },
+  {
+    "q": "What are the four metric groups in CVSS 4.0?",
+    "options": ["Base, Temporal, Environmental, Scope", "Base, Threat, Environmental, Supplemental", "Impact, Exploitability, Scope, Threat", "Low, Medium, High, Critical"],
+    "answer": 1,
+    "explain": "Temporal was renamed Threat in 4.0, and a Supplemental group that doesn't change the score was added. Scope was replaced by separate impact metrics for subsequent systems."
+  },
+  {
+    "q": "What does a CVSS-BT score denote?",
+    "options": ["Base + Temporal (3.1)", "Base + Threat metrics in CVSS 4.0", "No technical details", "The vendor's score"],
+    "answer": 1,
+    "explain": "CVSS 4.0 explicitly states which groups are included: CVSS-B, CVSS-BT, CVSS-BE, CVSS-BTE."
+  },
+  {
+    "q": "What does it mean that a CVE is in the CISA KEV catalog?",
+    "options": ["It has a CVSS of 10", "There is evidence it's being actively exploited in real attacks", "No patch exists yet", "It only affects the US government"],
+    "answer": 1,
+    "explain": "KEV contains only vulnerabilities with confirmed exploitation. That's why it's the strongest priority signal, especially on exposed systems."
+  },
+  {
+    "q": "A new critical CVE is published in a popular library. What tells you fastest which of your services contain it?",
+    "options": ["A CVSS calculator", "The SBOMs of your artifacts", "EPSS", "WAF logs"],
+    "answer": 1,
+    "explain": "An SBOM is a list of components and versions. With SBOMs in a central tool (e.g. Dependency-Track) the search takes a minute."
+  },
+  {
+    "q": "A vendor says a CVE in their library doesn't affect their product because the vulnerable function is never called. How is that statement conveyed in a standardized way?",
+    "options": ["SBOM", "VEX with status not_affected and a justification", "CVSS Environmental", "KEV"],
+    "answer": 1,
+    "explain": "VEX describes whether a product is actually affected. Scanners that support VEX can then suppress such false positives."
+  },
+  {
+    "q": "An EPSS score is 0.10. What is true about the percentile?",
+    "options": ["The percentile is always 10", "The percentile is high (around the 88th), because most CVEs have a much lower probability", "The percentile is unrelated to the score", "The percentile is 50"],
+    "answer": 1,
+    "explain": "The distribution of EPSS scores is heavily skewed toward zero, so a 10% probability already puts a CVE in the top ~12%. FIRST recommends showing both numbers."
+  },
+  {
+    "q": "Which metrics show that a vulnerability management program is working? (multiple answers)",
+    "options": ["MTTR per priority", "Percentage of findings resolved within SLA", "Total number of scanner findings", "Number of exposed systems with KEV vulnerabilities"],
+    "answer": [0, 1, 3],
+    "explain": "The total number of findings grows with every new scanner and says nothing about risk. What matters is speed, meeting deadlines and exposure to what is actually being attacked."
+  },
+  {
+    "q": "Why should you regularly rebuild a Docker image even when the code doesn't change?",
+    "options": ["Because of image size", "The base image and packages receive security patches the old image lacks", "Docker requires it", "Because of licenses"],
+    "answer": 1,
+    "explain": "An image built six months ago contains packages from six months ago. Regular rebuilds and registry scanning catch new CVEs."
+  },
+  {
+    "q": "Apply the priority table from the lesson (P1: in KEV, or EPSS ≥ 0.1 on an internet-exposed system). Which finding in the scanner report is P1?",
+    "lang": "text",
+    "snippet": "ID      CVE              PACKAGE     CVSS  EPSS    KEV  EXPOSURE\nF-101   CVE-2025-31001   openssl     9.8   0.003   no   internal batch server\nF-102   CVE-2025-31002   jenkins     8.8   0.020   no   internet\nF-103   CVE-2025-31003   confluence  6.5   0.350   no   internet\nF-104   CVE-2025-31004   libxml2     7.5   0.0005  no   internal API\nF-105   CVE-2025-31005   bash        4.2   0.001   no   internal API",
+    "options": ["F-101 (highest CVSS)", "F-102", "F-103", "F-104"],
+    "answer": 2,
+    "explain": "F-103 has EPSS 0.35 (35% probability of exploitation in 30 days) on an internet-exposed system, so it is P1 even though its CVSS is the lowest of the options. F-102 is P2 (CVSS ≥ 7 and exposed), F-101 and F-104 are P3 (high CVSS, internal, low EPSS). CVSS says how bad it would be, EPSS how likely it is to happen."
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "title": "Tehnike odgovora na incidente",
+  "title_en": "Incident response techniques",
+  "summary": "Tehnike odgovora na incident: planovi, playbookovi i vježbe, korelacija i obogaćivanje logova, trijaža i timeline, chain of custody i legal hold, izolacija, eskalacija, remedijacija sa verifikacijom, restore i root cause analiza.",
+  "summary_en": "Incident response techniques: plans, playbooks, and exercises, log correlation and enrichment, triage and timeline, chain of custody and legal hold, isolation, escalation, remediation with verification, restoration, and root cause analysis.",
+  "minutes": 75,
+  "domain": 3,
+  "objectives": [
+    "3.3"
+  ]
+}

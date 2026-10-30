@@ -1,0 +1,297 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Novi CISO želi pokrenuti program upravljanja ranjivostima u organizaciji koja nikad nije sistematski skenirala mrežu. Šta analitičar treba uraditi FIRST?",
+    "options": [
+      "Napraviti i potvrditi asset inventory sa vlasnicima i kritičnošću sistema",
+      "Pokrenuti full intrusive sken cijele mreže da se odmah vidi stanje",
+      "Kupiti licencu za drugi skener radi poređenja rezultata",
+      "Definisati SLA rokove za ispravku kritičnih nalaza"
+    ],
+    "answer": 0,
+    "explain": "Bez inventara ne znaš šta skeniraš ni da li je pokrivenost potpuna, a vlasnik i kritičnost trebaju kasnije za prioritizaciju. SLA rokovi i alati dolaze poslije, a intrusive sken bez planiranja može srušiti produkciju."
+  },
+  {
+    "obj": "2.1",
+    "q": "Kompanija ima 400 laptopova; većina zaposlenih radi od kuće i rijetko se spaja na VPN. Sedmični mrežni sken iz data centra ih gotovo nikad ne zatekne. Koja metoda NAJBOLJE rješava problem?",
+    "options": [
+      "External non-credentialed skeniranje",
+      "Agent-based skeniranje",
+      "Pasivni monitoring na SPAN portu core switcha",
+      "Povećati učestalost mrežnog skena na dnevni"
+    ],
+    "answer": 1,
+    "explain": "Agent na laptopu prikuplja podatke lokalno i šalje ih čim uređaj ima internet, bez obzira na lokaciju. Pasivni monitoring i češći mrežni sken i dalje zavise od toga da je uređaj u kancelarijskoj mreži, a external sken ne vidi kućne laptopove."
+  },
+  {
+    "obj": "2.1",
+    "q": "Non-credentialed sken prijavljuje ranjivu verziju OpenSSH-a na Debian serveru. Administrator pokazuje da je `apt` instalirao sve sigurnosne zakrpe. Koji je MOST likely razlog i najbolji sljedeći korak?",
+    "options": [
+      "True positive; odmah izolovati server",
+      "False negative; povećati osjetljivost skena na intrusive",
+      "False positive zbog backportovane zakrpe; ponoviti credentialed sken",
+      "Zastarjeli plugin feed; obrisati nalaz iz izvještaja"
+    ],
+    "answer": 2,
+    "explain": "Debian backportuje zakrpe bez promjene upstream verzije u banneru, pa skener koji gleda samo banner javlja lažnu ranjivost. Credentialed sken čita stvarnu verziju paketa i potvrđuje stanje. Brisanje nalaza bez provjere nije validacija."
+  },
+  {
+    "obj": "2.1",
+    "q": "Nakon aktivnog skena u proizvodnom pogonu, dva PLC-a su se restartovala i linija je stala 40 minuta. Koji pristup je BEST za ubuduće?",
+    "options": [
+      "External sken sa interneta da se ne opterećuje interna mreža",
+      "Credentialed sken sa domenskim administratorskim nalogom",
+      "Isključiti OT mrežu iz programa upravljanja ranjivostima",
+      "Pasivno skeniranje (monitoring saobraćaja) uz aktivne provjere samo u planiranom zastoju"
+    ],
+    "answer": 3,
+    "explain": "OT uređaji su krhki i dostupnost je prioritet, pa se koristi pasivno otkrivanje i, ako treba, blagi aktivni testovi u dogovorenom prozoru. Isključivanje iz programa ostavlja rizik neprimijećenim, a external sken ne vidi OT mrežu."
+  },
+  {
+    "obj": "2.1",
+    "q": "Trgovac obrađuje kartična plaćanja i mora ispuniti PCI DSS. Ko mora obaviti kvartalni EXTERNAL sken ranjivosti?",
+    "options": [
+      "Approved Scanning Vendor (ASV)",
+      "Interni SOC tim sa bilo kojim komercijalnim skenerom",
+      "Qualified Security Assessor (QSA) lično, ručno",
+      "Banka izdavalac kartice"
+    ],
+    "answer": 0,
+    "explain": "PCI DSS (req. 11.3.2) traži da eksterne kvartalne skenove obavi ASV koga je odobrio PCI SSC. Interne skenove može raditi interni kvalifikovani tim. QSA radi procjenu usklađenosti, ne kvartalne eksterne skenove."
+  },
+  {
+    "obj": "2.1",
+    "q": "Sken DMZ segmenta vratio je izvještaj bez ijednog nalaza, a nmap pokazuje skoro sve portove kao `filtered`. Šta je MOST likely?",
+    "options": [
+      "Svi serveri u DMZ-u su potpuno zakrpljeni",
+      "Firewall blokira skener, pa je rezultat false negative",
+      "Skener je koristio pogrešan plugin za Windows",
+      "Hostovi su ugašeni, pa nalazi ne postoje"
+    ],
+    "answer": 1,
+    "explain": "`filtered` znači da između skenera i cilja nešto odbacuje pakete. Prazan izvještaj tada nije dokaz sigurnosti nego slijepa tačka. Rješenje je skener u segmentu, dokumentovana pravila za IP skenera ili agenti."
+  },
+  {
+    "obj": "2.1",
+    "q": "Analitičar treba da utvrdi koji operativni sistemi i verzije servisa rade na hostovima u nepoznatoj, upravo preuzetoj mreži, prije nego što se definišu politike skeniranja. Kako se zove ova aktivnost?",
+    "options": [
+      "Security baseline scanning",
+      "Penetration testing",
+      "Device fingerprinting",
+      "Software composition analysis"
+    ],
+    "answer": 2,
+    "explain": "Device fingerprinting (banner grabbing, nmap -sV/-O, pasivni p0f/JA3) utvrđuje tip uređaja, OS i verzije. Baseline sken provjerava konfiguraciju prema standardu, a SCA analizira zavisnosti u kodu."
+  },
+  {
+    "obj": "2.1",
+    "q": "Revizor traži dokaz da su Linux serveri podešeni prema preskriptivnim, konsenzusom razvijenim smjernicama za hardening sa nivoima Level 1 i Level 2. Koji standard je u pitanju?",
+    "options": [
+      "ISO/IEC 27001",
+      "PCI DSS",
+      "NIST CSF",
+      "CIS Benchmarks"
+    ],
+    "answer": 3,
+    "explain": "CIS Benchmarks su konkretne smjernice za hardening po platformi, sa Level 1 i Level 2 profilima. ISO 27001 definiše ISMS i kontrole na višem nivou, PCI DSS je za kartične podatke, a NIST CSF je okvir funkcija, ne konfiguracijski vodič."
+  },
+  {
+    "obj": "2.1",
+    "q": "Tim želi da skener pronađe ranjiv klijentski softver (stari browser, PDF čitač) i kernel bez zakrpe na Windows i Linux serverima. Koji tip skena je NAJPOTREBNIJI?",
+    "options": [
+      "Credentialed",
+      "Non-credentialed",
+      "External",
+      "Passive"
+    ],
+    "answer": 0,
+    "explain": "Lokalne ranjivosti nisu vidljive preko mreže; skener se mora prijaviti i pročitati instalirani softver i zakrpe. Non-credentialed, external i passive vide samo mrežno izložene servise."
+  },
+  {
+    "obj": "2.1",
+    "q": "Mrežni sken tokom radnog vremena preopteretio je WAN link prema udaljenim poslovnicama i usporio ERP. Koje DVIJE mjere NAJBOLJE rješavaju problem? Izaberi DVA.",
+    "options": [
+      "Pomjeriti sken u van-radno vrijeme ili maintenance window",
+      "Prebaciti sve skenove na intrusive politiku da završe brže",
+      "Skenirati poslovnice samo jednom godišnje",
+      "Ograničiti brzinu i paralelnost skena (throttling) ili postaviti lokalni skener/agente u poslovnicama"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "Scheduling i performance su planiranje skena: termin van radnog vremena i throttling ili lokalni skeneri/agenti uklanjaju opterećenje WAN-a. Intrusive politika povećava rizik, a godišnji sken ostavlja ranjivosti predugo neprimijećene."
+  },
+  {
+    "obj": "2.1",
+    "q": "Koja izjava NAJBOLJE opisuje razliku između internal i external skena?",
+    "options": [
+      "Internal koristi agente, external uvijek koristi kredencijale",
+      "Internal pokazuje šta vidi napadač koji je već u mreži, external šta je izloženo internetu",
+      "External skenira samo web aplikacije, internal samo baze podataka",
+      "Internal je uvijek pasivan, external uvijek aktivan"
+    ],
+    "answer": 1,
+    "explain": "Razlika je u poziciji skenera i perspektivi: unutar perimetra (insider ili kompromitovan host) i izvan njega (napadač sa interneta). Agent/agentless, credentialed i passive/active su nezavisne dimenzije."
+  },
+  {
+    "obj": "2.1",
+    "q": "Discovery sken je pronašao 37 hostova koji ne postoje u CMDB-u, među njima i Raspberry Pi u sali za sastanke. Šta analitičar treba uraditi FIRST?",
+    "options": [
+      "Obrisati ih iz izvještaja jer nisu u opsegu",
+      "Pokrenuti intrusive sken samo na tim hostovima",
+      "Utvrditi vlasnika i namjenu nepoznatih uređaja i ažurirati inventar, a sumnjive eskalirati",
+      "Odmah fizički isključiti sve nepoznate uređaje"
+    ],
+    "answer": 2,
+    "explain": "Razlika između inventara i discovery rezultata otkriva neupravljane ili rogue uređaje. Prvo se utvrđuje šta su i ko je odgovoran, uz eskalaciju sumnjivih (Raspberry Pi može biti rogue uređaj). Masovno isključivanje bez provjere može prekinuti legitimne servise."
+  },
+  {
+    "obj": "2.1",
+    "q": "Koji je glavni rizik credentialed skeniranja koji tim mora kontrolisati?",
+    "options": [
+      "Credentialed sken daje više false positive nalaza nego non-credentialed",
+      "Credentialed sken ne može otkriti nedostajuće zakrpe",
+      "Credentialed sken je moguć samo sa agentima",
+      "Kredencijali skenera su privilegovani i vrijedna meta ako se zloupotrijebe"
+    ],
+    "answer": 3,
+    "explain": "Nalog skenera ima široka prava na mnogo hostova, pa se čuva u vaultu ili PAM-u, ima minimalna potrebna prava, rotira se i nadzire u SIEM-u. Credentialed sken zapravo smanjuje false positive i bolje vidi zakrpe."
+  },
+  {
+    "obj": "2.1",
+    "q": "Bolnica ima infuzione pumpe i MR uređaj čiji proizvođač zabranjuje instalaciju agenata i upozorava da aktivni skenovi mogu prekinuti rad. Koja metoda je BEST za inventar i otkrivanje ranjivih verzija?",
+    "options": [
+      "Passive scanning iz kopije mrežnog saobraćaja",
+      "Agent-based skeniranje",
+      "Credentialed active sken sa full politikom",
+      "External sken preko javne IP adrese bolnice"
+    ],
+    "answer": 0,
+    "explain": "Pasivno praćenje saobraćaja otkriva uređaje, protokole i verzije bez slanja paketa prema medicinskim uređajima. Agenti su zabranjeni, aktivni sken je rizičan, a external ne vidi internu mrežu."
+  },
+  {
+    "obj": "2.1",
+    "q": "Organizacija želi da njen ISMS bude certifikovan i da kontrola za upravljanje tehničkim ranjivostima bude dio tog sistema. Koji standard najbolje odgovara?",
+    "options": [
+      "CIS Benchmark za Windows Server",
+      "ISO/IEC 27001",
+      "PCI DSS",
+      "OWASP Top 10"
+    ],
+    "answer": 1,
+    "explain": "ISO/IEC 27001 je certifikabilni standard za ISMS; Annex A kontrola 8.8 pokriva upravljanje tehničkim ranjivostima (detaljnije u ISO 27002). CIS je hardening vodič, PCI DSS je za kartične podatke, a OWASP Top 10 je lista rizika web aplikacija."
+  },
+  {
+    "obj": "2.1",
+    "q": "Nakon što je SOC dobio Nessus izvještaj, skener je i dalje pokretao Suricata alarme svake noći. Šta je BEST pristup?",
+    "options": [
+      "Trajno isključiti sve IDS potpise za skeniranje portova",
+      "Prestati sa skeniranjem jer stvara šum",
+      "Najaviti termin i IP skenera SOC-u i podesiti pravila za IP skenera, uz praćenje aktivnosti van plana",
+      "Premjestiti skener na internet da IDS ne vidi saobraćaj"
+    ],
+    "answer": 2,
+    "explain": "Koordinacija (operations) i ciljani tuning za dokumentovani IP skenera smanjuju šum bez gubitka vidljivosti. Gašenje svih potpisa bi sakrilo pravi reconnaissance, a skeniranje sa interneta mijenja perspektivu i ne vidi internu mrežu."
+  },
+  {
+    "obj": "2.1",
+    "q": "Koji izlaz alata ukazuje da je verzija servisa utvrđena stvarnom probom servisa, a ne pretpostavkom po broju porta?",
+    "options": [
+      "`<service name=\"http\" method=\"table\" conf=\"3\"/>`",
+      "`8080/tcp filtered http-proxy`",
+      "`Not shown: 9999 closed tcp ports (reset)`",
+      "`<service name=\"http\" product=\"SimpleHTTPServer\" version=\"0.6\" method=\"probed\" conf=\"10\"/>`"
+    ],
+    "answer": 3,
+    "explain": "U nmap XML-u `method=\"probed\"` i visok `conf` znače da je servis identifikovan odgovorom na probu (-sV). `method=\"table\"` je samo nagađanje iz tabele poznatih portova, a `filtered` znači da cilj nije ni dostupan."
+  },
+  {
+    "obj": "2.1",
+    "q": "Kompanija mora skenirati cloud okruženje na desetinama AWS naloga, gdje se EC2 instance kreiraju i gase više puta dnevno. Koja DVA pristupa NAJBOLJE daju potpunu sliku? Izaberi DVA.",
+    "options": [
+      "Jednom mjesečno ručno skenirati listu IP adresa iz tabele",
+      "Agentsko skeniranje instanci (npr. Amazon Inspector preko SSM-a)",
+      "Skeniranje slika (AMI i kontejnerskih) u pipelineu i registryju prije pokretanja",
+      "Pasivni sken na SPAN portu u on-prem data centru"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Efemerni resursi traže kontinuirano agentsko skeniranje i skeniranje izvora (slika) prije deploya. Statična lista IP-ova brzo zastari, a on-prem SPAN ne vidi cloud saobraćaj."
+  },
+  {
+    "obj": "2.1",
+    "q": "Šta security baseline sken PRVENSTVENO provjerava?",
+    "options": [
+      "Odstupanja konfiguracije od propisanog standarda (npr. PermitRootLogin, politike lozinki)",
+      "Koje CVE ranjivosti postoje u instaliranim paketima",
+      "Koji hostovi su živi u podmreži",
+      "Da li je kod aplikacije siguran od injection napada"
+    ],
+    "answer": 0,
+    "explain": "Baseline (compliance) sken poredi postavke sa standardom poput CIS Benchmarka ili PCI DSS zahtjeva. Traženje CVE-ova je vulnerability sken, živi hostovi su discovery, a sigurnost koda je SAST/DAST."
+  },
+  {
+    "obj": "2.1",
+    "type": "match",
+    "q": "Upari svaki scenarij sa NAJPRIKLADNIJIM tipom skeniranja.",
+    "options": [
+      "Udaljeni laptopovi koji su rijetko u kancelarijskoj mreži",
+      "Ruteri i firewall appliance na koje se ne može instalirati softver",
+      "Pogled napadača na javne servise kompanije",
+      "SCADA mreža sa krhkim PLC uređajima",
+      "Tačna lista nedostajućih zakrpa na Windows serverima",
+      "Provjera hardeninga prema CIS Benchmarku"
+    ],
+    "targets": [
+      "Credentialed",
+      "Passive",
+      "Agent-based",
+      "Security baseline",
+      "External",
+      "Agentless"
+    ],
+    "answer": [
+      2,
+      5,
+      4,
+      1,
+      0,
+      3
+    ],
+    "explain": "Laptopovi van mreže traže agente, appliance se skeniraju agentless, napadačku perspektivu daje external sken, krhki OT traži pasivni pristup, zakrpe najtačnije vidi credentialed sken, a hardening provjerava baseline sken."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Poredaj korake uvođenja skeniranja nove mreže od prvog do posljednjeg.",
+    "options": [
+      "Pokrenuti odobreni sken u dogovorenom prozoru",
+      "Validirati nalaze i ukloniti false positive",
+      "Napraviti asset inventory i odrediti vlasnike",
+      "Ponovni sken nakon ispravke (validation)",
+      "Definisati opseg, dobiti odobrenje i obavijestiti SOC/NOC",
+      "Izabrati tip skena i osjetljivost prema vrsti imovine"
+    ],
+    "answer": [
+      2,
+      4,
+      5,
+      0,
+      1,
+      3
+    ],
+    "explain": "Prvo inventar, zatim opseg i odobrenje, pa izbor metode i osjetljivosti, zatim sam sken, validacija nalaza i na kraju ponovni sken koji potvrđuje ispravku."
+  },
+  {
+    "obj": "2.1",
+    "type": "spot",
+    "q": "Eksterni (non-credentialed) sken javnog web servera. Politika kaže da sa interneta smiju biti dostupni samo HTTP i HTTPS. Označi redove koji krše politiku.",
+    "snippet": "$ nmap -sV -Pn shop.example.com\nNmap scan report for shop.example.com (198.51.100.10)\nHost is up (0.012s latency).\nNot shown: 994 filtered tcp ports (no-response)\nPORT     STATE  SERVICE       VERSION\n25/tcp   closed smtp\n80/tcp   open   http          Microsoft IIS httpd 10.0\n443/tcp  open   ssl/http      Microsoft IIS httpd 10.0\n1433/tcp open   ms-sql-s      Microsoft SQL Server 2019 15.00.2000\n3389/tcp open   ms-wbt-server Microsoft Terminal Services\n8443/tcp closed https-alt\nNmap done: 1 IP address (1 host up) scanned in 41.22 seconds",
+    "lang": "text",
+    "answer": [8, 9],
+    "explain": "Red 9: Microsoft SQL Server (1433/tcp) je otvoren prema internetu, pa je baza izložena brute force napadima i ranjivostima servisa. Red 10: RDP (3389/tcp, ms-wbt-server) je otvoren prema internetu, što je jedan od najčešćih ulaza za ransomware. Oba servisa treba zatvoriti na perimetarskom firewallu i pristup ograničiti na VPN/bastion. Portovi 80 i 443 su dozvoljeni, a closed portovi (25, 8443) znače da host odgovara, ali niko ne sluša, pa nisu kršenje. Filtered portovi su blokirani firewallom."
+  }
+]

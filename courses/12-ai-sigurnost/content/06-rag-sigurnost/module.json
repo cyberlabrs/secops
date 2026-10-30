@@ -1,0 +1,11 @@
+{
+  "title": "Sigurnost RAG sistema",
+  "summary": "Kontrola pristupa po dokumentu u fazi pretrage, izolacija tenanata, zaštita vektorske baze, rizici embeddinga (OWASP LLM08) i odbrana od trovanja RAG korpusa.",
+  "minutes": 75,
+  "domain": 3,
+  "objectives": [
+    "3.1"
+  ],
+  "title_en": "RAG system security",
+  "summary_en": "Document-level access control at retrieval time, tenant isolation, vector store protection, embedding risks (OWASP LLM08) and defense against RAG corpus poisoning."
+}

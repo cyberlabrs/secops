@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "4.1",
+    "q": "A data scientist suggests loading a model from a public hub in pytorch_model.bin format on the build server “just to see that it works.” The server holds CI secrets. How should you respond?",
+    "options": [
+      "Allow it, because .bin is a binary format without code",
+      "Allow it if the model is popular",
+      "Refuse: a .bin from torch.save is pickle and loading it can execute code with the process's rights; ask for a safetensors version or work in an isolated environment without secrets or network",
+      "Allow it if it is loaded on a GPU instead of a CPU"
+    ],
+    "answer": 2,
+    "explain": "PyTorch .bin/.pt/.pth files are pickle in a ZIP archive; loading them is code execution (AML.T0011.000). Popularity is not proof of integrity, and the device a tensor is mapped to doesn't change deserialization."
+  },
+  {
+    "obj": "4.1",
+    "q": "What does the safetensors format solve, and what doesn't it?",
+    "options": [
+      "It solves code execution at load time because it contains only a JSON header and raw tensors; it doesn't solve a backdoor or wrong weight content",
+      "It solves both code execution and backdoors because the format has been audited",
+      "It solves nothing, it only speeds up loading",
+      "It solves only model compression"
+    ],
+    "answer": 0,
+    "explain": "safetensors removes a class of deserialization attacks. Model behavior (a backdoor, AML.T0018.000) lives in the weight values and requires provenance, signing and evaluation. Speed is an extra benefit, and the format is not compression."
+  },
+  {
+    "obj": "4.1",
+    "q": "A team has an old model in pickle format from a public hub and must move it to safetensors. Which order is safest?",
+    "options": [
+      "Load the pickle on a developer laptop and save it as safetensors",
+      "Rename the file to .safetensors",
+      "Load the pickle directly in production serving and export the tensors",
+      "First check whether a safetensors version exists at the source; if not, scan statically and convert in an ephemeral environment without network or secrets with weights_only=True, then compare the tensors and sign the result"
+    ],
+    "answer": 3,
+    "explain": "Conversion requires loading the pickle file once, so it is done in isolation and only if there is no better option. A laptop and production have secrets and network, and renaming doesn't change the format."
+  },
+  {
+    "obj": "4.1",
+    "q": "A model scanner returned “no findings” for a pickle file. What can you conclude?",
+    "options": [
+      "The model is safe and can be used without other checks",
+      "The scanner didn't find known dangerous patterns; that's a signal, not proof: a blocklist can be bypassed and the scanner doesn't see the model's behavior, so a code-free format, provenance, signing and evaluation still apply",
+      "The model definitely has no backdoor",
+      "The model should be scanned again with another scanner, and then it's definitely safe"
+    ],
+    "answer": 1,
+    "explain": "Static scanning reduces risk but doesn't eliminate it. It doesn't detect backdoors in the weights, and an approach based on a list of dangerous functions has known bypasses. Even two scanners don't give a guarantee."
+  },
+  {
+    "obj": "4.1",
+    "q": "A service loads a model with from_pretrained(\"org/model\") without a revision parameter. What risk does this create?",
+    "options": [
+      "The service always takes the current state of the main branch, so a change to the repo (intentional or through account compromise) automatically reaches production; pin a commit hash and download from an internal registry",
+      "No risk, because the hub scans all files",
+      "The model will be slower",
+      "The model can't be loaded without internet, which is the only problem"
+    ],
+    "answer": 0,
+    "explain": "A moving reference is the same problem as the latest tag for images. A commit pin and an internal registry give control over what enters production. Hub scanning doesn't catch everything, and speed is not a security question."
+  },
+  {
+    "obj": "4.1",
+    "q": "A model on a hub requires trust_remote_code=True to load. What does this mean, and how should you proceed?",
+    "options": [
+      "It's an ordinary performance setting and can always be enabled",
+      "It means the model is signed",
+      "Enable it, but only in production",
+      "The library executes Python code from the model's repo; review the code, pin the revision, preferably vendor the code into an internal repo, and never enable it for an unknown source"
+    ],
+    "answer": 3,
+    "explain": "trust_remote_code executes arbitrary code from the repo at load time, so it is a decision about trusting the publisher and the code. It is disabled by default for a reason. It has nothing to do with signing or performance."
+  },
+  {
+    "obj": "4.1",
+    "q": "Which combination of settings reduces the risk when loading artifacts in a Python ML environment?",
+    "options": [
+      "torch.load(weights_only=False), np.load(allow_pickle=True)",
+      "torch.load(weights_only=True), np.load(allow_pickle=False), Keras safe_mode=True, trust_remote_code=False",
+      "Loading all models via pickle.load for uniformity",
+      "Disabling all library warnings"
+    ],
+    "answer": 1,
+    "explain": "These are the safe defaults in newer versions; state them explicitly in code. The opposite values enable code execution at load time, and disabling warnings hides signals."
+  },
+  {
+    "obj": "4.1",
+    "q": "An organization wants serving to load only models approved by the ML release team. Every model's hash is recorded in the registry database. Why is a signature still needed?",
+    "options": [
+      "A hash is slow to compute",
+      "A signature reduces the model's size",
+      "A hash proves integrity only while the registry is intact and doesn't say who published the model; a signature binds the model to the publisher's identity or key, which is verified independently of the registry",
+      "A signature replaces the need for the safetensors format"
+    ],
+    "answer": 2,
+    "explain": "An attacker with access to the registry can change both the model and the hash. A signature, verified with a key or identity from separate configuration, proves integrity and provenance. It doesn't affect size and doesn't replace a code-free format."
+  },
+  {
+    "obj": "4.1",
+    "q": "What exactly does OpenSSF Model Signing (model_signing) sign when a model directory is signed?",
+    "options": [
+      "A manifest with the hash of every file in the directory, in Sigstore bundle format, so changing any file breaks verification",
+      "Only the largest weights file",
+      "Only the model card",
+      "The serving Docker image"
+    ],
+    "answer": 0,
+    "explain": "The manifest covers all files, including the configuration and tokenizer, and the signature is separate from the model. Signing only the weights leaves config.json and the tokenizer unprotected, and they also change behavior."
+  },
+  {
+    "obj": "4.1",
+    "q": "The serving loader verifies the model's signature with a public key stored in the same bucket as the model and the signature. What is the weakness?",
+    "options": [
+      "The public key should be kept secret",
+      "Verification should happen after the model is loaded",
+      "The bucket should be renamed",
+      "An attacker who can swap the model in the bucket can also swap the key; the expected key or identity must come from configuration controlled by the platform team, separate from the model"
+    ],
+    "answer": 3,
+    "explain": "The trust anchor must not be under the same control as the artifact. The public key is not a secret, but its integrity does matter. Verifying after loading is too late, and the bucket name is not a control."
+  },
+  {
+    "obj": "4.1",
+    "q": "In an offline lab environment you sign the file model.safetensors with cosign. What is the correct approach?",
+    "options": [
+      "Keyless signing via Sigstore, because no key is needed",
+      "A key pair (cosign generate-key-pair), sign-blob without uploading to the transparency log, and verify-blob with the public key while ignoring the tlog",
+      "Signing isn't possible without internet",
+      "Computing an MD5 is enough"
+    ],
+    "answer": 1,
+    "explain": "Keyless requires access to Fulcio and Rekor. Without a network you use a key pair and disable the tlog (the exact flags depend on the cosign version). MD5 is not a signature and is not collision-resistant."
+  },
+  {
+    "obj": "4.1",
+    "q": "Which ATLAS identifier best describes a situation where an attacker publishes a model with malicious code in the artifact on a public hub, and the victim loads it?",
+    "options": [
+      "AML.T0051 LLM Prompt Injection",
+      "AML.T0034 Cost Harvesting",
+      "AML.T0058 Publish Poisoned Models and AML.T0011.000 Unsafe AI Artifacts",
+      "AML.T0070 RAG Poisoning"
+    ],
+    "answer": 2,
+    "explain": "Publishing a poisoned model and loading an unsafe artifact are exactly those techniques, together with AML.T0010.003 for the model supply chain. The other labels are prompt injection, costs and RAG corpus poisoning."
+  },
+  {
+    "obj": "4.1",
+    "q": "An inventory shows that a production service loads a model.joblib created three years ago every time it starts. What is the priority?",
+    "options": [
+      "Nothing, because the model is internal",
+      "Compress the file",
+      "Move the file to another directory",
+      "Establish its provenance and who can write to the file's location, restrict write access, and plan an export to a code-free format (e.g., retraining with a safe format or ONNX), with signing and verification at startup"
+    ],
+    "answer": 3,
+    "explain": "joblib uses pickle, so anyone who can replace the file can execute code in the service. Internal doesn't mean safe. In the short term you restrict writes and add verification; in the long term you move to a code-free format."
+  },
+  {
+    "obj": "4.1",
+    "q": "A team downloads a LoRA adapter from a forum to quickly improve an internal model. Which approach is correct?",
+    "options": [
+      "Adapters are small, so they aren't risky",
+      "The adapter goes through the same intake as a model: publisher and license, pin, code-free format, scanning, evaluation including security tests, signing and an AI-BOM entry",
+      "Merge the adapter with the model and skip evaluation",
+      "Use the adapter only in production"
+    ],
+    "answer": 1,
+    "explain": "An adapter changes model behavior just like weights and can carry both pickle and a backdoor (OWASP LLM03 mentions them explicitly). Size is not a measure of risk, and skipping evaluation removes the only behavior control."
+  },
+  {
+    "obj": "4.1",
+    "q": "How is a model described in a CycloneDX AI-BOM?",
+    "options": [
+      "As a component of type machine-learning-model with a modelCard object, and datasets as components of type data (supported since CycloneDX 1.5)",
+      "As a component of type library with no additional fields",
+      "CycloneDX doesn't support models, only SPDX does",
+      "As a comment in the description field"
+    ],
+    "answer": 0,
+    "explain": "CycloneDX 1.5 introduced the machine-learning-model type and modelCard (parameters, quantitative analysis, considerations) and the data type. SPDX 3.0 has AI and Dataset profiles, but CycloneDX supports models too."
+  },
+  {
+    "obj": "4.1",
+    "q": "The platform team wants the serving pod not to start if the model isn't properly signed. Where and when should the check be done?",
+    "options": [
+      "Once, when downloading from the hub",
+      "In a nightly job that checks the bucket",
+      "Immediately before loading, e.g., in an init container: download by digest, verify the signature with the expected identity or key, check the format, and only then start serving",
+      "After startup, in the health check"
+    ],
+    "answer": 2,
+    "explain": "The check must be as close to use as possible to close the window between verification and loading. A check at download doesn't catch a later swap, a nightly job is delayed, and a health check after startup comes after any code has already executed."
+  },
+  {
+    "obj": "4.1",
+    "q": "A model is distributed in safetensors format, but it comes with a Python file containing a custom architecture that serving executes. Is safetensors enough?",
+    "options": [
+      "Yes, safetensors guarantees there is no code",
+      "No: safetensors protects only the weights; custom code shipped with the model is third-party code that needs review, a pin and preferably vendoring, and the signature should cover all files",
+      "Yes, if the Python file is smaller than 10 KB",
+      "No, the weights should be converted back to pickle"
+    ],
+    "answer": 1,
+    "explain": "The weight format says nothing about other files that serving executes. The code is treated as a dependency, and a signature manifest (e.g., OpenSSF Model Signing) covers the whole directory. Size is not a control, and pickle is a step backwards."
+  },
+  {
+    "obj": "4.1",
+    "q": "Which set of files should a CI check reject in a model directory intended for deployment, if the policy allows only code-free formats?",
+    "options": [
+      ".safetensors and .gguf",
+      ".json and .txt",
+      ".onnx",
+      ".pkl, .pickle, .pt, .pth, .bin and .joblib"
+    ],
+    "answer": 3,
+    "explain": "Those extensions typically refer to pickle or pickle inside an archive. safetensors, GGUF and ONNX contain no Python code executed at load time, and configuration JSON and text are a normal part of a model. Besides extensions, it is worth checking magic bytes too."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Order the steps of the intake process for a third-party model, from first to last.",
+    "options": [
+      "Signing the internal copy and recording it in the registry with an AI-BOM",
+      "Static scanning of the artifacts",
+      "Pinning the exact revision and recording the files' hash values",
+      "Evaluating behavior on an internal and a security test set",
+      "Checking the publisher, purpose and license"
+    ],
+    "answer": [4, 2, 1, 3, 0],
+    "explain": "First you decide whether the model may be used at all, then you fix the exact version, followed by scanning and evaluation. Signing and the registry entry come last, once the model has been verified, so that a signature means “approved.”"
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match the model supply chain risk with the control that most directly mitigates it.",
+    "options": [
+      "Code execution when loading weights",
+      "The main branch on the hub changes overnight",
+      "A model in the bucket replaced after approval",
+      "A backdoor in the weights that the scanner doesn't see",
+      "Unknown which models and data are in the system"
+    ],
+    "targets": [
+      "Behavior evaluation and provenance",
+      "An AI-BOM (CycloneDX ML-BOM)",
+      "A code-free format (safetensors)",
+      "A signature verified immediately before loading",
+      "A pin to a commit hash and an internal registry"
+    ],
+    "answer": [2, 4, 3, 0, 1],
+    "explain": "safetensors removes code execution at load time, a pin and a registry prevent unplanned changes, a signature verified at deployment catches a swap, a backdoor is hunted through evaluation and provenance checks, and an AI-BOM gives an overview of the components."
+  },
+  {
+    "obj": "4.1",
+    "type": "spot",
+    "q": "Code that loads a third-party model into a production fraud detection service. Mark the lines that introduce supply chain risk.",
+    "snippet": "import pickle, torch\nfrom huggingface_hub import hf_hub_download\nfrom safetensors.torch import load_file\n\nREPO, REV = \"acme-research/fraud-bert\", \"9c1e4a7f3b2d8e6a0c5f1d9b7e3a2c4f6d8b0e1a\"\nweights = hf_hub_download(REPO, \"pytorch_model.bin\")\nstate = torch.load(weights, weights_only=False)\nmodel.load_state_dict(state)\n\ntok_file = hf_hub_download(REPO, \"tokenizer.pkl\", revision=REV)\ntokenizer = pickle.load(open(tok_file, \"rb\"))\n\nhead = load_file(hf_hub_download(REPO, \"head.safetensors\", revision=REV))",
+    "lang": "python",
+    "answer": [5, 6, 10],
+    "explain": "Line 6: downloading without a revision takes the current state of the main branch, which can change (compromised publisher account, swapped file); pin the commit hash (REV). Line 7: torch.load with weights_only=False uses full pickle, so loading the .bin file executes arbitrary code; keep weights_only=True or, better, move to safetensors. Line 11: pickle.load on a file from the hub is code execution from an untrusted source; load the tokenizer from JSON (tokenizer.json). Loading head.safetensors with a pinned revision (line 13) is correct: safetensors contains only tensors."
+  }
+]

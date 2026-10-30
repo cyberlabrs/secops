@@ -1,0 +1,76 @@
+[
+  {
+    "q": "Želiš provjeriti koju vrijednost PermitRootLogin SSH server STVARNO koristi, uključujući fajlove iz sshd_config.d. Koja komanda?",
+    "options": ["grep PermitRootLogin /etc/ssh/sshd_config", "sshd -t", "sshd -T | grep -i permitrootlogin", "systemctl status ssh"],
+    "answer": 2,
+    "explain": "sshd -T ispisuje efektivnu konfiguraciju nakon svih Include fajlova. grep nad glavnim fajlom može pokazati vrijednost koju je drop-in fajl već nadjačao, a sshd -t samo provjerava sintaksu."
+  },
+  {
+    "q": "U sudoers fajlu stoji: deploy ALL=(ALL) NOPASSWD: /usr/bin/vim. Zašto je ovo opasno?",
+    "options": ["vim nema punu putanju", "Iz vim-a se može pokrenuti shell, a on se izvršava kao root", "NOPASSWD je zabranjen u modernim distribucijama", "Nije opasno, vim samo uređuje fajlove"],
+    "answer": 1,
+    "explain": "vim (kao i less, find, awk, tar…) može pokrenuti shell (npr. :!bash). Kroz sudo taj shell dobija root prava. GTFOBins katalogizuje takve programe."
+  },
+  {
+    "q": "Skripta /opt/backup.sh se pokreće iz root crona i ima dozvole -rwxrwxrwx. Šta je problem?",
+    "options": ["Nema problema dok je vlasnik root", "Bilo koji korisnik može upisati komande koje će se izvršiti kao root", "Skripta je prevelika", "Cron ne može pokretati skripte sa dozvolom 777"],
+    "answer": 1,
+    "explain": "Kombinacija 'pokreće root' i 'svako može pisati' je klasična eskalacija privilegija. Ispravno je 700 ili 750, vlasnik root."
+  },
+  {
+    "q": "Šta znači 's' na mjestu x bita vlasnika, npr. -rwsr-xr-x root root /usr/bin/passwd?",
+    "options": ["Fajl je simbolički link", "SUID: program se izvršava s pravima vlasnika fajla (root)", "Sticky bit: samo vlasnik smije obrisati fajl", "Fajl je potpisan"],
+    "answer": 1,
+    "explain": "SUID bit pokreće program s pravima vlasnika fajla. passwd ga treba da bi mijenjao /etc/shadow. Sticky bit se vidi kao 't' na direktorijima (npr. /tmp)."
+  },
+  {
+    "q": "Koje dvije SSH postavke zajedno zatvaraju prijavu lozinkom? (više odgovora)",
+    "options": ["PasswordAuthentication no", "KbdInteractiveAuthentication no", "PermitEmptyPasswords no", "UsePAM no"],
+    "answer": [0, 1],
+    "explain": "PasswordAuthentication zatvara klasičnu prijavu lozinkom, a KbdInteractiveAuthentication (ranije ChallengeResponseAuthentication) zatvara PAM put kojim se lozinka može tražiti interaktivno."
+  },
+  {
+    "q": "Koja komanda pronalazi fajlove koje može mijenjati bilo koji korisnik?",
+    "options": ["find / -xdev -type f -perm -0002", "find / -xdev -perm -4000", "find / -nouser", "ls -la / | grep rw"],
+    "answer": 0,
+    "explain": "-perm -0002 znači 'write bit za ostale je postavljen'. -4000 traži SUID, a -nouser fajlove bez vlasnika."
+  },
+  {
+    "q": "Zašto je PermitRootLogin no bolji od dozvoljavanja root prijave ključem?",
+    "options": ["Root ključevi ne rade sa ed25519", "Napadač mora znati i korisničko ime, a svaka admin radnja ide kroz sudo i ostaje zabilježeno KO ju je uradio", "Ubrzava SSH", "CIS zabranjuje ključeve za root"],
+    "answer": 1,
+    "explain": "Prijava kao root briše odgovornost: u logu piše samo 'root'. Lični nalozi plus sudo daju i dodatnu prepreku i jasan audit trag."
+  },
+  {
+    "q": "Šta radi auditd pravilo: -w /etc/shadow -p wa -k identity?",
+    "options": ["Zabranjuje pisanje u /etc/shadow", "Bilježi pisanje (w) i promjenu atributa (a) fajla /etc/shadow, s ključem 'identity' za pretragu", "Šifruje /etc/shadow", "Pravi backup /etc/shadow"],
+    "answer": 1,
+    "explain": "-w je watch na putanju, -p wa su dozvole koje se prate (write, attribute change), -k je ključ po kojem kasnije tražiš sa ausearch -k identity. auditd bilježi, ne blokira."
+  },
+  {
+    "q": "Koji umask CIS preporučuje da ostali korisnici ne bi mogli čitati nove fajlove?",
+    "options": ["000", "022", "027", "777"],
+    "answer": 2,
+    "explain": "umask 027 daje fajlove 640 i direktorije 750: grupa čita, ostali ne vide ništa. 022 (podrazumijevano) ostavlja fajlove čitljive svima."
+  },
+  {
+    "q": "Prije restarta SSH servisa na udaljenom serveru nakon izmjene konfiguracije, šta je najvažnije uraditi?",
+    "options": ["Isključiti firewall", "Pokrenuti sshd -t i zadržati otvorenu postojeću sesiju dok ne testiraš novu prijavu", "Restartovati cijeli server", "Obrisati known_hosts"],
+    "answer": 1,
+    "explain": "sshd -t hvata sintaksne greške, a otvorena sesija ti je rezervni put ako nova konfiguracija ipak blokira prijavu."
+  },
+  {
+    "q": "Šta je CIS Benchmark Level 1 u odnosu na Level 2?",
+    "options": ["Level 1 je za Windows, Level 2 za Linux", "Level 1 su osnovne postavke s malim rizikom da pokvare aplikacije; Level 2 je stroži, za okruženja s višim zahtjevima", "Level 2 je zastarjela verzija", "Level 1 traži plaćenu licencu"],
+    "answer": 1,
+    "explain": "Level 1 je praktičan minimum za većinu sistema. Level 2 dodaje mjere koje mogu smanjiti funkcionalnost i primjenjuju se gdje je rizik veći."
+  },
+  {
+    "type": "spot",
+    "q": "Ovaj fajl treba da sprovede SSH hardening iz lekcije: prijava samo ključem i bez direktne root prijave. Klikni redove koji to krše.",
+    "lang": "text",
+    "snippet": "# /etc/ssh/sshd_config.d/10-hardening.conf\nPort 22\nPermitRootLogin yes\nPubkeyAuthentication yes\nPasswordAuthentication yes\nKbdInteractiveAuthentication no\nMaxAuthTries 3\nX11Forwarding no\nLoginGraceTime 60\nAllowGroups ssh-users\nClientAliveInterval 300\nClientAliveCountMax 2",
+    "answer": [2, 4],
+    "explain": "PermitRootLogin yes dozvoljava direktnu root prijavu, pa napadač ne mora pogađati korisničko ime i nema traga ko je radio kao root; treba PermitRootLogin no. PasswordAuthentication yes ostavlja prijavu lozinkom i brute-force otvorenim; treba PasswordAuthentication no. Ostali redovi odgovaraju preporukama. Nakon izmjene provjeri sa sshd -t i sshd -T."
+  }
+]

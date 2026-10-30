@@ -1,0 +1,12 @@
+{
+  "title": "Okviri napada i proces odgovora na incidente",
+  "title_en": "Attack frameworks and the incident response process",
+  "summary": "Cyber Kill Chain, Diamond Model i MITRE ATT&CK za opis i prekid napada, OSSTMM/OWASP kao okviri testiranja, te IR proces od pripreme do post-incident faze i NIST SP 800-61r3 mapiranje na CSF 2.0.",
+  "summary_en": "Cyber Kill Chain, Diamond Model, and MITRE ATT&CK for describing and disrupting attacks, OSSTMM/OWASP as testing frameworks, and the IR process from preparation to the post-incident phase, plus how NIST SP 800-61r3 maps to CSF 2.0.",
+  "minutes": 75,
+  "domain": 3,
+  "objectives": [
+    "3.1",
+    "3.2"
+  ]
+}

@@ -1,0 +1,271 @@
+[
+  {
+    "obj": "5.1",
+    "q": "Revizor je utvrdio da javni Application Load Balancer prihvata TLS 1.0 i 1.1 konekcije. Listener je napravljen CloudFormation šablonom bez navedene SSL politike. Kompanija mora prihvatati samo TLS 1.2 i 1.3, bez izmjene aplikacije. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "Dodati AWS WAF pravilo koje blokira zahtjeve sa starim TLS verzijama",
+      "Prebaciti TLS terminaciju na EC2 instance i podesiti nginx",
+      "Postaviti SslPolicy HTTPS listenera na ELBSecurityPolicy-TLS13-1-2-2021-06 (ili noviju TLS 1.2+ politiku) u šablonu",
+      "Zamijeniti ACM certifikat certifikatom sa jačim ključem"
+    ],
+    "answer": 2,
+    "explain": "Security policy listenera određuje dozvoljene TLS verzije i šifre; bez navedene politike IaC koristi staru ELBSecurityPolicy-2016-08. WAF ne kontroliše TLS handshake, terminacija na instancama dodaje napor, a jačina ključa certifikata ne mijenja verzije protokola."
+  },
+  {
+    "obj": "5.1",
+    "q": "S3 bucket sa medicinskim zapisima mora odbiti svaki zahtjev koji ne koristi TLS. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Bucket politika sa Deny za s3:* kad je aws:SecureTransport false",
+      "Default encryption bucketa postavljen na SSE-KMS",
+      "S3 Block Public Access na nivou naloga",
+      "Bucket politika sa Allow samo kad je aws:SecureTransport true, bez Deny statementa"
+    ],
+    "answer": 0,
+    "explain": "Deny sa aws:SecureTransport=false odbija HTTP zahtjeve bez obzira na druge Allow dozvole. Enkripcija u mirovanju i Block Public Access ne kontrolišu transport, a samo Allow ne sprečava pristup koji je dozvoljen identity politikom u istom nalogu."
+  },
+  {
+    "obj": "5.1",
+    "q": "Kompanija koristi CloudFront ispred ALB origina. Saobraćaj mora biti šifrovan i od klijenta do CloudFronta i od CloudFronta do ALB-a, a HTTP zahtjeve klijenata treba preusmjeriti na HTTPS. Koja konfiguracija ispunjava zahtjeve?",
+    "options": [
+      "Viewer protocol policy HTTP and HTTPS i origin protocol policy HTTP only",
+      "Viewer protocol policy HTTPS only i origin protocol policy Match viewer",
+      "Field-level encryption bez promjene protocol policy",
+      "Viewer protocol policy Redirect HTTP to HTTPS i origin protocol policy HTTPS only, sa ACM certifikatom na ALB-u za domen origina"
+    ],
+    "answer": 3,
+    "explain": "Redirect HTTP to HTTPS forsira TLS prema klijentima uz preusmjeravanje, a HTTPS only prema originu šifruje drugi dio puta. HTTPS only bez redirecta odbija HTTP umjesto da ga preusmjeri, Match viewer bi i dalje mogao koristiti HTTP, a field-level encryption štiti samo pojedina polja."
+  },
+  {
+    "obj": "5.1",
+    "q": "EC2 instance u privatnim subnetima bez internet pristupa moraju čitati iz S3 u istom regionu. Kompanija želi najmanji trošak i da se S3 pristup kroz taj put ograniči samo na buckete organizacije. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "NAT gateway i bucket politika sa aws:SourceIp",
+      "S3 gateway VPC endpoint u route tabelama privatnih subneta sa endpoint politikom koja koristi aws:ResourceOrgID",
+      "S3 interface VPC endpoint u svakom subnetu bez endpoint politike",
+      "AWS Client VPN prema S3"
+    ],
+    "answer": 1,
+    "explain": "Gateway endpoint za S3 nema naknade, a endpoint politika sa aws:ResourceOrgID sprečava pristup tuđim bucketima. NAT naplaćuje obradu podataka i izlazi na internet, interface endpoint košta po satu i GB i bez politike ne ograničava buckete, a Client VPN je za korisnike."
+  },
+  {
+    "obj": "5.1",
+    "q": "On-prem aplikacija povezana preko AWS Direct Connect mora privatno pristupati S3, bez saobraćaja preko javnog interneta. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "S3 gateway endpoint u VPC-i povezanoj sa Direct Connectom",
+      "S3 interface VPC endpoint (PrivateLink) i rezolucija S3 imena na privatne IP adrese endpointa iz on-prem DNS-a",
+      "S3 Transfer Acceleration",
+      "CloudFront distribucija ispred bucketa"
+    ],
+    "answer": 1,
+    "explain": "Interface endpoint ima privatne IP adrese dostupne preko DX ili VPN veze. Gateway endpoint radi samo za saobraćaj koji potiče iz same VPC-i, a Transfer Acceleration i CloudFront koriste javne endpointe."
+  },
+  {
+    "obj": "5.1",
+    "q": "Zaposleni moraju pristupati internoj web aplikaciji iza ALB-a bez VPN klijenta. Pristup je dozvoljen samo korisnicima iz IAM Identity Center grupe Finance i samo sa uređaja koje CrowdStrike označi kao usklađene, a odluka se mora donositi pri svakom zahtjevu. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "AWS Client VPN sa SAML autentikacijom i authorization rules po grupi",
+      "Javni ALB sa AWS WAF IP set pravilom za kancelarijske adrese",
+      "AWS Verified Access sa Identity Center i CrowdStrike trust providerima i Cedar politikom koja provjerava grupu i stanje uređaja",
+      "ALB sa Cognito autentikacijom"
+    ],
+    "answer": 2,
+    "explain": "Verified Access ocjenjuje svaki zahtjev prema identitetu i stanju uređaja, bez VPN-a. Client VPN traži VPN klijent i ne provjerava stanje uređaja, WAF IP set ne poznaje identitet, a Cognito na ALB-u ne integriše device posture."
+  },
+  {
+    "obj": "5.1",
+    "q": "SaaS provider želi izložiti API korisnicima u njihovim VPC-ima privatno, bez VPC peeringa, bez interneta i uz moguće preklapanje CIDR opsega. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "VPC endpoint service (PrivateLink) iza Network Load Balancera, a korisnici prave interface endpointe",
+      "Transit Gateway sa svim korisničkim VPC-ima",
+      "Javni API Gateway sa API ključevima",
+      "VPC peering sa svakim korisnikom"
+    ],
+    "answer": 0,
+    "explain": "PrivateLink izlaže samo servis kroz NLB, radi sa preklapajućim CIDR-ovima i ne izlaže cijelu VPC. Transit Gateway i peering traže nepreklapajuće adrese i otvaraju mrežu, a javni API Gateway ide preko interneta."
+  },
+  {
+    "obj": "5.1",
+    "q": "HPC aplikacija na EC2 mora šifrovati sav saobraćaj između instanci zbog regulative, bez izmjene aplikacije i bez pada performansi. Instance su u istoj VPC-i i komuniciraju direktno. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Konfigurisati IPsec tunele između svih instanci",
+      "Postaviti Network Load Balancer sa TLS listenerom između instanci",
+      "Uključiti EBS encryption by default",
+      "Koristiti instance tipove koji podržavaju Nitro automatsku enkripciju u prenosu i zadržati direktnu komunikaciju bez virtuelnih uređaja između"
+    ],
+    "answer": 3,
+    "explain": "Podržani Nitro instance tipovi automatski šifruju saobraćaj između instanci u istoj ili peered VPC-i kad ne prolazi kroz load balancer ili transit gateway, bez uticaja na performanse. IPsec traži održavanje i troši CPU, NLB bi prekinuo uslov direktne komunikacije, a EBS enkripcija je za podatke u mirovanju."
+  },
+  {
+    "obj": "5.1",
+    "q": "Data science tim pokreće distribuirani training job na SageMaker AI sa više instanci. Regulativa traži da saobraćaj između training kontejnera bude šifrovan. Šta treba uključiti?",
+    "options": [
+      "SSE-KMS na S3 bucketu sa podacima za trening",
+      "EnableNetworkIsolation na training jobu",
+      "KMS ključ za ML storage volumene",
+      "EnableInterContainerTrafficEncryption na training jobu"
+    ],
+    "answer": 3,
+    "explain": "Inter-container traffic encryption šifruje komunikaciju između kontejnera u distribuiranom treningu. Network isolation blokira mrežni pristup prema van, a SSE-KMS i KMS za volumene štite podatke u mirovanju."
+  },
+  {
+    "obj": "5.2",
+    "q": "Regulator traži da ključevi za enkripciju podataka u S3 i EBS budu u single-tenant HSM-u pod isključivom kontrolom kompanije, ali kompanija želi zadržati nativnu integraciju AWS servisa sa enkripcijom. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "AWS KMS customer managed ključevi u standardnom key storeu",
+      "AWS KMS custom key store povezan sa AWS CloudHSM klasterom",
+      "AWS CloudHSM sa aplikacijom koja šifruje podatke prije upisa preko PKCS#11",
+      "SSE-C sa ključevima iz on-prem HSM-a"
+    ],
+    "answer": 1,
+    "explain": "Custom key store čuva materijal u tvom single-tenant CloudHSM klasteru, a servisi i dalje koriste KMS integraciju. Standardni KMS je multi-tenant, direktni CloudHSM traži vlastitu enkripciju u aplikaciji, a SSE-C ne radi za EBS i traži slanje ključa uz svaki zahtjev."
+  },
+  {
+    "obj": "5.2",
+    "q": "Aplikacija upisuje milione malih objekata u bucket šifrovan SSE-KMS customer managed ključem. Troškovi KMS-a rastu i povremeno se javlja KMS throttling. Koje rješenje smanjuje broj KMS poziva uz zadržavanje SSE-KMS?",
+    "options": [
+      "Uključiti S3 Bucket Keys za bucket",
+      "Prebaciti na DSSE-KMS",
+      "Uključiti automatsku rotaciju KMS ključa",
+      "Prebaciti na SSE-C"
+    ],
+    "answer": 0,
+    "explain": "Bucket Key je kratkotrajni ključ na nivou bucketa izveden iz KMS ključa, pa S3 rjeđe poziva KMS. DSSE-KMS ne podržava Bucket Keys i dodaje drugi sloj, rotacija ne smanjuje broj poziva, a SSE-C napušta KMS."
+  },
+  {
+    "obj": "5.2",
+    "q": "Security tim mora osigurati da su svi novi EBS volumeni i snapshoti u nalogu šifrovani customer managed ključem, i to u svim regionima koje kompanija koristi. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "Lambda funkcija koja svakog sata šifruje nešifrovane volumene",
+      "AWS Config pravilo encrypted-volumes sa ručnom remedijacijom",
+      "Uključiti EBS encryption by default i postaviti podrazumijevani KMS ključ u svakom korištenom regionu",
+      "Instruisati developere da biraju enkripciju u launch template"
+    ],
+    "answer": 2,
+    "explain": "EBS encryption by default je postavka po regionu koja automatski šifruje sve nove volumene i snapshote izabranim ključem. Config samo detektuje, Lambda ne može šifrovati postojeći volumen u mjestu, a oslanjanje na developere nije kontrola."
+  },
+  {
+    "obj": "5.2",
+    "q": "Nešifrovana produkcijska RDS for PostgreSQL instanca mora postati šifrovana KMS ključem. Šta je ispravan postupak?",
+    "options": [
+      "Uključiti enkripciju u postavkama instance i uraditi reboot",
+      "Napraviti nešifrovanu read repliku i promovisati je",
+      "Uključiti EBS encryption by default; postojeća RDS instanca će se automatski šifrovati",
+      "Napraviti snapshot, kopirati ga sa enkripcijom i KMS ključem, pa restore nove instance iz šifrovane kopije"
+    ],
+    "answer": 3,
+    "explain": "RDS enkripcija se bira pri kreiranju i ne može se uključiti na postojećoj instanci; put je snapshot, šifrovana kopija i restore. Read replica nasljeđuje stanje enkripcije izvora, a EBS default ne utiče na postojeće RDS instance."
+  },
+  {
+    "obj": "5.2",
+    "q": "Finansijska firma mora čuvati evidenciju transakcija u S3 sedam godina u WORM obliku. Niko, uključujući root korisnika i AWS podršku, ne smije obrisati ni skratiti retenciju objekata. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "S3 Versioning sa MFA Delete",
+      "S3 Object Lock u governance modu sa retencijom od 7 godina",
+      "S3 Object Lock u compliance modu sa default retencijom od 7 godina",
+      "S3 Lifecycle pravilo koje briše objekte nakon 7 godina"
+    ],
+    "answer": 2,
+    "explain": "Compliance mode ne dozvoljava nikome da obriše objekat ili skrati retenciju prije isteka. Governance mode može zaobići korisnik sa s3:BypassGovernanceRetention, MFA Delete štiti samo verzije uz MFA, a lifecycle ne sprečava brisanje."
+  },
+  {
+    "obj": "5.2",
+    "q": "Pravni tim traži da se određeni objekti u bucketu sa Object Lockom ne smiju obrisati dok traje sudski spor, čiji kraj nije poznat. Retencija tih objekata ističe sljedeće sedmice. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Promijeniti retenciju svih objekata u bucketu na compliance mode od 10 godina",
+      "Postaviti legal hold na te objekte i skinuti ga kad se spor završi",
+      "Isključiti versioning na bucketu",
+      "Kopirati objekte u Glacier Deep Archive"
+    ],
+    "answer": 1,
+    "explain": "Legal hold štiti objekat bez roka, nezavisno od retention perioda, dok ga ovlašteni korisnik ne skine. Dugačka compliance retencija bi nepotrebno zaključala sve objekte, versioning se ne može isključiti uz Object Lock, a kopija u Deep Archive ne štiti od brisanja."
+  },
+  {
+    "obj": "5.2",
+    "q": "Security tim mora spriječiti deploy Lambda koda koji nije potpisan odobrenim profilom ili je izmijenjen nakon potpisivanja. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "AWS Signer signing profile i Lambda code signing configuration sa politikom Enforce za nepotpisane i nevažeće artefakte",
+      "Amazon Inspector Lambda code scanning",
+      "S3 Object Lock na bucketu sa deployment paketima",
+      "Lambda code signing configuration sa politikom Warn"
+    ],
+    "answer": 0,
+    "explain": "Code signing configuration sa Enforce odbija deploy koda bez važećeg potpisa dozvoljenog profila. Warn samo bilježi upozorenje i dozvoljava deploy, Inspector traži ranjivosti, a Object Lock ne provjerava porijeklo koda."
+  },
+  {
+    "obj": "5.2",
+    "q": "Kompanija želi zaštititi backupe od ransomware napadača koji bi mogao dobiti administratorski pristup produkcijskom nalogu. Koja DVA koraka NAJVIŠE povećavaju otpornost? (Izaberi DVA.)",
+    "options": [
+      "Kopirati recovery pointove AWS Backup-om u vault u posebnom backup nalogu (ili logically air-gapped vault) zaključan Vault Lockom u compliance modu",
+      "Uključiti S3 Versioning na produkcijskim bucketima kao jedinu zaštitu",
+      "Čuvati backupe u istom nalogu, ali u drugom regionu",
+      "SCP-om zabraniti brisanje recovery pointova, izmjenu vault politika i zakazivanje brisanja KMS ključeva osim break-glass ulozi",
+      "Smanjiti retenciju backupa na 1 dan da napadač ima manje podataka"
+    ],
+    "answer": [0, 3],
+    "explain": "Izolovan i nepromjenjiv vault preživljava kompromitaciju produkcijskog naloga, a SCP sprečava brisanje backupa i ključeva čak i administratorima member naloga. Versioning i drugi region u istom nalogu napadač sa admin pravima može poništiti, a kraća retencija smanjuje mogućnost oporavka."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Upari zahtjev sa NAJPRIKLADNIJIM servisom ili funkcijom.",
+    "options": [
+      "Automatski dnevni EBS snapshoti instanci sa tagom Backup=true i kopija u drugi region, bez ostalih servisa.",
+      "Migrirati 300 TB sa on-prem NFS-a u S3 uz TLS i provjeru integriteta.",
+      "Fajlovi na EFS koji se ne koriste 90 dana trebaju preći u jeftiniju klasu.",
+      "Centralni backup plan za RDS, DynamoDB i EFS u svim nalozima organizacije.",
+      "Dokazati da CloudTrail log fajlovi nisu izmijenjeni nakon isporuke."
+    ],
+    "targets": [
+      "AWS Backup sa backup policies u Organizations",
+      "CloudTrail log file integrity validation",
+      "Amazon Data Lifecycle Manager",
+      "AWS DataSync",
+      "Amazon Macie",
+      "EFS Lifecycle management"
+    ],
+    "answer": [2, 3, 5, 0, 1],
+    "explain": "DLM automatizuje EBS snapshote po tagu sa cross-region kopijom, DataSync prenosi podatke uz TLS i verifikaciju, EFS Lifecycle premješta neaktivne fajlove, AWS Backup centralizuje planove u organizaciji, a log file integrity validation dokazuje integritet CloudTrail logova. Macie je distraktor."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Upari zahtjev za enkripciju S3 podataka sa odgovarajućim tipom.",
+    "options": [
+      "Najjednostavnija enkripcija bez upravljanja ključevima i bez dodatnog troška.",
+      "Audit svake upotrebe ključa u CloudTrailu i kontrola ko smije dešifrovati.",
+      "Regulativa traži dva nezavisna sloja enkripcije na serverskoj strani.",
+      "Podaci moraju biti šifrovani prije nego što napuste aplikaciju kompanije."
+    ],
+    "targets": [
+      "DSSE-KMS",
+      "SSE-S3",
+      "Client-side encryption (AWS Encryption SDK)",
+      "SSE-KMS",
+      "SSE-C"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "SSE-S3 je podrazumijevan i ne traži upravljanje ključevima, SSE-KMS daje key policy i CloudTrail audit, DSSE-KMS primjenjuje dva sloja enkripcije, a client-side šifruje prije slanja u AWS. SSE-C je distraktor i za nove buckete je blokiran podrazumijevano."
+  },
+  {
+    "obj": "5.2",
+    "type": "order",
+    "q": "Poredaj korake kojima se postojeći nešifrovani EBS volumen zamjenjuje šifrovanim.",
+    "options": [
+      "Kopirati snapshot sa uključenom enkripcijom i izabranim KMS ključem",
+      "Zaustaviti instancu, odvojiti stari volumen i zakačiti novi na isti device",
+      "Napraviti snapshot nešifrovanog volumena",
+      "Kreirati novi volumen iz šifrovanog snapshota u istoj AZ kao instanca"
+    ],
+    "answer": [2, 0, 3, 1],
+    "explain": "Postojeći volumen se ne može šifrovati u mjestu: prvo snapshot, zatim šifrovana kopija snapshota, novi volumen iz nje u istoj AZ i na kraju zamjena volumena na instanci."
+  },
+  {
+    "obj": "5.1",
+    "type": "spot",
+    "q": "Bucket politika treba odbiti svaki pristup bucketu acme-records i njegovim objektima preko HTTP-a ili TLS-a starijeg od 1.2. Klikni redove zbog kojih to ne radi.",
+    "lang": "json",
+    "snippet": "{\"Version\": \"2012-10-17\", \"Statement\": [\n  {\n    \"Sid\": \"DenyHttp\",\n    \"Effect\": \"Deny\",\n    \"Principal\": \"*\",\n    \"Action\": \"s3:*\",\n    \"Resource\": [\"arn:aws:s3:::acme-records\", \"arn:aws:s3:::acme-records/*\"],\n    \"Condition\": { \"Bool\": { \"aws:SecureTransport\": \"true\" } }\n  },\n  {\n    \"Sid\": \"DenyOldTls\", \"Effect\": \"Deny\", \"Principal\": \"*\", \"Action\": \"s3:*\",\n    \"Resource\": \"arn:aws:s3:::acme-records\",\n    \"Condition\": { \"NumericLessThan\": { \"s3:TlsVersion\": \"1.2\" } }\n  }\n]}",
+    "answer": [7, 11],
+    "explain": "Red 8: Deny kad je aws:SecureTransport \"true\" blokira upravo HTTPS zahtjeve, a HTTP propušta. Treba \"false\". Red 12: Resource sadrži samo ARN bucketa, pa se uslov za TLS verziju primjenjuje na operacije nad bucketom (npr. ListBucket), ali ne i na GetObject/PutObject nad objektima. Treba dodati \"arn:aws:s3:::acme-records/*\", kao u prvom statementu. AWS Config pravilo s3-bucket-ssl-requests-only bi uhvatilo prvu grešku."
+  }
+]

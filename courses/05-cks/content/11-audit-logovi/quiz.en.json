@@ -1,0 +1,228 @@
+[
+  {
+    "obj": "6.5",
+    "q": "An audit Policy has these rules in order: (1) level: Metadata without filters, (2) level: RequestResponse for resources pods in the prod namespace. At which level is kubectl -n prod delete pod web logged?",
+    "options": [
+      "Metadata, because the first matching rule determines the level",
+      "RequestResponse, because the more specific rule takes precedence",
+      "RequestResponse, because the highest level of all matching rules is used",
+      "Neither, because the rules are mutually exclusive"
+    ],
+    "answer": 0,
+    "explain": "Rules are evaluated in order and the first match wins; a rule without filters matches everything. Specificity and 'highest level' play no role, so the catch-all must go at the end."
+  },
+  {
+    "obj": "6.5",
+    "q": "The task says: 'Log Secrets so that you can see who accessed them, but the content of a Secret must never end up in the log.' Which level do you choose?",
+    "options": [
+      "Request",
+      "Metadata",
+      "RequestResponse with omitStages: [ResponseComplete]",
+      "None"
+    ],
+    "answer": 1,
+    "explain": "Metadata records the user, verb, object and result without the body. Request would write the value on create/update, RequestResponse on get, and None wouldn't even record who accessed it."
+  },
+  {
+    "obj": "6.5",
+    "q": "The audit log is huge and almost every request has two records: one without responseStatus and one with it. What do you add to the Policy?",
+    "options": [
+      "omitStages: [ResponseComplete]",
+      "level: None for verbs [get]",
+      "omitStages: [RequestReceived]",
+      "--audit-log-maxsize=1"
+    ],
+    "answer": 2,
+    "explain": "An event in the RequestReceived stage is generated before processing and has no result; omitting it leaves only ResponseComplete. Omitting ResponseComplete would discard exactly the records with the result, and maxsize only rotates the file."
+  },
+  {
+    "obj": "6.5",
+    "q": "You added --audit-policy-file=/etc/kubernetes/audit/policy.yaml and --audit-log-path=/var/log/kubernetes/audit/audit.log to kube-apiserver.yaml. After two minutes kubectl returns 'connection refused', and crictl logs for kube-apiserver says the policy file doesn't exist, even though ls on the node shows the file. What is the cause?",
+    "options": [
+      "The policy file has the wrong permissions on the host",
+      "The kubelet needs to be restarted with systemctl restart kubelet",
+      "The --audit-log-path flag must be specified before --audit-policy-file",
+      "The hostPath volume and volumeMount for the policy file are missing from the manifest"
+    ],
+    "answer": 3,
+    "explain": "The API server runs in a container and sees only mounted paths. The file exists on the host but not in the container. The kubelet picks up manifest changes on its own, and flag order doesn't matter."
+  },
+  {
+    "obj": "6.5",
+    "q": "Task: keep at most 5 old audit files, rotate each at 100 MB and delete files older than 30 days. Which set of flags is correct?",
+    "options": [
+      "--audit-log-maxbackup=5 --audit-log-maxsize=100 --audit-log-maxage=30",
+      "--audit-log-maxbackup=30 --audit-log-maxsize=100 --audit-log-maxage=5",
+      "--audit-log-maxbackup=5 --audit-log-maxsize=100M --audit-log-maxage=30d",
+      "--audit-log-maxfiles=5 --audit-log-maxsize=100 --audit-log-maxage=30"
+    ],
+    "answer": 0,
+    "explain": "maxbackup is a number of files, maxsize is in megabytes, maxage in days, all as integers without units. The --audit-log-maxfiles flag doesn't exist, and the second option swaps the number of files and the days."
+  },
+  {
+    "obj": "6.5",
+    "q": "You mounted the log directory like this: volumeMount mountPath: /var/log/kubernetes/audit/, readOnly: true; volume hostPath path: /var/log/kubernetes/audit/, type: DirectoryOrCreate. What will happen?",
+    "options": [
+      "Everything works, readOnly applies only to the host",
+      "The API server can't write the audit log because the mount is read-only",
+      "The kubelet rejects the manifest because DirectoryOrCreate doesn't support readOnly",
+      "The log is written to stdout instead of a file"
+    ],
+    "answer": 1,
+    "explain": "readOnly: true makes the mount immutable inside the container, so the API server can neither create nor append to audit.log. The combination with DirectoryOrCreate is syntactically allowed, and the log doesn't automatically fall back to stdout."
+  },
+  {
+    "obj": "6.5",
+    "q": "A rule reads: level: RequestResponse, resources: [{group: \"\", resources: [\"pods\"]}]. There isn't a single record of kubectl exec into Pods in the log. Why?",
+    "options": [
+      "exec goes through the kubelet and the API server doesn't see it",
+      "exec is a non-resource URL and must be added to nonResourceURLs",
+      "exec is the subresource pods/exec, which resources: [\"pods\"] doesn't include",
+      "RequestResponse doesn't support the create verb"
+    ],
+    "answer": 2,
+    "explain": "kubectl exec is a create on the pods/exec subresource; 'pods' doesn't include subresources, so you need 'pods/exec' or 'pods/*'. The request goes through the API server and is a resource request."
+  },
+  {
+    "obj": "6.5",
+    "q": "You want to cut the noise: don't log reads of events objects, but do log their creation. Which rule, placed at the top of the list, does that?",
+    "options": [
+      "level: None, resources: [{group: \"\", resources: [\"events\"]}]",
+      "level: Metadata, resources: [{group: \"\", resources: [\"events\"]}], verbs: [create]",
+      "level: None, nonResourceURLs: [\"/api/v1/events*\"]",
+      "level: None, resources: [{group: \"\", resources: [\"events\"]}], verbs: [get, list, watch]"
+    ],
+    "answer": 3,
+    "explain": "None with verbs get/list/watch silences only reads, while create falls through to later rules. Without verbs, creation would be silenced too; events are not a non-resource URL, and Metadata for create doesn't silence reads."
+  },
+  {
+    "obj": "6.5",
+    "q": "Which jq command finds who deleted the Secret db-pass in the prod namespace?",
+    "options": [
+      "jq 'select(.verb==\"delete\" and .objectRef.resource==\"secrets\" and .objectRef.namespace==\"prod\" and .objectRef.name==\"db-pass\") | .user.username' audit.log",
+      "jq '.items[] | select(.kind==\"Secret\" and .metadata.name==\"db-pass\") | .user' audit.log",
+      "jq 'select(.method==\"DELETE\" and .path==\"/secrets/db-pass\") | .username' audit.log",
+      "jq 'select(.objectRef.kind==\"Secret\" and .verb==\"remove\") | .user.username' audit.log"
+    ],
+    "answer": 0,
+    "explain": "The audit log is JSON Lines with the fields verb, objectRef.resource/namespace/name and user.username. There is no items array, no method/path fields, no objectRef.kind and no remove verb."
+  },
+  {
+    "obj": "6.5",
+    "q": "You're looking for who read the Secret api-token in the prod namespace. The filter verb==\"get\" and objectRef.name==\"api-token\" returns nothing, but you suspect the ServiceAccount backup. What was most likely missed?",
+    "options": [
+      "The audit log doesn't record ServiceAccount requests",
+      "A read via list: objectRef.name is empty in that case, so a filter by name doesn't catch it",
+      "The Secret was read via etcd, so there is no record",
+      "get on Secrets is logged only at the RequestResponse level"
+    ],
+    "answer": 1,
+    "explain": "kubectl get secrets (list) returns all Secrets in the namespace, and the event has no object name. ServiceAccounts are logged as system:serviceaccount:<ns>:<name>, and the Metadata level also records get."
+  },
+  {
+    "obj": "6.5",
+    "q": "In an audit event you see user.username: system:serviceaccount:prod:backup, verb: delete, objectRef.resource: secrets, responseStatus.code: 403. What happened?",
+    "options": [
+      "The ServiceAccount successfully deleted the Secret",
+      "The Secret didn't exist",
+      "The ServiceAccount backup from the prod namespace attempted the deletion, but authorization denied it",
+      "The API server rejected the request because of the ImagePolicyWebhook"
+    ],
+    "answer": 2,
+    "explain": "403 Forbidden means RBAC didn't allow the action; success would be 200, a nonexistent object 404. The attempt is still an important lead: someone is using that ServiceAccount's token for actions it isn't meant to perform."
+  },
+  {
+    "obj": "6.5",
+    "q": "After changing the kube-apiserver manifest, crictl ps -a shows no kube-apiserver container at all, not even an exited one. Where do you look first?",
+    "options": [
+      "kubectl -n kube-system logs kube-apiserver-controlplane",
+      "/var/log/kubernetes/audit/audit.log",
+      "systemctl status kube-apiserver",
+      "journalctl -u kubelet, because the kubelet didn't even manage to create the Pod (manifest parsing or mounting)"
+    ],
+    "answer": 3,
+    "explain": "If the container doesn't exist at all, the problem is before startup: the kubelet can't parse the manifest or mount a volume, and that is written in its journal. kubectl doesn't work without the API server, and kube-apiserver is not a systemd service in a kubeadm cluster."
+  },
+  {
+    "obj": "6.5",
+    "q": "Which combination of hostPath types is correct for the audit configuration in a static Pod manifest?",
+    "options": [
+      "Policy: type File (readOnly); log: type DirectoryOrCreate for the directory (writable)",
+      "Policy: type DirectoryOrCreate; log: type File for audit.log",
+      "Policy: type FileOrCreate; log: type File (readOnly)",
+      "Both: type Directory for /etc/kubernetes"
+    ],
+    "answer": 0,
+    "explain": "The policy file must exist, so File is appropriate and the mount is read-only. For the log, a directory is mounted that is created if it doesn't exist, because audit.log and the rotated files are created at runtime. File for a nonexistent log file breaks the Pod's startup."
+  },
+  {
+    "obj": "6.5",
+    "q": "Which TWO situations prevent the kube-apiserver from coming up after auditing is enabled? (Choose TWO.)",
+    "options": [
+      "The policy file has apiVersion: audit.k8s.io/v1 and only one rule, level: Metadata",
+      "The policy file has rules: [] (no rules)",
+      "--audit-log-path points to a path whose directory isn't mounted",
+      "The Policy doesn't contain omitStages",
+      "--audit-log-maxbackup isn't specified"
+    ],
+    "answer": [1, 2],
+    "explain": "A Policy without rules is invalid, and the API server can't open a log on an unmounted path. A Policy with a single Metadata rule is valid, and omitStages and maxbackup are optional."
+  },
+  {
+    "obj": "6.5",
+    "q": "You made a copy of the manifest with cp kube-apiserver.yaml kube-apiserver.yaml.bak in the /etc/kubernetes/manifests/ directory. Why is that bad?",
+    "options": [
+      "The kubelet doesn't read files with the .bak extension, so there is no problem",
+      "The copy takes up too much disk space",
+      "The kubelet treats files in that directory as static Pod manifests, so the copy can conflict with the original",
+      "kubeadm upgrade will overwrite the copy"
+    ],
+    "answer": 2,
+    "explain": "The kubelet tries to run manifests from staticPodPath, and two manifests for the same Pod on the same port collide. Always keep the copy outside the manifests directory (e.g. /root)."
+  },
+  {
+    "obj": "6.5",
+    "type": "order",
+    "q": "Order the steps for enabling audit logging on a kubeadm control plane.",
+    "options": [
+      "Add the flags --audit-policy-file and --audit-log-path (and maxage/maxbackup/maxsize) to the manifest",
+      "Make a copy of kube-apiserver.yaml outside /etc/kubernetes/manifests",
+      "Wait for kube-apiserver to be Running and check tail audit.log | jq",
+      "Write the Policy file to /etc/kubernetes/audit/policy.yaml",
+      "Add hostPath volumes and volumeMounts for the policy file and the log directory"
+    ],
+    "answer": [1, 3, 0, 4, 2],
+    "explain": "First the backup copy, then the Policy file, which must exist before startup, then the manifest changes (flags and volumes in the same editing session) and finally the check that the API server is running and the log is being created."
+  },
+  {
+    "obj": "6.5",
+    "type": "match",
+    "q": "Match the audit event field with the question it answers in an investigation.",
+    "options": [
+      "user.username",
+      "objectRef",
+      "responseStatus.code",
+      "sourceIPs"
+    ],
+    "targets": [
+      "Whether the request succeeded or was denied",
+      "From which address the request was sent",
+      "Who sent the request",
+      "With which tool the request was sent",
+      "On which resource, in which namespace and on which object"
+    ],
+    "answer": [2, 4, 0, 1],
+    "explain": "username is the identity, objectRef describes the object, responseStatus.code the result, and sourceIPs the client address. The tool (kubectl, curl) is in the userAgent field, which isn't offered here."
+  },
+  {
+    "type": "spot",
+    "obj": "6.5",
+    "q": "Requirement: Secrets are recorded only at Metadata level (never their content), kubectl exec with full detail, everything else Metadata. Yet the audit log shows Secret contents. Click the line that causes it.",
+    "snippet": "apiVersion: audit.k8s.io/v1\nkind: Policy\nrules:\n- level: None\n  resources:\n  - group: \"\"\n    resources: [\"events\"]\n- level: RequestResponse\n  resources:\n  - group: \"\"\n    resources: [\"secrets\", \"pods/exec\"]\n- level: Metadata\n  resources:\n  - group: \"\"\n    resources: [\"secrets\"]\n- level: Metadata",
+    "lang": "yaml",
+    "answer": [
+      10
+    ],
+    "explain": "Rules are evaluated in order and the first match sets the level. The RequestResponse rule also lists secrets, so every Secret request gets a full record including content, and the later Metadata rule for secrets never applies. Fix: remove \"secrets\" from that line (leaving [\"pods/exec\"]) or move the Metadata rule for secrets above the RequestResponse rule."
+  }
+]

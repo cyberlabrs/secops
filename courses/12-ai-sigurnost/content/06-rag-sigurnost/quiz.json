@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Interni asistent indeksira sve SharePoint dokumente u jednu kolekciju. Sistemski prompt kaže modelu da ne otkriva dokumente za koje korisnik nema pravo. Zaposleni iz prodaje dobija sažetak plata iz HR-a. Koja je osnovna greška u dizajnu?",
+    "options": [
+      "Model je premali da bi pratio instrukciju",
+      "Kontrola pristupa je prepuštena modelu; nedozvoljeni chunkovi su već ušli u kontekst, a filter po ACL-u treba primijeniti pri pretrazi",
+      "Sistemski prompt treba ponoviti na kraju konteksta",
+      "SharePoint ne bi trebalo indeksirati"
+    ],
+    "answer": 1,
+    "explain": "Sve što uđe u kontekst treba smatrati otkrivenim. ACL se provodi u retrieveru na osnovu identiteta iz autentifikacije. Veći model ili ponovljen prompt ne čine model mehanizmom autorizacije, a indeksiranje SharePointa je u redu uz ispravne kontrole."
+  },
+  {
+    "obj": "3.1",
+    "q": "Retriever traži top-5 najsličnijih chunkova, a zatim aplikacija izbacuje one za koje korisnik nema pravo. Korisnici iz malih odjeljenja često dobijaju prazne odgovore. Šta je najbolje rješenje?",
+    "options": [
+      "Pre-filter: vektorska baza pretražuje samo chunkove koje korisnik smije vidjeti, a post-provjera ostaje kao odbrana u dubinu",
+      "Slati svih 5 chunkova modelu uz instrukciju da ignoriše nedozvoljene",
+      "Povećati top-k na 500 i ukloniti provjeru",
+      "Dati malim odjeljenjima pristup svim dokumentima"
+    ],
+    "answer": 0,
+    "explain": "Post-filter nad malim top-k skupom daje loše ili prazne rezultate kad su najsličniji chunkovi tuđi. Pre-filter rješava i tačnost i sigurnost. Slanje modelu otkriva podatke, uklanjanje provjere je opasno, a širenje prava krši najmanje privilegije."
+  },
+  {
+    "obj": "3.1",
+    "q": "Marku je jutros oduzet pristup pravnom folderu. RAG indeks se osvježava jednom sedmično, uključujući ACL. Koja kombinacija kontrola najbolje zatvara ovaj prozor?",
+    "options": [
+      "Ručno obavijestiti Marka da ne koristi asistenta za pravna pitanja",
+      "Brisati cijeli indeks svake noći",
+      "Obrada promjena prava događajima, metrika maksimalnog kašnjenja opoziva i provjera pristupa u izvornom sistemu u realnom vremenu za osjetljive izvore",
+      "Šifrovati vektorsku bazu u mirovanju"
+    ],
+    "answer": 2,
+    "explain": "ACL u indeksu je kopija koja zastarijeva. Opoziv mora stići brzo (događaji), mora se mjeriti, a za osjetljive dokumente provjera u izvornom sistemu prije ubacivanja u prompt uklanja zavisnost od kopije. Šifrovanje ne mijenja ko je ovlašten, a noćno brisanje je skupo i ostavlja dnevni prozor."
+  },
+  {
+    "obj": "3.1",
+    "q": "Retriever filtrira po polju group koje dolazi iz JSON tijela zahtjeva koji šalje frontend. Šta je problem?",
+    "options": [
+      "JSON nije dovoljno brz format za filtere",
+      "Polje treba zvati groups umjesto group",
+      "Filter treba primijeniti tek poslije generisanja odgovora",
+      "Identitet i grupe dolaze od klijenta i mogu se lažirati; retriever ih mora uzeti iz verifikovanog tokena ili IdP-a"
+    ],
+    "answer": 3,
+    "explain": "Autorizacijski atributi moraju doći iz autentifikacije (verifikovan token, IdP), ne iz podataka koje kontroliše klijent ili tekst upita. Naziv polja i format nisu sigurnosno relevantni, a filtriranje poslije generisanja je prekasno."
+  },
+  {
+    "obj": "3.1",
+    "q": "Aplikacija za više kupaca koristi jednu kolekciju u vektorskoj bazi i filter tenant_id koji developeri dodaju u svaki upit. U novom endpointu filter je zaboravljen. Koja promjena dizajna sprječava ponavljanje?",
+    "options": [
+      "Code review checklista sa stavkom „dodaj tenant_id“",
+      "Filter po tenantu automatski postavlja sloj za pristup podacima iz identiteta zahtjeva (ili zaseban indeks po tenantu), uz automatski test izolacije u CI-ju",
+      "Dodati tenant_id u sistemski prompt",
+      "Koristiti veći embedding model"
+    ],
+    "answer": 1,
+    "explain": "Kontrola koja zavisi od toga da je developer ne zaboravi nije pouzdana. Centralni sloj ili logička izolacija (zaseban indeks/namespace) uklanja mogućnost greške, a test sa dva tenanta je dokazuje. Checklista pomaže, ali nije tehnička kontrola; prompt i model nisu relevantni."
+  },
+  {
+    "obj": "3.1",
+    "q": "Tim uvodi semantički keš: ako je novi upit dovoljno sličan ranijem, vraća se raniji odgovor. Keš je ključan samo po vektoru upita. Koji rizik ovo uvodi?",
+    "options": [
+      "Odgovor napravljen iz dokumenata dostupnih jednom korisniku može se vratiti korisniku bez tih prava; keš mora biti ključan po tenantu i skupu prava ili isključen za osjetljive izvore",
+      "Keš povećava trošak tokena",
+      "Keš ne radi sa embeddingima",
+      "Nema rizika jer keš ne sadrži dokumente nego samo odgovore"
+    ],
+    "answer": 0,
+    "explain": "Odgovor je izvedeni artefakt i nasljeđuje prava dokumenata iz kojih je nastao. Keš ključan samo po sličnosti zaobilazi ACL filter. Keš smanjuje trošak, radi upravo sa embeddingima, a odgovor sadrži informacije iz dokumenata."
+  },
+  {
+    "obj": "3.1",
+    "q": "Na javno dostupnom storage bucketu pronađen je backup vektorske baze sa vektorima, ali bez teksta chunkova. Menadžer tvrdi da to nije incident jer su to „samo brojevi“. Kako treba postupiti?",
+    "options": [
+      "Složiti se, jer se vektori ne mogu pretvoriti nazad u tekst",
+      "Obrisati backup i ne dokumentovati događaj",
+      "Tretirati kao curenje podataka iste klasifikacije kao izvorni dokumenti, jer embedding inversion može rekonstruisati značajan dio teksta, i pokrenuti proces odgovora na incident",
+      "Rotirati samo API ključ embedding servisa"
+    ],
+    "answer": 2,
+    "explain": "OWASP LLM08 navodi embedding inversion kao rizik: vektori nisu anonimizacija i nose klasifikaciju izvora. Događaj se obrađuje kao incident, uključujući procjenu obaveza prijave. Brisanje bez dokumentovanja i rotacija nepovezanog ključa ne rješavaju izloženost."
+  },
+  {
+    "obj": "3.1",
+    "q": "Korisnik traži brisanje svojih podataka (pravo na brisanje). Dokumenti su obrisani iz izvornog sistema, ali RAG asistent i dalje citira dijelove. Šta je nedostajalo?",
+    "options": [
+      "Veći top-k",
+      "Novi sistemski prompt koji zabranjuje pominjanje tog korisnika",
+      "Šifrovanje vektora",
+      "doc_id i verzija izvora na svakom chunku i proces koji pri brisanju izvora uklanja chunkove, vektore, sažetke i keš"
+    ],
+    "answer": 3,
+    "explain": "Pouzdano brisanje traži vezu svakog izvedenog artefakta sa izvorom (doc_id) i događaj koji pokreće brisanje u indeksu, kešu i sažecima. Prompt ne briše podatke, a šifrovanje i top-k nisu relevantni za brisanje."
+  },
+  {
+    "obj": "3.1",
+    "q": "Vektorska baza u Kubernetesu ima admin dashboard izložen preko javnog Ingressa, a aplikacija i ingest job koriste isti API ključ sa punim pravima. Koje izmjene su prioritetne?",
+    "options": [
+      "Dashboard samo kroz VPN/SSO, privatna mreža i NetworkPolicy za bazu, posebni nalozi za ingest (pisanje) i retriever (samo čitanje), ključevi u secret manageru",
+      "Promijeniti port dashboarda na nestandardni",
+      "Dodati CAPTCHA na dashboard",
+      "Povećati broj replika baze"
+    ],
+    "answer": 0,
+    "explain": "Vektorska baza sadrži iste podatke kao izvorni dokumenti i štiti se kao produkciona baza: bez javnog admin pristupa, mrežna izolacija i najmanje privilegije po komponenti. Nestandardni port je sigurnost kroz skrivanje, CAPTCHA ne zamjenjuje autentifikaciju, a replike su dostupnost."
+  },
+  {
+    "obj": "3.1",
+    "q": "RAG asistent za podršku indeksira i tikete koje otvaraju kupci. Nakon nekoliko sedmica asistent daje netačan broj telefona „službe za povrat novca“, koji potiče iz jednog tiketa. Kako se ovaj obrazac zove i koja kontrola je ključna?",
+    "options": [
+      "LLM09 Misinformation; ugasiti RAG",
+      "Trovanje RAG korpusa (ATLAS AML.T0070); nivoi povjerenja izvora, karantin sadržaja koji generišu korisnici prije indeksiranja i citati u odgovoru",
+      "Model extraction; rate limit",
+      "Embedding inversion; šifrovanje vektora"
+    ],
+    "answer": 1,
+    "explain": "Sadržaj iz izvora u koji piše širok krug ljudi ušao je u korpus bez reviewa: to je RAG poisoning. Kontrole su na ingestu (povjerenje, karantin, porijeklo) i u UI (citati). Gašenje RAG-a nije srazmjerno, a ekstrakcija modela i inversion su drugi rizici."
+  },
+  {
+    "obj": "3.1",
+    "q": "Prije prvog indeksiranja internog wikija sigurnosni tim predlaže skeniranje cijelog korpusa. Šta je glavni razlog?",
+    "options": [
+      "Ubrzavanje embeddinga",
+      "Smanjenje broja chunkova",
+      "Wikiji i tiketi često sadrže zalijepljene tajne i lične podatke; ono što nije indeksirano ne može procuriti kroz asistenta (i ATLAS opisuje RAG Credential Harvesting)",
+      "Provjera pravopisa radi boljih odgovora"
+    ],
+    "answer": 2,
+    "explain": "Skeniranje tajni i ličnih podataka prije indeksiranja sprječava da asistent postane pretraživač kredencijala (AML.T0082). Brzina, broj chunkova i pravopis nisu sigurnosni razlozi."
+  },
+  {
+    "obj": "3.1",
+    "q": "Tim razmatra korištenje eksternog API-ja za embedding dokumenata koji sadrže lične podatke klijenata. Šta je najvažnije pitanje prije odluke?",
+    "options": [
+      "Kolika je dimenzija vektora",
+      "Da li API podržava batch zahtjeve",
+      "Da li je API brži od lokalnog modela",
+      "Gdje se podaci obrađuju, koliko ih dobavljač zadržava i da li ih koristi za treniranje, i postoji li ugovor o obradi podataka"
+    ],
+    "answer": 3,
+    "explain": "Eksterni embedding znači da svaki dokument i upit napušta infrastrukturu. To je odluka o obradi podataka: lokacija, zadržavanje, korištenje i ugovor. Dimenzija, batch i brzina su tehnički detalji bez uticaja na zaštitu podataka."
+  },
+  {
+    "obj": "3.1",
+    "q": "Tim mijenja embedding model na novi, bolji. Developer predlaže da se samo novi dokumenti embeduju novim modelom, a stari ostanu. Šta je problem?",
+    "options": [
+      "Vektori dva modela nisu uporedivi, pa pretraga postaje nepouzdana; promjena modela je migracija sa novom verzijom indeksa i ponovnim indeksiranjem",
+      "Nema problema, vektori su univerzalni",
+      "Problem je samo trošak skladištenja",
+      "Stare vektore treba samo normalizovati"
+    ],
+    "answer": 0,
+    "explain": "Različiti modeli prave različite vektorske prostore. Miješanje kvari rangiranje, a time i ponašanje filtera i testova. Ispravno je ponovo indeksirati uz verzionisan indeks i provjeru da su metadata (ACL, porijeklo) prenesena."
+  },
+  {
+    "obj": "3.1",
+    "q": "Kako najpouzdanije automatski testirati da RAG sistem ne propušta dokumente između korisnika?",
+    "options": [
+      "Pitati model da li je ikad otkrio tuđe dokumente",
+      "Kanarinac dokument sa jedinstvenim nizom dostupan samo jednom test korisniku; drugi test korisnik iz druge grupe i tenanta pokreće upite, a test pada ako se niz pojavi u chunkovima ili odgovoru",
+      "Ručno pregledati 10 nasumičnih odgovora mjesečno",
+      "Provjeriti da li vektorska baza ima uključen TLS"
+    ],
+    "answer": 1,
+    "explain": "Kanarinac test je deterministički, ponovljiv i može ići u CI pri svakoj promjeni retrievera. Model nije pouzdan svjedok sopstvenog ponašanja, ručni uzorak je slab, a TLS ne govori ništa o autorizaciji."
+  },
+  {
+    "obj": "3.1",
+    "q": "Aplikacija u promptu označava preuzeti sadržaj kao „podatke, ne instrukcije“. Developer smatra da je time indirektni prompt injection iz korpusa riješen. Kako odgovoriti?",
+    "options": [
+      "Tačno, oznake potpuno rješavaju problem",
+      "Oznake treba ukloniti jer zbunjuju model",
+      "Oznake smanjuju rizik, ali ga ne uklanjaju; treba ih kombinovati sa kontrolom šta ulazi u korpus i ograničenim ovlašćenjima onoga što model smije uraditi",
+      "Problem rješava samo fine-tuning modela"
+    ],
+    "answer": 2,
+    "explain": "Odvajanje u promptu je korisna, ali probabilistička mjera. Odbrana u dubinu kombinuje kontrolu ulaza u korpus, ograničena ovlašćenja (gateway, odobrenje) i nepovjerljivu obradu izlaza. Fine-tuning ni sam ne daje garanciju."
+  },
+  {
+    "obj": "3.1",
+    "q": "Pri ingestu model pravi sažetak svakog dokumenta i sažeci se indeksiraju u zajedničku kolekciju „pregledi“ bez ACL-a, da bi pretraga bila brža. Šta je problem?",
+    "options": [
+      "Sažeci su prekratki za dobar embedding",
+      "Sažeci troše previše tokena",
+      "Model ne zna praviti sažetke",
+      "Sažetak je izvedeni artefakt i mora naslijediti ACL dokumenta; bez toga kolekcija pregleda zaobilazi kontrolu pristupa"
+    ],
+    "answer": 3,
+    "explain": "Sve što nastaje iz dokumenta nosi njegova prava, a pri miješanju više dokumenata najrestriktivnija. Kolekcija bez ACL-a je bočni kanal za curenje. Dužina i trošak su sekundarni."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koji skup metadata polja je minimalno potreban na svakom chunku da bi se mogli provesti kontrola pristupa, brisanje i istraga trovanja?",
+    "options": [
+      "doc_id, verzija izvora, izvorni sistem, tenant, dozvoljene grupe, klasifikacija, vrijeme ingesta i hash sadržaja",
+      "Samo tekst chunka i vektor",
+      "Naslov dokumenta i broj stranice",
+      "Ime embedding modela"
+    ],
+    "answer": 0,
+    "explain": "ACL polja omogućavaju filter, doc_id i verzija brisanje, a izvor, vrijeme i hash porijeklo i istragu. Ostale opcije su korisne, ali ne omogućavaju nijednu od tri sigurnosne funkcije."
+  },
+  {
+    "obj": "3.1",
+    "q": "U logovima RAG-a vidiš da je broj chunkova odbijenih zbog ACL-a za jednog korisnika porastao 50 puta u jednom danu. Šta to najvjerovatnije znači i šta je razumna reakcija?",
+    "options": [
+      "Greška u embedding modelu; zamijeniti model",
+      "Moguće namjerno ispitivanje tuđih podataka ili promjena prava/rangiranja; istražiti upite korisnika i nedavne promjene ACL-a i retrievera",
+      "Normalno ponašanje; ignorisati",
+      "Vektorska baza je kompromitovana; ugasiti je odmah"
+    ],
+    "answer": 1,
+    "explain": "Nagli rast odbijenih chunkova je signal koji vrijedi istražiti: korisnik može ciljano tražiti osjetljive teme, ili se promijenilo članstvo u grupama ili rangiranje. Filter je radio, pa nema dokaza kompromitacije baze, a zamjena modela nije povezana."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Upari rizik u RAG sistemu sa kontrolom koja ga najdirektnije ublažava.",
+    "options": [
+      "Curenje između kupaca u zajedničkom indeksu",
+      "Rekonstrukcija teksta iz ukradenih vektora",
+      "Oduzeta prava i dalje važe kroz asistenta",
+      "Netačan sadržaj iz tiketa kupaca u odgovorima",
+      "Odgovor za direktora vraćen pripravniku"
+    ],
+    "targets": [
+      "Karantin i nivoi povjerenja za sadržaj koji generišu korisnici",
+      "Keš ključan po tenantu i skupu prava",
+      "Obavezan filter po tenantu iz sloja za pristup podacima ili zaseban indeks",
+      "Vektori klasifikovani i zaštićeni kao izvorni tekst",
+      "Sinhronizacija opoziva događajima i provjera u izvornom sistemu"
+    ],
+    "answer": [2, 3, 4, 0, 1],
+    "explain": "Izolacija tenanata sprječava curenje između kupaca, zaštita vektora odgovara na embedding inversion, sinhronizacija opoziva zatvara prozor zastarjelih prava, karantin sprječava trovanje korpusa, a keš ključan po pravima sprječava curenje kroz izvedene odgovore."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Poredaj korake obrade upita u RAG sistemu sa kontrolom pristupa, od prvog do posljednjeg.",
+    "options": [
+      "Model generiše odgovor, a aplikacija ga prikazuje uz citate izvora",
+      "Vektorska baza vraća top-k chunkova samo iz dozvoljenog skupa (pre-filter)",
+      "Aplikacija uzima identitet i grupe korisnika iz verifikovanog tokena",
+      "Druga provjera ACL-a nad rezultatima i sastavljanje prompta sa označenim kontekstom",
+      "Upit se pretvara u embedding"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "Identitet dolazi prvi jer od njega zavisi filter. Zatim embedding upita, pretraga sa pre-filterom, druga provjera i sastavljanje prompta, pa generisanje i prikaz sa citatima."
+  },
+  {
+    "obj": "3.1",
+    "type": "spot",
+    "q": "Funkcija multi-tenant RAG asistenta. Korisnik smije vidjeti samo dokumente svog tenanta i grupa kojima pripada. Označi redove u kojima je kontrola pristupa pogrešno izvedena.",
+    "snippet": "def answer(question: str, session) -> str:\n    user = session.user                                  # iz SSO tokena\n    tenant = extract_tenant(question) or user.tenant     # tenant iz teksta pitanja\n    hits = vector_db.search(embed(question), top_k=8, filter={\"tenant\": tenant})\n    context = \"\\n\\n\".join(h.text for h in hits)\n    system = f\"Ne prikazuj dokumente grupa kojima korisnik ne pripada. Grupe: {user.groups}\"\n    prompt = f\"{system}\\n<dokumenti>\\n{context}\\n</dokumenti>\\nPitanje: {question}\"\n    reply = llm.generate(prompt, max_tokens=800)\n    audit.log(user=user.id, doc_ids=[h.doc_id for h in hits])\n    return reply",
+    "lang": "python",
+    "answer": [2, 3, 5],
+    "explain": "Red 3: tenant se uzima iz teksta pitanja, pa korisnik može napisati ime drugog tenanta i pretraživati tuđe dokumente; identitet i tenant dolaze samo iz autentifikacije (session.user). Red 4: filter pri pretrazi sadrži samo tenant, a ne ACL grupa i klasifikaciju, pa u kontekst ulaze i dokumenti za koje korisnik nema pravo; treba pre-filter po allowed_groups (i klasifikaciji) u samoj vektorskoj bazi. Red 6: kontrola pristupa prepuštena je instrukciji u promptu, a podatak je već u kontekstu i može procuriti (injection, greška modela); u prompt ulazi samo ono što korisnik smije vidjeti i bez AI-ja. Logovanje korištenih doc_id-jeva je dobra praksa."
+  }
+]

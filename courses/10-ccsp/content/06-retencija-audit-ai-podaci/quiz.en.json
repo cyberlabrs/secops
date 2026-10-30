@@ -1,0 +1,278 @@
+[
+  {
+    "obj": "2.7",
+    "q": "An organization is terminating its contract with an IaaS provider and must ensure that its data, including replicas and snapshots, cannot be recovered. Which method is BEST?",
+    "options": [
+      "Ask the provider to degauss the disks on which the data resided.",
+      "Overwrite all volumes with zeros before shutting down the instances.",
+      "Crypto-shredding: destroy all copies of the keys with which the data was encrypted.",
+      "Delete the objects and volumes through the provider's console."
+    ],
+    "answer": 2,
+    "explain": "In shared, replicated storage, the customer has no access to physical media. Crypto-shredding makes all copies of the ciphertext unusable. Degaussing is not available to the customer and does not work on SSDs, overwriting does not guarantee that all blocks are overwritten, and ordinary deletion leaves data remanence."
+  },
+  {
+    "obj": "2.7",
+    "q": "The legal department has informed IT that a lawsuit from a former partner is expected. In three days, a lifecycle policy is due to delete relevant emails older than five years. What should be done FIRST?",
+    "options": [
+      "Apply a legal hold to the relevant data and suspend its automatic deletion.",
+      "Let the policy delete the emails because the retention period has expired.",
+      "Export the emails to a USB drive and hand them over to the partner's lawyer.",
+      "Wait for the lawsuit to be formally filed before taking any action."
+    ],
+    "answer": 0,
+    "explain": "The duty to preserve arises when a dispute is reasonably anticipated. Legal hold takes precedence over retention; deletion would be destruction of evidence (spoliation). Handing data to the other party is not part of preservation, and waiting for the formal lawsuit is too late."
+  },
+  {
+    "obj": "2.7",
+    "q": "Who should approve the periods in a data retention policy?",
+    "options": [
+      "The cloud provider, because it manages the storage",
+      "The backup system administrator",
+      "A security analyst in the SOC",
+      "Management, with the participation of the legal department and data owners"
+    ],
+    "answer": 3,
+    "explain": "Periods derive from regulation, contracts, and business needs. Management approves the policy, the legal department interprets the requirements, and data owners know the business needs. IT and the provider enforce the policy, but do not determine it."
+  },
+  {
+    "obj": "2.7",
+    "q": "A company keeps archives for 15 years in cold storage, encrypted with customer-managed keys. What is the MOST important risk that the archiving procedure must address?",
+    "options": [
+      "Retrieval time from cold storage can be several hours.",
+      "Loss or unplanned destruction of keys and obsolescence of data formats.",
+      "The cost of storage may increase over the years.",
+      "The provider may change the name of the storage class."
+    ],
+    "answer": 1,
+    "explain": "Without the key, an encrypted archive is permanently lost, and a format that nobody can read has the same effect. Keys must be retained as long as the archive, with periodic readability checks. Slower retrieval and cost are known trade-offs, not critical risks."
+  },
+  {
+    "obj": "2.7",
+    "q": "Which statement BEST describes the difference between a backup and an archive?",
+    "options": [
+      "A backup is kept longer than an archive and is used for compliance.",
+      "An archive is used for long-term retention of data removed from active use, and a backup for recovery of active data.",
+      "An archive and a backup are the same; they differ only in storage class.",
+      "A backup is never encrypted, while an archive always is."
+    ],
+    "answer": 1,
+    "explain": "A backup is a copy of active data for recovery (linked to RPO/RTO), while an archive retains data that is no longer active, long-term, for legal or business reasons. Periods, purpose, and access differ."
+  },
+  {
+    "obj": "2.7",
+    "q": "An audit finds that a firm keeps all customers' personal data indefinitely 'just in case'. Which principle is MOST directly violated?",
+    "options": [
+      "Data portability",
+      "Non-repudiation",
+      "Least privilege",
+      "Storage limitation"
+    ],
+    "answer": 3,
+    "explain": "The GDPR principle of storage limitation requires that personal data be kept only as long as necessary for the purpose. Indefinite retention also increases the risk of leakage and the scope of eDiscovery. The other principles are not directly related."
+  },
+  {
+    "obj": "2.7",
+    "q": "Data in object storage is under legal hold. What is the BEST technical control for the outline requirements of 'deletion prevention' and 'authorized access'?",
+    "options": [
+      "Legal hold protection on the objects, with access restricted to the eDiscovery team and access logging",
+      "A copy of the data on a lawyer's laptop",
+      "Object versioning without access restrictions",
+      "Moving the data to a cheaper storage class"
+    ],
+    "answer": 0,
+    "explain": "A legal hold mechanism (e.g., Object Lock legal hold, litigation hold) prevents deletion and modification, and restricted, logged access meets the authorized access requirement. A copy on a laptop has no control, versioning without restrictions allows versions to be deleted, and a storage class does not protect anything."
+  },
+  {
+    "obj": "2.8",
+    "q": "All database administrators use a shared 'dbadmin' account. Logging is detailed and immutable. The auditor says the organization still does not meet the accountability requirement. Why?",
+    "options": [
+      "Logs are not encrypted in transit.",
+      "A shared account makes it impossible to tie an action to a specific person.",
+      "Logs are not retained for 12 months.",
+      "The database is not in the same region as the log archive."
+    ],
+    "answer": 1,
+    "explain": "Accountability requires that an action be tied to a unique identity. A shared account makes this impossible regardless of log quality. The solution is individual accounts, e.g., through PAM or federation."
+  },
+  {
+    "obj": "2.8",
+    "q": "The security team is defining required attributes for events involving access to sensitive data. Which set is the MOST complete?",
+    "options": [
+      "Server name, OS version, and free disk space",
+      "User password, session token, and time",
+      "Only the source IP address and the HTTP status code",
+      "Synchronized time, user identity, source IP address and geolocation, object, action, and result"
+    ],
+    "answer": 3,
+    "explain": "An event must answer when, where, who, and what. Passwords and tokens are never logged, an IP address alone is not an identity, and server data does not describe access to data."
+  },
+  {
+    "obj": "2.8",
+    "q": "An organization uses a SaaS HR system and must track who views payroll data. What should be checked BEFORE signing the contract?",
+    "options": [
+      "Whether the provider allows agents to be installed on its servers",
+      "Whether the SaaS uses a relational or NoSQL database",
+      "Whether the provider exposes data access audit logs, their retention, and an export API",
+      "Whether the provider uses a Type 1 hypervisor"
+    ],
+    "answer": 2,
+    "explain": "In SaaS, the customer sees only the logs the provider exposes. Availability, granularity, retention, and the ability to export logs to your own SIEM are selection criteria and a contract item. Agents, database type, and hypervisor are outside the customer's control and visibility."
+  },
+  {
+    "obj": "2.8",
+    "q": "Cloud environment administrators also have full rights over the account where audit logs are stored. Which change BEST protects log integrity?",
+    "options": [
+      "Move the logs to a separate account with immutable storage and separate access",
+      "Increase logging frequency",
+      "Enable log compression",
+      "Ask administrators not to delete logs"
+    ],
+    "answer": 0,
+    "explain": "Separation of duties and immutable storage (WORM) prevent an administrator whose actions are logged from altering or deleting the traces. Frequency and compression do not protect integrity, and a request is not a control."
+  },
+  {
+    "obj": "2.8",
+    "q": "A contracting party claims it never sent a payment instruction recorded in the system. Which mechanism would BEST enable non-repudiation?",
+    "options": [
+      "A SHA-256 hash of each instruction",
+      "An HMAC with a key shared by both parties",
+      "A digital signature of the instruction with the sender's private key, together with a trusted timestamp",
+      "A TLS connection between the parties"
+    ],
+    "answer": 2,
+    "explain": "Only the sender has the private key, so the signature proves origin and integrity. Anyone can compute a hash, both parties share the HMAC key, and TLS protects the channel but leaves no proof of the message's origin after transmission."
+  },
+  {
+    "obj": "2.8",
+    "q": "During an incident investigation, a forensic examiner takes a snapshot of a cloud volume. What is MOST important for the evidence to be admissible in court?",
+    "options": [
+      "A documented chain of custody with hash values at collection and at every handover",
+      "That the snapshot is in the same region as production",
+      "That the analysis is performed directly on the original volume",
+      "That the snapshot is compressed for faster transfer"
+    ],
+    "answer": 0,
+    "explain": "Chain of custody proves who handled the evidence, when, and how, and that it was not altered (hash). Analysis is performed on copies, not on the original. Region and compression do not affect admissibility."
+  },
+  {
+    "obj": "2.8",
+    "q": "The SIEM reports a sign-in by the same user from Sarajevo and, ten minutes later, from another country. What should the analyst keep in mind before concluding that the account is compromised?",
+    "options": [
+      "Geolocation from an IP address is always precise, so compromise is certain.",
+      "Geolocation is approximate; VPN, proxy, and cloud egress addresses can produce a false 'impossible travel'.",
+      "Geolocation is not a relevant event attribute.",
+      "Timestamps in logs never need to be synchronized."
+    ],
+    "answer": 1,
+    "explain": "Geolocation is a useful but approximate attribute. Before drawing a conclusion, check VPN, proxy, and other sources. Synchronized time is a prerequisite for correlation."
+  },
+  {
+    "obj": "2.9",
+    "q": "A data science team wants to train a model on customer support conversation history that contains customers' personal data. What should be done FIRST?",
+    "options": [
+      "Train the model immediately and remove the personal data from the model later.",
+      "Buy a larger GPU cluster so that training takes less time.",
+      "Establish the legal basis and purpose, classify the data set, and apply minimization or pseudonymization.",
+      "Publish the data set to partners for validation."
+    ],
+    "answer": 2,
+    "explain": "Protection of training data starts at the management level: legal basis, purpose, classification, and minimization before training. Removing data from an already trained model is difficult, and publishing the data set is a leak."
+  },
+  {
+    "obj": "2.9",
+    "q": "A researcher demonstrates that they can determine with high confidence whether a specific patient was in the training set of a diagnostic model. What is this attack called?",
+    "options": [
+      "Data poisoning",
+      "Prompt injection",
+      "Model extraction",
+      "Membership inference"
+    ],
+    "answer": 3,
+    "explain": "Membership inference reveals whether a record was in the training set, which is itself a leak of sensitive information. Poisoning alters training data, extraction copies the model, and prompt injection changes an LLM's behavior through input."
+  },
+  {
+    "obj": "2.9",
+    "q": "A team downloads a pre-trained model from a public repository for use in production. Which control BEST addresses model verification?",
+    "options": [
+      "Checking the model's provenance, hash, and signature and scanning it before adding it to the internal registry",
+      "Measuring the model's accuracy on a public benchmark",
+      "Increasing the number of model replicas in production",
+      "Enabling automatic scaling of the inference endpoint"
+    ],
+    "answer": 0,
+    "explain": "Verification checks that the model is what it claims to be and has not been altered: provenance, integrity (hash, signature), and scanning because of supply chain risk. Accuracy on a benchmark is validation, while replicas and scaling relate to availability."
+  },
+  {
+    "obj": "2.9",
+    "q": "A fraud detection model started missing transactions with a certain pattern. The investigation shows that an employee had been inserting mislabeled examples into the training set for months. Which control would MOST likely have prevented this?",
+    "options": [
+      "Rate limiting of queries to the model",
+      "Access control on the data set, provenance, and automatic data validation before training",
+      "Differential privacy during training",
+      "Filtering of model output"
+    ],
+    "answer": 1,
+    "explain": "This is data poisoning. Restricted access to the data set, tracking of provenance and changes, and validation (anomalies, label inconsistencies) before training prevent it. Rate limiting and output filtering protect against extraction and leakage, and differential privacy protects privacy, not integrity."
+  },
+  {
+    "obj": "2.9",
+    "q": "Which statement BEST distinguishes validation from verification of an AI model?",
+    "options": [
+      "Validation checks the model's signature, verification its accuracy.",
+      "Validation and verification are synonyms.",
+      "Verification checks that the model is correct and unaltered according to the specification, validation that it is fit for purpose.",
+      "Verification is performed only on data, validation only on models."
+    ],
+    "answer": 2,
+    "explain": "Verification answers the question 'was it built right' (integrity, provenance, specification), and validation 'was the right thing built' (accuracy, robustness, bias for the purpose). Both apply to data and to models."
+  },
+  {
+    "obj": "2.9",
+    "q": "Employees paste internal contracts into a public generative AI service to get summaries. What is the BEST first step for the security manager?",
+    "options": [
+      "Fire the employees who used the service.",
+      "Ignore it because the provider claims the service is secure.",
+      "Block all internet traffic to all domains containing 'ai'.",
+      "Assess the risk and define an acceptable use policy with an approved service that has contractual guarantees on data use and retention."
+    ],
+    "answer": 3,
+    "explain": "The manager first assesses the risk and provides a controlled alternative: a policy, an approved service, a contract that prohibits training on the data and defines retention, with DLP and CASB as technical controls. Blind trust, crude blocking, and penalties do not solve the problem."
+  },
+  {
+    "obj": "2.7",
+    "type": "match",
+    "q": "Match each situation with the sanitization method that is MOST appropriate according to NIST SP 800-88.",
+    "options": [
+      "A cloud customer leaves a SaaS and wants the data to become unreadable",
+      "Internal HDDs with low-sensitivity data are reused within the same department",
+      "Faulty disks with highly confidential data from the organization's own data center",
+      "Magnetic tapes with an archive that will no longer be used"
+    ],
+    "targets": ["Purge: degaussing", "Clear: overwriting", "Destroy: physical destruction", "Purge: cryptographic erase (crypto-shredding)", "Change of classification"],
+    "answer": [3, 1, 2, 0],
+    "explain": "A customer in the cloud realistically has only cryptographic erase. Reuse within the organization for low-sensitivity data allows clear. Faulty disks with highly confidential data are physically destroyed because they cannot be reliably overwritten. Magnetic tapes can be purged by degaussing. A change of classification sanitizes nothing."
+  },
+  {
+    "obj": "2.8",
+    "type": "order",
+    "q": "Arrange the steps of handling digital evidence from a cloud environment, from first to last.",
+    "options": [
+      "Analysis on a forensic copy with documentation of every step",
+      "Identification of relevant sources (volumes, logs, memory) and owners",
+      "A report with findings and a documented chain of custody",
+      "Collection (snapshot, log export) and calculation of hash values"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "First the evidence sources are identified, then they are collected with a hash confirming integrity, analysis is performed on a copy, and finally a report is produced, to which the chain of custody gives evidentiary value."
+  },
+  {
+    "obj": "2.8",
+    "type": "spot",
+    "q": "The organization is subject to PCI DSS (one year of audit log history) and must be able to prove that CloudTrail logs have not been altered. Mark the lines of the Terraform configuration that prevent this.",
+    "snippet": "resource \"aws_cloudtrail\" \"org\" {\n  name                          = \"org-trail\"\n  s3_bucket_name                = aws_s3_bucket.logs.id   # bucket in a separate log-archive account\n  is_multi_region_trail         = true\n  include_global_service_events = true\n  enable_log_file_validation    = false\n}\n\nresource \"aws_s3_bucket_lifecycle_configuration\" \"logs\" {\n  bucket = aws_s3_bucket.logs.id\n  rule {\n    id     = \"expire-logs\"\n    status = \"Enabled\"\n    expiration { days = 30 }\n  }\n}",
+    "lang": "hcl",
+    "answer": [5, 13],
+    "explain": "Line 6: enable_log_file_validation = false disables the digest files with hashes and signatures, so log integrity (not modified or deleted) cannot be proven; set it to true, together with immutable storage (Object Lock/WORM). Line 14: the lifecycle rule deletes logs after 30 days, while PCI DSS requires at least 12 months (three months immediately available); retention must follow the regulatory requirement, e.g. move to a colder tier instead of deleting. A multi-region trail, global events and a bucket in a separate log-archive account are good practice."
+  }
+]

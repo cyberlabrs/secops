@@ -1,0 +1,325 @@
+[
+  {
+    "obj": "2.2",
+    "q": "Analitičar dobija izlaz sa linijama poput `Discovered open port 3389/tcp on 203.0.113.44` za cijeli /16 opseg skeniran za nekoliko minuta. Koji alat je MOST likely korišten?",
+    "options": [
+      "Masscan",
+      "Nikto",
+      "Checkov",
+      "Recon-ng"
+    ],
+    "answer": 0,
+    "explain": "Masscan je asinhroni skener portova za ogromne opsege i ispisuje upravo `Discovered open port ... on ...`. Nikto skenira web servere, Checkov IaC kod, a Recon-ng je OSINT okvir."
+  },
+  {
+    "obj": "2.2",
+    "q": "Izlaz alata sadrži: `[git-config] [http] [medium] https://app.example.com/.git/config`. Koji alat je proizveo ovaj nalaz?",
+    "options": [
+      "Masscan",
+      "Nuclei",
+      "Prowler",
+      "Maltego"
+    ],
+    "answer": 1,
+    "explain": "Nuclei ispisuje nalaze u obliku `[template-id] [protocol] [severity] URL`. Prowler daje PASS/FAIL po cloud checku, Masscan samo otvorene portove, a Maltego graf OSINT veza."
+  },
+  {
+    "obj": "2.2",
+    "q": "DevOps tim želi da prije `terraform apply` otkrije javno čitljive S3 bucketove i Security Grupe otvorene prema 0.0.0.0/0, direktno iz koda. Koji alat je BEST?",
+    "options": [
+      "Burp Suite",
+      "Angry IP Scanner",
+      "Checkov",
+      "Caldera"
+    ],
+    "answer": 2,
+    "explain": "Checkov radi statičku analizu IaC-a (Terraform, CloudFormation, K8s) i javlja pravila poput CKV_AWS_20. Burp testira web aplikacije, Angry IP Scanner mapira mrežu, a Caldera emulira protivnika."
+  },
+  {
+    "obj": "2.2",
+    "q": "SOC želi da provjeri da li Sigma i EDR pravila zaista otkrivaju PowerShell tehnike mapirane na MITRE ATT&CK (npr. T1059.001), izvođenjem malih kontrolisanih testova na test hostu. Koji alat NAJBOLJE odgovara?",
+    "options": [
+      "OpenVAS",
+      "ScoutSuite",
+      "Nikto",
+      "Atomic Red Team"
+    ],
+    "answer": 3,
+    "explain": "Atomic Red Team je BAS biblioteka testova mapiranih na ATT&CK tehnike, namijenjena provjeri detekcije. OpenVAS traži ranjivosti, ScoutSuite audituje cloud konfiguraciju, a Nikto web servere."
+  },
+  {
+    "obj": "2.2",
+    "q": "Za reviziju konfiguracije tri cloud provajdera (AWS, Azure, GCP) kroz read-only API pristup, sa HTML izvještajem po servisu, tim bira open-source alat. Koji je to MOST likely?",
+    "options": [
+      "ScoutSuite",
+      "Masscan",
+      "Metasploit Framework",
+      "Nikto"
+    ],
+    "answer": 0,
+    "explain": "ScoutSuite je multi-cloud alat za procjenu sigurnosne konfiguracije kroz API i daje HTML izvještaj. Ostali alati ne čitaju cloud API konfiguraciju."
+  },
+  {
+    "obj": "2.2",
+    "q": "Threat intel analitičar mora vizuelno prikazati veze između domena, email adresa, IP adresa i osoba povezanih sa phishing kampanjom. Koji alat je BEST?",
+    "options": [
+      "Trivy",
+      "Maltego",
+      "Nessus",
+      "ZAP"
+    ],
+    "answer": 1,
+    "explain": "Maltego je OSINT alat za analizu veza koji prikazuje entitete i transformacije kao graf. Trivy skenira slike, Nessus hostove, a ZAP web aplikacije."
+  },
+  {
+    "obj": "2.3",
+    "q": "Koji CVSS v3.1 vektor predstavlja NAJOPASNIJU kombinaciju exploitability metrika?",
+    "options": [
+      "AV:L/AC:L/PR:L/UI:N",
+      "AV:N/AC:H/PR:H/UI:R",
+      "AV:N/AC:L/PR:N/UI:N",
+      "AV:P/AC:L/PR:N/UI:N"
+    ],
+    "answer": 2,
+    "explain": "Napad sa mreže (AV:N), niska složenost (AC:L), bez privilegija (PR:N) i bez korisnika (UI:N) znači da bilo ko sa interneta može automatski iskoristiti ranjivost. Ostale kombinacije traže lokalni ili fizički pristup, prava ili interakciju."
+  },
+  {
+    "obj": "2.3",
+    "q": "Vendor objavljuje CVSS 4.0 vektor sa `SC:H/SI:H/SA:H`. Šta ove metrike znače?",
+    "options": [
+      "Visoki zahtjevi za povjerljivost, integritet i dostupnost u organizaciji",
+      "Scope je promijenjen kao u CVSS 3.1",
+      "Ranjivost ima uticaj na fizičku sigurnost ljudi",
+      "Visok uticaj na sisteme IZA ranjivog sistema (subsequent systems)"
+    ],
+    "answer": 3,
+    "explain": "U CVSS 4.0 Scope je uklonjen; uticaj se odvojeno ocjenjuje za ranjivi sistem (VC/VI/VA) i za naredne sisteme (SC/SI/SA). Zahtjevi organizacije su CR/IR/AR, a Safety je zasebna vrijednost u environmental i supplemental metrikama."
+  },
+  {
+    "obj": "2.3",
+    "q": "Koja izjava NAJBOLJE opisuje EPSS skor 0.03 sa percentilom 0.89?",
+    "options": [
+      "Procijenjena vjerovatnoća eksploatacije u narednih 30 dana je 3%, što je više nego kod 89% CVE-ova",
+      "CVE je eksploatisan u 3% organizacija u posljednjih godinu dana",
+      "Ozbiljnost ranjivosti je 0.03 na skali 0–1, pa je zanemariva",
+      "89% svih napada koristi ovaj CVE"
+    ],
+    "answer": 0,
+    "explain": "EPSS je vjerovatnoća eksploatacije u divljini u narednih 30 dana, a percentil pokazuje relativni položaj među svim CVE-ovima. EPSS ne mjeri ozbiljnost, to radi CVSS."
+  },
+  {
+    "obj": "2.3",
+    "q": "Analitičar ima četiri nalaza. Koji treba popraviti FIRST?",
+    "options": [
+      "CVSS 9.8, EPSS 0.01, na izolovanom laboratorijskom serveru bez mreže",
+      "CVSS 7.5, u CISA KEV-u, na internet-facing VPN gatewayu",
+      "CVSS 8.8, EPSS 0.05, na internom file serveru",
+      "CVSS 5.3, self-signed certifikat na intranetu"
+    ],
+    "answer": 1,
+    "explain": "Potvrđena aktivna eksploatacija (KEV) na sistemu izloženom internetu je najveći realan rizik. Viši CVSS na izolovanom sistemu bez puta za napadača ima nižu vjerovatnoću, iako ga ne treba zaboraviti."
+  },
+  {
+    "obj": "2.3",
+    "q": "Zakrpa za kritičnu ranjivost u softveru MR uređaja ne smije se primijeniti dok proizvođač ne recertifikuje uređaj (oko 6 mjeseci). Koje DVIJE mjere su BEST? Izaberi DVA.",
+    "options": [
+      "Implementirati kompenzacione kontrole poput segmentacije i strogih ACL pravila",
+      "Instalirati zakrpu odmah jer je ranjivost kritična",
+      "Ukloniti nalaz iz skenera kao false positive",
+      "Dokumentovati formalni izuzetak (exception) sa vlasnikom rizika i rokom važenja"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "Kad se zakrpa ne smije primijeniti, rizik se smanjuje kompenzacionim kontrolama i formalno prihvata kroz izuzetak sa vlasnikom i rokom. Neodobrena zakrpa krši certifikaciju uređaja, a nalaz nije false positive."
+  },
+  {
+    "obj": "2.3",
+    "q": "CVE u katalogu CISA KEV ima `knownRansomwareCampaignUse: \"Known\"`. Šta to znači za prioritizaciju?",
+    "options": [
+      "Ranjivost je teoretska i ne zahtijeva brzu reakciju",
+      "Ranjivost ima CVSS 10.0",
+      "Ranjivost je potvrđeno korištena u ransomware kampanjama, što povećava hitnost ispravke",
+      "CISA je izdala zakrpu za ranjivost"
+    ],
+    "answer": 2,
+    "explain": "Polje pokazuje da je eksploatacija ranjivosti povezana sa ransomware kampanjama, što uz aktivnu eksploataciju dodatno podiže prioritet. KEV ne govori ništa o CVSS skoru, a zakrpe izdaju vendori, ne CISA."
+  },
+  {
+    "obj": "2.3",
+    "q": "Nakon što je tim primijenio zakrpu za kritičan nalaz, šta je NAJBOLJI način da se potvrdi ispravka?",
+    "options": [
+      "Email administratora da je zakrpa instalirana",
+      "Zatvaranje tiketa nakon isteka SLA roka",
+      "Smanjenje CVSS skora u izvještaju",
+      "Ponovni (po mogućnosti credentialed) sken koji pokazuje da nalaz više ne postoji"
+    ],
+    "answer": 3,
+    "explain": "Validation of remediation znači nezavisnu provjeru, najčešće rescan i provjeru verzije. Izjava administratora nije dokaz, a CVSS skor ranjivosti se ne mijenja zato što je zakrpa primijenjena."
+  },
+  {
+    "obj": "2.3",
+    "q": "Šta CVSS 4.0 oznaka **CVSS-BT** govori o skoru?",
+    "options": [
+      "Skor uključuje Base i Threat metrike",
+      "Skor uključuje Base i Temporal metrike iz verzije 3.1",
+      "Skor je izračunat samo od strane vendora (Base) i testiran (Tested)",
+      "Skor uključuje Base, Threat i Environmental metrike"
+    ],
+    "answer": 0,
+    "explain": "CVSS 4.0 nomenklatura: B = Base, T = Threat, E = Environmental. CVSS-BT je Base + Threat (Exploit Maturity), a CVSS-BTE uključuje i environmental kontekst."
+  },
+  {
+    "obj": "2.3",
+    "q": "U CISA SSVC stablu, ranjivost ima Exploitation = Active, Automatable = Yes, Technical Impact = Total i sistem je Essential za misiju. Koja je MOST likely odluka?",
+    "options": [
+      "Track",
+      "Act",
+      "Track*",
+      "Attend"
+    ],
+    "answer": 1,
+    "explain": "Aktivna eksploatacija, automatizovanost, potpuna kontrola i ključna uloga sistema daju najvišu odluku, Act: uključiti rukovodstvo i popraviti što prije. Track i Track* su za standardne rokove, a Attend za ubrzanu, ali ne najhitniju reakciju."
+  },
+  {
+    "obj": "2.3",
+    "q": "Dvije ranjivosti imaju CVSS 8.1. Prva ima EPSS 0.72, druga 0.004. Nijedna nije u KEV-u, a oba hosta su interna sa sličnom vrijednošću. Šta je BEST zaključak?",
+    "options": [
+      "Imaju isti prioritet jer je CVSS isti",
+      "Prioritet ima druga jer niži EPSS znači veću ozbiljnost",
+      "Prioritet ima ranjivost sa EPSS 0.72 jer je mnogo vjerovatnija eksploatacija",
+      "Nijednu ne treba popravljati dok ne uđe u KEV"
+    ],
+    "answer": 2,
+    "explain": "Kad su ozbiljnost i kontekst slični, EPSS razlikuje vjerovatnoću napada. Čekanje na KEV znači reagovati tek nakon što napadi počnu."
+  },
+  {
+    "obj": "2.3",
+    "q": "Tim web aplikacije stalno dobija nove SQL injection nalaze iz DAST-a nakon svakog releasea. Koja strategija ublažavanja rješava UZROK?",
+    "options": [
+      "Dodati novo WAF pravilo za svaki nalaz",
+      "Prihvatiti rizik kroz exception",
+      "Smanjiti učestalost DAST skeniranja",
+      "Secure coding best practices (parametrizovani upiti) uz SAST u CI pipelineu"
+    ],
+    "answer": 3,
+    "explain": "Ponavljajući nalazi iste klase (CWE-89) znače problem u načinu pisanja koda. Parametrizovani upiti i SAST rješavaju ih na izvoru; WAF je kompenzaciona, privremena mjera."
+  },
+  {
+    "obj": "2.3",
+    "q": "Koje DVIJE situacije MOST likely dovode do FALSE NEGATIVE rezultata skeniranja? Izaberi DVA.",
+    "options": [
+      "Skener prijavljuje ranjivu verziju iz bannera iako je zakrpa backportovana",
+      "Kredencijali skenera su istekli pa credentialed sken pada na non-credentialed provjere",
+      "Plugin feed skenera nije ažuriran tri mjeseca",
+      "Nalaz je prijavljen na hostu koji je u međuvremenu ugašen"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Bez kredencijala skener ne vidi lokalne ranjivosti, a bez ažurnog feeda ne zna za nove CVE-ove; u oba slučaja ranjivost postoji, a nije prijavljena. Banner sa backportom i ugašen host daju false positive."
+  },
+  {
+    "obj": "2.3",
+    "q": "Ranjivost na mail gatewayu je u KEV-u, sa `forensicTriage: \"Yes\"`. Tim je primijenio zakrpu. Šta treba uraditi NEXT?",
+    "options": [
+      "Provjeriti da li je sistem kompromitovan prije zakrpe (IOC-i, logovi, nepoznati nalozi, web shellovi)",
+      "Zatvoriti tiket jer je zakrpa primijenjena",
+      "Promijeniti CVSS skor u Low",
+      "Ukloniti gateway iz programa skeniranja"
+    ],
+    "answer": 0,
+    "explain": "Kod aktivno eksploatisanih ranjivosti napadač je možda ušao prije zakrpe; zakrpa ne uklanja postojeći pristup. KEV polje forensicTriage upravo ukazuje da je potrebna provjera kompromitacije."
+  },
+  {
+    "obj": "2.3",
+    "type": "order",
+    "q": "Poredaj nalaze od NAJVIŠEG do NAJNIŽEG prioriteta ispravke.",
+    "options": [
+      "CVSS 10.0, EPSS 0.99, KEV, na izolovanom (air-gapped) build serveru",
+      "CVSS 6.1, EPSS 0.001, reflected XSS na internoj wiki stranici",
+      "CVSS 9.8, EPSS 0.94, KEV, na internet-facing VPN gatewayu",
+      "CVSS 7.8, EPSS 0.20, KEV, lokalna eskalacija privilegija na internim radnim stanicama",
+      "CVSS 8.1, EPSS 0.40, nije u KEV-u, na javnoj web prodavnici sa kartičnim podacima"
+    ],
+    "answer": [
+      2,
+      4,
+      3,
+      0,
+      1
+    ],
+    "explain": "Prvo izložen i aktivno eksploatisan VPN, zatim izložena PCI prodavnica sa visokim EPSS-om, pa KEV eskalacija na brojnim internim hostovima, zatim izolovani build server (ozbiljno, ali bez puta za napadača) i na kraju interni XSS niske vjerovatnoće."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Upari svaki izlaz ili opis sa alatom koji ga je MOST likely proizveo.",
+    "options": [
+      "`Discovered open port 443/tcp on 10.0.5.12`",
+      "`Check: CKV_AWS_20 ... FAILED for resource: aws_s3_bucket.reports`",
+      "`+ /: The X-Content-Type-Options header is not set.`",
+      "`FAIL iam_root_mfa_enabled us-east-1 MFA is not enabled for root account.`",
+      "Graf entiteta: domen → email → osoba → telefon",
+      "Rezultat sa poljem QoD (Quality of Detection) 80%"
+    ],
+    "targets": [
+      "Nikto",
+      "OpenVAS",
+      "Checkov",
+      "Masscan",
+      "Maltego",
+      "Prowler"
+    ],
+    "answer": [
+      3,
+      2,
+      0,
+      5,
+      4,
+      1
+    ],
+    "explain": "Masscan ispisuje `Discovered open port`, Checkov pravila `CKV_`, Nikto linije sa `+`, Prowler PASS/FAIL cloud checkove, Maltego grafove veza, a OpenVAS (Greenbone) uz rezultat daje QoD."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Upari CVSS metriku sa njenim značenjem.",
+    "options": [
+      "AT:P (v4.0)",
+      "UI:A (v4.0)",
+      "E:U (v4.0)",
+      "S:C (v3.1)",
+      "MAV:L (v3.1/v4.0)",
+      "AU:Y (v4.0)"
+    ],
+    "targets": [
+      "Uticaj prelazi granicu ranjive komponente",
+      "Organizacija je ranjivi sistem učinila dostupnim samo lokalno",
+      "Uspjeh zavisi od posebnih uslova u ranjivom sistemu",
+      "Napad se može automatizovati kroz više meta",
+      "Žrtva mora svjesno i aktivno učestvovati",
+      "Nema javno poznatih pokušaja eksploatacije ni PoC-a"
+    ],
+    "answer": [
+      2,
+      4,
+      5,
+      0,
+      1,
+      3
+    ],
+    "explain": "AT (Attack Requirements) Present znači uslove u ranjivom sistemu; UI:A je aktivna interakcija korisnika; E:U je Unreported exploit maturity; S:C u 3.1 je Scope Changed; MAV je modified attack vector iz environmental grupe; AU:Y je supplemental Automatable."
+  },
+  {
+    "obj": "2.3",
+    "type": "spot",
+    "q": "Ovo je tabela odluka nakon trijaže nalaza skenera. Označi redove u kojima je odluka analitičara pogrešna s obzirom na CVSS, EPSS, KEV i izloženost.",
+    "snippet": "ID  Host (exposure)    Finding                       CVSS  EPSS  KEV  Decision\nF1  web01 (internet)   Missing X-Frame-Options        4.3  0.00  no   Accept, review in 90 days\nF2  vpn01 (internet)   CVE-2024-3400 PAN-OS cmd inj  10.0  0.94  yes  Defer to Q1 patch window\nF3  db02 (internal)    CVE-2023-0286 OpenSSL          7.4  0.01  no   Patch in 30-day cycle\nF4  web02 (internet)   CVE-2021-41773 Apache 2.4.49   7.5  0.94  yes  False positive (banner), suppressed\nF5  hr-app (internal)  TLS 1.0 enabled                5.9  0.00  no   Disable TLS 1.0, rescan after change\nF6  lab07 (isolated)   CVE-2023-48795 SSH Terrapin    5.9  0.01  no   Isolated VLAN, decommission 2026-11-06",
+    "lang": "text",
+    "answer": [2, 4],
+    "explain": "Red 3: CVE-2024-3400 na VPN uređaju dostupnom sa interneta ima CVSS 10.0, visok EPSS i nalazi se u CISA KEV katalogu (aktivno se iskorištava); odlaganje do kvartalnog prozora je neprihvatljivo, potrebna je hitna zakrpa ili mitigacija i provjera kompromitacije. Red 5: nalaz je proglašen lažno pozitivnim samo na osnovu bannera i potisnut bez provjere; za KEV ranjivost na internet hostu treba provjeriti stvarnu verziju (paket, backport advisory, credentialed sken) i dokumentovati razlog i datum. Ostale odluke su u skladu sa rizikom: nizak nalaz prihvaćen uz reviziju, interni srednji/visok nalaz u redovnom ciklusu, isključivanje TLS 1.0 uz ponovni sken, kompenzaciona kontrola za host koji se gasi."
+  }
+]

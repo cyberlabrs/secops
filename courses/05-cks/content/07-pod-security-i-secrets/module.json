@@ -1,0 +1,12 @@
+{
+  "title": "Pod Security Standards i Secreti",
+  "summary": "Pod Security Standards i Pod Security Admission, securityContext koji prolazi restricted nivo, ko sve može pročitati Secret i kako uključiti i provjeriti enkripciju Secreta u etcd-u.",
+  "minutes": 90,
+  "domain": 4,
+  "objectives": [
+    "4.1",
+    "4.2"
+  ],
+  "title_en": "Pod Security Standards and Secrets",
+  "summary_en": "Pod Security Standards and Pod Security Admission, a securityContext that passes the restricted level, who can read a Secret, and how to enable and verify Secret encryption in etcd."
+}

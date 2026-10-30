@@ -1,0 +1,299 @@
+[
+  {
+    "obj": "1.4",
+    "q": "The SOC has confirmed that an attacker exfiltrated a database with the names and addresses of 40,000 customers from the EU. Who should make the decision about notifying the supervisory authority and the customers?",
+    "options": [
+      "Management, advised by legal counsel and the DPO, according to the incident response plan",
+      "The SOC analyst who discovered the incident, because they know the facts best",
+      "The database administrator",
+      "The cloud provider hosting the database"
+    ],
+    "answer": 0,
+    "explain": "Notification has legal, regulatory, and reputational consequences, so the decision is made by management with legal counsel and the DPO. The technical team gathers facts and preserves evidence."
+  },
+  {
+    "obj": "1.4",
+    "q": "Under GDPR, within what time frame must a controller notify the supervisory authority of a personal data breach, if the breach is likely to result in a risk to the rights of individuals?",
+    "options": [
+      "24 hours from discovery",
+      "60 days from discovery",
+      "Without undue delay and, where feasible, no later than 72 hours after becoming aware of it",
+      "Only after the forensic investigation is complete"
+    ],
+    "answer": 2,
+    "explain": "GDPR Art. 33 requires notification within 72 hours of becoming aware; additional information can be provided in phases. 60 days is the HIPAA deadline for notifying individuals, and 24 hours is the early warning under NIS2."
+  },
+  {
+    "obj": "1.4",
+    "q": "A company has developed a unique algorithm for ranking offers that gives it a competitive advantage, and it does not want the details ever to become public. Which form of protection is MOST appropriate?",
+    "options": [
+      "Patent",
+      "Trademark",
+      "Copyright",
+      "Trade secret, with NDAs and access controls"
+    ],
+    "answer": 3,
+    "explain": "A patent requires public disclosure of the invention and expires after 20 years. A trade secret lasts as long as it remains secret, provided the organization takes reasonable protective measures."
+  },
+  {
+    "obj": "1.4",
+    "q": "During working hours and on the employer's equipment, a developer wrote an automation tool. The employment contract contains no specific IP provisions. Who is MOST likely the copyright owner?",
+    "options": [
+      "The developer, because they are the author",
+      "The employer, under the work for hire principle",
+      "No one, because the software is not registered",
+      "The developer and the employer jointly, in equal shares"
+    ],
+    "answer": 1,
+    "explain": "A work created within the scope of employment generally belongs to the employer. Copyright arises automatically; registration is not a requirement."
+  },
+  {
+    "obj": "1.4",
+    "q": "The development team wants to incorporate a GPL-licensed library into a commercial product that is distributed to customers as closed source. What is the GREATEST risk?",
+    "options": [
+      "An obligation to pay the library's author a license fee per installation",
+      "Export controls due to the use of open-source code",
+      "The copyleft obligation to release the distributed derivative work under the same license, including the source code",
+      "Loss of trademark protection for the product"
+    ],
+    "answer": 2,
+    "explain": "The GPL is a copyleft license: distributing a derivative work requires releasing it under the GPL. That is why a policy on the use of open-source components and license checks (e.g., through an SBOM) are needed."
+  },
+  {
+    "obj": "1.4",
+    "q": "An EU company wants to transfer employees' personal data to a subsidiary in a country for which there is no adequacy decision. Which mechanism is MOST appropriate for regular, recurring transfers within a multinational group?",
+    "options": [
+      "Binding Corporate Rules approved by the supervisory authority",
+      "Explicit consent of each employee for each transfer",
+      "Safe Harbor certification of the subsidiary",
+      "Encrypting the data in transit, so the transfer is no longer a transfer of personal data"
+    ],
+    "answer": 0,
+    "explain": "BCRs are approved internal group rules for regular transfers (SCCs are the alternative). Employee consent is problematic because of the relationship of dependence and is meant for occasional transfers; Safe Harbor was invalidated in 2015; encryption does not change the legal nature of the data."
+  },
+  {
+    "obj": "1.4",
+    "q": "An engineer needs to show export-controlled source code of software with strong cryptography to a colleague from a foreign country who works in the same office in the US. How is this action treated?",
+    "options": [
+      "As internal communication that is not regulated",
+      "As a copyright violation",
+      "As a GDPR issue",
+      "As a possible deemed export, which may require an export license"
+    ],
+    "answer": 3,
+    "explain": "Under the EAR and ITAR, disclosing controlled technology to a foreign national within the country is considered an export (deemed export). Legal counsel and the export compliance function should be consulted."
+  },
+  {
+    "obj": "1.4",
+    "q": "A US clinic engages a cloud provider to store patients' medical images. What does HIPAA require before processing begins?",
+    "options": [
+      "That the provider has a PCI DSS certificate",
+      "A signed Business Associate Agreement (BAA) in which the provider commits to protecting PHI",
+      "That the data is stored exclusively in the EU",
+      "Each patient's consent to the use of the cloud"
+    ],
+    "answer": 1,
+    "explain": "A provider that processes PHI for a covered entity is a business associate and must sign a BAA. PCI DSS applies to cards."
+  },
+  {
+    "obj": "1.4",
+    "q": "A web shop in Sarajevo accepts Visa and Mastercard payments. What is the nature of its obligation to comply with PCI DSS?",
+    "options": [
+      "A legal obligation prescribed by the law of Bosnia and Herzegovina",
+      "A voluntary best practice without consequences",
+      "A contractual obligation arising from the contract with the acquirer and the card brands' rules",
+      "A regulatory obligation enforced by the central bank"
+    ],
+    "answer": 2,
+    "explain": "PCI DSS is an industry standard imposed by contract. Non-compliance leads to fines from the card brands or loss of the right to accept cards, not to criminal liability under the standard itself."
+  },
+  {
+    "obj": "1.4",
+    "q": "A California startup sells data on user behavior to advertisers. What obligation does it MOST likely have under CCPA/CPRA?",
+    "options": [
+      "Allow consumers to opt out of the sale and sharing of personal information",
+      "Appoint a DPO in the EU",
+      "Sign a BAA with the advertisers",
+      "Obtain an adequacy decision from the European Commission"
+    ],
+    "answer": 0,
+    "explain": "CCPA/CPRA gives consumers the right to know, delete, correct, and refuse the sale or sharing of their data (\"Do Not Sell or Share\"). The other obligations belong to GDPR or HIPAA."
+  },
+  {
+    "obj": "1.5",
+    "q": "Which standard of proof applies in a civil proceeding for damages after a data breach?",
+    "options": [
+      "Beyond a reasonable doubt",
+      "Clear and present danger",
+      "Probable cause",
+      "Preponderance of the evidence"
+    ],
+    "answer": 3,
+    "explain": "A civil proceeding requires a preponderance of the evidence (more likely than not). Beyond a reasonable doubt is the standard for criminal proceedings, and probable cause is the basis for a search warrant."
+  },
+  {
+    "obj": "1.5",
+    "q": "An internal investigation into a violation of the acceptable use policy reveals that an employee is selling customer data to a competitor. What is the BEST next step?",
+    "options": [
+      "Immediately confront the employee and demand a confession",
+      "Involve legal counsel and management to decide on the next course of action and contact with the authorities, while preserving evidence and the chain of custody",
+      "Delete their account and all logs to prevent further leakage",
+      "Call the police independently without informing management"
+    ],
+    "answer": 1,
+    "explain": "The investigation is moving from administrative to possibly criminal and civil. The decision on contacting the police is made by management with legal counsel, and evidence must be preserved; deleting logs would destroy evidence."
+  },
+  {
+    "obj": "1.5",
+    "q": "A company has received notice that a former partner is preparing a lawsuit against it. What must it do immediately with respect to data?",
+    "options": [
+      "Continue routine deletion under the retention policy",
+      "Encrypt all relevant data so the other party cannot read it",
+      "Issue a legal hold and suspend deletion of all potentially relevant data",
+      "Move the data to another jurisdiction"
+    ],
+    "answer": 2,
+    "explain": "When a dispute is reasonably anticipated, an obligation to preserve relevant data arises (legal hold). Deleting or hiding data is spoliation and carries sanctions."
+  },
+  {
+    "obj": "1.5",
+    "q": "Which characteristic is SPECIFIC to a criminal investigation compared with an administrative one?",
+    "options": [
+      "The organization fully controls the pace and scope of the investigation",
+      "Evidence does not need to be preserved with a chain of custody",
+      "The outcome is a disciplinary action against the employee",
+      "It is led by law enforcement, proof beyond a reasonable doubt is required, and the rules for obtaining evidence are strictly observed"
+    ],
+    "answer": 3,
+    "explain": "A criminal investigation is led by the police and prosecutors, with the highest standard of proof and strict rules (warrants, chain of custody). The organization then loses control over the pace."
+  },
+  {
+    "obj": "1.5",
+    "q": "A data protection regulator requires a bank to provide evidence of its controls after a customer complaint. What kind of investigation is this, and what should the bank do?",
+    "options": [
+      "A regulatory investigation; the bank should cooperate and provide the requested evidence through legal counsel",
+      "A civil investigation; the bank may refuse until it receives a subpoena",
+      "An administrative investigation; the bank decides on its own whether to respond",
+      "A criminal investigation; the bank should engage a PFI"
+    ],
+    "answer": 0,
+    "explain": "The investigation is initiated by a regulator over a possible violation of regulations, and cooperation is mandatory. The response goes through legal counsel, with documented evidence of controls."
+  },
+  {
+    "obj": "1.5",
+    "q": "The security team sets up a honeypot with fake data to detect attackers who are already in the network. How is this most commonly treated legally?",
+    "options": [
+      "As entrapment, because it induces attackers to commit a crime",
+      "As enticement, which is acceptable because it merely provides an opportunity to a person who already intended to act",
+      "As a violation of the ECPA",
+      "As an unlawful search without a warrant"
+    ],
+    "answer": 1,
+    "explain": "Enticement provides an opportunity to someone who already has the intent, and it is acceptable. Entrapment is inducing a person to commit an act they would not otherwise commit, and it makes the evidence unusable."
+  },
+  {
+    "obj": "1.5",
+    "q": "The police informally ask a private company to search an employee's computer and hand over the findings, without a warrant. What is the GREATEST legal risk?",
+    "options": [
+      "The company violates the license agreement for its forensic software",
+      "The evidence will not have hash values",
+      "The company acts as an agent of the state, so search restrictions apply and the evidence may be inadmissible",
+      "The employee loses the right to compensation"
+    ],
+    "answer": 2,
+    "explain": "When a private organization acts at the request of the police, it is considered an agent of the state and is subject to the same restrictions as the authorities (warrant, constitutional rights). The request should be forwarded to legal counsel."
+  },
+  {
+    "obj": "1.6",
+    "q": "Which document is the only OPTIONAL one in the security documentation hierarchy?",
+    "options": [
+      "Standard",
+      "Baseline",
+      "Procedure",
+      "Guideline"
+    ],
+    "answer": 3,
+    "explain": "Guidelines are recommendations. Policies, standards, baselines, and procedures are mandatory."
+  },
+  {
+    "obj": "1.6",
+    "q": "An organization is moving from TOTP to passkeys for MFA. Which document is LEAST likely to change?",
+    "options": [
+      "The access control policy",
+      "The authentication standard",
+      "The authenticator registration procedure",
+      "The IdP configuration baseline"
+    ],
+    "answer": 0,
+    "explain": "A policy is technology-neutral and states what and why (e.g., strong authentication). Standards, baselines, and procedures describe the specific technology and method, so they change."
+  },
+  {
+    "obj": "1.6",
+    "q": "A new industrial controller supports only AES-128, while the organization's standard prescribes AES-256 for sensitive data. What is the BEST thing to do?",
+    "options": [
+      "Amend the policy so it allows all algorithms",
+      "Initiate a formal exception with a risk assessment, compensating controls, an expiration date, and the risk owner's signature",
+      "Do not introduce the controller under any circumstances",
+      "Introduce the controller without documenting it, because AES-128 is still secure"
+    ],
+    "answer": 1,
+    "explain": "Deviations from standards are handled through a formal exception process: risk assessment, compensating controls, limited duration, and acceptance of the risk by the owner. Changing the policy or deviating silently is not correct."
+  },
+  {
+    "obj": "1.6",
+    "q": "Who should approve the umbrella (organizational) information security policy?",
+    "options": [
+      "System administrators",
+      "The internal auditor",
+      "Senior management",
+      "The SIEM vendor"
+    ],
+    "answer": 2,
+    "explain": "The policy provides direction and a mandate for the program, so it is approved and signed by senior management. The auditor verifies but does not approve policies, to preserve independence."
+  },
+  {
+    "obj": "1.6",
+    "q": "A policy on the use of generative AI tools for all employees is an example of which type of policy?",
+    "options": [
+      "Issue-specific policy",
+      "System-specific policy",
+      "Baseline",
+      "Procedure"
+    ],
+    "answer": 0,
+    "explain": "An issue-specific policy covers a specific topic that concerns the whole organization (AUP, email, BYOD, AI). A system-specific policy applies to a single system."
+  },
+  {
+    "obj": "1.6",
+    "type": "match",
+    "q": "Match the example with the document type.",
+    "options": [
+      "\"All sensitive data must be protected by encryption at rest and in transit.\"",
+      "\"AES-256 is used for encryption at rest; TLS 1.2 or later for transit.\"",
+      "\"Steps for rotating a KMS key: 1) create a new version, 2) update the alias, 3) verify the applications.\"",
+      "\"Teams are advised to use the central secrets management service.\""
+    ],
+    "targets": [
+      "Guideline",
+      "Procedure",
+      "Policy",
+      "Standard"
+    ],
+    "answer": [2, 3, 1, 0],
+    "explain": "A general, mandatory statement is a policy; specific algorithms are a standard; steps are a procedure; a recommendation is a guideline."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Order the steps taken when a personal data breach is suspected, from first to last.",
+    "options": [
+      "Notify the supervisory authority and, as needed, the affected individuals",
+      "Contain the incident and preserve evidence",
+      "Involve legal counsel, the DPO, and management, and assess the risk to individuals and the applicable regimes",
+      "Lessons learned and corrective actions",
+      "Determine what data and how many people from which jurisdictions are affected"
+    ],
+    "answer": [1, 4, 2, 0, 3],
+    "explain": "First the incident is contained while preserving evidence, then the facts are established, then legal counsel and management assess the risk and obligations, notification follows, and finally lessons learned."
+  }
+]

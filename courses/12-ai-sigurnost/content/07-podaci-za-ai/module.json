@@ -1,0 +1,11 @@
+{
+  "title": "Podaci za AI: privatnost i trovanje podataka",
+  "summary": "Lični podaci u treniranju, promptovima i logovima (GDPR, ZZPL), upravljanje skupovima podataka (data card, snapshot, lineage, EU AI Act čl. 10) i odbrana od trovanja podataka po NIST AI 100-2.",
+  "minutes": 60,
+  "domain": 3,
+  "objectives": [
+    "3.2"
+  ],
+  "title_en": "Data for AI: privacy and data poisoning",
+  "summary_en": "Personal data in training, prompts and logs (GDPR, Serbian ZZPL), dataset governance (data card, snapshot, lineage, EU AI Act Art. 10) and defense against data poisoning per NIST AI 100-2."
+}

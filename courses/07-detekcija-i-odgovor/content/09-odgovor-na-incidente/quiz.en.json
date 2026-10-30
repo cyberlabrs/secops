@@ -1,0 +1,230 @@
+[
+  {
+    "obj": "6.1",
+    "q": "A manager asks why the new IR plan no longer has the four phases from NIST SP 800-61r2. What is the correct answer?",
+    "options": [
+      "NIST withdrew its incident response recommendations",
+      "SP 800-61r3 organizes its recommendations as a CSF 2.0 Community Profile, by the Govern, Identify, Protect, Detect, Respond and Recover functions, with continuous improvement",
+      "r3 requires using only the six-phase SANS model",
+      "r3 applies only to federal agencies in the cloud"
+    ],
+    "answer": 1,
+    "explain": "r3 (April 2025) uses the CSF 2.0 functions, categories and subcategories as a common language. At the same time, NIST says an organization may use whatever model suits it."
+  },
+  {
+    "obj": "6.1",
+    "q": "In the NIST SP 800-61r3 model, which CSF 2.0 functions make up incident response itself (the top level of the model)?",
+    "options": [
+      "Govern, Identify, Protect",
+      "Identify, Protect, Detect",
+      "Protect, Respond, Recover",
+      "Detect, Respond, Recover"
+    ],
+    "answer": 3,
+    "explain": "Govern, Identify and Protect are preparation and broader risk management. Detect, Respond and Recover are incident response, and Improvement (ID.IM) connects lessons with all functions."
+  },
+  {
+    "obj": "6.1",
+    "q": "Which category does the r2 \"Post-Incident Activity\" phase correspond to in r3?",
+    "options": [
+      "Improvement (ID.IM) in the Identify function",
+      "Incident Mitigation (RS.MI)",
+      "Continuous Monitoring (DE.CM)",
+      "Asset Management in the Identify function"
+    ],
+    "answer": 0,
+    "explain": "Lessons learned and improvements are tracked in ID.IM. r3 stresses that lessons are learned and shared throughout the whole process, not only at the end."
+  },
+  {
+    "obj": "6.1",
+    "q": "An analyst has confirmed that the attacker's SSH login succeeded and that sudo was run. Which CSF subcategory describes the formal step that follows now?",
+    "options": [
+      "RC.RP-06: the end of recovery is declared",
+      "DE.AE-08: incidents are declared when adverse events meet the criteria",
+      "RS.CO-04: public updates",
+      "ID.IM-01: improvements from evaluations"
+    ],
+    "answer": 1,
+    "explain": "Declaring the incident (DE.AE-08) is the moment from which the plan, roles and deadlines apply. Recovery and public communication come later."
+  },
+  {
+    "obj": "6.1",
+    "q": "The team is writing a \"Compromised cloud account\" document: who decides on shutting down services, when legal is notified, which phases are followed and which technical procedures are invoked. What is this document called?",
+    "options": [
+      "Runbook",
+      "Policy",
+      "Playbook",
+      "Chain of custody"
+    ],
+    "answer": 2,
+    "explain": "A playbook describes what is done for a type of incident: decisions, roles, communication and order. The specific commands are in the runbooks it points to."
+  },
+  {
+    "obj": "6.1",
+    "q": "According to r3, who in incident response typically has the authority for high-impact decisions such as shutting down or rebuilding a critical service?",
+    "options": [
+      "The scribe",
+      "Public relations",
+      "Each incident handler on their own",
+      "The organization's leadership"
+    ],
+    "answer": 3,
+    "explain": "r3 states that leadership oversees the response, allocates resources and may have the authority for high-impact actions. Policy should define in advance which role may do what."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company uses an MSSP for its SOC and AWS for production. What does r3 recommend regarding third parties?",
+    "options": [
+      "Clearly define in the contract the division of responsibilities, information flows and authority to act (shared responsibility model)",
+      "Do not involve third parties in the response",
+      "Leave the entire response to the cloud provider",
+      "Notify them only after the incident is closed"
+    ],
+    "answer": 0,
+    "explain": "Third parties may have a primary role or act only for certain incidents. The contract should specify precisely who may do what, including limitations."
+  },
+  {
+    "obj": "6.1",
+    "q": "Three incidents are open at the same time: port scanning (reported first), a leaked key with production access (second) and confirmed ransomware on a file server (third). In what order are they handled?",
+    "options": [
+      "In the order they were reported",
+      "Scanning first, because it is the simplest",
+      "Ransomware, then the leaked key, then scanning, based on risk",
+      "In parallel, with equal priority"
+    ],
+    "answer": 2,
+    "explain": "r3 says incidents are not handled in order of arrival but by risk: asset criticality, impact, stage of activity, recoverability."
+  },
+  {
+    "obj": "6.2",
+    "q": "A suspicious process is running on a compromised host, and ls -l /proc/4242/exe shows \"(deleted)\". What do you do before stopping the process?",
+    "options": [
+      "Nothing, the file is already deleted",
+      "Copy /proc/4242/exe, cmdline, environ, maps and the fd list, then compute SHA-256",
+      "Reboot the host to free memory",
+      "Run an antivirus scan over the whole disk"
+    ],
+    "answer": 1,
+    "explain": "While the process is running, /proc/<pid>/exe lets you copy the deleted binary. Once the process is killed or the host rebooted, that evidence is gone."
+  },
+  {
+    "obj": "6.2",
+    "q": "According to RFC 3227, which of the following do you collect FIRST?",
+    "options": [
+      "Network connections and the process table",
+      "A copy of /var/log on disk",
+      "Logs from the central SIEM",
+      "A backup from tape"
+    ],
+    "answer": 0,
+    "explain": "The process table, connections, ARP and memory are at the second level of volatility (right after registers and cache). Disk, remote logs and archives are less volatile."
+  },
+  {
+    "obj": "6.2",
+    "q": "A colleague proposes unplugging the compromised server's network cable immediately. Which risk does RFC 3227 warn about?",
+    "options": [
+      "That the DHCP address will be lost",
+      "That logs will not rotate",
+      "That cutting the connection may trigger an attacker mechanism (dead man switch) that wipes traces",
+      "That the ARP cache will fill up"
+    ],
+    "answer": 2,
+    "explain": "RFC 3227 warns that removing external avenues for change may trigger a mechanism that destroys evidence. The isolation decision is made deliberately, ideally after volatile data has been collected."
+  },
+  {
+    "obj": "6.2",
+    "q": "Why is it recommended during live response to use trusted tools from your own media instead of ps and ss from the compromised host?",
+    "options": [
+      "Because they are slower",
+      "Because they do not support JSON output",
+      "Because they do not work without root privileges",
+      "Because the attacker may have replaced the system's tools to hide their processes and connections"
+    ],
+    "answer": 3,
+    "explain": "RFC 3227: do not trust the programs on the system. A rootkit or a replaced binary can lie. Statically linked tools from trusted media reduce that risk."
+  },
+  {
+    "obj": "6.2",
+    "q": "Which item is NOT part of a chain of custody record according to RFC 3227?",
+    "options": [
+      "Who collected the evidence, when and where",
+      "Who stored the evidence and how",
+      "The analyst's opinion about the attacker's motive",
+      "When and how custody of the evidence changed"
+    ],
+    "answer": 2,
+    "explain": "The chain of custody documents the provenance and handling of evidence (with a hash), not analysis. The attacker's motive belongs in the investigation report."
+  },
+  {
+    "obj": "6.2",
+    "q": "A live response script needs to save its output. Where is it best to write it?",
+    "options": [
+      "To /tmp on the compromised host",
+      "Off the compromised disk: a network share, attached media or over SSH to another system, with a hash of every file",
+      "To the home directory of the user whose account was compromised",
+      "Nowhere, a screenshot is enough"
+    ],
+    "answer": 1,
+    "explain": "Writing to the compromised disk changes evidence and can overwrite deleted data, and the attacker can tamper with the output. Output goes off the host and is hashed immediately."
+  },
+  {
+    "obj": "6.2",
+    "q": "The attacker has lost access, but the pod in Kubernetes is still running. The team wants to delete the pod to \"clean up\" the cluster. What comes first?",
+    "options": [
+      "Collect the pod YAML, logs of all containers (and --previous), file system changes and processes from the node, and only then decide",
+      "Delete the pod; the Deployment will create a new one",
+      "Restart the node",
+      "Scale the Deployment to zero without collecting anything"
+    ],
+    "answer": 0,
+    "explain": "Containers are ephemeral: deleting the pod destroys its file system, processes and part of the logs. Evidence is collected before removal, and the pod can be isolated (module 10)."
+  },
+  {
+    "obj": "6.2",
+    "q": "During triage you are writing a timeline. What is the correct practice?",
+    "options": [
+      "The local time of each system, without sources",
+      "Only team actions, without observations from logs",
+      "Only conclusions, without raw entries",
+      "UTC times, the source of every entry, and observations from logs clearly separated from team actions"
+    ],
+    "answer": 3,
+    "explain": "UTC removes time zone confusion, the source allows verification, and separating observations from actions satisfies RS.AN-06 (recording investigative actions)."
+  },
+  {
+    "obj": "6.2",
+    "type": "order",
+    "q": "Order the evidence sources by the RFC 3227 order of volatility, from most volatile.",
+    "options": [
+      "Files on disk (cron, authorized_keys)",
+      "A backup on archival media",
+      "The contents of /dev/shm and /tmp",
+      "Network connections and the process table",
+      "Logs in the central SIEM"
+    ],
+    "answer": [3, 2, 0, 4, 1],
+    "explain": "RFC 3227: processes and network (level 2), temporary file systems (3), disk (4), remote logging and monitoring (5), archival media (7)."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Match each activity with the CSF 2.0 category it belongs to.",
+    "options": [
+      "Preliminary review of a report and severity estimate",
+      "Collecting data while preserving integrity and provenance",
+      "Isolating a host so the incident does not spread",
+      "Verifying backup integrity before restoring",
+      "Analyzing lessons and updating the plan"
+    ],
+    "targets": [
+      "RS.MI Incident Mitigation",
+      "RS.MA Incident Management",
+      "ID.IM Improvement",
+      "RC.RP Recovery Plan Execution",
+      "RS.AN Incident Analysis",
+      "PR.AA Identity Management"
+    ],
+    "answer": [1, 4, 0, 3, 2],
+    "explain": "Triage is RS.MA-02, evidence collection RS.AN-07, containment RS.MI-01, backup verification RC.RP-03, and lessons go to ID.IM. PR.AA is not relevant to any activity."
+  }
+]

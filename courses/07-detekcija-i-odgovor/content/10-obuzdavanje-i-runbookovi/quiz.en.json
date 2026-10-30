@@ -1,0 +1,249 @@
+[
+  {
+    "obj": "6.3",
+    "q": "Isolating an EC2 instance: the team replaced all security groups with an isolation group, but the attacker's reverse connection is still working. Why, and what next?",
+    "options": [
+      "The isolation group was not saved; repeat the change",
+      "Security groups do not apply to outbound traffic",
+      "Security groups track connections, so existing tracked connections remain; add a NACL deny on the subnet",
+      "The instance must be restarted for the group to take effect"
+    ],
+    "answer": 2,
+    "explain": "Changing the security group blocks only new traffic; tracked connections are not interrupted. A NACL is not stateful and does cut them. A restart would destroy volatile evidence."
+  },
+  {
+    "obj": "6.3",
+    "q": "The attacker used temporary credentials obtained by assuming a role (STS). How do you invalidate them?",
+    "options": [
+      "aws iam delete-access-key for the temporary key",
+      "Revoke active sessions on the role: an inline policy that denies requests with tokens issued before that moment (aws:TokenIssueTime)",
+      "By deleting the CloudTrail trails",
+      "Temporary credentials cannot be invalidated; you wait for them to expire"
+    ],
+    "answer": 1,
+    "explain": "Temporary credentials cannot be deleted, but they can be made useless with a policy based on aws:TokenIssueTime. If the attacker can assume the role again, contain the source (key, account) first."
+  },
+  {
+    "obj": "6.3",
+    "q": "A compromised pod is part of a Deployment behind a Service. You want to isolate it, keep it for forensics, and keep the service running. What do you do?",
+    "options": [
+      "Change the pod's labels (remove app, add quarantine=true) and apply a deny-all NetworkPolicy for quarantine pods",
+      "kubectl delete pod; the ReplicaSet creates a new one",
+      "Scale the Deployment to zero",
+      "kubectl drain the node immediately"
+    ],
+    "answer": 0,
+    "explain": "Without the label used by the selector, the pod leaves the ReplicaSet and the Service, and the ReplicaSet creates a replacement. The NetworkPolicy isolates it on the network. Deleting or draining destroys evidence, and scaling interrupts the service."
+  },
+  {
+    "obj": "6.3",
+    "q": "You are isolating a Linux host with iptables. Which order does not cut your SSH session from the IR workstation?",
+    "options": [
+      "DROP policies first, then rules for the IR address",
+      "Only iptables -F",
+      "DROP policy for OUTPUT first, then INPUT",
+      "Save the rules (iptables-save), add ACCEPT for lo and the IR address, and only then set the policies to DROP"
+    ],
+    "answer": 3,
+    "explain": "The rules that allow IR must exist before the policy becomes DROP, otherwise your session drops too. iptables -F deletes the rules and isolates nothing."
+  },
+  {
+    "obj": "6.3",
+    "q": "A suspicious process needs to be stopped, but forensics has not yet collected its memory and /proc data. What do you use?",
+    "options": [
+      "kill -9",
+      "kill -STOP (SIGSTOP), then SIGKILL after collection",
+      "reboot",
+      "rm the binary"
+    ],
+    "answer": 1,
+    "explain": "SIGSTOP freezes the process without losing its memory and open files, so /proc/<pid>/ can still be read. SIGKILL and reboot are final."
+  },
+  {
+    "obj": "6.3",
+    "q": "The attacker had root on the host for several days. The team deleted their account and cron job. What is the correct assessment?",
+    "options": [
+      "Eradication is complete",
+      "Changing the root password is enough",
+      "Running antivirus is enough",
+      "You cannot be sure all persistence has been found; the host should be rebuilt from a known-good image, the entry point patched and credentials rotated"
+    ],
+    "answer": 3,
+    "explain": "With root access, modified binaries, a rootkit and other persistence are possible. For serious incidents, a rebuild is more reliable than cleanup, together with patching the entry point."
+  },
+  {
+    "obj": "6.3",
+    "q": "The attacker had three access paths: two IAM access keys and SSH to one EC2 instance. The team discovered all three. How do you contain?",
+    "options": [
+      "All three footholds in the same move, after collecting volatile evidence",
+      "One key first, then observe what the attacker does with the others",
+      "Only SSH, because keys are harder to abuse",
+      "Wait until the end of the business day"
+    ],
+    "answer": 0,
+    "explain": "Gradual containment tips off the attacker, who can use the remaining access to cover their tracks or speed up the attack. Observing the attacker is a separate strategy that requires agreement with legal counsel."
+  },
+  {
+    "obj": "6.3",
+    "q": "An Entra ID user has been compromised. Which combination contains it fastest?",
+    "options": [
+      "Only a password reset",
+      "Deleting the user",
+      "Disable the account, revoke sessions (revokeSignInSessions), reset the password and review MFA methods",
+      "Changing the NSG on the VMs"
+    ],
+    "answer": 2,
+    "explain": "A password reset does not invalidate existing tokens, so sessions are revoked separately. The attacker may have added their own MFA method. Deletion destroys context for the investigation."
+  },
+  {
+    "obj": "6.4",
+    "q": "Gitleaks found an AWS access key in a public GitHub repo. What is the first step of the runbook?",
+    "options": [
+      "Rewrite the git history",
+      "Deactivate the key (aws iam update-access-key --status Inactive)",
+      "Search CloudTrail",
+      "Notify the author of the commit"
+    ],
+    "answer": 1,
+    "explain": "Revocation always comes first: a key from a public repo can be abused within minutes. Investigation, rotation and cleanup come afterwards."
+  },
+  {
+    "obj": "6.4",
+    "q": "The key has been deactivated. CloudTrail shows the attacker used it to call CreateUser and CreateAccessKey. What does this mean for the runbook?",
+    "options": [
+      "Nothing, the key is deactivated",
+      "Only the original key needs to be deleted",
+      "CloudTrail should be stopped to prevent further logging",
+      "The attacker has persistence: the new user and key must be deactivated and removed, and all Create/Attach/Put events reviewed"
+    ],
+    "answer": 3,
+    "explain": "The attacker created their own access, independent of the leaked key. Eradication in the cloud always includes reviewing IAM changes made during the incident."
+  },
+  {
+    "obj": "6.4",
+    "q": "Publicly exposed S3 bucket: data events and server access logs were not enabled. What is the answer to whether anyone downloaded the data?",
+    "options": [
+      "That nobody did, because there are no records",
+      "That someone did, always",
+      "That it cannot be determined, and it is reported that way; enabling logging goes into the post-incident actions",
+      "That CloudTrail management events should be checked for GetObject"
+    ],
+    "answer": 2,
+    "explain": "GetObject is a data event and is not logged unless explicitly enabled. Absence of evidence is not evidence of absence of access; legal counsel and the regulator must receive accurate information."
+  },
+  {
+    "obj": "6.4",
+    "q": "What is the first technical measure in the runbook for a publicly exposed bucket?",
+    "options": [
+      "Deleting the bucket",
+      "Enable S3 Block Public Access for the bucket and verify that get-bucket-policy-status returns IsPublic false",
+      "Encrypting the objects with a new KMS key",
+      "Starting a Macie scan"
+    ],
+    "answer": 1,
+    "explain": "Block Public Access immediately closes public access without losing data or state. Deletion destroys evidence, and Macie and encryption come later."
+  },
+  {
+    "obj": "6.4",
+    "q": "Falco reports a process with stratum+tcp on the command line in a pod, and the node's CPU is at 100%. The cryptominer has been contained with a quarantine. Which step is key to preventing a recurrence?",
+    "options": [
+      "Find the entry point (vulnerable application, exposed API, token, malicious image) and remove everything the attacker created in the cluster",
+      "Restart the pod",
+      "Limit the pod's CPU",
+      "Disable the Falco rule"
+    ],
+    "answer": 0,
+    "explain": "A cryptominer is a consequence of code execution. Without closing the entry point and removing the attacker's objects (Deployments, CronJobs, DaemonSets), the attack comes back."
+  },
+  {
+    "obj": "6.4",
+    "q": "The on-call engineer could not execute a runbook step because they did not have the IAM role the runbook assumes. How should this be treated?",
+    "options": [
+      "As a post-incident review finding: fix the runbook's prerequisites and test it in an exercise",
+      "As the on-call engineer's mistake",
+      "It doesn't matter, the step was executed later",
+      "Remove the step from the runbook"
+    ],
+    "answer": 0,
+    "explain": "A runbook the on-call engineer cannot execute is broken. A blameless review looks for the cause in the system (prerequisites, access), and the fix is verified with a test."
+  },
+  {
+    "obj": "6.4",
+    "q": "Which item in a post-incident report is a well-written action?",
+    "options": [
+      "\"Monitor SSH better.\"",
+      "\"Marko needs to be more careful.\"",
+      "\"Consider MFA.\"",
+      "\"Correlate Wazuh 5763 + 5715 to level 12 with paging; owner: detections team; due 2026-10-18; ticket SEC-431.\""
+    ],
+    "answer": 3,
+    "explain": "An action must be concrete and have an owner, a due date and a ticket so it can be tracked. Blaming an individual and vague wording change nothing."
+  },
+  {
+    "obj": "6.4",
+    "q": "The MTTC in the incident report is 41 minutes. What does this metric measure?",
+    "options": [
+      "Time from the first trace of the attack to the alert",
+      "Time from the alert to an analyst picking it up",
+      "Time from the incident declaration to containment",
+      "Time to full recovery"
+    ],
+    "answer": 2,
+    "explain": "MTTD measures detection, MTTA alert acknowledgment, MTTC containment, and MTTR recovery."
+  },
+  {
+    "obj": "6.3",
+    "type": "order",
+    "q": "Put the steps for responding to a compromised EC2 instance in order, starting with the first.",
+    "options": [
+      "Rebuild the instance from a patched image and enhance monitoring",
+      "Replace the security groups with an isolation group and add a NACL deny",
+      "Enable termination protection, tag it and take an EBS snapshot",
+      "Remove persistence in IAM and patch the entry point"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "First protect the evidence (termination protection, snapshot), then contain, then eradicate (persistence and entry point), and finally recover from a clean image with enhanced monitoring."
+  },
+  {
+    "obj": "6.4",
+    "type": "match",
+    "q": "Match each incident with the first measure from its runbook.",
+    "options": [
+      "Leaked AWS access key",
+      "Publicly exposed S3 bucket",
+      "Cryptominer in a Kubernetes pod",
+      "Compromised GitLab personal access token"
+    ],
+    "targets": [
+      "Revoke the token in GitLab",
+      "Quarantine label and deny-all NetworkPolicy, after collecting evidence",
+      "S3 Block Public Access for the bucket",
+      "Deactivate the key in IAM",
+      "Rewrite the git history"
+    ],
+    "answer": [
+      3,
+      2,
+      1,
+      0
+    ],
+    "explain": "For keys and tokens, revocation comes first; for storage, closing public access; and for a cryptominer, isolating the pod. Rewriting history is a later and often unnecessary step."
+  },
+  {
+    "type": "spot",
+    "obj": "6.4",
+    "q": "The runbook must stop the attacker immediately, but without irreversible steps that break services or destroy evidence before the investigation. Mark the lines that violate this principle.",
+    "snippet": "#!/usr/bin/env bash\n# Runbook: leaked AWS access key\nset -euo pipefail\nK=AKIAEXAMPLEKEY123456; U=ci-deployer\n\n# 1. containment\naws iam delete-access-key --user-name \"$U\" --access-key-id \"$K\"\n\n# 2. investigation: what the key did\njq -r --arg k \"$K\" '.Records[] | select(.userIdentity.accessKeyId==$k)\n  | [.eventTime, .eventName, .sourceIPAddress] | @tsv' cloudtrail.json\n\n# 3. resources the attacker launched\naws ec2 terminate-instances --instance-ids $(cat attacker_instances.txt)\n\n# 4. persistence: user policies\naws iam list-attached-user-policies --user-name \"$U\"",
+    "lang": "bash",
+    "answer": [
+      6,
+      13
+    ],
+    "explain": "Containment means deactivation: aws iam update-access-key --status Inactive stops the attacker immediately, and the key is deleted only after services move to a new credential or an OIDC role. Deleting is irreversible and breaks legitimate services that still use the key. terminate-instances destroys the disks of the instances the attacker launched, and the evidence with them; first snapshot the volumes and isolate (security group or stop), and only then terminate. The jq investigation and the policy review are correct steps."
+  }
+]

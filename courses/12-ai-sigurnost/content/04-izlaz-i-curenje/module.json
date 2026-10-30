@@ -1,0 +1,11 @@
+{
+  "title": "Obrada izlaza i curenje podataka",
+  "summary": "Nesigurna obrada izlaza, otkrivanje osjetljivih podataka i curenje sistemskog prompta: izlaz modela kao nepovjerljiv unos, validacija JSON Schema šemom, sigurno renderovanje i CSP, minimizacija konteksta, DLP na izlazu, zaštita logova i prompt bez tajni uz canary detekciju.",
+  "minutes": 60,
+  "domain": 2,
+  "objectives": [
+    "2.2"
+  ],
+  "title_en": "Output handling and data leakage",
+  "summary_en": "Improper output handling, sensitive information disclosure and system prompt leakage: model output as untrusted input, JSON Schema validation, safe rendering and CSP, context minimization, output DLP, log protection and secret-free prompts with canary detection."
+}

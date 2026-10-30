@@ -1,0 +1,292 @@
+[
+  {
+    "obj": "5.3",
+    "q": "Kompanija koristi Amazon RDS for PostgreSQL. Security tim traži da se master lozinka čuva u AWS Secrets Manageru i rotira svakih 30 dana. Tim ne želi održavati nikakav vlastiti kod za rotaciju. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Uključiti managed master user password na RDS instanci (--manage-master-user-password) i podesiti raspored rotacije",
+      "Kreirati tajnu u Secrets Manageru i napisati vlastitu Lambda funkciju za rotaciju sa četiri koraka",
+      "Sačuvati lozinku kao SecureString u Parameter Storeu i rotirati je EventBridge pravilom koje pokreće Lambda funkciju",
+      "Generisati lozinku u CodePipeline-u pri svakom deployu i upisati je u RDS kroz CloudFormation"
+    ],
+    "answer": 0,
+    "explain": "Managed rotation znači da RDS sam kreira tajnu u Secrets Manageru i rotira je bez Lambda funkcije koju održavaš. Vlastita Lambda i Parameter Store rješenja rade, ali traže kod i održavanje."
+  },
+  {
+    "obj": "5.3",
+    "q": "Aplikacija drži konekcije prema Aurora MySQL bazi otvorenim satima i kešira kredencijale. Nakon uvođenja rotacije u Secrets Manageru, pri svakoj rotaciji dio zahtjeva pada sa greškom autentikacije dok se aplikacija ne restartuje. Kako riješiti problem uz zadržavanje rotacije?",
+    "options": [
+      "Povećati interval rotacije sa 30 na 90 dana",
+      "Preći na alternating users strategiju rotacije sa superuser tajnom koja upravlja drugim korisnikom",
+      "Isključiti rotaciju i umjesto nje koristiti IAM database authentication samo za administratore",
+      "Prebaciti tajnu u Parameter Store i čitati je pri svakom upitu"
+    ],
+    "answer": 1,
+    "explain": "Kod alternating users strategije prethodni kredencijali ostaju važeći do sljedeće rotacije, pa keširani kredencijali i dalje rade. Duži interval samo smanjuje učestalost problema, a isključivanje rotacije ne ispunjava zahtjev."
+  },
+  {
+    "obj": "5.3",
+    "q": "Lambda funkcija za rotaciju tajne radi u privatnim subnetima VPC-a bez NAT gatewaya, kako bi mogla doći do RDS baze. Rotacija pada sa timeout greškom u koraku createSecret. Šta je NAJVJEROVATNIJE rješenje?",
+    "options": [
+      "Povećati memoriju i timeout Lambda funkcije",
+      "Dodati resource policy na tajnu koja dozvoljava Lambda servis",
+      "Kreirati interface VPC endpoint za Secrets Manager u tom VPC-u",
+      "Promijeniti KMS ključ tajne u AWS managed ključ aws/secretsmanager"
+    ],
+    "answer": 2,
+    "explain": "Lambda u privatnom subnetu bez NAT-a ne može doći do Secrets Manager API-ja, pa createSecret ne može pozvati servis; interface VPC endpoint to rješava. Timeout i KMS ključ nisu uzrok, a resource policy ne rješava mrežnu dostupnost."
+  },
+  {
+    "obj": "5.3",
+    "q": "Tajna u nalogu A (111111111111) treba biti čitljiva roli u nalogu B (222222222222). Tajna je šifrovana AWS managed ključem aws/secretsmanager. Resource policy na tajni i IAM politika u nalogu B su ispravno podešene, ali poziv i dalje pada. Šta treba uraditi?",
+    "options": [
+      "Dodati nalog B u key policy ključa aws/secretsmanager",
+      "Uključiti replikaciju tajne u region naloga B",
+      "Kreirati grant na ključu aws/secretsmanager za rolu iz naloga B",
+      "Ponovo šifrovati tajnu customer managed KMS ključem čiji key policy dozvoljava nalogu B kms:Decrypt"
+    ],
+    "answer": 3,
+    "explain": "Key policy AWS managed ključa se ne može mijenjati, pa takav ključ ne podržava cross-account pristup tajni. Treba customer managed ključ sa key policy koji dozvoljava nalog B; replikacija ne mijenja nalog."
+  },
+  {
+    "obj": "5.3",
+    "q": "Tim treba čuvati 200 konfiguracionih vrijednosti hijerarhijski po okruženju (/app/prod/…), od kojih je desetak osjetljivo. Rotacija nije potrebna, a cilj je NAJNIŽI trošak. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "Systems Manager Parameter Store, sa SecureString parametrima za osjetljive vrijednosti",
+      "AWS Secrets Manager za sve vrijednosti",
+      "S3 bucket sa SSE-KMS i JSON fajlom po okruženju",
+      "DynamoDB tabela sa client-side enkripcijom"
+    ],
+    "answer": 0,
+    "explain": "Parameter Store je napravljen za hijerarhijsku konfiguraciju, a SecureString šifruje osjetljive vrijednosti KMS ključem bez posebne naknade za standard tier. Secrets Manager se plaća po tajni i donosi rotaciju koja ovdje nije potrebna."
+  },
+  {
+    "obj": "5.3",
+    "q": "Aplikacija radi aktivno-pasivno u eu-central-1 i eu-west-1. Kredencijale baze čuva Secrets Manager u eu-central-1 sa rotacijom. Nakon failovera aplikacija u eu-west-1 mora čitati iste kredencijale lokalno. Koje rješenje ispunjava zahtjev uz NAJMANJE napora?",
+    "options": [
+      "Kreirati drugu tajnu u eu-west-1 i Lambda funkcijom kopirati vrijednost nakon svake rotacije",
+      "Replicirati tajnu u eu-west-1 funkcijom replikacije Secrets Managera",
+      "Čuvati kopiju u Parameter Storeu u eu-west-1",
+      "Aplikacija u eu-west-1 treba čitati tajnu cross-Region iz eu-central-1"
+    ],
+    "answer": 1,
+    "explain": "Replika tajne se automatski sinhronizuje sa primarnom, uključujući rotirane vrijednosti, i čita se lokalno u drugom regionu. Ručno kopiranje dodaje kod, a cross-Region čitanje ne radi ako je primarni region nedostupan."
+  },
+  {
+    "obj": "5.3",
+    "q": "Security tim traži da rola data-pipeline smije dešifrovati podatke KMS ključem samo kada zahtjev dolazi kroz Amazon S3, a ne kada rola direktno poziva kms:Decrypt iz CLI-ja. Koji uslov treba dodati u key policy?",
+    "options": [
+      "aws:SourceIp sa opsegom VPC-a",
+      "kms:CallerAccount sa ID-jem naloga",
+      "kms:ViaService sa vrijednošću s3.<region>.amazonaws.com",
+      "aws:PrincipalOrgID sa ID-jem organizacije"
+    ],
+    "answer": 2,
+    "explain": "kms:ViaService dozvoljava upotrebu ključa samo za zahtjeve koje u ime principala šalje navedeni servis. SourceIp, CallerAccount i PrincipalOrgID ne razlikuju direktan poziv od poziva kroz S3."
+  },
+  {
+    "obj": "5.3",
+    "q": "Novi KMS ključ kreiran je kroz CloudFormation sa key policy koji daje prava samo roli KeyAdmin. Administrator naloga ima AdministratorAccess IAM politiku, ali ne može koristiti ključ za šifrovanje. Šta je uzrok?",
+    "options": [
+      "AdministratorAccess ne uključuje kms:* akcije",
+      "Ključ je u stanju Pending import",
+      "SCP organizacije blokira sve KMS akcije",
+      "Key policy nema izjavu koja omogućava IAM politike (principal root naloga), pa IAM politike nemaju efekat"
+    ],
+    "answer": 3,
+    "explain": "IAM politike za KMS djeluju samo ako key policy to omogući izjavom za root principal naloga. Bez nje pristup imaju samo principali eksplicitno navedeni u key policy, bez obzira na AdministratorAccess."
+  },
+  {
+    "obj": "5.3",
+    "q": "Compliance traži godišnju rotaciju materijala KMS ključeva koji štite S3 i EBS podatke. Aplikacije ne smiju mijenjati ARN ključa, a podaci se ne smiju ponovo šifrovati. Ključevi su simetrični customer managed ključevi koje je generisao KMS. Šta uraditi?",
+    "options": [
+      "Uključiti automatic key rotation na ključevima (period 365 dana)",
+      "Svake godine kreirati novi ključ i prebaciti alias",
+      "Svake godine re-šifrovati sve objekte novim ključem kroz S3 Batch Operations",
+      "Prebaciti se na AWS managed ključeve"
+    ],
+    "answer": 0,
+    "explain": "Automatska rotacija mijenja samo materijal; key ID i ARN ostaju isti, a stari materijal ostaje za dešifrovanje postojećih podataka. Novi ključ sa aliasom mijenja ARN, a re-šifrovanje nije potrebno."
+  },
+  {
+    "obj": "5.3",
+    "q": "Inženjer je greškom zakazao brisanje customer managed KMS ključa koji štiti produkcijsku RDS bazu i to je primijećeno sljedeći dan. Šta se može uraditi?",
+    "options": [
+      "Ključ je odmah obrisan; podaci se mogu vratiti samo iz snapshotova šifrovanih drugim ključem",
+      "Ako je waiting period (7–30 dana) još u toku, brisanje se može otkazati sa CancelKeyDeletion i ključ ponovo omogućiti",
+      "AWS Support može vratiti obrisan ključ u roku od 90 dana",
+      "Treba uvesti isti materijal ključa ponovo u novi ključ"
+    ],
+    "answer": 1,
+    "explain": "Brisanje KMS ključa uvijek ima waiting period od 7 do 30 dana u kojem se može otkazati; nakon otkazivanja ključ treba ponovo omogućiti. Nakon isteka perioda ključ je trajno nepovratan."
+  },
+  {
+    "obj": "5.3",
+    "q": "Globalna DynamoDB tabela u us-east-1 i eu-west-1 sadrži atribute šifrovane client-side KMS ključem. Aplikacija u eu-west-1 mora dešifrovati podatke lokalno i kada us-east-1 nije dostupan. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Koristiti isti single-Region ključ iz us-east-1 cross-Region",
+      "Kreirati nezavisan ključ u eu-west-1 i re-šifrovati podatke pri replikaciji",
+      "Koristiti multi-Region primary ključ u us-east-1 i replica ključ u eu-west-1",
+      "Koristiti AWS owned ključ DynamoDB-a"
+    ],
+    "answer": 2,
+    "explain": "Multi-Region ključevi dijele isti materijal i key ID, pa replica u eu-west-1 dešifruje ciphertext nastao u us-east-1 bez poziva prema tom regionu. Single-Region ključ zavisi od us-east-1, a nezavisan ključ traži re-šifrovanje."
+  },
+  {
+    "obj": "5.3",
+    "q": "Regulator traži da materijal ključa bude generisan u on-prem HSM-u kompanije, da kopija van AWS-a bude originalni izvor i da kompanija može u bilo kom trenutku odmah učiniti ključ neupotrebljivim u AWS-u, a kasnije ga vratiti bez gubitka podataka. AWS servisi (S3, EBS) moraju i dalje koristiti ključ normalno. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "External key store (XKS) povezan sa on-prem HSM-om",
+      "AWS CloudHSM klaster bez KMS integracije",
+      "Client-side enkripcija on-prem ključem prije slanja u S3",
+      "KMS ključ sa imported key material; po potrebi DeleteImportedKeyMaterial i kasnije ponovni import istog materijala"
+    ],
+    "answer": 3,
+    "explain": "Imported material (BYOK) generišeš sam, čuvaš original i možeš ga odmah obrisati, pa ponovo uvesti isti materijal. XKS takođe ispunjava zahtjeve, ali traži proxy i stalnu dostupnost on-prem sistema, što je mnogo više napora; CloudHSM bez KMS-a ne radi sa SSE-KMS."
+  },
+  {
+    "obj": "5.3",
+    "q": "Banka mora dokazati da materijal ključa koji štiti podatke u AWS-u nikada ne napušta njen eksterni key manager i da se sve kriptografske operacije sa tim ključem izvode van AWS-a. Podaci su u S3 i EBS. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "KMS external key store (XKS) sa XKS proxyjem prema eksternom key manageru",
+      "KMS ključ sa imported key material koji ističe svakih 30 dana",
+      "AWS CloudHSM key store",
+      "Multi-Region KMS ključ sa replikom u regionu banke"
+    ],
+    "answer": 0,
+    "explain": "XKS (hold your own key) izvodi operacije u eksternom key manageru i materijal nikad nije u AWS-u. Imported material je kopija u KMS-u, a CloudHSM key store drži materijal u HSM-ovima unutar AWS-a."
+  },
+  {
+    "obj": "5.3",
+    "q": "Kompanija mora čuvati KMS ključeve u single-tenant HSM-ovima pod svojom kontrolom, ali želi da S3, EBS i RDS i dalje koriste ključeve kroz standardnu KMS integraciju. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "AWS CloudHSM klaster i PKCS#11 biblioteka u aplikacijama",
+      "AWS KMS custom key store tipa AWS CloudHSM, sa klasterom od barem dva HSM-a u različitim AZ",
+      "KMS ključ sa imported key material",
+      "AWS owned ključevi sa uključenom rotacijom"
+    ],
+    "answer": 1,
+    "explain": "CloudHSM key store daje KMS ključeve čiji je materijal u tvom single-tenant CloudHSM klasteru, a servisi ih koriste kao i druge KMS ključeve. Sam CloudHSM bez KMS-a nema integraciju sa SSE-KMS, a imported material je i dalje u višenamjenskim KMS HSM-ovima."
+  },
+  {
+    "obj": "5.3",
+    "q": "KMS ključ sa imported key material ima datum isteka materijala. Tim želi biti upozoren 14 dana prije isteka kako bi na vrijeme ponovo uvezao materijal. Šta je NAJJEDNOSTAVNIJE rješenje?",
+    "options": [
+      "AWS Config pravilo koje provjerava key policy",
+      "Dnevni cron na EC2 koji poziva describe-key i šalje email",
+      "CloudWatch alarm na KMS metriku vremena do isteka imported key materiala, sa SNS obavještenjem",
+      "GuardDuty nalaz za KMS"
+    ],
+    "answer": 2,
+    "explain": "KMS objavljuje CloudWatch metriku za preostalo vrijeme do isteka uvezenog materijala, pa alarm sa pragom od 14 dana rješava zahtjev bez koda. Cron na EC2 radi, ali traži održavanje, a Config i GuardDuty ne prate istek materijala."
+  },
+  {
+    "obj": "5.3",
+    "q": "Aplikacija za plaćanja upisuje u CloudWatch Logs zahtjeve koji ponekad sadrže brojeve kartica i email adrese. Developeri moraju čitati logove, ali ne smiju vidjeti te podatke; security tim mora moći vidjeti originale. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "Amazon Macie nad log grupom",
+      "Subscription filter prema Lambda funkciji koja briše podatke i upisuje u novu log grupu",
+      "Šifrovati log grupu KMS ključem kojem developeri nemaju pristup",
+      "CloudWatch Logs data protection policy sa managed data identifiers, a logs:Unmask dozvoliti samo security roli"
+    ],
+    "answer": 3,
+    "explain": "Data protection policy maskira osjetljive podatke pri ingestiji na svim izlazima, a original vide samo principali sa logs:Unmask. Macie ne maskira logove, Lambda rješenje traži kod, a KMS ključ bi developerima uskratio cijeli log."
+  },
+  {
+    "obj": "5.3",
+    "q": "Nakon što je uključena CloudWatch Logs data protection policy na log grupi, auditor primjećuje da su brojevi kartica iz prošlog mjeseca i dalje vidljivi u Logs Insights. Šta je objašnjenje?",
+    "options": [
+      "Politika maskira samo podatke unesene nakon njenog uključivanja; stari događaji ostaju nemaskirani",
+      "Logs Insights ne poštuje data protection politike",
+      "Politika na nivou log grupe ne radi dok se ne uključi i politika na nivou naloga",
+      "Auditor ima pravo logs:Unmask kroz AdministratorAccess, pa vidi sve"
+    ],
+    "answer": 0,
+    "explain": "Maskiranje se dešava pri ingestiji, pa događaji uneseni prije politike nisu maskirani. Logs Insights jeste maskiran izlaz, a politika na log grupi radi samostalno."
+  },
+  {
+    "obj": "5.3",
+    "q": "Web aplikacija iza Amazon CloudFront distribucije sa originom ALB u eu-central-1 treba HTTPS sa vlastitim domenom. Tim je zatražio ACM certifikat u eu-central-1, ali ga ne može izabrati u CloudFront podešavanjima. Šta treba uraditi?",
+    "options": [
+      "Izvesti certifikat iz eu-central-1 i uvesti ga u CloudFront",
+      "Zatražiti ACM certifikat za isti domen u us-east-1 i koristiti ga na CloudFront distribuciji",
+      "Koristiti AWS Private CA certifikat",
+      "Prebaciti ALB u us-east-1"
+    ],
+    "answer": 1,
+    "explain": "CloudFront koristi samo ACM certifikate iz us-east-1, nezavisno od regiona origina. Javni ACM certifikati za ovu namjenu se ne prenose između regiona, a privatni certifikat ne bi bio povjerljiv u browserima."
+  },
+  {
+    "obj": "5.3",
+    "q": "Kompanija ima 60 naloga u AWS Organizations. Interni mikroservisi trebaju privatne TLS certifikate za mTLS, iz jedne CA kojom upravlja security tim, sa automatskom obnovom. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Pokrenuti vlastitu CA (OpenSSL) na EC2 u security nalogu i distribuirati certifikate kroz S3",
+      "Kreirati AWS Private CA u svakom nalogu",
+      "Kreirati AWS Private CA u security nalogu, podijeliti je kroz AWS RAM sa organizacijom i izdavati certifikate preko ACM-a u aplikacionim nalozima",
+      "Koristiti javne ACM certifikate sa DNS validacijom za interne domene"
+    ],
+    "answer": 2,
+    "explain": "Centralna Private CA podijeljena kroz RAM omogućava da svaki nalog izdaje certifikate preko ACM-a, koji ih automatski obnavlja. CA u svakom nalogu povećava trošak i upravljanje, a vlastita CA na EC2 je najviše napora."
+  },
+  {
+    "obj": "5.3",
+    "q": "Kontejneri na Amazon EKS žive nekoliko sati i trebaju klijentske certifikate. Tim ne želi održavati CRL ili OCSP infrastrukturu, a želi niži trošak CA. Koja dva koraka ispunjavaju zahtjeve? (Izaberi DVA.)",
+    "options": [
+      "Kreirati AWS Private CA u short-lived certificate modu kao posljednju CA u hijerarhiji",
+      "Izdavati certifikate sa važenjem do 7 dana i obnavljati ih automatski u kontejnerima",
+      "Izdavati certifikate kroz ACM iz te CA kako bi se automatski obnavljali",
+      "Uključiti OCSP na root CA",
+      "Koristiti general-purpose CA sa važenjem certifikata od 13 mjeseci"
+    ],
+    "answer": [0, 1],
+    "explain": "Short-lived mode je jeftiniji i izdaje certifikate do 7 dana, pa revokacija nije potrebna. ACM ne može izdavati certifikate iz short-lived CA, a OCSP i dugi certifikati su upravo ono što tim želi izbjeći."
+  },
+  {
+    "obj": "5.3",
+    "type": "order",
+    "q": "Poredaj korake kreiranja KMS ključa sa uvezenim materijalom (BYOK) ispravnim redom.",
+    "options": [
+      "Uvesti šifrovani materijal sa import tokenom i zadati expiration model",
+      "Kreirati KMS ključ bez materijala (origin EXTERNAL)",
+      "Šifrovati vlastiti materijal ključa javnim wrapping ključem",
+      "Preuzeti javni wrapping ključ i import token (GetParametersForImport)",
+      "Napraviti CloudWatch alarm za istek materijala"
+    ],
+    "answer": [1, 3, 2, 0, 4],
+    "explain": "Prvo se kreira ključ bez materijala, zatim se preuzimaju wrapping ključ i token, materijal se lokalno šifruje i uvozi. Alarm za istek ima smisla tek kada materijal sa datumom isteka postoji."
+  },
+  {
+    "obj": "5.3",
+    "type": "order",
+    "q": "Poredaj korake Lambda rotacije tajne u AWS Secrets Manageru.",
+    "options": [
+      "testSecret: provjeri da nova vrijednost radi na bazi",
+      "finishSecret: prebaci labelu AWSCURRENT na novu verziju",
+      "createSecret: generiši novu vrijednost kao AWSPENDING",
+      "setSecret: postavi novu vrijednost u bazi"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Rotacija ide createSecret, setSecret, testSecret, finishSecret. Tek nakon uspješnog testa nova verzija dobija AWSCURRENT, a stara postaje AWSPREVIOUS."
+  },
+  {
+    "obj": "5.3",
+    "type": "match",
+    "q": "Upari zahtjev sa NAJBOLJIM rješenjem.",
+    "options": [
+      "Materijal ključa nikad ne smije biti u AWS-u",
+      "Odmah učiniti ključ neupotrebljivim i kasnije ga vratiti istim materijalom",
+      "Single-tenant HSM, ali uz SSE-KMS integraciju sa AWS servisima",
+      "Dešifrovati isti ciphertext u dva regiona bez poziva prema drugom regionu",
+      "Rola smije koristiti ključ samo kroz Amazon EBS"
+    ],
+    "targets": [
+      "kms:ViaService uslov",
+      "Multi-Region key",
+      "Imported key material",
+      "External key store (XKS)",
+      "CloudHSM key store",
+      "AWS owned key"
+    ],
+    "answer": [3, 2, 4, 1, 0],
+    "explain": "XKS drži materijal van AWS-a; imported material se može obrisati i ponovo uvesti; CloudHSM key store daje single-tenant HSM uz KMS integraciju; multi-Region key dijeli materijal između regiona; kms:ViaService ograničava upotrebu na servis. AWS owned key ovdje ne odgovara ničemu."
+  }
+]

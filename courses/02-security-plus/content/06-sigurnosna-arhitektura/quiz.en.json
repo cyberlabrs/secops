@@ -1,0 +1,145 @@
+[
+  {
+    "obj": "3.1",
+    "q": "A company uses EC2 instances for its application and Amazon RDS for its database. An auditor asks who is responsible for patching the operating system. Which statement is CORRECT?",
+    "options": ["AWS patches the OS on both EC2 and under RDS", "The company patches the OS on EC2, and AWS patches the OS under RDS", "The company patches the OS on both EC2 and under RDS", "Nobody, cloud instances update automatically"],
+    "answer": 1,
+    "explain": "EC2 is IaaS, so the OS is the customer's responsibility. RDS is a managed PaaS service, so the provider maintains the OS and database software. Data and access remain the customer's responsibility in both cases."
+  },
+  {
+    "obj": "3.1",
+    "q": "A team is moving order processing to AWS Lambda functions triggered by SQS messages. What becomes the team's MOST important security focus compared to the earlier VM-based model?",
+    "options": ["Kernel patching", "Physical server protection", "Hypervisor configuration", "The function's IAM permissions, code dependencies, and validation of input events"],
+    "answer": 3,
+    "explain": "With serverless, the provider manages the OS and runtime, so the customer's responsibility narrows to the code, libraries, the function's IAM role, and inputs (event injection). The kernel, hypervisor, and physical security are on the provider."
+  },
+  {
+    "obj": "3.1",
+    "q": "Five regional hospitals want shared cloud infrastructure that meets the same health data regulations and splits the costs, but they don't want to share resources with other industries. Which deployment model fits BEST?",
+    "options": ["Community", "Public", "Hybrid", "A separate private cloud for each hospital"],
+    "answer": 0,
+    "explain": "A community cloud is shared by several organizations with common requirements, with costs split among them. Public is shared with everyone, and a separate private cloud for each hospital doesn't share costs."
+  },
+  {
+    "obj": "3.1",
+    "q": "After an entire cloud region went down, the team rebuilt the complete environment in another region in less than an hour because everything was described in Terraform code. Which technical consideration does IaC MOST improve in this case?",
+    "options": ["Data sovereignty", "Power requirements", "Ease of recovery", "Usability"],
+    "answer": 2,
+    "explain": "IaC enables repeatable, fast re-creation of infrastructure, which directly improves ease of recovery. Data sovereignty is a business/legal question about data location, and power requirements concern power supply."
+  },
+  {
+    "obj": "3.1",
+    "q": "A factory runs a PLC controller with outdated firmware for which the vendor no longer releases patches, and replacing it would halt production for months. What is the BEST approach?",
+    "options": ["Shut down the controller immediately", "Isolate the OT segment from the IT network with a strictly controlled crossing and passive monitoring", "Install a traditional antivirus on the PLC", "Connect the PLC directly to the internet for easier monitoring"],
+    "answer": 1,
+    "explain": "In an OT environment availability is the priority, so unpatchable systems are protected with compensating controls: segmentation and monitoring. Shutting it down stops production, and a PLC generally doesn't support traditional antivirus."
+  },
+  {
+    "obj": "3.1",
+    "q": "The network for managing a critical system is air-gapped. Which attack vector remains MOST likely?",
+    "options": ["Infected removable media (USB) used to transfer updates", "DDoS from the internet", "A phishing email sent directly to the control workstations", "An attack on public DNS"],
+    "answer": 0,
+    "explain": "An air-gapped network has no internet connection, so internet-based vectors are ruled out. Data and updates come in via removable media, which is exactly the path Stuxnet took."
+  },
+  {
+    "obj": "3.1",
+    "q": "A European company is choosing a cloud region for customer data. The legal team requires the data to remain under EU jurisdiction. Which business consideration is key?",
+    "options": ["Scalability", "Cost", "Environmental requirements", "Data sovereignty"],
+    "answer": 3,
+    "explain": "Data sovereignty means data is subject to the laws of the country where it's located, so the region is chosen accordingly. Scalability and cost matter, but they don't address the legal requirement."
+  },
+  {
+    "obj": "3.1",
+    "q": "An application has been split into 40 microservices in Kubernetes that communicate with each other over HTTP. Which control BEST protects traffic between services?",
+    "options": ["A single perimeter firewall in front of the cluster", "A longer password for the Kubernetes dashboard", "mTLS through a service mesh plus NetworkPolicy rules", "An air gap between pods"],
+    "answer": 2,
+    "explain": "Microservices increase east-west traffic that a perimeter firewall doesn't see. mTLS provides encryption and an identity for each service, and NetworkPolicy restricts who may talk to whom."
+  },
+  {
+    "obj": "3.2",
+    "q": "A team wants an IDS to analyze all traffic to the servers in the internal zone, without the risk that an IDS failure interrupts traffic. Where and how is it BEST placed?",
+    "options": ["Passively, on a TAP or SPAN port behind the internal firewall", "Inline in front of the internet router", "On an administrator's laptop", "In the guest Wi-Fi network"],
+    "answer": 0,
+    "explain": "An IDS is a detective control and is placed passively (TAP/SPAN) where it sees the relevant traffic. Inline placement is for an IPS and introduces the risk of interruption, and the guest network doesn't see traffic to internal servers."
+  },
+  {
+    "obj": "3.2",
+    "q": "In a Zero Trust architecture, which component sits between the user and the application and, based on another component's decision, establishes or terminates the connection?",
+    "options": ["Policy engine", "Policy enforcement point (PEP)", "Policy administrator", "Implicit trust zone"],
+    "answer": 1,
+    "explain": "The PEP in the data plane enforces the decision: it allows or blocks. The policy engine makes the decision, and the policy administrator passes it to the PEP; together they form the PDP in the control plane."
+  },
+  {
+    "obj": "3.2",
+    "q": "An organization is implementing Zero Trust. An employee with a correct password and MFA still must not access an internal application if their laptop isn't known or isn't in a proper state. Which TWO device management elements are checked? Choose TWO.",
+    "options": ["Health (patches, active EDR, disk encryption)", "The office's geographic location", "Internet connection speed", "Inventory (the device is enrolled in MDM/inventory)"],
+    "answer": [0, 3],
+    "explain": "Zero Trust checks device health and whether the device is known in the inventory. Connection speed isn't a security signal, and the office's physical location by itself doesn't grant trust in a Zero Trust model."
+  },
+  {
+    "obj": "3.2",
+    "q": "During a DDoS attack, the production network is saturated and administrators can't reach the routers to apply filters. What should have been set up in advance?",
+    "options": ["A split tunnel VPN", "An additional web server", "A screened subnet", "An out-of-band management network with console access"],
+    "answer": 3,
+    "explain": "OOB management uses a separate channel, so it works even when the production network is unavailable. A split tunnel and a screened subnet don't provide an independent path to the devices."
+  },
+  {
+    "obj": "3.2",
+    "q": "Remote employees connect via VPN. The security team wants all of their internet traffic to pass through the corporate web filter and DLP. Which VPN configuration is required?",
+    "options": ["Split tunnel", "Site-to-site", "Full tunnel", "GRE without encryption"],
+    "answer": 2,
+    "explain": "A full tunnel sends all traffic through the VPN, so corporate controls see it. A split tunnel sends internet traffic directly, bypassing the filter. Site-to-site connects networks, not individual users."
+  },
+  {
+    "obj": "3.2",
+    "q": "During a quarterly access review, it's discovered that a DevOps engineer who worked in finance two years ago still has access to the ERP system. What is this problem called, and what BEST prevents it?",
+    "options": ["Privilege escalation; patching the ERP", "Privilege creep; regular access reviews and removing rights when a role changes", "Session hijacking; shorter tokens", "Shadow IT; CASB"],
+    "answer": 1,
+    "explain": "Accumulating rights through job changes is privilege creep. It's addressed with periodic access recertification and a role-change process. Privilege escalation is an attack that exploits a vulnerability, which isn't the case here."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Match each requirement with the solution that meets it BEST.",
+    "options": [
+      "Partners send files over FTP; both credentials and content need to be encrypted",
+      "Remote workers need web filtering, SaaS app control, and access to internal applications without a classic VPN",
+      "A service account is used by five IIS servers, and its password must not be rotated manually",
+      "The legal team communicates with messages that not even the service provider can read",
+      "Administrators need access to switches even when the production network is down"
+    ],
+    "targets": ["Out-of-band management", "Security Service Edge (SSE)", "SFTP", "gMSA", "End-to-end encrypted messaging", "Split tunnel"],
+    "answer": [2, 1, 3, 4, 0],
+    "explain": "SFTP replaces FTP and encrypts everything over SSH. SSE combines SWG, CASB, and ZTNA from the cloud. A gMSA has a password the domain rotates automatically. E2E encryption hides content even from the provider. OOB provides an independent channel to devices. A split tunnel doesn't meet any of the requirements."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Match each described measure or behavior with the architecture principle.",
+    "options": [
+      "An inline IPS lets all traffic through when it fails so the store doesn't stop",
+      "A firewall in front of the card database blocks all traffic when it fails",
+      "The outer and inner firewalls are from different vendors",
+      "Public IP addresses removed from VMs and unused services turned off",
+      "HR and development are on different VLANs on the same switch",
+      "The OT network uses completely separate switches and cables"
+    ],
+    "targets": ["Diversity", "Fail-closed", "Physical segmentation", "Fail-open", "Logical segmentation", "Attack surface reduction"],
+    "answer": [3, 1, 0, 5, 4, 2],
+    "explain": "Passing traffic on failure is fail-open (availability), blocking is fail-closed (confidentiality). Different vendors are diversity. Removing exposure reduces the attack surface. A VLAN is logical segmentation, and separate hardware is physical segmentation."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Order the steps for processing an access request in a Zero Trust architecture (following NIST SP 800-207 logic).",
+    "options": [
+      "The policy administrator tells the PEP to open the session",
+      "A user on a device requests access to an application",
+      "The user accesses the resource through the PEP",
+      "The PEP receives the request and forwards it for a decision",
+      "The policy engine evaluates identity, device state, and policy and makes a decision"
+    ],
+    "answer": [1, 3, 4, 0, 2],
+    "explain": "The request arrives at the PEP, the PEP sends it to the control plane, the policy engine decides, the policy administrator passes the decision to the PEP, and only then does the user access the resource through the PEP."
+  }
+]

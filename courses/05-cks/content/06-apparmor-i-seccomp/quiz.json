@@ -1,0 +1,243 @@
+[
+  {
+    "obj": "3.4",
+    "q": "Na node01 postoji fajl /etc/apparmor.d/deny-write sa linijom profile k8s-deny-write flags=(attach_disconnected) {. Koja komanda učitava profil u kernel u enforce modu?",
+    "options": [
+      "systemctl reload k8s-deny-write",
+      "aa-status --load k8s-deny-write",
+      "apparmor_parser -q /etc/apparmor.d/deny-write",
+      "kubectl apply -f /etc/apparmor.d/deny-write"
+    ],
+    "answer": 2,
+    "explain": "apparmor_parser čita fajl i učitava profil u kernel (bez -C je enforce). aa-status samo prikazuje stanje, profil nije systemd servis, a Kubernetes ne učitava AppArmor profile."
+  },
+  {
+    "obj": "3.4",
+    "q": "Profil iz fajla /etc/apparmor.d/deny-write (linija: profile k8s-deny-write ...) je učitan na node01. Koji securityContext kontejnera ga ispravno primjenjuje?",
+    "options": [
+      "appArmorProfile: {type: Localhost, localhostProfile: deny-write}",
+      "appArmorProfile: {type: Localhost, localhostProfile: /etc/apparmor.d/deny-write}",
+      "appArmorProfile: {type: Localhost, localhostProfile: k8s-deny-write}",
+      "appArmorProfile: {type: RuntimeDefault, localhostProfile: k8s-deny-write}"
+    ],
+    "answer": 2,
+    "explain": "localhostProfile je ime profila iz fajla (poslije riječi profile), ne ime ni putanja fajla. localhostProfile se navodi samo i obavezno uz type: Localhost."
+  },
+  {
+    "obj": "3.4",
+    "q": "Pod sa appArmorProfile type: Localhost, localhostProfile: k8s-deny-write ostaje Pending, a kubectl describe pokazuje: Error: failed to get container spec opts: failed to generate apparmor spec opts: apparmor profile not found. Profil si učitao na controlplane. Šta je uzrok?",
+    "options": [
+      "Profil je u complain modu",
+      "Pod je zakazan na node01, a profil je učitan samo na controlplane",
+      "Nedostaje anotacija container.apparmor.security.beta.kubernetes.io",
+      "AppArmor ne radi sa busybox slikom"
+    ],
+    "answer": 1,
+    "explain": "Profil mora biti učitan u kernel čvora na kome kontejner radi; scheduler ne zna gdje su profili. Complain mod bi i dalje bio pronađen, a anotacije su zastarjele i polje ih zamjenjuje."
+  },
+  {
+    "obj": "3.4",
+    "q": "Profil k8s-deny-write je učitan samo na node01. Zadatak: Deployment web mora koristiti taj profil i svi Podovi moraju raditi. Šta je ispravno rješenje uz najmanje izmjena na čvorovima?",
+    "options": [
+      "Dodati appArmorProfile u spec Deploymenta i oznaku na controlplane",
+      "Dodati appArmorProfile i nodeName: node01 u metadata Deploymenta",
+      "Promijeniti type u RuntimeDefault da radi na svim čvorovima",
+      "Označiti node01 (npr. apparmor=deny-write) i u spec.template.spec dodati nodeSelector sa tom oznakom i appArmorProfile u securityContext kontejnera"
+    ],
+    "answer": 3,
+    "explain": "Polja Podova u Deploymentu idu u spec.template.spec, a nodeSelector vodi Podove samo na čvor sa učitanim profilom. RuntimeDefault ne primjenjuje traženi profil, a polja u metadata se ignorišu."
+  },
+  {
+    "obj": "3.4",
+    "q": "Kako najbrže dokazati da kontejner writer u Podu secure stvarno radi pod AppArmor profilom k8s-deny-write u enforce modu?",
+    "options": [
+      "kubectl exec secure -c writer -- cat /proc/1/attr/current",
+      "kubectl get pod secure -o yaml | grep apparmor",
+      "kubectl exec secure -c writer -- grep Seccomp /proc/1/status",
+      "aa-status na controlplane"
+    ],
+    "answer": 0,
+    "explain": "/proc/1/attr/current u kontejneru ispisuje aktivni profil i mod, npr. k8s-deny-write (enforce). YAML pokazuje samo šta je traženo, Seccomp polje se odnosi na seccomp, a aa-status na controlplane ne vidi procese na node01."
+  },
+  {
+    "obj": "3.4",
+    "q": "Izmijenio si /etc/apparmor.d/deny-write na node01 (dodao novo deny pravilo), ali postojeći kontejneri se ponašaju kao ranije. Šta nedostaje?",
+    "options": [
+      "systemctl restart kubelet",
+      "apparmor_parser -r /etc/apparmor.d/deny-write da se profil ponovo učita u kernel",
+      "kubectl rollout restart da kubelet pročita fajl",
+      "aa-complain /etc/apparmor.d/deny-write"
+    ],
+    "answer": 1,
+    "explain": "Kernel koristi učitanu verziju profila; fajl se ne čita sam od sebe. -r zamjenjuje učitan profil novom verzijom. Restart kubeleta ne dira AppArmor, a aa-complain bi isključio blokiranje."
+  },
+  {
+    "obj": "3.4",
+    "q": "Na node01 postoji fajl /var/lib/kubelet/seccomp/profiles/audit.json. Koji seccompProfile ga ispravno referencira?",
+    "options": [
+      "type: Localhost, localhostProfile: /var/lib/kubelet/seccomp/profiles/audit.json",
+      "type: RuntimeDefault, localhostProfile: profiles/audit.json",
+      "type: Localhost, localhostProfile: profiles/audit.json",
+      "type: Localhost, localhostProfile: audit"
+    ],
+    "answer": 2,
+    "explain": "localhostProfile je putanja relativna u odnosu na kubeletov seccomp folder /var/lib/kubelet/seccomp/, uključujući podfolder i ekstenziju. RuntimeDefault ne prima localhostProfile."
+  },
+  {
+    "obj": "3.4",
+    "q": "Primijenio si Pod sa seccomp profilom koji sadrži samo {\"defaultAction\": \"SCMP_ACT_ERRNO\"}. Šta će se desiti?",
+    "options": [
+      "Pod radi normalno, jer ERRNO samo loguje pozive",
+      "Pod ostaje Pending dok scheduler ne nađe čvor sa profilom",
+      "kubectl apply odbija Pod zbog neispravnog JSON-a",
+      "Svi syscall-ovi su odbijeni pa proces ne može da radi; kontejner pada (npr. CrashLoopBackOff)"
+    ],
+    "answer": 3,
+    "explain": "Bez liste dozvoljenih syscall-ova, ERRNO se vraća za svaki poziv, pa aplikacija ne može ni da se pokrene. Samo logovanje radi SCMP_ACT_LOG, a API server ne čita sadržaj profila na čvoru."
+  },
+  {
+    "obj": "3.4",
+    "q": "Želiš da saznaš koje syscall-ove aplikacija koristi, bez rizika da je blokiraš. Koji defaultAction staviš u privremeni profil?",
+    "options": [
+      "SCMP_ACT_LOG",
+      "SCMP_ACT_ERRNO",
+      "SCMP_ACT_KILL_PROCESS",
+      "SCMP_ACT_TRAP"
+    ],
+    "answer": 0,
+    "explain": "SCMP_ACT_LOG dozvoljava poziv i zapisuje ga u kernel/audit log, pa iz loga praviš allowlist. ERRNO, KILL_PROCESS i TRAP blokiraju ili prekidaju proces."
+  },
+  {
+    "obj": "3.4",
+    "q": "Šta treba dodati u ovaj profil da bi aplikacija mogla sve osim mount i ptrace? {\"defaultAction\": \"SCMP_ACT_ALLOW\", \"syscalls\": [{\"names\": [\"mount\", \"ptrace\"], \"action\": ???}]}",
+    "options": [
+      "\"SCMP_ACT_ALLOW\"",
+      "\"SCMP_ACT_ERRNO\"",
+      "\"SCMP_ACT_LOG\"",
+      "\"RuntimeDefault\""
+    ],
+    "answer": 1,
+    "explain": "Ovo je denylist: podrazumijevano dozvoli, a navedene pozive odbij sa SCMP_ACT_ERRNO. LOG bi ih samo zabilježio, a RuntimeDefault je tip profila u Podu, ne akcija u JSON-u."
+  },
+  {
+    "obj": "3.4",
+    "q": "Zadatak: svi novi kontejneri na node01 koji nemaju seccompProfile treba da koriste RuntimeDefault. Šta radiš?",
+    "options": [
+      "Dodaš seccompDefault: true u /var/lib/kubelet/config.yaml na node01 i restartuješ kubelet",
+      "Dodaš --seccomp-default=true u manifest kube-apiservera",
+      "Kopiraš RuntimeDefault.json u /var/lib/kubelet/seccomp/",
+      "Uključiš admission plugin SeccompDefault"
+    ],
+    "answer": 0,
+    "explain": "seccompDefault je podešavanje kubeleta (polje u KubeletConfiguration ili flag --seccomp-default) po čvoru. API server nema taj flag, RuntimeDefault dolazi od runtimea, a takav admission plugin ne postoji."
+  },
+  {
+    "obj": "3.4",
+    "q": "U kontejneru pokreneš grep Seccomp /proc/1/status i dobiješ Seccomp: 0, iako je u Podu postavljen seccompProfile type: RuntimeDefault. Koji je najvjerovatniji razlog?",
+    "options": [
+      "RuntimeDefault ne postoji u containerd-u",
+      "Polje se mora pisati u anotaciji",
+      "Kontejner ima securityContext.privileged: true, pa radi bez seccompa",
+      "Vrijednost 0 znači da je filter aktivan"
+    ],
+    "answer": 2,
+    "explain": "Privilegovani kontejneri uvijek rade kao Unconfined bez obzira na seccompProfile. Vrijednost 2 znači da je filter aktivan, 0 da nije; containerd podržava RuntimeDefault, a anotacije su zastarjele."
+  },
+  {
+    "obj": "3.4",
+    "q": "Upari mehanizam sa onim što ograničava.",
+    "type": "match",
+    "options": [
+      "seccomp",
+      "AppArmor",
+      "Linux capabilities",
+      "NetworkPolicy"
+    ],
+    "targets": [
+      "Saobraćaj između Podova na L3/L4",
+      "Pristup fajlovima i resursima po putanjama, preko profila učitanog u kernel",
+      "Koje sistemske pozive proces smije izvršiti",
+      "Privilegije koje root inače ima, npr. NET_ADMIN ili SYS_ADMIN",
+      "Koje slike smiju biti pokrenute u klasteru"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "seccomp filtrira syscall-ove, AppArmor kontroliše pristup resursima po putanjama, capabilities dijele root privilegije na dijelove, a NetworkPolicy filtrira mrežni saobraćaj Podova. Kontrola slika je posao admission kontrole."
+  },
+  {
+    "obj": "3.4",
+    "q": "Poredaj korake za primjenu datog AppArmor profila na novi Pod koji mora raditi na node01.",
+    "type": "order",
+    "options": [
+      "kubectl exec <pod> -- cat /proc/1/attr/current i test zabranjene akcije",
+      "ssh node01 i apparmor_parser -q /etc/apparmor.d/<fajl>",
+      "Napiši Pod sa nodeName: node01 i securityContext.appArmorProfile (Localhost, ime profila) pa kubectl apply",
+      "aa-status | grep <ime-profila> da potvrdiš enforce mod",
+      "grep profile /etc/apparmor.d/<fajl> da saznaš ime profila"
+    ],
+    "answer": [
+      4,
+      1,
+      3,
+      2,
+      0
+    ],
+    "explain": "Prvo iz fajla saznaj ime profila, pa ga učitaj na node01 i potvrdi enforce mod. Tek onda kreiraš Pod na tom čvoru sa tim imenom u localhostProfile i provjeravaš u kontejneru da profil radi."
+  },
+  {
+    "obj": "3.4",
+    "q": "Treba ti lista syscall-ova koje koristi proces kontejnera app na node01. Koji niz komandi na čvoru to daje?",
+    "options": [
+      "kubectl logs app | grep syscall",
+      "aa-status | grep app",
+      "crictl inspect <id> | grep seccomp, pa cat profila",
+      "crictl ps --name app i crictl inspect <id> za PID, pa strace -f -c -p <pid>"
+    ],
+    "answer": 3,
+    "explain": "crictl daje ID i PID procesa na hostu, a strace -c broji syscall-ove koje proces poziva. Logovi aplikacije ne sadrže syscall-ove, aa-status pokazuje AppArmor, a crictl inspect pokazuje samo već primijenjeni profil."
+  },
+  {
+    "obj": "3.4",
+    "q": "Namespace prod ima oznaku pod-security.kubernetes.io/enforce=restricted. Pod bez seccompProfile je odbijen. Koje DVIJE izmjene zadovoljavaju zahtjev za seccomp? (Izaberi DVA.)",
+    "options": [
+      "seccompProfile: {type: Unconfined}",
+      "seccompProfile: {type: RuntimeDefault}",
+      "appArmorProfile: {type: RuntimeDefault} umjesto seccompa",
+      "seccompProfile: {type: Localhost, localhostProfile: profiles/app.json}",
+      "capabilities: {drop: [ALL]} umjesto seccompa"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "Nivo restricted zahtijeva da seccompProfile bude RuntimeDefault ili Localhost. Unconfined je zabranjen, a AppArmor i capabilities ne zamjenjuju seccomp (drop ALL je poseban zahtjev restricted nivoa)."
+  },
+  {
+    "obj": "3.4",
+    "q": "Pod sa seccompProfile type: Localhost, localhostProfile: profiles/strict.json ne startuje na node01 (greška pri kreiranju kontejnera). Fajl postoji na controlplane u /var/lib/kubelet/seccomp/profiles/. Šta je rješenje?",
+    "options": [
+      "Kopirati strict.json u /var/lib/kubelet/seccomp/profiles/ na node01 (ili vezati Pod za controlplane) i ponovo kreirati Pod",
+      "Učitati profil sa apparmor_parser -q na node01",
+      "Promijeniti localhostProfile u apsolutnu putanju na controlplane",
+      "Restartovati kube-apiserver da distribuira profil"
+    ],
+    "answer": 0,
+    "explain": "Seccomp profil čita kubelet/runtime sa lokalnog diska čvora gdje kontejner radi, pa fajl mora biti na node01. apparmor_parser je za AppArmor, a Kubernetes ne distribuira profile niti prihvata apsolutne putanje."
+  },
+  {
+    "obj": "3.4",
+    "q": "Želiš alat sa strace-om pored kontejnera app u Podu web, u istom PID namespaceu, bez SSH-a na čvor. Koja komanda je ispravna?",
+    "options": [
+      "kubectl exec -it web -c app -- strace",
+      "kubectl debug -it web --image=<slika-sa-strace> --target=app --profile=sysadmin",
+      "kubectl debug node/web -it --image=busybox:1.36",
+      "kubectl run debug --image=<slika-sa-strace> --overrides='{\"spec\":{\"hostPID\":false}}'"
+    ],
+    "answer": 1,
+    "explain": "kubectl debug dodaje ephemeral kontejner; --target ga stavlja u PID namespace kontejnera app, a profil sysadmin daje privilegije potrebne za praćenje procesa. exec zahtijeva da strace već postoji u slici, node/ očekuje ime čvora, a novi Pod bez hostPID ne vidi procese drugog Poda."
+  }
+]

@@ -1,0 +1,283 @@
+[
+  {
+    "obj": "1.1",
+    "q": "An insurance company uses a SaaS CRM in which it holds clients' personal data. The contract says the provider manages the application, infrastructure and backup. After a data leak caused by misconfigured report sharing, who bears ULTIMATE accountability to the clients and the regulator?",
+    "options": [
+      "The SaaS provider, because it manages the application in which the leak occurred.",
+      "The cloud auditor that issued the SOC 2 report without remarks on that control.",
+      "The insurance company as the cloud service customer and owner (controller) of the data.",
+      "Accountability is split in half, as defined by the shared responsibility model."
+    ],
+    "answer": 2,
+    "explain": "Execution of tasks can be transferred to the provider, but accountability for the data remains with the customer (data owner/controller). In addition, sharing configuration in SaaS is operationally on the customer's side as well. Shared responsibility divides tasks, not ultimate accountability."
+  },
+  {
+    "obj": "1.1",
+    "q": "A company contracts an intermediary that, for each new workload, automatically chooses among three IaaS providers the one with the lowest price at that moment and moves the workload accordingly. Which broker role does this BEST describe?",
+    "options": [
+      "Service arbitrage",
+      "Service aggregation",
+      "Service intermediation",
+      "Cloud carrier"
+    ],
+    "answer": 0,
+    "explain": "Arbitrage is aggregation with dynamic provider selection (e.g., by price or performance). Aggregation combines services but without dynamic selection, intermediation enhances a single service, and a carrier is a network operator, not a broker."
+  },
+  {
+    "obj": "1.1",
+    "q": "The legal department asks why it cannot get the exact address of the data center where the company's data resides at a public provider, only the region name. Which essential cloud characteristic BEST explains this?",
+    "options": [
+      "Broad network access",
+      "Measured service",
+      "On-demand self-service",
+      "Resource pooling"
+    ],
+    "answer": 3,
+    "explain": "Resource pooling includes location independence: the customer generally has no control over or knowledge of the exact location of resources, except at a higher level of abstraction (region, country). That is why jurisdiction is addressed through region selection and the contract."
+  },
+  {
+    "obj": "1.1",
+    "q": "Development teams provision resources at a public provider themselves using a credit card, without IT's knowledge. Which cloud characteristic contributes MOST to this risk, and what is management's BEST first response?",
+    "options": [
+      "Rapid elasticity; limit auto-scaling groups.",
+      "On-demand self-service; establish cloud governance (policies, approved accounts and guardrails).",
+      "Multi-tenancy; require dedicated hosts for all workloads.",
+      "Broad network access; block access to the provider's console at the proxy."
+    ],
+    "answer": 1,
+    "explain": "Shadow IT is a direct consequence of on-demand self-service. The best answer is a management one: governance with policies, central accounts and guardrails, rather than a technical block that only drives users to work around it."
+  },
+  {
+    "obj": "1.1",
+    "q": "During a DDoS attack the application stayed available because it automatically added instances, but the monthly bill grew tenfold. Which combination of characteristics is involved?",
+    "options": [
+      "Resource pooling and multi-tenancy",
+      "Rapid elasticity and measured service",
+      "Broad network access and on-demand self-service",
+      "Multi-tenancy and measured service"
+    ],
+    "answer": 1,
+    "explain": "Elasticity maintained availability, and measured service (pay-per-use) billed for the resources consumed. This is an example of an attack on cost (economic denial of sustainability / denial of wallet); it is mitigated with scaling limits, budget alarms and DDoS protection at the edge."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which statement BEST distinguishes elasticity from scalability?",
+    "options": [
+      "Scalability applies only to storage, and elasticity only to compute.",
+      "Elasticity requires manual approval by the provider, scalability does not.",
+      "Scalability means only horizontally adding nodes, elasticity only vertically.",
+      "Elasticity is the automatic increase and decrease of resources according to demand, while scalability is a system's ability to grow."
+    ],
+    "answer": 3,
+    "explain": "Scalability (vertical or horizontal) describes the ability to grow. Elasticity adds automatic adjustment in both directions, so the customer pays only for what it is currently consuming."
+  },
+  {
+    "obj": "1.1",
+    "q": "A security architect must choose one control with the GREATEST impact on reducing risk for the entire cloud environment. What should be prioritized?",
+    "options": [
+      "Protecting the management plane: MFA, least privilege and logging of all administrative API calls.",
+      "Antivirus on all virtual machines.",
+      "Encrypting all EBS volumes with the provider's default key.",
+      "An annual penetration test of the web application."
+    ],
+    "answer": 0,
+    "explain": "The management plane (console and API) controls all resources; a compromised administrator credential means a compromised entire environment. The other controls are useful but cover a narrower part of the risk."
+  },
+  {
+    "obj": "1.1",
+    "q": "In the NIST SP 500-292 reference architecture, which role is responsible for connectivity and transport of cloud services from providers to consumers?",
+    "options": [
+      "Cloud broker",
+      "Cloud auditor",
+      "Cloud carrier",
+      "Cloud service partner"
+    ],
+    "answer": 2,
+    "explain": "The cloud carrier is the intermediary that provides network connectivity and transport (e.g., a telecom operator). The broker manages services and relationships, the auditor assesses, and cloud service partner is the ISO/IEC 17789 term for supporting roles."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which building block technology separates the control plane from the data plane and enables centralized, programmable network management in the cloud, while also creating a high-value target for an attacker?",
+    "options": [
+      "Type 2 hypervisor",
+      "Software-Defined Networking (SDN) controller",
+      "Content Delivery Network",
+      "Object storage"
+    ],
+    "answer": 1,
+    "explain": "SDN separates decision-making (control plane) from forwarding (data plane) and centralizes management. A compromised SDN controller can redirect or open traffic for the entire network, so it requires special protection."
+  },
+  {
+    "obj": "1.1",
+    "q": "A public cloud provider uses a hypervisor that runs directly on the hardware. What is the MOST serious threat specific to that layer in a multi-tenant environment?",
+    "options": [
+      "Phishing of the customer's administrators",
+      "SQL injection in a tenant's application",
+      "Loss of a tenant's encryption key",
+      "VM escape, in which an attacker in one guest machine gains access to the hypervisor and other tenants"
+    ],
+    "answer": 3,
+    "explain": "VM escape breaks the isolation that is the foundation of multi-tenancy. The other threats are real, but they are not specific to the hypervisor and do not endanger other tenants in the same way."
+  },
+  {
+    "obj": "1.2",
+    "q": "A company moves an internal application to a PaaS platform. Which activity REMAINS the company's responsibility?",
+    "options": [
+      "Patching the operating system under the runtime",
+      "Physical protection of the servers",
+      "Security of its own application code and control of access to data",
+      "Maintaining the hypervisor"
+    ],
+    "answer": 2,
+    "explain": "In PaaS the provider manages the infrastructure, OS and runtime. The customer remains responsible for the code it deploys, the application configuration, data and IAM."
+  },
+  {
+    "obj": "1.2",
+    "q": "A hospital keeps electronic patient records in its own data center because of regulation, and sends anonymized data for analytics to the public cloud over a private connection. Which deployment model does this describe?",
+    "options": [
+      "Hybrid cloud",
+      "Community cloud",
+      "Multi-cloud",
+      "Private cloud"
+    ],
+    "answer": 0,
+    "explain": "Hybrid combines two or more distinct deployment models (here private and public) connected so that data and applications can be moved. Multi-cloud would mean multiple public providers."
+  },
+  {
+    "obj": "1.2",
+    "q": "Five regional banks jointly fund and use cloud infrastructure for an interbank payment system, with the same regulatory requirements. What is MOST important to define clearly before launch?",
+    "options": [
+      "The contractual responsibilities of community members for governance, costs, incidents and a member's exit",
+      "The number of virtual machines per bank",
+      "Which hypervisor will be used",
+      "The color and look of the user portal"
+    ],
+    "answer": 0,
+    "explain": "With a community cloud the greatest risk is an unclear division of governance and responsibility among members. Governance, cost sharing, incident response and reversibility for a departing member must be contracted."
+  },
+  {
+    "obj": "1.2",
+    "q": "Before signing a contract with a SaaS provider, the risk manager requests a clause guaranteeing export of all data in an open format and written confirmation of deletion within 30 days after termination. Which shared consideration does this address?",
+    "options": [
+      "Interoperability",
+      "Portability",
+      "Reversibility",
+      "Auditability"
+    ],
+    "answer": 2,
+    "explain": "Reversibility covers exiting the service: returning the data and its deletion at the provider within the agreed period. Portability relates to moving to another provider, interoperability to systems working together."
+  },
+  {
+    "obj": "1.2",
+    "q": "An organization wants a SIEM running at one provider to directly receive logs and events from another provider's services through standard APIs. Which concept is MOST relevant?",
+    "options": [
+      "Reversibility",
+      "Interoperability",
+      "Resiliency",
+      "Outsourcing"
+    ],
+    "answer": 1,
+    "explain": "Interoperability is the ability of systems to work together and exchange information. There is no moving of systems (portability) and no exiting the service (reversibility)."
+  },
+  {
+    "obj": "1.2",
+    "q": "The provider's SLA guarantees 99.9% availability, while the business requirement for a critical application is 99.99%. What is the security architect's BEST approach?",
+    "options": [
+      "Negotiate larger service credits for availability outages.",
+      "Accept the SLA because the difference is negligible.",
+      "Transfer the risk to the provider through an indemnification clause.",
+      "Design an architecture with redundancy across multiple zones or regions and include it in the BC/DR plan."
+    ],
+    "answer": 3,
+    "explain": "A contract cannot raise actual availability; service credits rarely cover business losses. A requirement above the SLA is met through architecture (redundancy, failover) and BC/DR planning, for which the customer is responsible."
+  },
+  {
+    "obj": "1.2",
+    "q": "A research institute processes genetic data in the public cloud and requires the data to be protected even from the provider's administrators while computations are performed on it. Which technology BEST meets the requirement?",
+    "options": [
+      "Volume encryption using KMS",
+      "TLS 1.3 between clients and services",
+      "Confidential computing with a Trusted Execution Environment",
+      "Tokenization of patient identifiers"
+    ],
+    "answer": 2,
+    "explain": "Confidential computing protects data in use inside a hardware-isolated TEE (e.g., AMD SEV-SNP, Intel TDX, Nitro Enclaves). Encryption at rest and TLS do not protect data while it is decrypted in memory during processing."
+  },
+  {
+    "obj": "1.2",
+    "q": "The government warns that adversaries are already recording encrypted traffic in order to decrypt it once quantum computers become powerful enough. What is the BEST FIRST step for an organization with long-term confidential data in the cloud?",
+    "options": [
+      "Immediately replace AES-256 with AES-128 for performance.",
+      "Build a cryptographic inventory and plan crypto-agility and the transition to post-quantum algorithms.",
+      "Turn off TLS and switch to private links.",
+      "Wait for the provider to solve the problem automatically."
+    ],
+    "answer": 1,
+    "explain": "Harvest now, decrypt later targets asymmetric cryptography (RSA/ECC). The first step is to know where cryptography is used (an inventory), then plan crypto-agility and PQC (FIPS 203/204/205). AES-256 remains strong enough, and downgrading to AES-128 would make things worse."
+  },
+  {
+    "obj": "1.2",
+    "q": "A company uses both AWS and Azure for different applications, without any private data center. Which of the following MOST accurately describes its model?",
+    "options": [
+      "Hybrid cloud, because it uses two environments",
+      "Community cloud, because it shares infrastructure with other companies",
+      "Private cloud, because it has dedicated accounts",
+      "Multi-cloud, because it uses multiple public providers"
+    ],
+    "answer": 3,
+    "explain": "Multi-cloud means using multiple providers. Hybrid requires a combination of different deployment types (e.g., private + public), which does not exist here."
+  },
+  {
+    "obj": "1.2",
+    "q": "Which statement about blockchain in the context of cloud security and privacy is MOST accurate?",
+    "options": [
+      "The immutability of records provides strong integrity and nonrepudiation, but makes it harder to honor the right to erasure of personal data.",
+      "Blockchain automatically encrypts all records, so there is no personal data on it.",
+      "Blockchain eliminates the need for key management.",
+      "Blockchain is a centralized database controlled by the CSP."
+    ],
+    "answer": 0,
+    "explain": "The append-only nature of blockchain provides integrity and nonrepudiation, but conflicts with the GDPR right to erasure; personal data is therefore not written directly to the chain. Private keys are critical and must be protected."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match the description with the role according to the ISO/IEC 17789 / NIST reference architecture.",
+    "options": [
+      "Independently assesses the provider's controls and issues a compliance report.",
+      "Combines services from multiple providers into one and negotiates terms on the customer's behalf.",
+      "Uses cloud services under a contract and is accountable for its own data.",
+      "Develops components and integrations for cloud services.",
+      "Sets legal requirements and imposes penalties for non-compliance."
+    ],
+    "targets": [
+      "Cloud service customer",
+      "Cloud service provider",
+      "Cloud auditor",
+      "Cloud service broker",
+      "Cloud service developer",
+      "Regulator"
+    ],
+    "answer": [2, 3, 0, 4, 5],
+    "explain": "The auditor assesses, the broker aggregates and intermediates, the customer uses the service and remains accountable for the data, the developer (a partner sub-role) develops, and the regulator sets legal requirements. The provider is a distractor: it makes services available."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Match the requirement with the service category that BEST meets it.",
+    "options": [
+      "The team wants full control over the OS and to install a special kernel-level agent.",
+      "Developers want to just deploy code, without worrying about the OS and runtime.",
+      "The HR department wants a ready-made payroll system without any development.",
+      "Analysts want a managed relational database without administering database servers."
+    ],
+    "targets": [
+      "SaaS",
+      "PaaS",
+      "IaaS",
+      "DBaaS"
+    ],
+    "answer": [2, 1, 0, 3],
+    "explain": "Control over the OS calls for IaaS, deploying code without managing the OS is PaaS, a ready-made application is SaaS, and a managed database is DBaaS (a subtype of platform services)."
+  }
+]

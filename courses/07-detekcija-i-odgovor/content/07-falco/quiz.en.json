@@ -1,0 +1,241 @@
+[
+  {
+    "obj": "4.1",
+    "q": "You wrote a new Falco rule in /root/falco/kurs_rules.yaml that uses the open_write macro. You run falco -V /root/falco/kurs_rules.yaml and get an error that the macro is not defined. What is correct?",
+    "options": [
+      "Remove the macro and rewrite the condition by hand, because Falco does not support macros in local files",
+      "Validate together with the official file, loading it first: falco -V /etc/falco/falco_rules.yaml -V /root/falco/kurs_rules.yaml",
+      "Add override: condition: append to the rule",
+      "Run Falco in replay mode, because -V does not understand macros"
+    ],
+    "answer": 1,
+    "explain": "The open_write macro is defined in falco_rules.yaml. A file that uses it must be loaded after the file that defines it, both during validation and at runtime. Macros work in all files; override does not fix an undefined macro."
+  },
+  {
+    "obj": "4.1",
+    "q": "The lab has no eBPF privileges, and you need to check whether the \"Read sensitive file untrusted\" rule catches the events in the read-sensitive-file-untrusted.scap capture. Which command does that?",
+    "options": [
+      "falco -o engine.kind=modern_ebpf -r /etc/falco/falco_rules.yaml < /opt/kurs/falco-traces/read-sensitive-file-untrusted.scap",
+      "falco -V /opt/kurs/falco-traces/read-sensitive-file-untrusted.scap",
+      "falco -o engine.kind=replay -o engine.replay.capture_file=/opt/kurs/falco-traces/read-sensitive-file-untrusted.scap -r /etc/falco/falco_rules.yaml",
+      "falco -l \"Read sensitive file untrusted\" /opt/kurs/falco-traces/read-sensitive-file-untrusted.scap"
+    ],
+    "answer": 2,
+    "explain": "The replay engine reads a .scap capture instead of the live kernel; the file is specified with the engine.replay.capture_file key. -V validates rules files, -l only describes a rule, and modern_ebpf does not read a capture from stdin."
+  },
+  {
+    "obj": "4.1",
+    "q": "The team wants to add the internal tool kurs-healthcheck to the user_known_shell_spawn_binaries list from the official rules, so that the next rules update does not overwrite the change. What is correct?",
+    "options": [
+      "In /etc/falco/rules.d/ add a list with the same name, items: [kurs-healthcheck] and override: items: append",
+      "Edit the list directly in /etc/falco/falco_rules.yaml",
+      "Add the list with append: true in falco_rules.yaml",
+      "Disable the Run shell untrusted rule in falco.yaml"
+    ],
+    "answer": 0,
+    "explain": "The official file is not modified because an update overwrites it. A local file, loaded later, adds items via override with items: append. append: true is deprecated, and disabling the rule also removes the detection."
+  },
+  {
+    "obj": "4.1",
+    "q": "A rule has an exception with fields: [proc.name, fd.name], comps: [=, =] and values: [[useradd, /etc/passwd], [chpasswd, /etc/shadow]]. What does Falco add to the condition?",
+    "options": [
+      "and (proc.name in (useradd, chpasswd) or fd.name in (/etc/passwd, /etc/shadow))",
+      "and not proc.name in (useradd, chpasswd) and not fd.name in (/etc/passwd, /etc/shadow)",
+      "or (proc.name=useradd and fd.name=/etc/passwd)",
+      "and not ((proc.name=useradd and fd.name=/etc/passwd) or (proc.name=chpasswd and fd.name=/etc/shadow))"
+    ],
+    "answer": 3,
+    "explain": "Each tuple becomes an and-expression over all fields, the tuples are joined with or, and the whole goes into a single not (...). The variant with two separate not in clauses would exclude every useradd regardless of the file, which is a wider hole than intended."
+  },
+  {
+    "obj": "4.1",
+    "q": "The \"Run shell untrusted\" rule is noisy because of the /opt/backup/bin/agent process, which legitimately runs sh. Which exception is hardest for an attacker to abuse?",
+    "options": [
+      "proc.pname = agent",
+      "proc.pname = agent and proc.aname[2] = systemd",
+      "An exception on the parent's executable path and the command, e.g. proc.pexepath = /opt/backup/bin/agent and proc.cmdline startswith \"sh -c /opt/backup/\"",
+      "Lower the rule's priority to DEBUG"
+    ],
+    "answer": 2,
+    "explain": "An attacker can easily choose the process name. The parent's executable path together with the expected command narrows the exception to the actual job. Lowering the priority does not reduce noise, it also hides real attacks."
+  },
+  {
+    "obj": "4.1",
+    "q": "When loading your custom rule, Falco warns that the rule is not restricted to event types. The condition is proc.name = nc and fd.sport = 4444. Why is that a problem and how do you fix it?",
+    "options": [
+      "The rule is evaluated for every syscall, which wastes CPU; add evt.type (e.g. evt.type in (connect, accept, accept4)) or a macro that contains it",
+      "The warning is cosmetic; suppress it with -o priority=error",
+      "fd.sport is not an allowed field in a condition, only in the output",
+      "Rules without evt.type cannot have tags"
+    ],
+    "answer": 0,
+    "explain": "Falco indexes rules by event type. Without evt.type, the rule is evaluated for all events and slows down the engine. Restrict it to the relevant syscalls; warn_evttypes exists precisely to warn about this."
+  },
+  {
+    "obj": "4.1",
+    "q": "Alerts need to go to Wazuh. Falco runs on the same host as the Wazuh manager. What is the simplest correct combination?",
+    "options": [
+      "program_output with the program /var/ossec/bin/wazuh-logtest",
+      "http_output to port 1514 of the Wazuh manager",
+      "syslog_output and a Wazuh rule over /var/log/auth.log",
+      "json_output: true and file_output to /var/log/falco-events.json, and in ossec.conf a localfile with log_format json for that file"
+    ],
+    "answer": 3,
+    "explain": "Wazuh reads the JSON file through localfile, and the JSON decoder unpacks the fields by itself (rule, priority, output_fields). wazuh-logtest is a testing tool, not an ingestion path, and port 1514 is for agents, not HTTP."
+  },
+  {
+    "obj": "4.1",
+    "q": "You want to disable all rules tagged maturity_incubating without touching any rules file. Where do you do that?",
+    "options": [
+      "In falco.yaml, the rules key with - disable: tag: maturity_incubating",
+      "In falco_rules.yaml, by deleting those rules",
+      "With the -p maturity_incubating flag",
+      "In the rule output, by adding %tags"
+    ],
+    "answer": 0,
+    "explain": "The rules configuration key in falco.yaml disables and enables rules by name (with wildcards) or tag, after all files and overrides have been loaded. -p is a deprecated flag for extra output, not for filtering."
+  },
+  {
+    "obj": "4.1",
+    "q": "Replaying a capture recorded three days ago produces an alert. What time is in the time field of the JSON alert?",
+    "options": [
+      "The time the replay was started",
+      "The time Falco wrote the alert to the file",
+      "The time of the event recorded in the capture",
+      "The time the .scap file was created on disk"
+    ],
+    "answer": 2,
+    "explain": "Falco takes the event timestamp from the capture. That is why replaying an old capture gives an accurate timeline for the investigation, not the time of the analysis."
+  },
+  {
+    "obj": "4.1",
+    "q": "A new rule produces no alerts on the write-etc.scap capture, even though you know the capture contains a write to /etc. What is the best next step?",
+    "options": [
+      "Raise the rule's priority to CRITICAL",
+      "Use a temporary rule that prints every evt.type in (open, openat, openat2) with evt.is_open_write=true to see which process and path are actually in the capture",
+      "Switch rule_matching to all",
+      "Remove falco_rules.yaml from -r so it doesn't get in the way"
+    ],
+    "answer": 1,
+    "explain": "A broad debug rule shows what the capture really contains (process name, temporary file, rename), so you can see which part of the condition fails. Priority does not affect matching, and without falco_rules.yaml the macros the rule uses disappear."
+  },
+  {
+    "obj": "4.1",
+    "q": "Two rules match the same event, but you only see an alert for the first one. What is the reason?",
+    "options": [
+      "Falco deduplicates alerts per process",
+      "The second rule has a lower priority",
+      "The second rule has no tags",
+      "The default rule_matching: first stops evaluation at the first matching rule"
+    ],
+    "answer": 3,
+    "explain": "With rule_matching: first, Falco reports the first rule that matches a given event. rule_matching: all reports all of them, at a performance cost."
+  },
+  {
+    "obj": "4.1",
+    "q": "You want to change the priority of the official Run shell untrusted rule to CRITICAL and change its output, leaving the condition unchanged. Which override block is correct?",
+    "options": [
+      "override: { priority: replace, output: replace }",
+      "override: { priority: append, output: append }",
+      "override: { condition: replace }",
+      "append: true"
+    ],
+    "answer": 0,
+    "explain": "priority can only be replaced; output supports both append and replace, and here you replace it. condition stays untouched because it is not listed. append: true is deprecated."
+  },
+  {
+    "obj": "4.1",
+    "q": "An analyst asks why the alert showed user.name=root, while you know that the user marko logged into the system and then used sudo. Which field should be in the output to show who started the session?",
+    "options": [
+      "proc.pname",
+      "user.loginuid",
+      "container.id",
+      "evt.res"
+    ],
+    "answer": 1,
+    "explain": "loginuid is set at login and does not change with sudo/su, so it shows the original user (their UID). user.name is the effective user of the process, root in this case."
+  },
+  {
+    "obj": "4.1",
+    "q": "A custom Falco rule catches a shell being spawned by an nginx process. How do you map it to ATT&CK so that it shows up in the same SIEM filter as the Wazuh and Sigma detections for the same technique?",
+    "options": [
+      "Write \"MITRE\" in desc",
+      "Set priority: ALERT",
+      "Add the tactic and technique to tags, e.g. mitre_execution, T1059.004, and filter by tag in the SIEM",
+      "Add source: mitre"
+    ],
+    "answer": 2,
+    "explain": "Official rules carry ATT&CK in tags (mitre_<tactic>, T<ID>), and those tags arrive in the JSON alert. source determines the event source (syscall, k8s_audit), not the mapping."
+  },
+  {
+    "obj": "4.1",
+    "q": "The Read sensitive file untrusted rule fires every night when a legitimate backup process (started by cron) reads /etc/shadow. The rule has the hook user_known_read_sensitive_files_activities set to (never_true). What do you do?",
+    "options": [
+      "Disable the rule",
+      "Add /etc/shadow to some exception list for all rules",
+      "Lower priority in falco.yaml to ERROR",
+      "Locally replace the macro: condition: (proc.exepath = /usr/local/bin/kurs-backup and proc.pname = cron) with override: condition: replace"
+    ],
+    "answer": 3,
+    "explain": "user_known_* macros are intended for exactly this kind of tuning: you replace never_true with a narrow condition that describes the legitimate activity. Disabling the rule or an exception for the file removes the detection for everyone, and a higher threshold in falco.yaml also silences other rules."
+  },
+  {
+    "obj": "4.1",
+    "q": "Falco needs to send alerts to Slack, Loki and Elasticsearch at the same time. What is the usual architecture?",
+    "options": [
+      "Three Falco instances, each with its own output",
+      "http_output to Falcosidekick, which forwards alerts to multiple destinations",
+      "file_output to three files",
+      "syslog_output, and Slack reads syslog"
+    ],
+    "answer": 1,
+    "explain": "Falcosidekick receives alerts over HTTP and fans them out to dozens of destinations. Multiple Falco instances would capture the same syscalls three times."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match the Falco element with what it does.",
+    "options": [
+      "macro",
+      "list",
+      "exceptions",
+      "override: items: append",
+      "required_engine_version"
+    ],
+    "targets": [
+      "A named array of values used with in",
+      "A named piece of a condition reused by multiple rules",
+      "Structured tuples of fields and values that become and not (...)",
+      "Adds items to an existing list from a file loaded earlier",
+      "Refuses to load the file on a Falco version that is too old",
+      "Determines where alerts go"
+    ],
+    "answer": [1, 0, 2, 3, 4],
+    "explain": "A macro is a piece of a condition, a list an array of values, exceptions structured exceptions, override append extends an existing element, and required_engine_version protects against an incompatible version. Outputs are determined by falco.yaml, not by any of the listed elements."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Order the steps for introducing a new Falco rule, starting with the first.",
+    "options": [
+      "Release the rule to production while monitoring the alert volume",
+      "Write the rule in a local file with ATT&CK tags",
+      "Run replay against positive and negative captures",
+      "Validate the syntax with falco -V together with the official file",
+      "Add exceptions for legitimate processes observed in the test"
+    ],
+    "answer": [1, 3, 2, 4, 0],
+    "explain": "First the rule, then syntax validation, testing against captures, tuning exceptions based on the test results, and only then production while monitoring the noise."
+  },
+  {
+    "type": "spot",
+    "obj": "4.1",
+    "q": "The rule loads without errors, but when you run kubectl exec -it web -- bash, no alert appears. Click the line that causes it.",
+    "snippet": "- list: kurs_shell_binaries\n  items: [bash, sh, zsh, dash, ash]\n\n- macro: kurs_container\n  condition: (container.id = host)\n\n- rule: Shell in kurs container\n  desc: Interactive shell started in a kurs application container\n  condition: >\n    spawned_process and kurs_container\n    and proc.name in (kurs_shell_binaries)\n    and proc.tty != 0\n  output: \"Shell in container (user=%user.name container=%container.id cmd=%proc.cmdline)\"\n  priority: WARNING",
+    "lang": "yaml",
+    "answer": [
+      4
+    ],
+    "explain": "container.id = host is true for processes on the host itself, outside containers, so the macro excludes exactly the containers. It should be (container.id != host), as in the built-in container macro. The list, spawned_process and proc.tty != 0 (interactive terminal) are correct."
+  }
+]

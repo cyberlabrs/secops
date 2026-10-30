@@ -1,0 +1,15 @@
+TIKET HD-48213   (helpdesk, kopirano iz sistema za tikete)
+Otvoren:     13.10.2026. 11:38 (CEST, UTC+2)
+Prijavila:   Jelena Kovač, inženjerka infrastrukture (jelena.kovac@drinalog.example)
+Kategorija:  Sigurnost / sumnjiva aktivnost na nalogu
+
+Opis (telefonom):
+Jutros oko 10:00 dobila sam mail od "IT podrške" da moram ponovo registrovati MFA do 12h.
+Kliknula sam link i upisala lozinku, stranica je izgledala kao Microsoftova pa me vratila na
+Outlook. Nekoliko minuta kasnije telefon je počeo da traži odobrenje prijave, više puta zaredom.
+Odbijala sam, a onda sam jednom pritisnula "Approve" jer sam mislila da je to ta registracija.
+Sad mi je kolega rekao da IT ne šalje takve mailove.
+
+Helpdesk napomena:
+Korisnica ima pristup VPN-u i jump hostu jump01 (Linux nalog jkovac, SSSD/AD).
+Poruka je sačuvana kao mail/hitno-mfa.eml. Proslijeđeno SOC-u, prioritet P2.

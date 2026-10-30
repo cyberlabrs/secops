@@ -1,0 +1,11 @@
+{
+  "title": "Detekcije: analytics rules, custom detections i ATT&CK",
+  "summary": "Custom detection rules u Defender XDR (kolone, frekvencije, NRT, akcije, upravljanje) i Sentinel analytics rules: scheduled, NRT, threat intelligence, ML i Fusion u Defender portalu, entity mapping, MITRE ATT&CK pokrivenost i anomalies sa flighting tuningom.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.4"
+  ],
+  "title_en": "Detections: analytics rules, custom detections and ATT&CK",
+  "summary_en": "Custom detection rules in Defender XDR (columns, frequencies, NRT, actions, management) and Sentinel analytics rules: scheduled, NRT, threat intelligence, ML and Fusion in the Defender portal, entity mapping, MITRE ATT&CK coverage and anomalies with flighting tuning."
+}

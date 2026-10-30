@@ -1,0 +1,76 @@
+[
+  {
+    "q": "Koja kategorija je na prvom mjestu OWASP Top 10:2025?",
+    "options": ["Injection", "Broken Access Control", "Security Misconfiguration", "Cryptographic Failures"],
+    "answer": 1,
+    "explain": "A01:2025 je Broken Access Control, kao i 2021. Security Misconfiguration je sada na drugom mjestu, a Injection je pao na peto."
+  },
+  {
+    "q": "Koje su dvije NOVE kategorije u OWASP Top 10:2025? (više odgovora)",
+    "options": ["Software Supply Chain Failures", "Server-Side Request Forgery", "Mishandling of Exceptional Conditions", "Insecure Design"],
+    "answer": [0, 2],
+    "explain": "Novi su A03 Software Supply Chain Failures i A10 Mishandling of Exceptional Conditions. SSRF je pripojen kategoriji A01, a Insecure Design postoji od 2021."
+  },
+  {
+    "q": "Gdje je SSRF u OWASP Top 10:2025?",
+    "options": ["I dalje je zasebna kategorija A10", "Pripojen je kategoriji A01 Broken Access Control", "Izbačen je jer više nije relevantan", "Pripojen je kategoriji A05 Injection"],
+    "answer": 1,
+    "explain": "U izdanju 2025. SSRF je dio A01. U API Security Top 10 (2023) i dalje je zasebna stavka API7."
+  },
+  {
+    "q": "Koja je ispravna odbrana od SQL injekcije?",
+    "options": ["Uklanjanje apostrofa iz unosa", "Parametrizovani upiti (prepared statements)", "WAF ispred aplikacije", "Base64 kodiranje unosa"],
+    "answer": 1,
+    "explain": "Parametrizacija odvaja kod od podataka na nivou drajvera baze. Filtriranje i WAF su dodatni slojevi i mogu se zaobići."
+  },
+  {
+    "q": "GET /api/invoices/1043 vraća fakturu drugog korisnika kad promijeniš broj. Kako se zove ova ranjivost u API Top 10?",
+    "options": ["API2 Broken Authentication", "API1 Broken Object Level Authorization (BOLA)", "API4 Unrestricted Resource Consumption", "API9 Improper Inventory Management"],
+    "answer": 1,
+    "explain": "BOLA (u web kontekstu IDOR): API ne provjerava da li objekat pripada korisniku koji ga traži."
+  },
+  {
+    "q": "Korisnik pošalje PATCH /api/users/me sa {\"role\":\"admin\"} i postane admin. Koja kategorija API Top 10?",
+    "options": ["API3 Broken Object Property Level Authorization (mass assignment)", "API7 SSRF", "API10 Unsafe Consumption of APIs", "API6 Sensitive Business Flows"],
+    "answer": 0,
+    "explain": "API prihvata polje koje korisnik ne smije mijenjati. Odbrana: eksplicitna lista dozvoljenih polja (DTO), a ne vezivanje cijelog JSON-a na model."
+  },
+  {
+    "q": "Kako treba čuvati lozinke korisnika?",
+    "options": ["AES-256 enkripcija", "SHA-256 hash", "Spor hash sa solju: Argon2id, scrypt ili bcrypt", "Base64"],
+    "answer": 2,
+    "explain": "Lozinke se ne šifruju, jer se šifrovano može dešifrovati. Brzi hash (SHA-256) dozvoljava milijarde pokušaja u sekundi na GPU. Argon2id/bcrypt su namjerno spori i koriste so."
+  },
+  {
+    "q": "Funkcija is_admin() vraća True kada servis za autorizaciju ne odgovori. Koja kategorija OWASP Top 10:2025?",
+    "options": ["A09 Logging & Alerting Failures", "A10 Mishandling of Exceptional Conditions (fail open)", "A04 Cryptographic Failures", "A03 Supply Chain"],
+    "answer": 1,
+    "explain": "Sistem koji pri grešci dozvoljava pristup pada otvoren. Ispravno je fail closed: greška znači odbijanje."
+  },
+  {
+    "q": "Interni paket 'firma-utils' neko objavi na javnom npm-u sa višom verzijom, i build ga preuzme. Kako se zove napad i u koju kategoriju spada?",
+    "options": ["Typosquatting, A05", "Dependency confusion, A03 Software Supply Chain Failures", "SSRF, A01", "Mass assignment, API3"],
+    "answer": 1,
+    "explain": "Dependency confusion iskorištava to da package manager preferira javni registar ili višu verziju. Odbrana: scoped paketi, privatni registar kao jedini izvor, lock fajlovi."
+  },
+  {
+    "q": "Koju vrstu ranjivosti automatski skeneri (SAST, DAST) NAJTEŽE pronalaze?",
+    "options": ["Hardkodovane tajne", "Ranjive verzije biblioteka", "BOLA/IDOR i greške poslovne logike", "Nedostajuća HTTP sigurnosna zaglavlja"],
+    "answer": 2,
+    "explain": "Skener ne zna koji objekat pripada kojem korisniku niti šta je poslovno ispravno. Za to trebaju testovi autorizacije, code review i modelovanje prijetnji."
+  },
+  {
+    "q": "Šta je glavna svrha Content-Security-Policy zaglavlja?",
+    "options": ["Šifruje kolačiće", "Ograničava odakle stranica smije učitavati i izvršavati skripte, čime ublažava XSS", "Sprečava SQL injekciju", "Forsira HTTPS"],
+    "answer": 1,
+    "explain": "CSP je drugi sloj odbrane od XSS-a: i kad napadač ubaci skriptu, browser je neće izvršiti ako izvor nije dozvoljen. HTTPS forsira HSTS."
+  },
+  {
+    "type": "spot",
+    "q": "Klikni redove u kojima korisnički unos postaje dio koda (A05 Injection).",
+    "lang": "python",
+    "snippet": "from flask import Flask, request\nimport sqlite3, subprocess\n\napp = Flask(__name__)\n\n@app.get(\"/orders\")\ndef orders():\n    name = request.args.get(\"customer\", \"\")\n    db = sqlite3.connect(\"shop.db\")\n    rows = db.execute(f\"SELECT id, total FROM orders WHERE customer = '{name}'\").fetchall()\n    return {\"orders\": rows}\n\n@app.get(\"/ping\")\ndef ping():\n    host = request.args.get(\"host\", \"127.0.0.1\")\n    out = subprocess.run(f\"ping -c 1 {host}\", shell=True, capture_output=True, text=True)\n    return {\"output\": out.stdout}",
+    "answer": [9, 15],
+    "explain": "Red 10 ubacuje parametar customer direktno u SQL f-stringom: ' OR '1'='1 vraća sve narudžbe. Ispravka: parametrizovan upit, db.execute(\"... WHERE customer = ?\", (name,)). Red 16 šalje host u shell (shell=True), pa 127.0.0.1; cat /etc/passwd izvršava i drugu komandu. Ispravka: subprocess.run([\"ping\", \"-c\", \"1\", host]) bez shella, uz validaciju da je host IP ili ime."
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "title": "Pravni zahtjevi i privatnost",
+  "summary": "Sukobi međunarodnih zakona (CLOUD Act, lokalizacija), pravni rizici clouda, EU okvir (GDPR, NIS2, DORA, AI Act, Data Act), forenzički standardi ISO/IEC 27037/27041/27042/27043 i eDiscovery (ISO/IEC 27050, EDRM), te privatnost: regulisani vs ugovorni podaci, GDPR, HIPAA, FERPA, PIPEDA, DPDP, ISO/IEC 27018, GAPP i PIA/DPIA.",
+  "minutes": 75,
+  "domain": 6,
+  "objectives": [
+    "6.1",
+    "6.2"
+  ],
+  "title_en": "Legal requirements and privacy",
+  "summary_en": "Conflicting international laws (CLOUD Act, localization), legal risks of the cloud, the EU framework (GDPR, NIS2, DORA, AI Act, Data Act), forensic standards ISO/IEC 27037/27041/27042/27043 and eDiscovery (ISO/IEC 27050, EDRM), and privacy: regulated vs contractual data, GDPR, HIPAA, FERPA, PIPEDA, DPDP, ISO/IEC 27018, GAPP, and PIA/DPIA."
+}

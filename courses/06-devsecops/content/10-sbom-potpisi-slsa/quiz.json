@@ -1,0 +1,266 @@
+[
+  {
+    "obj": "5.1",
+    "q": "Job sbom pokreće syft scan dir:. -o cyclonedx-json=sbom.cdx.json u korijenu kurs-shop repoa. Security tim se žali da u SBOM-u nema OS paketa (openssl, libc) koji su u produkcijskoj slici. Šta je uzrok i rješenje?",
+    "options": [
+      "Syft ne podržava OS pakete u CycloneDX formatu; treba koristiti -o spdx-json",
+      "SBOM izvornog koda vidi samo deklarisane zavisnosti; za release treba SBOM same slike, npr. syft scan registry:<slika@digest>",
+      "Nedostaje flag --scanners os, koji uključuje katalog OS paketa",
+      "Treba dodati trivy sbom sbom.cdx.json, koji dopunjava SBOM OS paketima"
+    ],
+    "answer": 1,
+    "explain": "SBOM direktorija sadrži ono što lock fajlovi deklarišu; OS paketi nastaju tek u slici, pa za release treba SBOM slike po digestu. CycloneDX podržava OS pakete, --scanners je Trivyjev flag, a trivy sbom skenira postojeći SBOM i ne dopunjava ga."
+  },
+  {
+    "obj": "5.1",
+    "q": "U produkciji radi 40 slika napravljenih tokom prošle godine. Jutros je objavljen CRITICAL CVE u werkzeug 2.2.2. Pipeline za svaku sliku čuva sbom.cdx.json. Koji je najbrži način da utvrdiš koje su slike pogođene, bez povlačenja slika?",
+    "options": [
+      "trivy image --severity CRITICAL za svaku sliku iz registrija",
+      "syft scan za svaku sliku, pa grep werkzeug",
+      "Ponovo pokrenuti sve pipelinee da se slike iznova izgrade i skeniraju",
+      "trivy sbom --severity CRITICAL nad sačuvanim SBOM-ovima, sa ažuriranom bazom ranjivosti"
+    ],
+    "answer": 3,
+    "explain": "trivy sbom skenira postojeći SBOM novom bazom ranjivosti bez slike, što je upravo svrha čuvanja SBOM-ova. trivy image i syft scan ponovo čitaju slike, a ponovni build pravi nove slike umjesto da odgovori šta je trenutno u produkciji."
+  },
+  {
+    "obj": "5.1",
+    "q": "Job sbom prolazi zeleno, ali Dependency-Track prikazuje SBOM sa nula komponenti. Pokazalo se da je syft pokrenut nad pogrešnim direktorijem. Koja izmjena joba bi ovo uhvatila?",
+    "options": [
+      "Dodati jq -e '.components | length > 0' sbom.cdx.json poslije syfta",
+      "Dodati allow_failure: false na job",
+      "Prebaciti format na -o spdx-json, koji prijavljuje grešku za prazan izvor",
+      "Dodati artifacts: when: always"
+    ],
+    "answer": 0,
+    "explain": "Validan ali prazan SBOM ne izaziva grešku alata, pa ga hvata eksplicitna provjera sadržaja (jq -e vraća izlazni kod različit od 0). allow_failure: false je podrazumijevano i ne mijenja ništa, SPDX format ne pada na prazan izvor, a when: always samo čuva artefakt."
+  },
+  {
+    "obj": "5.1",
+    "q": "Firma prodaje IoT uređaj na tržištu EU. Danas je 16. 10. 2026. Saznali ste da napadači aktivno iskorištavaju ranjivost u firmveru. Šta EU Cyber Resilience Act od vas traži upravo sada?",
+    "options": [
+      "Ništa do 11. 12. 2027, kada CRA stupa u punu primjenu",
+      "Javno objaviti kompletan SBOM firmvera na web stranici u roku od 24 sata",
+      "Prijaviti aktivno iskorištenu ranjivost (rano upozorenje u roku od 24 sata) preko ENISA platforme za prijavu",
+      "Povući CE oznaku sa proizvoda dok se ne objavi zakrpa"
+    ],
+    "answer": 2,
+    "explain": "Obaveze prijave aktivno iskorištenih ranjivosti i ozbiljnih incidenata važe od 11. 9. 2026, sa ranim upozorenjem u roku od 24 sata. Puna primjena (bitni zahtjevi, CE oznaka) je 11. 12. 2027, a SBOM ne mora biti javan; ide u tehničku dokumentaciju."
+  },
+  {
+    "obj": "5.1",
+    "type": "match",
+    "q": "Upari zahtjev sa formatom ili komandom koja ga najbolje ispunjava.",
+    "options": [
+      "Pravni tim traži detaljne podatke o licencama u formatu koji je ISO standard",
+      "Treba SBOM sa izjavama o iskoristivosti ranjivosti (VEX) u istom ekosistemu",
+      "SBOM za sliku u dva formata iz jednog pokretanja",
+      "Provjera ranjivosti u SBOM-u dobavljača koji nije poslao sliku"
+    ],
+    "targets": [
+      "trivy sbom vendor.cdx.json",
+      "syft scan dir:. -o table",
+      "SPDX",
+      "syft scan registry:<slika> -o cyclonedx-json=a.json -o spdx-json=b.json",
+      "CycloneDX"
+    ],
+    "answer": [2, 4, 3, 0],
+    "explain": "SPDX (2.2.1 je ISO/IEC 5962:2021) je nastao oko licenci; CycloneDX ima ugrađenu podršku za VEX; Syft prima više -o opcija u jednom pokretanju; trivy sbom skenira tuđi SBOM bez slike. syft -o table je samo pregled u terminalu."
+  },
+  {
+    "obj": "5.2",
+    "q": "Job sign radi cosign sign --key cosign.key 127.0.0.1:5000/kurs-shop:1.0. Mjesec dana kasnije neko je pod isti tag gurnuo drugu sliku, a cosign verify za tag više ne prolazi. Šta je trebalo uraditi?",
+    "options": [
+      "Potpisati sa --recursive da potpis pokrije sve buduće verzije taga",
+      "Koristiti keyless potpis, koji je vezan za tag umjesto za ključ",
+      "Postaviti tag kao immutable u cosign konfiguraciji",
+      "Potpisivati i deployovati po digestu (slika@sha256:...), jer potpis važi za sadržaj, ne za ime taga"
+    ],
+    "answer": 3,
+    "explain": "Potpis se uvijek veže za digest; tag je pokretna oznaka, pa nakon pomjeranja pokazuje na nepotpisan sadržaj. --recursive potpisuje slike svih platformi multi-arch indeksa, keyless takođe potpisuje digest, a cosign nema podešavanje immutable tagova (to je opcija registrija)."
+  },
+  {
+    "obj": "5.2",
+    "q": "Deploy job provjerava keyless potpis ovako: cosign verify --certificate-identity-regexp '.*kurs-shop.*' --certificate-oidc-issuer https://gitlab.com $IMAGE. Zašto je ovo slaba provjera?",
+    "options": [
+      "Regex prihvata svaki identitet koji sadrži kurs-shop, npr. pipeline u tuđem forku evil/kurs-shop-fork",
+      "Za GitLab issuer mora biti https://gitlab.com/oauth, pa provjera nikad ne prolazi",
+      "--certificate-identity-regexp ne postoji; dozvoljen je samo --certificate-identity",
+      "Keyless provjera uvijek traži i --key, inače se potpis ne provjerava kriptografski"
+    ],
+    "answer": 0,
+    "explain": "Svako sa nalogom na gitlab.com može napraviti projekat čija putanja sadrži kurs-shop i dobiti Fulcio certifikat; regex mora biti uzak i sa sidrima (^...$) ili treba koristiti tačan identitet. Issuer za GitLab je https://gitlab.com, flag sa regexom postoji, a keyless ne koristi --key."
+  },
+  {
+    "obj": "5.2",
+    "q": "Keyless potpis iz GitLab joba na gitlab.com ne prolazi provjeru sa greškom „none of the expected identities matched“. Provjera koristi --certificate-identity \"https://gitlab.com/shop/kurs-shop/.gitlab-ci.yml@refs/heads/main\". Šta je pogrešno?",
+    "options": [
+      "Identitet mora biti e-mail adresa korisnika koji je pokrenuo pipeline",
+      "Ref mora biti samo main, bez refs/heads/",
+      "Između putanje projekta i putanje CI fajla idu dvije kose crte: .../shop/kurs-shop//.gitlab-ci.yml@refs/heads/main",
+      "Nedostaje id_tokens sa aud: gitlab u jobu za provjeru"
+    ],
+    "answer": 2,
+    "explain": "GitLab identitet ima oblik <instanca>/<projekat>//<CI fajl>@<ref>, sa dvostrukom kosom crtom; jednostruka daje tačno ovu grešku. Identitet nije e-mail za CI jobove, ref ostaje puni refs/heads/main, a job za provjeru ne treba OIDC token (token treba job za potpis, sa aud: sigstore)."
+  },
+  {
+    "obj": "5.2",
+    "q": "Tim je nadogradio cosign u sign jobu sa v2 na v3. Potpis prolazi, ali stari deploy skript sa cosign v2 i stari admission kontroler sada odbijaju sve nove slike kao nepotpisane. Najvjerovatniji uzrok?",
+    "options": [
+      "cosign v3 više ne podržava potpis ključem, pa potpis nije ni napravljen",
+      "cosign v3 podrazumijevano pravi Sigstore bundle prikačen kao OCI 1.1 referrer, a stari verifikatori traže potpis na staroj .sig tag šemi",
+      "cosign v3 potpisuje tag umjesto digesta",
+      "cosign v3 šifruje potpis javnim ključem verifikatora, pa ga v2 ne može pročitati"
+    ],
+    "answer": 1,
+    "explain": "v3 kao podrazumijevani format koristi novi bundle i referrere; verifikatori koji to ne razumiju ne nalaze potpis. Zato se prvo nadograđuje strana provjere. Potpis ključem i dalje postoji, potpis se veže za digest, a potpisi se ne šifruju."
+  },
+  {
+    "obj": "5.2",
+    "q": "U offline labu (nema Rekora ni TUF-a) cosign sign --key cosign.key $IMAGE ne uspijeva jer ne može dohvatiti signing config. Koja kombinacija radi u cosign 3.1?",
+    "options": [
+      "cosign sign --key cosign.key --offline $IMAGE, a verify bez dodatnih flagova",
+      "cosign sign --key cosign.key --use-signing-config=false --tlog-upload=false $IMAGE, a verify sa --insecure-ignore-tlog=true",
+      "cosign sign --key cosign.key --tlog-upload=false $IMAGE (signing config ostaje uključen), a verify sa --key",
+      "cosign sign --key cosign.key --bundle=false $IMAGE, a verify sa --private-infrastructure"
+    ],
+    "answer": 1,
+    "explain": "U v3 --tlog-upload=false je dozvoljen samo uz isključen signing config (ili uz vlastiti signing config bez tlog servisa), a provjera potpisa koji nije u Rekoru traži --insecure-ignore-tlog=true. Sa uključenim signing configom cosign odbija --tlog-upload=false, --offline je zastarjeli flag provjere, a --bundle prima putanju fajla."
+  },
+  {
+    "obj": "5.2",
+    "q": "Organizacija koristi self-managed GitLab na gitlab.kurs-shop.ba bez pristupa internetu sa runnera. Žele potpisivanje slika bez dugotrajnog ključa na runneru. Koja opcija je izvodljiva?",
+    "options": [
+      "Keyless sa javnim Fulciom: dovoljno je id_tokens sa aud: sigstore",
+      "Keyless sa javnim Fulciom, uz --certificate-oidc-issuer https://gitlab.kurs-shop.ba pri provjeri",
+      "Potpis ključem koji živi u KMS-u ili Vaultu (--key hashivault://...), ili privatni Sigstore (vlastiti Fulcio i Rekor)",
+      "Potpis ključem iz masked CI/CD varijable, jer masked varijable nisu dugotrajne"
+    ],
+    "answer": 2,
+    "explain": "Javni Fulcio prihvata samo poznate OIDC issuere i traži pristup internetu, pa za izolovanu self-managed instancu ostaje ključ u KMS-u/Vaultu (ključ ne napušta KMS) ili vlastita Sigstore infrastruktura. Masked varijabla je i dalje dugotrajan ključ dostupan jobu."
+  },
+  {
+    "obj": "5.3",
+    "q": "Job build na kraju pokreće jq da napravi provenance.json i potpisuje ga cosign attest ključem iz CI/CD varijable dostupne istom jobu. Koji je najviši SLSA Build nivo koji ovo realno ispunjava i zašto?",
+    "options": [
+      "L1: provenance postoji, ali ga pravi i potpisuje korisnički script, koji je mogao upisati bilo šta",
+      "L3: provenance je potpisan i build radi na hostovanom runneru",
+      "L2: dovoljno je da je provenance potpisan bilo kojim ključem",
+      "L0: provenance bez in-toto layouta ne računa se ni za L1"
+    ],
+    "answer": 0,
+    "explain": "Za L2 provenance mora generisati i potpisati hostovana platforma, a za L3 ključ mora biti nedostupan korisničkim koracima; ovdje isti script pravi sadržaj i ima ključ. L1 dozvoljava i nepotpisan provenance, a in-toto layout nije zahtjev SLSA nivoa."
+  },
+  {
+    "obj": "5.3",
+    "q": "Na šta se odnosi in-toto atestacija i kako verifikator zna da je izjava baš o slici koju deployuje?",
+    "options": [
+      "Na tag slike u polju predicateType",
+      "Na digest slike u polju subject; predicateType kaže koja je vrsta izjave",
+      "Na commit hash u polju _type",
+      "Na ime Kubernetes Deploymenta u polju predicate.subject"
+    ],
+    "answer": 1,
+    "explain": "subject navodi artefakt po imenu i digestu, pa se izjava veže za tačan sadržaj; predicateType određuje vrstu izjave (SLSA provenance, CycloneDX…). _type je verzija Statement formata, a commit se nalazi u predikatu (npr. resolvedDependencies)."
+  },
+  {
+    "obj": "5.3",
+    "type": "match",
+    "q": "Upari opis build okruženja sa najvišim SLSA Build nivoom koji ispunjava.",
+    "options": [
+      "Developer gradi sliku na laptopu i gura je u registry",
+      "Hostovana CI platforma pravi i potpisuje provenance, ali korisnički koraci istog joba mogu pročitati ključ za potpis",
+      "Hostovana platforma sa izolovanim buildovima; provenance potpisuje komponenta van korisničkog koda",
+      "Skripta uz lokalni build automatski pravi nepotpisan provenance i isporučuje ga uz artefakt"
+    ],
+    "targets": ["L2", "L0", "L3", "L1"],
+    "answer": [1, 0, 2, 3],
+    "explain": "Bez provenancea je L0; automatski provenance, i nepotpisan, je L1; hostovana platforma koja potpisuje je L2; izolacija buildova i ključ nedostupan korisničkim koracima je L3. Druga opcija ne dostiže L3 upravo zbog dostupnog ključa."
+  },
+  {
+    "obj": "5.3",
+    "q": "Želiš da GitLab runner automatski napravi SLSA provenance za artefakte joba build-wheel (dist/*.whl). Šta dodaješ jobu?",
+    "options": [
+      "artifacts: reports: provenance: dist/",
+      "id_tokens sa aud: slsa",
+      "variables: RUNNER_GENERATE_ARTIFACTS_METADATA: \"true\"",
+      "include: template: Security/SLSA.gitlab-ci.yml"
+    ],
+    "answer": 2,
+    "explain": "Sa RUNNER_GENERATE_ARTIFACTS_METADATA runner uz artefakt pravi <ime>-metadata.json, in-toto Statement sa SLSA v1 provenance predikatom. Izvještaj tipa provenance i šablon Security/SLSA ne postoje, a id_tokens daje OIDC token, ne provenance."
+  },
+  {
+    "obj": "5.3",
+    "q": "Uz sliku su prikačeni potpis i atestacija tipa slsaprovenance1. Deploy treba da propusti samo slike koje je izgradio runner https://gitlab.kurs-shop.ba/runners/shared. Šta je ispravno?",
+    "options": [
+      "cosign verify --key cosign.pub $IMAGE je dovoljan jer provjerava i sve atestacije",
+      "cosign tree $IMAGE i provjera da postoji red sa atestacijom",
+      "trivy sbom nad provenance.json sa --exit-code 1",
+      "cosign verify-attestation --key cosign.pub --type slsaprovenance1 $IMAGE, pa provjeriti runDetails.builder.id u dekodiranom payloadu (ili --policy sa Rego pravilom)"
+    ],
+    "answer": 3,
+    "explain": "verify-attestation provjerava potpis atestacije i tip predikata, a sadržaj (builder.id) se provjerava nad payloadom ili politikom. cosign verify provjerava potpis slike, ne atestacije; cosign tree samo pokazuje da nešto postoji, bez provjere potpisa i sadržaja; trivy sbom ne čita provenance."
+  },
+  {
+    "obj": "5.4",
+    "type": "order",
+    "q": "Poredaj jobove završnog dijela pipelinea tako da potpis znači „slika je prošla naše provjere“, a deploy ne vjeruje tagu.",
+    "options": [
+      "deploy: kubectl apply sa image@digest",
+      "sign: cosign sign i cosign attest (SBOM, provenance) na digest",
+      "build: slika u registry, digest u image.txt",
+      "verify: cosign verify i cosign verify-attestation",
+      "image-scan: trivy image --exit-code 1 na digest"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "Build daje digest, skeniranje mora proći prije potpisa (inače potpis ne garantuje ništa o provjerama), potpis i atestacije se vežu za digest, provjera ide neposredno prije deploya, a deploy koristi isti provjereni digest."
+  },
+  {
+    "obj": "5.4",
+    "q": "Deploy job radi cosign verify --key $COSIGN_PUB registry.kurs-shop.ba/kurs-shop:1.4 i zatim kubectl set image deploy/kurs-shop app=registry.kurs-shop.ba/kurs-shop:1.4. Koji je problem?",
+    "options": [
+      "Između provjere i povlačenja slike tag se može pomjeriti, pa klaster može pokrenuti drugu sliku; deploy treba upisati provjereni digest",
+      "cosign verify ne radi sa javnim ključem iz varijable",
+      "kubectl set image ne radi sa privatnim registrijem",
+      "Provjera mora ići poslije kubectl set image, da bi se provjerila slika koja zaista radi"
+    ],
+    "answer": 0,
+    "explain": "Provjera po tagu i deploy po tagu otvaraju prozor u kojem se tag može promijeniti (TOCTOU), pa se deployuje digest koji je provjeren. cosign radi sa ključem iz fajla ili varijable, kubectl radi sa privatnim registrijem uz imagePullSecret, a provjera poslije deploya je prekasno."
+  },
+  {
+    "obj": "5.4",
+    "q": "Klaster koristi Kyverno 1.19. Treba nova politika koja odbija Podove sa nepotpisanim kurs-shop slikama. Koji resurs je preporučen?",
+    "options": [
+      "ClusterPolicy (kyverno.io/v1) sa verifyImages, jer je jedini tip koji podržava cosign",
+      "ValidatingAdmissionPolicy (admissionregistration.k8s.io) sa CEL funkcijom verifyImageSignatures",
+      "ImageValidatingPolicy (policies.kyverno.io/v1) sa attestors i validations koje pozivaju verifyImageSignatures",
+      "MutatingPolicy koja zamjenjuje nepotpisane slike potpisanim"
+    ],
+    "answer": 2,
+    "explain": "U 1.19 su ClusterPolicy/Policy zastarjeli (uklanjanje planirano za 1.20), a ImageValidatingPolicy je stabilan tip za provjeru potpisa i atestacija. Ugrađeni ValidatingAdmissionPolicy nema funkcije za provjeru potpisa, a mutacija ne može napraviti potpis."
+  },
+  {
+    "obj": "5.4",
+    "q": "Uveli ste ImageValidatingPolicy sa validationActions: [Deny] za sve slike (glob: \"*\"). Odmah su prestali da se kreiraju Podovi CoreDNS-a i ingress kontrolera. Šta je bilo bolje uraditi?",
+    "options": [
+      "Postaviti validationConfigurations.required: false da politika ne blokira ništa",
+      "Prvo pokrenuti politiku sa [Audit], popisati nepotpisane slike trećih strana, suziti matchImageReferences na vlastite slike i za vendorske dodati izuzetke, pa onda Deny",
+      "Isključiti mutateDigest, jer on mijenja slike sistemskih komponenti",
+      "Premjestiti provjeru isključivo u deploy job pipelinea"
+    ],
+    "answer": 1,
+    "explain": "Audit prvo pokaže šta bi politika blokirala, bez štete; zatim se politika sužava i izuzeci popisuju. required: false bi oslabio i provjeru vlastitih slika, mutateDigest nije uzrok blokiranja, a provjera samo u pipelineu se može zaobići."
+  },
+  {
+    "obj": "5.4",
+    "q": "Zašto nije dovoljno da potpise provjerava samo deploy job u pipelineu?",
+    "options": [
+      "Jer cosign verify u pipelineu ne provjerava Rekor",
+      "Jer pipeline ne može provjeriti atestacije, samo potpise",
+      "Jer deploy job nema pristup registriju sa potpisima",
+      "Jer se može zaobići: ručni kubectl apply ili drugi pipeline sa pristupom klasteru deployuju bez te provjere; admission politika važi za svaki zahtjev"
+    ],
+    "answer": 3,
+    "explain": "Provjera u pipelineu štiti samo deployove kroz taj pipeline; admission kontrola u klasteru je jedina koja važi za sve putanje. cosign u pipelineu provjerava Rekor i atestacije (verify-attestation), a deploy job normalno ima pristup registriju."
+  }
+]

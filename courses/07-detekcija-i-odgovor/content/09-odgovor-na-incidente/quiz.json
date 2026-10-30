@@ -1,0 +1,230 @@
+[
+  {
+    "obj": "6.1",
+    "q": "Menadžer pita zašto novi IR plan više nema četiri faze iz NIST SP 800-61r2. Šta je tačan odgovor?",
+    "options": [
+      "NIST je ukinuo preporuke za odgovor na incidente",
+      "SP 800-61r3 organizuje preporuke kao CSF 2.0 Community Profile, po funkcijama Govern, Identify, Protect, Detect, Respond i Recover, uz stalno poboljšanje",
+      "r3 zahtijeva da se koristi isključivo SANS model sa šest faza",
+      "r3 se odnosi samo na federalne agencije u cloudu"
+    ],
+    "answer": 1,
+    "explain": "r3 (april 2025) koristi funkcije, kategorije i podkategorije CSF 2.0 kao zajednički jezik. NIST istovremeno kaže da organizacija može koristiti model koji joj odgovara."
+  },
+  {
+    "obj": "6.1",
+    "q": "U modelu iz NIST SP 800-61r3, koje funkcije CSF 2.0 čine sam odgovor na incident (gornji nivo modela)?",
+    "options": [
+      "Govern, Identify, Protect",
+      "Identify, Protect, Detect",
+      "Protect, Respond, Recover",
+      "Detect, Respond, Recover"
+    ],
+    "answer": 3,
+    "explain": "Govern, Identify i Protect su priprema i šire upravljanje rizikom. Detect, Respond i Recover su odgovor na incident, a Improvement (ID.IM) povezuje lekcije sa svim funkcijama."
+  },
+  {
+    "obj": "6.1",
+    "q": "Faza „Post-Incident Activity“ iz r2 u r3 odgovara kojoj kategoriji?",
+    "options": [
+      "Improvement (ID.IM) u funkciji Identify",
+      "Incident Mitigation (RS.MI)",
+      "Continuous Monitoring (DE.CM)",
+      "Asset Management u funkciji Identify"
+    ],
+    "answer": 0,
+    "explain": "Lekcije naučene i poboljšanja vode se u ID.IM. r3 naglašava da se lekcije uče i dijele tokom cijelog procesa, ne samo na kraju."
+  },
+  {
+    "obj": "6.1",
+    "q": "Analitičar je potvrdio da je SSH prijava napadača uspjela i da je pokrenut sudo. Koja CSF podkategorija opisuje formalni korak koji sada slijedi?",
+    "options": [
+      "RC.RP-06: kraj oporavka se proglašava",
+      "DE.AE-08: incident se proglašava kad štetni događaji ispune kriterijume",
+      "RS.CO-04: javna obavještenja",
+      "ID.IM-01: poboljšanja iz evaluacija"
+    ],
+    "answer": 1,
+    "explain": "Proglašenje incidenta (DE.AE-08) je trenutak od kojeg važe plan, uloge i rokovi. Oporavak i javna komunikacija dolaze kasnije."
+  },
+  {
+    "obj": "6.1",
+    "q": "Tim piše dokument „Kompromitovan cloud nalog“: ko odlučuje o gašenju servisa, kada se obavještava pravna služba, koje faze se prolaze i koji tehnički postupci se pozivaju. Kako se taj dokument zove?",
+    "options": [
+      "Runbook",
+      "Politika",
+      "Playbook",
+      "Chain of custody"
+    ],
+    "answer": 2,
+    "explain": "Playbook opisuje šta se radi za vrstu incidenta: odluke, uloge, komunikaciju i redoslijed. Konkretne komande su u runbookovima na koje upućuje."
+  },
+  {
+    "obj": "6.1",
+    "q": "Ko u odgovoru na incident, prema r3, tipično ima ovlašćenje za odluke visokog uticaja, poput gašenja ili ponovne izgradnje kritičnog servisa?",
+    "options": [
+      "Zapisničar",
+      "Odnosi sa javnošću",
+      "Svaki incident handler samostalno",
+      "Rukovodstvo organizacije"
+    ],
+    "answer": 3,
+    "explain": "r3 navodi da rukovodstvo nadzire odgovor, dodjeljuje resurse i može imati ovlašćenje za akcije visokog uticaja. Politika treba unaprijed odrediti koja uloga smije šta."
+  },
+  {
+    "obj": "6.1",
+    "q": "Firma koristi MSSP za SOC i AWS za produkciju. Šta r3 preporučuje u vezi sa trećim stranama?",
+    "options": [
+      "Ugovorom jasno definisati podjelu odgovornosti, tokove informacija i ovlašćenja za djelovanje (model dijeljene odgovornosti)",
+      "Ne uključivati treće strane u odgovor",
+      "Prepustiti cijeli odgovor cloud provajderu",
+      "Obavještavati ih tek nakon zatvaranja incidenta"
+    ],
+    "answer": 0,
+    "explain": "Treće strane mogu imati primarnu ulogu ili djelovati samo kod određenih incidenata. Ugovor treba precizno odrediti ko smije šta, uključujući ograničenja."
+  },
+  {
+    "obj": "6.1",
+    "q": "Istovremeno su otvorena tri incidenta: skeniranje portova (prvo prijavljeno), procurjeli ključ sa pristupom produkciji (drugo) i potvrđen ransomware na file serveru (treće). Kojim redom se obrađuju?",
+    "options": [
+      "Po redoslijedu prijave",
+      "Skeniranje prvo, jer je najjednostavnije",
+      "Ransomware, pa procurjeli ključ, pa skeniranje, prema riziku",
+      "Paralelno, sa istim prioritetom"
+    ],
+    "answer": 2,
+    "explain": "r3 kaže da se incidenti ne obrađuju po redoslijedu dolaska, nego po riziku: kritičnost imovine, uticaj, faza aktivnosti, mogućnost oporavka."
+  },
+  {
+    "obj": "6.2",
+    "q": "Na kompromitovanom hostu radi sumnjiv proces, a ls -l /proc/4242/exe pokazuje „(deleted)“. Šta radiš prije zaustavljanja procesa?",
+    "options": [
+      "Ništa, fajl je već obrisan",
+      "Kopiraš /proc/4242/exe, cmdline, environ, maps i listu fd-ova, pa izračunaš SHA-256",
+      "Restartuješ host da se oslobodi memorija",
+      "Pokreneš antivirus nad cijelim diskom"
+    ],
+    "answer": 1,
+    "explain": "Dok proces radi, /proc/<pid>/exe omogućava kopiranje obrisanog binarnog fajla. Kad se proces ubije ili host restartuje, taj dokaz nestaje."
+  },
+  {
+    "obj": "6.2",
+    "q": "Prema RFC 3227, šta od navedenog prikupljaš PRVO?",
+    "options": [
+      "Mrežne konekcije i tabelu procesa",
+      "Kopiju /var/log na disku",
+      "Logove iz centralnog SIEM-a",
+      "Bekap sa trake"
+    ],
+    "answer": 0,
+    "explain": "Tabela procesa, konekcije, ARP i memorija su na drugom nivou volatilnosti (odmah poslije registara i keša). Disk, udaljeni logovi i arhive su stalniji."
+  },
+  {
+    "obj": "6.2",
+    "q": "Kolega predlaže da se odmah isključi mrežni kabl kompromitovanog servera. Na koji rizik upozorava RFC 3227?",
+    "options": [
+      "Da će se izgubiti DHCP adresa",
+      "Da se logovi neće rotirati",
+      "Da prekid veze može okinuti mehanizam napadača (dead man switch) koji briše tragove",
+      "Da će se ARP keš popuniti"
+    ],
+    "answer": 2,
+    "explain": "RFC 3227 upozorava da uklanjanje vanjskih kanala može aktivirati mehanizam koji uništava dokaze. Odluka o izolaciji se donosi svjesno, idealno nakon prikupljanja volatilnih podataka."
+  },
+  {
+    "obj": "6.2",
+    "q": "Zašto se tokom live responsea preporučuje koristiti pouzdane alate sa vlastitog medija umjesto ps i ss sa kompromitovanog hosta?",
+    "options": [
+      "Zato što su sporiji",
+      "Zato što ne podržavaju JSON izlaz",
+      "Zato što ne rade bez root prava",
+      "Zato što napadač može zamijeniti alate na sistemu da sakriju njegove procese i konekcije"
+    ],
+    "answer": 3,
+    "explain": "RFC 3227: ne vjeruj programima na sistemu. Rootkit ili zamijenjen binarni fajl može lagati. Statički linkovani alati sa pouzdanog medija smanjuju taj rizik."
+  },
+  {
+    "obj": "6.2",
+    "q": "Koji podatak NIJE dio zapisa o lancu nadzora po RFC 3227?",
+    "options": [
+      "Ko je, kada i gdje prikupio dokaz",
+      "Ko je čuvao dokaz i kako",
+      "Mišljenje analitičara o motivu napadača",
+      "Kada i kako je dokaz promijenio vlasnika"
+    ],
+    "answer": 2,
+    "explain": "Lanac nadzora dokumentuje porijeklo i rukovanje dokazom (uz hash), ne analizu. Motiv napadača spada u izvještaj o istrazi."
+  },
+  {
+    "obj": "6.2",
+    "q": "Live response skripta treba sačuvati izlaz. Gdje je najbolje pisati?",
+    "options": [
+      "U /tmp kompromitovanog hosta",
+      "Van kompromitovanog diska: mrežni direktorij, priključen medij ili preko SSH-a na drugi sistem, uz hash svakog fajla",
+      "U home direktorij korisnika čiji je nalog kompromitovan",
+      "Nigdje, dovoljan je screenshot"
+    ],
+    "answer": 1,
+    "explain": "Pisanje na kompromitovan disk mijenja dokaze i može prepisati obrisane podatke, a napadač može mijenjati izlaz. Izlaz ide van hosta i odmah se hashira."
+  },
+  {
+    "obj": "6.2",
+    "q": "Napadač je ostao bez pristupa, ali je pod u Kubernetesu još pokrenut. Tim želi pod obrisati da „očisti“ klaster. Šta prvo?",
+    "options": [
+      "Prikupiti pod YAML, logove svih kontejnera (i --previous), izmjene fajl sistema i procese sa čvora, pa tek onda odlučiti",
+      "Obrisati pod; Deployment će napraviti novi",
+      "Restartovati čvor",
+      "Skalirati Deployment na nulu bez ikakvog prikupljanja"
+    ],
+    "answer": 0,
+    "explain": "Kontejneri su prolazni: brisanjem poda nestaju fajl sistem, procesi i dio logova. Dokazi se prikupljaju prije uklanjanja, a pod se može izolovati (modul 10)."
+  },
+  {
+    "obj": "6.2",
+    "q": "Tokom trijaže pišeš vremensku liniju. Šta je ispravna praksa?",
+    "options": [
+      "Lokalno vrijeme svakog sistema, bez izvora",
+      "Samo akcije tima, bez opažanja iz logova",
+      "Samo zaključci, bez sirovih zapisa",
+      "UTC vremena, izvor svakog zapisa, i jasno razdvojena opažanja iz logova od akcija tima"
+    ],
+    "answer": 3,
+    "explain": "UTC uklanja zabunu oko vremenskih zona, izvor omogućava provjeru, a razdvajanje opažanja i akcija ispunjava RS.AN-06 (bilježenje akcija istrage)."
+  },
+  {
+    "obj": "6.2",
+    "type": "order",
+    "q": "Poredaj izvore dokaza po redoslijedu volatilnosti iz RFC 3227, od najnestalnijeg.",
+    "options": [
+      "Fajlovi na disku (cron, authorized_keys)",
+      "Bekap na arhivskom mediju",
+      "Sadržaj /dev/shm i /tmp",
+      "Mrežne konekcije i tabela procesa",
+      "Logovi u centralnom SIEM-u"
+    ],
+    "answer": [3, 2, 0, 4, 1],
+    "explain": "RFC 3227: procesi i mreža (nivo 2), privremeni fajl sistemi (3), disk (4), udaljeni logovi i monitoring (5), arhivski mediji (7)."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Upari aktivnost sa kategorijom CSF 2.0 kojoj pripada.",
+    "options": [
+      "Preliminarni pregled prijave i procjena ozbiljnosti",
+      "Prikupljanje podataka uz očuvanje integriteta i porijekla",
+      "Izolacija hosta da se incident ne proširi",
+      "Provjera integriteta bekapa prije vraćanja",
+      "Analiza lekcija i ažuriranje plana"
+    ],
+    "targets": [
+      "RS.MI Incident Mitigation",
+      "RS.MA Incident Management",
+      "ID.IM Improvement",
+      "RC.RP Recovery Plan Execution",
+      "RS.AN Incident Analysis",
+      "PR.AA Identity Management"
+    ],
+    "answer": [1, 4, 0, 3, 2],
+    "explain": "Trijaža je RS.MA-02, prikupljanje dokaza RS.AN-07, obuzdavanje RS.MI-01, provjera bekapa RC.RP-03, a lekcije idu u ID.IM. PR.AA nije relevantan nijednoj aktivnosti."
+  }
+]

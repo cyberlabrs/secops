@@ -1,0 +1,230 @@
+[
+  {
+    "obj": "4.1",
+    "q": "Kompanija ima 35 AWS naloga u AWS Organizations. Zaposleni se prijavljuju preko Microsoft Entra ID. Kad zaposleni napusti firmu i bude deaktiviran u Entra ID, mora automatski izgubiti pristup svim nalozima. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Napraviti IAM korisnike u svakom nalogu i skriptu koja ih briše prema izvozu iz Entra ID",
+      "Konfigurisati IAM SAML identity provider u svakom nalogu i ručno održavati uloge",
+      "Uključiti IAM Identity Center sa Entra ID kao external IdP (SAML 2.0) i automatskim SCIM provisioningom, uz dodjelu permission setova grupama",
+      "Napraviti Cognito user pool federisan sa Entra ID i identity pool za pristup nalozima"
+    ],
+    "answer": 2,
+    "explain": "Identity Center sa SAML-om za prijavu i SCIM-om za sinhronizaciju korisnika i grupa automatski deaktivira korisnika kad ga IdP deaktivira. SAML provider po nalogu i IAM korisnici traže ručno održavanje, a Cognito je za krajnje korisnike aplikacija, ne za radnu snagu."
+  },
+  {
+    "obj": "4.1",
+    "q": "Korisnik se uspješno prijavljuje u AWS access portal (IAM Identity Center), ali ne vidi nalog Production, iako kolege iz istog tima vide. Grupa Platform ima dodijeljen permission set za Production. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Korisnik nije član grupe Platform u Identity Centeru, npr. jer SCIM sinhronizacija nije prenijela članstvo iz IdP-a",
+      "Permission set ima session duration kraći od 12 sati",
+      "Korisnik nema MFA uređaj registrovan u IAM-u nalogu Production",
+      "SCP na nalogu Production blokira sts:AssumeRoleWithSAML"
+    ],
+    "answer": 0,
+    "explain": "Access portal prikazuje samo naloge za koje korisnik (direktno ili kroz grupu) ima assignment; ako članstvo nije sinhronizovano, nalog se ne vidi. Session duration ne utiče na vidljivost, IAM MFA nije bitan za Identity Center korisnika, a SCP bi izazvao grešku pri ulasku, ne skrivanje naloga."
+  },
+  {
+    "obj": "4.1",
+    "q": "Administrator je dodao novu customer managed politiku po imenu u permission set i pokrenuo provisioning, ali provisioning u nalogu Dev pada. U ostalim nalozima uspijeva. Šta je uzrok?",
+    "options": [
+      "Nalog Dev nema uključen CloudTrail",
+      "Permission set može sadržavati samo AWS managed politike",
+      "Dev nalog je delegated administrator, a permission setovi se ne mogu dodijeliti delegated administratoru",
+      "U nalogu Dev ne postoji customer managed politika sa tim imenom i putanjom"
+    ],
+    "answer": 3,
+    "explain": "Permission set referencira customer managed politiku po imenu i putanji, pa ta politika mora postojati u svakom ciljnom nalogu. Permission setovi podržavaju i customer managed i inline politike, a CloudTrail nije preduslov za provisioning."
+  },
+  {
+    "obj": "4.1",
+    "q": "Startup pravi mobilnu aplikaciju u kojoj se korisnici registruju emailom ili Google nalogom, a zatim direktno uploaduju fotografije u S3, svaki samo u svoj prefiks. Backend server ne postoji. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "IAM korisnik po mobilnom korisniku sa access keyem ugrađenim u aplikaciju",
+      "Cognito user pool sa Google federacijom i Cognito identity pool čija authenticated uloga dozvoljava s3:PutObject na prefiks ${cognito-identity.amazonaws.com:sub}/*",
+      "IAM Identity Center sa Google Workspace kao IdP-om",
+      "S3 bucket politika koja dozvoljava s3:PutObject za Principal \"*\" uz aws:SecureTransport uslov"
+    ],
+    "answer": 1,
+    "explain": "User pool radi registraciju i federaciju, identity pool mijenja token za privremene kredencijale, a varijabla sub ograničava korisnika na njegov prefiks. IAM korisnici po korisniku i javni upload su nesigurni, a Identity Center je za radnu snagu."
+  },
+  {
+    "obj": "4.1",
+    "q": "Security tim pregleda trust policy uloge koju koristi Cognito identity pool. Uloga dozvoljava sts:AssumeRoleWithWebIdentity za principal cognito-identity.amazonaws.com bez ikakvih uslova. Koji je rizik i kako ga ukloniti?",
+    "options": [
+      "Nema rizika jer samo Cognito može izdati token",
+      "Rizik je da uloga traje predugo; treba smanjiti max session duration na 15 minuta",
+      "Bilo koji identity pool, uključujući tuđi, mogao bi preuzeti ulogu; treba dodati uslov cognito-identity.amazonaws.com:aud sa ID-jem vlastitog identity poola i amr uslov",
+      "Rizik je da guest korisnici dobiju admin prava; treba isključiti user pool"
+    ],
+    "answer": 2,
+    "explain": "Bez aud uslova svaki identity pool u AWS-u može tražiti tu ulogu. Uslov na aud veže ulogu za tvoj pool, a amr razlikuje authenticated i unauthenticated identitete. Trajanje sesije ne rješava problem."
+  },
+  {
+    "obj": "4.1",
+    "q": "Kompanija mora smanjiti rizik od phishinga za root korisnike i preostale IAM korisnike sa pristupom konzoli. Koji MFA tip treba izabrati?",
+    "options": [
+      "Virtual authenticator aplikaciju (TOTP)",
+      "Hardware TOTP token",
+      "SMS MFA na službene telefone",
+      "Passkeys ili FIDO2 security keys"
+    ],
+    "answer": 3,
+    "explain": "Passkeys i security keys su zasnovani na FIDO standardima i vezani za domen, pa su otporni na phishing. TOTP kodovi (virtual i hardware) mogu se presresti na lažnoj stranici, a SMS MFA AWS više ne podržava za nove uređaje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Organizacija ima 200 member naloga i želi ukloniti lozinke i MFA uređaje root korisnika u member nalozima, a da i dalje može izvesti rijetke root zadatke, kao što je brisanje pogrešne S3 bucket politike koja je zaključala sve principale. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "Uključiti centralizovani root pristup za member naloge i za root zadatke koristiti sts:AssumeRoot iz management ili delegated admin naloga",
+      "Postaviti SCP koji zabranjuje sve akcije root korisnika i čuvati root lozinke u Secrets Manageru",
+      "Rotirati root lozinke svakih 90 dana i dodijeliti jedan hardware MFA token svim nalozima",
+      "Obrisati member naloge i ponovo ih kreirati bez root korisnika"
+    ],
+    "answer": 0,
+    "explain": "Centralizovani root pristup uklanja root kredencijale member naloga, a privilegovane zadatke izvodi kratkotrajna AssumeRoot sesija sa task politikom. SCP ne uklanja kredencijale, dijeljenje lozinki i tokena je rizično, a nalog ne može postojati bez root korisnika."
+  },
+  {
+    "obj": "4.1",
+    "q": "SaaS dobavljač za analizu troškova traži IAM ulogu u nalogu kompanije. Dobavljač koristi jednu svoju AWS ulogu za sve klijente. Security tim mora spriječiti da drugi klijent dobavljača navede ARN ove uloge i tako dobije pristup podacima kompanije. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Dodati uslov aws:SourceIp sa IP adresama dobavljača u identity politiku uloge",
+      "Dati dobavljaču IAM korisnika sa access keyem koji se rotira svakih 30 dana",
+      "U trust policy uloge navesti ulogu dobavljača kao principal i zahtijevati jedinstveni sts:ExternalId koji je dobavljač dodijelio kompaniji",
+      "Navesti \"Principal\": {\"AWS\": \"*\"} uz uslov aws:PrincipalOrgID"
+    ],
+    "answer": 2,
+    "explain": "External ID rješava confused deputy: dobavljač pri AssumeRole šalje ID vezan za konkretnog klijenta, pa zahtjev u ime drugog klijenta ne prolazi. IP uslov ne razlikuje klijente dobavljača, access key je lošija praksa, a dobavljač nije u tvojoj organizaciji."
+  },
+  {
+    "obj": "4.1",
+    "q": "SNS tema iz naloga kompanije šalje poruke u SQS red. Security tim želi spriječiti da SNS teme iz drugih naloga koriste isti put da pišu u red (confused deputy preko servisa). Šta treba dodati u SQS queue politiku?",
+    "options": [
+      "Uslov sts:ExternalId u statement za sns.amazonaws.com",
+      "Uslov aws:SecureTransport = true",
+      "Uslov aws:PrincipalOrgID",
+      "Uslov aws:SourceArn sa ARN-om dozvoljene SNS teme (i aws:SourceAccount)"
+    ],
+    "answer": 3,
+    "explain": "Kad AWS servis djeluje u ime resursa, aws:SourceArn i aws:SourceAccount ograničavaju za koji izvorni resurs servis smije pristupiti. External ID se koristi kod AssumeRole, SecureTransport ne rješava identitet, a servisni principal nema PrincipalOrgID."
+  },
+  {
+    "obj": "4.1",
+    "q": "Lambda funkcija generiše S3 presigned URL sa --expires-in od 24 sata za partnere. Partneri prijavljuju da linkovi prestaju raditi nakon otprilike sat vremena. Šta je uzrok?",
+    "options": [
+      "URL je potpisan privremenim kredencijalima execution role funkcije, pa ne važi duže od tih kredencijala",
+      "S3 presigned URL nikad ne može trajati duže od jednog sata",
+      "Bucket nema uključen versioning",
+      "Partneri koriste HTTP umjesto HTTPS"
+    ],
+    "answer": 0,
+    "explain": "Presigned URL važi najviše onoliko koliko važe kredencijali kojima je potpisan; kredencijali uloge ističu prije 24 sata. Sa IAM user ključem i SigV4 URL može važiti do 7 dana, a versioning nije povezan sa trajanjem."
+  },
+  {
+    "obj": "4.1",
+    "q": "Administrator koristi IAM korisnika sa access keyem za CLI. Politika traži MFA (aws:MultiFactorAuthPresent) za osjetljive akcije. Kako administrator NAJJEDNOSTAVNIJE dobija kredencijale koji zadovoljavaju taj uslov iz CLI-ja?",
+    "options": [
+      "Pozvati sts:GetFederationToken bez MFA",
+      "Pozvati aws sts get-session-token sa --serial-number i --token-code virtualnog MFA uređaja i koristiti vraćene privremene kredencijale",
+      "Dodati MFA serijski broj u ~/.aws/config bez poziva STS-a",
+      "Generisati novi access key nakon prijave u konzolu sa MFA"
+    ],
+    "answer": 1,
+    "explain": "GetSessionToken sa MFA kodom vraća privremene kredencijale u kojima je MFA prisutan. GetFederationToken ne podržava MFA, novi access key je i dalje dugotrajan i bez MFA konteksta, a sam zapis u config bez STS poziva ne mijenja ništa."
+  },
+  {
+    "obj": "4.1",
+    "q": "Developer pokušava iz uloge A (dobijene preko AssumeRole) preuzeti ulogu B sa --duration-seconds 14400. Uloga B ima max session duration 12 sati. Poziv vraća grešku o trajanju. Zašto?",
+    "options": [
+      "Uloga B mora imati uključen MFA",
+      "Role chaining (preuzimanje uloge iz sesije druge uloge) ograničava sesiju na najviše jedan sat",
+      "AssumeRole nikad ne dozvoljava više od 4 sata",
+      "Uloga A nema permissions boundary"
+    ],
+    "answer": 1,
+    "explain": "Kod role chaininga AWS ograničava novu sesiju na jedan sat bez obzira na max session duration uloge. Max session duration uloge do 12 sati važi kad se uloga preuzima direktno iz IAM korisnika ili federacije."
+  },
+  {
+    "obj": "4.1",
+    "q": "Kompanija želi da se korisnici iz on-prem Active Directory prijavljuju u IAM Identity Center. Korisnici i lozinke ne smiju biti sinhronizovani ni kopirani u AWS, a postoji Site-to-Site VPN prema data centru. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "AD Connector kao identity source za Identity Center",
+      "AWS Managed Microsoft AD sa jednosmjernom sinhronizacijom lozinki",
+      "Simple AD sa ručno kreiranim korisnicima",
+      "Cognito user pool sa SAML federacijom prema AD FS"
+    ],
+    "answer": 0,
+    "explain": "AD Connector je proxy prema on-prem AD-u i ne čuva korisnike ni lozinke u AWS-u. Managed AD bi bio poseban direktorij u AWS-u, Simple AD ne povezuje on-prem korisnike, a Cognito nije identity source za Identity Center."
+  },
+  {
+    "obj": "4.1",
+    "q": "Prijava korisnika u WorkSpaces preko AD Connector-a odjednom ne radi ni za jednog korisnika. On-prem domain controlleri rade normalno. Šta treba PRVO provjeriti?",
+    "options": [
+      "Da li je u CloudTrailu uključen data event logging",
+      "Da li je istekao IAM SAML certifikat",
+      "Da li korisnici imaju permission set u Identity Centeru",
+      "Mrežnu vezu (VPN/Direct Connect) i DNS/portove (53, 88, 389) od AD Connector-a prema on-prem DC-ovima"
+    ],
+    "answer": 3,
+    "explain": "AD Connector nema cache i svaku prijavu prosljeđuje on-prem DC-ovima, pa prekid VPN-a, DNS-a ili blokirani portovi ruše prijavu za sve. SAML certifikat i permission setovi nisu dio ovog toka, a data eventi ne utiču na autentikaciju."
+  },
+  {
+    "obj": "4.1",
+    "q": "SAML federacija (IAM SAML provider, bez Identity Centera) prema jednom AWS nalogu je radila godinama, a danas sve prijave padaju sa porukom da je SAML odgovor neispravan. Na IdP strani nisu mijenjana pravila. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Uloge su dostigle maksimalan broj sesija",
+      "CloudTrail trail je obrisan",
+      "IdP je rotirao ili mu je istekao signing certifikat, a metadata u IAM SAML provideru nije ažurirana",
+      "Root korisnik nema MFA"
+    ],
+    "answer": 2,
+    "explain": "AWS provjerava potpis assertiona certifikatom iz metadata SAML providera; kad IdP promijeni certifikat, sve prijave padaju dok se metadata ne ažurira. Broj sesija nije ograničen na taj način, a CloudTrail i root MFA ne utiču na federaciju."
+  },
+  {
+    "obj": "4.1",
+    "q": "Security analitičar istražuje sumnjive prijave u IAM Identity Center (identity source je Identity Center directory). Koje DVIJE stvari tačno opisuju šta će naći u CloudTrailu? (Izaberi DVA.)",
+    "options": [
+      "Događaj CredentialVerification pokazuje da li je pojedinačni faktor (npr. PASSWORD ili TOTP) uspio",
+      "Neuspjele prijave se uopšte ne loguju",
+      "Događaj UserAuthentication se loguje tek kad su svi traženi faktori uspješno prošli",
+      "Prijave se vide samo u VPC Flow Logs",
+      "Svaka prijava stvara ConsoleLogin događaj tipa IAMUser"
+    ],
+    "answer": [0, 2],
+    "explain": "Identity Center loguje CredentialChallenge i CredentialVerification po faktoru, a UserAuthentication tek nakon uspješne prijave; neuspjeh se vidi kao neuspjela verifikacija bez UserAuthentication. Flow Logs ne bilježe identitet, a Identity Center korisnici nisu IAM korisnici."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari scenarij sa STS API-jem koji se koristi.",
+    "options": [
+      "GitHub Actions job preuzima ulogu u AWS-u preko OIDC tokena.",
+      "Korisnik sa IAM user ključem dobija MFA-zaštićene kredencijale za CLI.",
+      "Okta šalje SAML assertion direktno IAM SAML provideru jednog naloga.",
+      "Uloga u nalogu A preuzima ulogu za čitanje u nalogu B.",
+      "Management nalog izvodi privilegovan root zadatak u member nalogu."
+    ],
+    "targets": [
+      "AssumeRoleWithSAML",
+      "AssumeRoot",
+      "AssumeRole",
+      "GetSessionToken",
+      "AssumeRoleWithWebIdentity",
+      "GetFederationToken"
+    ],
+    "answer": [4, 3, 0, 2, 1],
+    "explain": "OIDC token = AssumeRoleWithWebIdentity, MFA sesija za IAM korisnika = GetSessionToken, SAML assertion = AssumeRoleWithSAML, cross-account uloga = AssumeRole, root zadatak u member nalogu = AssumeRoot. GetFederationToken je distraktor."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Poredaj korake prijave korisnika preko IAM Identity Center sa external IdP-om do pristupa konzoli naloga.",
+    "options": [
+      "Identity Center provjerava assertion i prikazuje naloge i permission setove dodijeljene korisniku",
+      "Korisnik otvara AWS access portal URL",
+      "Korisnik bira nalog i permission set, a Identity Center izdaje privremene kredencijale za AWSReservedSSO ulogu",
+      "Identity Center preusmjerava korisnika na IdP, koji ga autentifikuje (uključujući MFA) i vraća SAML assertion"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Prijava počinje na access portalu, autentikaciju i MFA radi IdP koji vraća SAML assertion, Identity Center ga provjerava i prikazuje dodjele, a tek izborom naloga i permission seta nastaje sesija uloge u nalogu."
+  }
+]

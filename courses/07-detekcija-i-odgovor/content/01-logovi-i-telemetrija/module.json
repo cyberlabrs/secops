@@ -1,0 +1,13 @@
+{
+  "title": "Logovi i telemetrija na Linuxu",
+  "summary": "Linux logovi (auth.log, journald, auditd), vrijeme i integritet logova, cloud i Kubernetes izvori te prikupljanje i normalizacija u ECS i OCSF.",
+  "minutes": 75,
+  "domain": 1,
+  "objectives": [
+    "1.1",
+    "1.2",
+    "1.3"
+  ],
+  "title_en": "Logs and telemetry on Linux",
+  "summary_en": "Linux logs (auth.log, journald, auditd), log time and integrity, cloud and Kubernetes sources, and collection and normalization into ECS and OCSF."
+}

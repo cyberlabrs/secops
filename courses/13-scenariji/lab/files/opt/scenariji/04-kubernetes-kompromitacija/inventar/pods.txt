@@ -1,0 +1,12 @@
+# kubectl get pods -A -o wide (snimak 2026-10-21T02:40Z)
+NAMESPACE     NAME                                  READY   STATUS    RESTARTS   AGE   IP            NODE
+argocd        argocd-application-controller-0       1/1     Running   0          21d   10.244.1.44   node01
+ingress-nginx ingress-nginx-controller-6b7c9f8d4-2lq8s 1/1   Running   0          21d   10.244.1.12   node01
+kube-system   coredns-7c65d6cfc9-4rnv8              1/1     Running   0          34d   10.244.0.5    cp01
+kube-system   node-debug-7f4c                       1/1     Running   0          21m   10.0.10.11    node01
+monitoring    prometheus-server-0                   2/2     Running   0          21d   10.244.1.31   node01
+payments      payments-api-6c8b7d9f5-q4tzr          1/1     Running   0          6d    10.244.1.58   node01
+shop          newsletter-5f7d8c9b6-hq4ln            1/1     Running   0          9d    10.244.3.40   node03
+shop          postgres-0                            1/1     Running   0          48d   10.244.3.15   node03
+shop          storefront-7d9c6b5f4-m8wzn            1/1     Running   0          13d   10.244.3.22   node03
+shop          storefront-7d9c6b5f4-x2kqp            1/1     Running   0          13d   10.244.2.17   node02

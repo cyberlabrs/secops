@@ -1,0 +1,290 @@
+[
+  {
+    "obj": "1.5",
+    "q": "Kompanija počinje izbor IaaS provajdera za novu platformu koja će obrađivati kartične podatke i lične podatke građana EU. Šta sigurnosni menadžer treba uraditi PRVO?",
+    "options": [
+      "Zatražiti SOC 2 Type II izvještaje od tri najveća provajdera",
+      "Uporediti cijene i SLA provajdera",
+      "Definisati kriterije procjene na osnovu poslovnih, regulatornih i sigurnosnih zahtjeva",
+      "Pokrenuti penetration test na probnim nalozima kod svakog provajdera"
+    ],
+    "answer": 2,
+    "explain": "Verifikacija prema kriterijima zahtijeva da kriteriji postoje. Tek kada su definisani zahtjevi (PCI DSS, GDPR, lokacija podataka) ima smisla prikupljati i ocjenjivati dokaze kao što je SOC 2."
+  },
+  {
+    "obj": "1.5",
+    "q": "Menadžer rizika procjenjuje SaaS provajdera i želi dokaz da su kontrole provajdera ne samo dobro dizajnirane, nego i efikasno radile tokom proteklih 12 mjeseci. Koji dokument NAJBOLJE odgovara?",
+    "options": [
+      "SOC 2 Type II izvještaj",
+      "SOC 2 Type I izvještaj",
+      "SOC 3 izvještaj",
+      "Popunjen CAIQ upitnik u CSA STAR registru"
+    ],
+    "answer": 0,
+    "explain": "Type II testira operativnu efikasnost kontrola kroz period. Type I ocjenjuje dizajn u jednom trenutku, SOC 3 je javni sažetak bez detalja testova, a CAIQ je samoprocjena."
+  },
+  {
+    "obj": "1.5",
+    "q": "SOC 2 izvještaj SaaS provajdera navodi da je IaaS provajder na kojem radi isključen metodom carve-out. Šta to znači za customera?",
+    "options": [
+      "Kontrole IaaS provajdera su testirane u okviru ovog izvještaja",
+      "SaaS provajder nije smio isključiti podizvođača, pa je izvještaj nevažeći",
+      "Customer ne mora brinuti o IaaS sloju jer je to odgovornost SaaS provajdera",
+      "Izvještaj ne pokriva kontrole IaaS provajdera, pa customer treba pribaviti i procijeniti njegov izvještaj"
+    ],
+    "answer": 3,
+    "explain": "Carve-out isključuje kontrole podizvođača iz obima. Za potpunu sliku customer mora pribaviti dokaze o kontrolama tog podizvođača (fourth party), npr. njegov SOC 2."
+  },
+  {
+    "obj": "1.5",
+    "q": "U SOC 2 izvještaju provajdera nalazi se sekcija Complementary User Entity Controls koja navodi da korisnik mora uključiti MFA i periodično revidirati pristup. Šta to NAJBOLJE opisuje?",
+    "options": [
+      "Preporuke koje customer može ignorisati ako koristi SSO",
+      "Kontrole koje customer mora sprovesti da bi kontrole provajdera postigle svoje ciljeve",
+      "Izuzetke koje je revizor pronašao kod provajdera",
+      "Dodatne usluge koje provajder naplaćuje"
+    ],
+    "answer": 1,
+    "explain": "CUEC su obaveze customera bez kojih se ciljevi kontrola ne postižu. Ako ih customer ne sprovede, oslanjanje na izvještaj provajdera nije opravdano."
+  },
+  {
+    "obj": "1.5",
+    "q": "Koji nivo CSA STAR programa uključuje nezavisnu procjenu treće strane, npr. kroz STAR Certification uz ISO 27001 ili STAR Attestation uz SOC 2?",
+    "options": [
+      "Level 1",
+      "Level 3",
+      "Level 2",
+      "Level 0"
+    ],
+    "answer": 2,
+    "explain": "Level 1 je samoprocjena (CAIQ), Level 2 je audit treće strane (Certification ili Attestation), a Level 3 je kontinuirano praćenje. Level 0 ne postoji."
+  },
+  {
+    "obj": "1.5",
+    "q": "SOC 2 izvještaj provajdera pokriva period koji je završio prije pet mjeseci, a novi izvještaj još nije izdat. Ugovor se potpisuje sada. Šta je NAJBOLJE zatražiti?",
+    "options": [
+      "Bridge (gap) letter u kojem provajder potvrđuje da nije bilo značajnih promjena kontrola od kraja perioda",
+      "Odgoditi potpisivanje dok ne izađe novi izvještaj",
+      "Pravo da customer sam auditira data centar",
+      "SOC 3 izvještaj za isti period"
+    ],
+    "answer": 0,
+    "explain": "Bridge letter pokriva vremenski jaz između kraja perioda izvještaja i trenutka procjene. Odgađanje i fizički audit su nesrazmjerni, a SOC 3 pokriva isti stari period sa manje detalja."
+  },
+  {
+    "obj": "1.5",
+    "q": "Agencija zahtijeva da HSM koji štiti glavne ključeve automatski uništi ključni materijal pri pokušaju fizičkog otvaranja kućišta. Koji minimalni nivo FIPS 140 to ispunjava?",
+    "options": [
+      "Level 1",
+      "Level 2",
+      "Level 4",
+      "Level 3"
+    ],
+    "answer": 3,
+    "explain": "Level 3 uvodi tamper-resistance i reakciju (zeroization) pri pokušaju neovlaštenog pristupa. Level 2 traži samo tamper-evidence, a Level 4 dodaje zaštitu od napada iz okruženja, što je više od minimuma."
+  },
+  {
+    "obj": "1.5",
+    "q": "Dva firewall proizvoda imaju Common Criteria sertifikat: jedan na EAL2, drugi na EAL4. Koja izjava je NAJTAČNIJA?",
+    "options": [
+      "EAL4 proizvod je dvostruko sigurniji od EAL2 proizvoda",
+      "EAL4 označava dublju i strožu evaluaciju prema Security Targetu, ali ne garantuje da proizvod ima više sigurnosnih funkcija",
+      "EAL2 proizvod nije prikladan za bilo kakvu upotrebu u cloudu",
+      "EAL nivo važi za sve buduće verzije proizvoda"
+    ],
+    "answer": 1,
+    "explain": "EAL mjeri dubinu evaluacije tvrdnji iz Security Targeta, a ne apsolutnu sigurnost. Sertifikat važi za evaluiranu verziju i konfiguraciju (TOE), pa nove verzije zahtijevaju ponovnu evaluaciju ili održavanje sertifikata."
+  },
+  {
+    "obj": "1.5",
+    "q": "U Common Criteria terminologiji, kako se zove dokument koji, nezavisno od proizvođača, definiše sigurnosne zahtjeve za klasu proizvoda kao što su mrežni uređaji?",
+    "options": [
+      "Protection Profile",
+      "Security Target",
+      "Target of Evaluation",
+      "Statement of Applicability"
+    ],
+    "answer": 0,
+    "explain": "Protection Profile je skup zahtjeva za klasu proizvoda. Security Target je tvrdnja proizvođača za konkretan proizvod, TOE je sam evaluirani proizvod, a SoA pripada ISO 27001."
+  },
+  {
+    "obj": "1.5",
+    "q": "Organizacija planira nabavku kriptografskog modula za novi sistem 2026. godine. Ponuđač nudi modul sa važećim FIPS 140-2 sertifikatom i drugi sa FIPS 140-3 sertifikatom. Šta je NAJBOLJA preporuka?",
+    "options": [
+      "Izabrati FIPS 140-2 jer outline ispita navodi taj standard",
+      "Oba su jednako prihvatljiva dugoročno",
+      "Izabrati modul sa FIPS 140-3 validacijom jer FIPS 140-2 sertifikati prelaze na historical listu u septembru 2026",
+      "FIPS validacija nije bitna ako provajder ima ISO 27001"
+    ],
+    "answer": 2,
+    "explain": "FIPS 140-3 je zamijenio 140-2; preostali 140-2 sertifikati prelaze na CMVP historical listu 21. 9. 2026. ISO 27001 sertifikuje sistem upravljanja, ne kriptografski modul."
+  },
+  {
+    "obj": "1.5",
+    "q": "Provajder je popunio CAIQ i objavio ga u CSA STAR registru, ali nema nijedan nezavisni audit. Customer obrađuje visokoosjetljive podatke. Kako treba tretirati ovaj dokaz?",
+    "options": [
+      "Kao ekvivalent ISO 27001 sertifikata",
+      "Kao dovoljan dokaz jer je zasnovan na CCM-u",
+      "Kao dokaz koji automatski ispunjava GDPR",
+      "Kao koristan polazni opis kontrola, ali bez nezavisne potvrde; za visok rizik potrebni su dodatni dokazi ili kontrole"
+    ],
+    "answer": 3,
+    "explain": "CAIQ (STAR Level 1) je samoprocjena: daje transparentnost, ali ne nezavisnu verifikaciju. Za visok rizik treba tražiti audit treće strane, ugovorne garancije ili kompenzacione kontrole."
+  },
+  {
+    "obj": "1.6",
+    "q": "SOC prima hiljade alarma dnevno iz cloud okruženja i ne uspijeva otkriti kompromitovani nalog koji se ponaša neuobičajeno (prijave u neobično vrijeme i masovno preuzimanje podataka). Koja tehnologija NAJBOLJE adresira ovaj problem?",
+    "options": [
+      "User and Entity Behavior Analytics zasnovana na ML-u",
+      "Dodatna pravila sa potpisima poznatih napada",
+      "Veći broj analitičara u noćnoj smjeni",
+      "Duže čuvanje logova"
+    ],
+    "answer": 0,
+    "explain": "UEBA uči normalno ponašanje korisnika i entiteta i otkriva odstupanja koja potpisi ne vide. Više ljudi i duže čuvanje logova ne rješavaju problem prepoznavanja anomalija u velikom obimu."
+  },
+  {
+    "obj": "1.6",
+    "q": "Nakon nekoliko mjeseci ML model za detekciju prevara počinje propuštati sve više slučajeva. Istraga pokazuje da su podaci za ponovni trening dolazili iz izvora u koji je napadač mogao upisivati. Koja prijetnja je NAJVJEROVATNIJA?",
+    "options": [
+      "Model inversion",
+      "Data poisoning",
+      "Prompt injection",
+      "Membership inference"
+    ],
+    "answer": 1,
+    "explain": "Ubacivanje zlonamjernih podataka u trening skup je data poisoning. Model inversion i membership inference izvlače informacije iz modela, a prompt injection napada LLM kroz ulaz."
+  },
+  {
+    "obj": "1.6",
+    "q": "Koja kontrola NAJBOLJE podržava verifikaciju izvora podataka koji se koriste za trening sigurnosnog ML modela?",
+    "options": [
+      "Povećanje veličine trening skupa iz javnih izvora",
+      "Češći ponovni trening modela",
+      "Evidencija porijekla i transformacija podataka (provenance/lineage) uz hash i potpis skupova podataka",
+      "Šifrovanje modela at rest"
+    ],
+    "answer": 2,
+    "explain": "Verifikacija znači potvrditi odakle podaci dolaze i da nisu mijenjani: provenance/lineage i integritet (hash, potpis). Više javnih podataka može povećati rizik, a šifrovanje modela ne govori ništa o kvalitetu podataka."
+  },
+  {
+    "obj": "1.6",
+    "q": "Analitičari troše većinu vremena na ponavljajuće korake: provjeru reputacije IP adrese, traženje vlasnika naloga i otvaranje tiketa. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Novi SIEM sa više izvora logova",
+      "Outsourcing cijelog SOC-a",
+      "Smanjiti broj pravila detekcije",
+      "SOAR sa playbookovima koji automatizuju obogaćivanje i otvaranje slučajeva"
+    ],
+    "answer": 3,
+    "explain": "SOAR orkestrira alate i automatizuje ponovljive korake kroz playbookove, čime se smanjuje MTTR. SIEM prikuplja i koreliše, ali ne automatizuje odgovor; smanjenje pravila povećava rizik propuštanja."
+  },
+  {
+    "obj": "1.6",
+    "q": "Tim projektuje SOAR playbook za sumnju na kompromitovanu produkcijsku bazu. Koji dizajn je NAJBOLJI?",
+    "options": [
+      "Automatsko obogaćivanje i prikupljanje dokaza, a izolacija produkcijske baze tek uz odobrenje analitičara",
+      "Potpuno automatsko gašenje baze čim stigne alarm bilo koje ozbiljnosti",
+      "Samo slanje emaila analitičaru bez automatizacije",
+      "Automatsko brisanje baze i vraćanje iz backupa"
+    ],
+    "answer": 0,
+    "explain": "Neutralne akcije se automatizuju, a akcije sa velikim poslovnim uticajem zadržavaju human-in-the-loop zbog mogućih lažnih pozitiva. Potpuno ručni pristup gubi prednosti SOAR-a, a destruktivne automatske akcije su rizične."
+  },
+  {
+    "obj": "1.6",
+    "q": "Model za selekciju kandidata za posao, treniran na istorijskim odlukama o zapošljavanju, sistematski daje niže ocjene jednoj grupi kandidata. Koje etičko pitanje je u PRVOM planu?",
+    "options": [
+      "Explainability",
+      "Intelektualna svojina",
+      "Bias i pravičnost",
+      "Model drift"
+    ],
+    "answer": 2,
+    "explain": "Model je naslijedio pristrasnost iz istorijskih podataka, što je problem pravičnosti (bias). Explainability je povezana tema, ali ovdje je primarni problem diskriminatorni ishod."
+  },
+  {
+    "obj": "1.6",
+    "q": "Banka u EU planira da AI sistem automatski, bez ljudskog učešća, odbija zahtjeve za kredit. Šta je NAJBOLJE uraditi prije puštanja u produkciju?",
+    "options": [
+      "Testirati tačnost modela na istorijskim podacima",
+      "Procijeniti usklađenost (DPIA po GDPR-u, klasifikacija kao visokorizičan sistem po EU AI Actu) i obezbijediti ljudski nadzor i pravo na osporavanje odluke",
+      "Prebaciti model na managed AI servis provajdera da bi odgovornost prešla na njega",
+      "Šifrovati sve podatke o klijentima"
+    ],
+    "answer": 1,
+    "explain": "Kreditno bodovanje je visokorizična upotreba po AI Actu, a GDPR čl. 22 ograničava isključivo automatizovane odluke sa značajnim učinkom. Odgovornost za upotrebu ne prelazi na provajdera, a tačnost i šifrovanje ne rješavaju regulatorne zahtjeve."
+  },
+  {
+    "obj": "1.6",
+    "q": "Koje četiri funkcije čine jezgro NIST AI Risk Management Frameworka?",
+    "options": [
+      "Identify, Protect, Detect, Respond",
+      "Plan, Do, Check, Act",
+      "Assess, Authorize, Monitor, Retire",
+      "Govern, Map, Measure, Manage"
+    ],
+    "answer": 3,
+    "explain": "NIST AI RMF koristi Govern, Map, Measure i Manage. Identify/Protect/Detect/Respond je NIST CSF, PDCA je ciklus sistema upravljanja (ISO), a treća opcija je izmišljena."
+  },
+  {
+    "obj": "1.6",
+    "q": "Organizacija želi sertifikovati sistem upravljanja AI-jem, sa strukturom sličnom ISO 27001. Koji standard je NAJPRIKLADNIJI?",
+    "options": [
+      "ISO/IEC 27017",
+      "ISO/IEC 42001",
+      "ISO/IEC 23894",
+      "ISO 22301"
+    ],
+    "answer": 1,
+    "explain": "ISO/IEC 42001 definiše sistem upravljanja AI-jem (AIMS) i sertifikaciono je provjerljiv. ISO/IEC 23894 daje smjernice za rizike AI-ja bez sertifikacije, 27017 se odnosi na cloud kontrole, a 22301 na kontinuitet."
+  },
+  {
+    "obj": "1.5",
+    "type": "match",
+    "q": "Upari potrebu menadžera rizika sa dokazom koji je NAJBOLJE ispunjava.",
+    "options": [
+      "Javni sažetak kontrola za marketinški materijal i prve razgovore.",
+      "Detaljna potvrda da su kontrole sigurnosti i dostupnosti radile 12 mjeseci.",
+      "Potvrda da je kriptografski modul u HSM-u validiran.",
+      "Uvid u to koje kontrole Aneksa A su uključene u sertifikovani ISMS.",
+      "Standardizovan upitnik o kontrolama mapiran na CCM."
+    ],
+    "targets": [
+      "FIPS 140-3 sertifikat",
+      "CAIQ",
+      "SOC 2 Type II",
+      "SOC 3",
+      "Statement of Applicability (ISO 27001)",
+      "Common Criteria EAL4"
+    ],
+    "answer": [
+      3,
+      2,
+      0,
+      4,
+      1
+    ],
+    "explain": "SOC 3 je javni sažetak, SOC 2 Type II testira efikasnost kroz period, FIPS 140-3 validira kriptografske module, SoA pokazuje obuhvat kontrola ISO 27001, a CAIQ je CSA upitnik mapiran na CCM. Common Criteria je distraktor."
+  },
+  {
+    "obj": "1.6",
+    "type": "order",
+    "q": "Poredaj korake SOAR playbooka za kompromitovani pristupni ključ u cloudu od prvog do posljednjeg.",
+    "options": [
+      "Analitičar odlučuje o eskalaciji i komunikaciji i zatvara slučaj sa lekcijama",
+      "Automatski deaktivirati ključ i opozvati aktivne sesije",
+      "Prijem alarma iz servisa za detekciju prijetnji",
+      "Automatski prikupiti dokaze (logove API poziva) i otvoriti slučaj za analitičara",
+      "Obogatiti alarm: vlasnik ključa, izvorne IP adrese, reputacija"
+    ],
+    "answer": [
+      2,
+      4,
+      1,
+      3,
+      0
+    ],
+    "explain": "Playbook počinje alarmom, zatim obogaćivanjem konteksta, pa zaustavlja štetu (deaktivacija ključa), prikuplja dokaze i otvara slučaj, a ljudska odluka i lekcije dolaze na kraju."
+  }
+]

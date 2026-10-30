@@ -1,0 +1,12 @@
+{
+  "title": "Odgovor na incidente: okvir, trijaža i dokazi",
+  "summary": "Odgovor na incidente po NIST SP 800-61r3 i CSF 2.0: uloge, playbook i runbook, trijaža i prioritet, redoslijed volatilnosti, lanac nadzora i Linux live response.",
+  "minutes": 90,
+  "domain": 6,
+  "objectives": [
+    "6.1",
+    "6.2"
+  ],
+  "title_en": "Incident response: framework, triage and evidence",
+  "summary_en": "Incident response according to NIST SP 800-61r3 and CSF 2.0: roles, playbooks and runbooks, triage and priority, order of volatility, chain of custody and Linux live response."
+}

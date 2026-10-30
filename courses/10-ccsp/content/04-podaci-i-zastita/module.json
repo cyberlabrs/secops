@@ -1,0 +1,13 @@
+{
+  "title": "Podaci u cloudu: životni ciklus, skladištenje i zaštita",
+  "summary": "Cloud data lifecycle, disperzija i tokovi podataka, tipovi storagea i njihove prijetnje, te tehnike zaštite: šifrovanje i envelope encryption, tokenizacija, hashing i potpisi, DLP, masking, anonimizacija i pseudonimizacija, upravljanje ključevima, tajnama i certifikatima.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.2",
+    "2.3"
+  ],
+  "title_en": "Cloud data: lifecycle, storage and protection",
+  "summary_en": "The cloud data lifecycle, data dispersion and data flows, storage types and their threats, and protection techniques: encryption and envelope encryption, tokenization, hashing and signatures, DLP, masking, anonymization and pseudonymization, and management of keys, secrets and certificates."
+}

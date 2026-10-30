@@ -1,0 +1,231 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Kompanija ima 150 naloga u AWS Organizations i otvara nove naloge svake sedmice. Sigurnosni tim traži da GuardDuty bude uključen u svim postojećim i budućim nalozima u Regionima eu-central-1 i eu-west-1 i da se svi nalazi vide iz jednog Security Tooling naloga. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "U svakom nalogu napraviti CloudFormation StackSet koji uključuje GuardDuty detector i ručno poslati pozivnice iz Security Tooling naloga.",
+      "Uključiti GuardDuty samo u management nalogu, jer on automatski analizira CloudTrail organization trail svih članova.",
+      "Iz management naloga u oba Regiona postaviti Security Tooling nalog kao GuardDuty delegated administrator i u njemu uključiti auto-enable za sve članove organizacije.",
+      "Napraviti Lambda funkciju koju EventBridge pokreće na CreateAccountResult događaj i koja uključuje GuardDuty u novom nalogu."
+    ],
+    "answer": 2,
+    "explain": "Delegated administrator sa auto-enable opcijom automatski uključuje GuardDuty u postojećim i novim članovima, a nalazi se agregiraju kod admina. GuardDuty je regionalan, pa se to radi u svakom Regionu. StackSet sa pozivnicama i Lambda rade, ali traže više održavanja, a GuardDuty u management nalogu ne analizira tuđe naloge."
+  },
+  {
+    "obj": "1.1",
+    "q": "Osiguravajuća kuća ima portal na koji klijenti uploaduju PDF dokumente u S3 bucket. Fajlovi zaraženi malverom ne smiju biti dostupni internoj aplikaciji koja ih obrađuje. Tim ne želi održavati vlastitu infrastrukturu za skeniranje. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Uključiti GuardDuty Malware Protection for S3 za bucket sa tagovanjem objekata i dodati bucket policy koji odbija s3:GetObject za objekte čiji tag skeniranja nije NO_THREATS_FOUND.",
+      "Pokrenuti Lambda funkciju sa ClamAV slojem na s3:ObjectCreated događaj i premjestiti zaražene fajlove u karantinski bucket.",
+      "Uključiti Amazon Macie automated sensitive data discovery za bucket i blokirati objekte sa nalazima.",
+      "Uključiti GuardDuty S3 Protection i koristiti nalaze o sumnjivom pristupu da se objekti obrišu."
+    ],
+    "answer": 0,
+    "explain": "Malware Protection for S3 je managed skeniranje novih objekata; rezultat se upisuje kao tag na objekat, a bucket policy na osnovu taga blokira čitanje. ClamAV u Lambdi radi, ali ga moraš održavati. Macie traži osjetljive podatke, ne malver, a S3 Protection analizira API aktivnost (data events), ne sadržaj fajlova."
+  },
+  {
+    "obj": "1.1",
+    "q": "Platformski tim vodi više Amazon EKS klastera. Sigurnosni tim mora otkriti kada se unutar kontejnera pokrene kriptominer ili reverse shell. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Uključiti EKS control plane logging (audit) i napraviti metric filter za exec komande.",
+      "Uključiti GuardDuty EKS Protection, koji analizira Kubernetes audit logove.",
+      "Uključiti Amazon Inspector skeniranje ECR imagea koje koriste klasteri.",
+      "Uključiti GuardDuty Runtime Monitoring za EKS sa automatski upravljanim GuardDuty agentom."
+    ],
+    "answer": 3,
+    "explain": "Procese, fajlove i mrežne konekcije unutar kontejnera vidi samo Runtime Monitoring preko agenta. EKS Protection i audit logovi vide pozive Kubernetes API-ja, ne šta se dešava u kontejneru, a Inspector nalazi poznate ranjivosti u imageu, ne aktivno ponašanje."
+  },
+  {
+    "obj": "1.1",
+    "q": "GuardDuty je uključen u cijeloj organizaciji, sa delegated administratorom u Security Tooling nalogu. Dežurni tim mora dobiti email u roku od nekoliko minuta za svaki nalaz čiji je severity 7 ili veći, iz bilo kog člana. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "U svakom članu napraviti CloudWatch alarm nad GuardDuty metrikom broja nalaza i poslati alarm na SNS topic.",
+      "U Security Tooling nalogu, u svakom korištenom Regionu, napraviti EventBridge pravilo sa source aws.guardduty i numeričkim filterom severity >= 7 koje šalje događaj na SNS topic sa email pretplatom.",
+      "Zakazati Lambda funkciju koja svakih 5 minuta poziva ListFindings u svim nalozima i šalje email preko Amazon SES.",
+      "Uključiti izvoz nalaza u S3 i napraviti S3 event notification koji šalje email za svaki novi objekat."
+    ],
+    "answer": 1,
+    "explain": "Nalazi članova stižu i u EventBridge administratorskog naloga, pa je jedno pravilo po Regionu sa numeričkim filterom na severity najjednostavnije. GuardDuty ne objavljuje takvu metriku za alarm, polling Lambda je više koda i kašnjenja, a S3 export ne filtrira po severity i ažuriranja dolaze sa zakašnjenjem."
+  },
+  {
+    "obj": "1.1",
+    "q": "Revizor traži da sigurnosni tim dobije obavještenje svaki put kada se neko prijavi ili izvrši API poziv kao root korisnik bilo kog naloga. CloudTrail organization trail već postoji i piše u S3. Šta treba uraditi?",
+    "options": [
+      "Uključiti CloudTrail Insights i čekati Insights događaj za root aktivnost.",
+      "Konfigurisati trail da šalje događaje u CloudWatch Logs, napraviti metric filter za userIdentity.type = Root i CloudWatch alarm koji šalje na SNS.",
+      "Napraviti Athena upit nad trail bucketom i pokretati ga ručno svako jutro.",
+      "Uključiti IAM Access Analyzer za organizaciju i pratiti nalaze za root korisnika."
+    ],
+    "answer": 1,
+    "explain": "Metric filter nad CloudTrail log grupom plus alarm na SNS je standardni (CIS) način za skoro real-time obavještenje o root aktivnosti. Insights prati odstupanja u broju i greškama API poziva, a ne konkretnog korisnika; Athena upit nije alarm, a Access Analyzer ne prati prijave."
+  },
+  {
+    "obj": "1.1",
+    "q": "Sve produkcijske EC2 instance imaju tag Env=prod. Svaka instanca, uključujući nove iz Auto Scaling grupa, mora stalno imati instaliran i ispravno konfigurisan CloudWatch agent. Ako neko ručno promijeni konfiguraciju, ona se mora vratiti. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Dodati instalaciju agenta u user data svih launch templateova.",
+      "Jednom pokrenuti Systems Manager Run Command sa dokumentom AmazonCloudWatch-ManageAgent na sve instance.",
+      "Napraviti AWS Config custom pravilo koje provjerava da li agent šalje metrike.",
+      "Napraviti Systems Manager State Manager association za tag Env=prod koja po rasporedu primjenjuje AmazonCloudWatch-ManageAgent sa konfiguracijom iz Parameter Store-a."
+    ],
+    "answer": 3,
+    "explain": "State Manager association cilja tag, automatski obuhvata nove instance i periodično vraća željeno stanje. User data radi samo pri pokretanju i ne ispravlja kasnije promjene, Run Command je jednokratan, a Config pravilo samo prijavljuje neusklađenost."
+  },
+  {
+    "obj": "1.1",
+    "q": "Kompanija mora u svim nalozima organizacije provjeravati pravila iz CIS AWS Foundations Benchmarka i automatski ispraviti S3 buckete koji postanu javni. Pravila moraju biti definisana na jednom mjestu kao kod. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "Deployovati AWS Config organization conformance pack iz delegated admin naloga sa pravilima i remedijacijom preko SSM Automation dokumenata.",
+      "Uključiti Amazon Macie u svim nalozima i obrisati buckete sa nalazima.",
+      "Uključiti AWS Trusted Advisor i pregledati sigurnosne provjere jednom sedmično.",
+      "U svakom nalogu napraviti Lambda funkciju koja svakog sata čita ACL-ove svih bucketa i mijenja ih."
+    ],
+    "answer": 0,
+    "explain": "Organization conformance pack je jedan šablon sa Config pravilima i remedijacijom koji se automatski deployuje na sve naloge, a SSM Automation radi ispravku. Macie traži osjetljive podatke, Trusted Advisor nema automatsku remedijaciju, a Lambda u svakom nalogu je najveći operativni teret."
+  },
+  {
+    "obj": "1.1",
+    "q": "Security Hub CSPM je uključen sa delegated administratorom. Tim želi da FSBP i CIS standardi budu uključeni u svim nalozima i svim Regionima, da ih novi nalozi dobiju automatski i da se iz jednog mjesta mogu isključiti pojedine kontrole za sandbox OU. Šta treba koristiti?",
+    "options": [
+      "Security Hub automation rules koje suprimiraju nalaze sandbox naloga.",
+      "AWS Config aggregator i ručno uključivanje standarda u svakom Regionu.",
+      "Security Hub central configuration sa configuration policies primijenjenim na OU iz delegated admin naloga.",
+      "Service control policy koja zabranjuje securityhub:DisableSecurityHub."
+    ],
+    "answer": 2,
+    "explain": "Central configuration omogućava da delegated admin definiše koje standarde i kontrole uključiti i primijeni to na OU ili naloge u svim Regionima, uključujući nove naloge. Automation rules mijenjaju nalaze, ne konfiguraciju; Config aggregator ne uključuje standarde, a SCP samo sprečava gašenje."
+  },
+  {
+    "obj": "1.1",
+    "q": "Javni API ima jasnu dnevnu i sedmičnu sezonalnost broja zahtjeva. Tim želi alarm kada broj zahtjeva neuobičajeno poraste ili padne, ali ne može odrediti jedan fiksni prag. Koje rješenje ispunjava zahtjev uz NAJMANJE truda?",
+    "options": [
+      "Composite alarm koji kombinuje dva statička alarma, jedan za dan i jedan za noć.",
+      "Lambda funkcija koja svakih 5 minuta računa prosjek i standardnu devijaciju i šalje SNS poruku.",
+      "Metric filter nad access logovima sa pragom od dvostrukog prosjeka.",
+      "CloudWatch alarm zasnovan na anomaly detection modelu za metriku Count."
+    ],
+    "answer": 3,
+    "explain": "Anomaly detection alarm uči očekivani opseg metrike sa sezonalnošću i alarmira kada vrijednost izađe iz pojasa. Statički pragovi i metric filter ne prate sezonalnost, a vlastita Lambda je nepotreban kod."
+  },
+  {
+    "obj": "1.1",
+    "q": "Organizacija ima 400 S3 bucketa u 60 naloga. Uprava traži kontinuiran pregled koji bucketi vjerovatno sadrže lične podatke, uz razumne troškove i bez ručnog definisanja poslova za svaki bucket. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Uključiti Amazon Macie sa delegated administratorom i automated sensitive data discovery za organizaciju.",
+      "Napraviti Macie sensitive data discovery job koji svakog dana skenira sve objekte u svim bucketima.",
+      "Uključiti GuardDuty S3 Protection u svim nalozima.",
+      "Pokrenuti Athena upite nad S3 inventory izvještajima i tražiti imena fajlova koja liče na PII."
+    ],
+    "answer": 0,
+    "explain": "Automated sensitive data discovery kontinuirano uzorkuje objekte i daje sensitivity score po bucketu, što je jeftiniji pregled cijele organizacije. Dnevni job nad svim objektima je skup, S3 Protection prati API aktivnost, a imena fajlova ne otkrivaju sadržaj."
+  },
+  {
+    "obj": "1.3",
+    "q": "Developer je na stage-u REST API-ja u Amazon API Gateway uključio CloudWatch execution logging na nivou INFO. Konzola javlja grešku da CloudWatch Logs role ARN mora biti postavljen u postavkama naloga. Šta treba uraditi?",
+    "options": [
+      "Dodati logs:PutLogEvents u execution rolu Lambda funkcije iza API-ja.",
+      "Napraviti log grupu sa imenom API-ja prije uključivanja logovanja.",
+      "Napraviti IAM rolu kojoj vjeruje apigateway.amazonaws.com sa politikom AmazonAPIGatewayPushToCloudWatchLogs i upisati njen ARN u API Gateway account settings u tom Regionu.",
+      "Dodati resource policy na API koja dozvoljava logs.amazonaws.com."
+    ],
+    "answer": 2,
+    "explain": "REST API execution i access logovi traže rolu na nivou naloga i Regiona koju API Gateway preuzima da piše u CloudWatch Logs. Lambda rola utiče samo na logove funkcije, log grupa se pravi automatski, a resource policy API-ja kontroliše ko poziva API."
+  },
+  {
+    "obj": "1.3",
+    "q": "EC2 instance u privatnom subnetu bez NAT gatewaya imaju instaliran CloudWatch agent i instance profile sa CloudWatchAgentServerPolicy. U logu agenta stoje greške o isteku konekcije prema logs endpointu. Kako riješiti problem uz najmanje izlaganje internetu?",
+    "options": [
+      "Dodati javnu IP adresu instancama i rutu prema internet gatewayu.",
+      "Napraviti interface VPC endpointe za CloudWatch Logs (i monitoring za metrike) sa private DNS i security grupom koja dozvoljava HTTPS sa instanci.",
+      "Napraviti gateway VPC endpoint za CloudWatch Logs.",
+      "Zamijeniti CloudWatchAgentServerPolicy politikom CloudWatchAgentAdminPolicy."
+    ],
+    "answer": 1,
+    "explain": "Agent mora doći do CloudWatch API-ja; bez interneta to omogućava interface endpoint (PrivateLink) za logs i monitoring. Gateway endpointi postoje samo za S3 i DynamoDB, javna IP otvara instancu, a dozvole nisu problem jer je greška timeout."
+  },
+  {
+    "obj": "1.3",
+    "q": "EventBridge pravilo za GuardDuty nalaze šalje događaje na SNS topic. Metrike pravila pokazuju uspješna okidanja (Invocations), ali i FailedInvocations, i email nikad ne stiže. Topic je šifrovan AWS managed ključem aws/sns. Šta je rješenje?",
+    "options": [
+      "Šifrovati topic customer managed KMS ključem čija key policy dozvoljava events.amazonaws.com akcije kms:GenerateDataKey* i kms:Decrypt.",
+      "Promijeniti event pattern tako da source bude aws.sns.",
+      "Dodati dozvolu sns:Subscribe u execution rolu pravila.",
+      "Prebaciti pravilo u us-east-1 jer se SNS obavještenja šalju samo odatle."
+    ],
+    "answer": 0,
+    "explain": "Key policy AWS managed ključa se ne može mijenjati, pa EventBridge ne može objaviti poruku u topic šifrovan sa aws/sns. Customer managed ključ sa dozvolom za events.amazonaws.com rješava problem. Pattern je ispravan jer pravilo okida, sns:Subscribe nije potreban, a SNS radi u svakom Regionu."
+  },
+  {
+    "obj": "1.3",
+    "q": "Tim je napravio novi S3 bucket sa podrazumijevanim postavkama (Object Ownership: Bucket owner enforced) i na CloudFront distribuciji uključio legacy standard logging u taj bucket. Logovi ne stižu. Koje rješenje ispunjava zahtjev uz NAJMANJE promjena sigurnosnih postavki bucketa?",
+    "options": [
+      "Isključiti S3 Block Public Access na bucketu.",
+      "Uključiti CloudFront real-time logs prema Kinesis Data Streams i iz njega pisati u bucket.",
+      "Dodati bucket policy koja dozvoljava s3:PutObject za principal cloudfront.amazonaws.com.",
+      "Prebaciti distribuciju na CloudFront standard logging (v2) sa S3 odredištem preko CloudWatch vended logs isporuke."
+    ],
+    "answer": 3,
+    "explain": "Legacy logging piše objekte preko ACL-ova, koji su isključeni kada je Object Ownership Bucket owner enforced. Standard logging v2 isporučuje logove preko servisa delivery.logs.amazonaws.com i bucket policyja, pa ACL-ovi ne trebaju. Block Public Access nije uzrok, real-time logs su složeniji i skuplji, a cloudfront.amazonaws.com nije principal koji piše legacy logove."
+  },
+  {
+    "obj": "1.1",
+    "q": "Sigurnosni tim želi da GuardDuty Extended Threat Detection može generisati attack sequence nalaze za Amazon EKS klastere, koji obuhvataju i promjene RBAC-a i zlonamjerne procese u kontejnerima. Koja DVA koraka treba preduzeti? (Izaberi DVA.)",
+    "options": [
+      "Uključiti EKS control plane logging prema CloudWatch Logs.",
+      "Uključiti GuardDuty EKS Protection.",
+      "Uključiti VPC Flow Logs u VPC-ovima klastera.",
+      "Uključiti GuardDuty Runtime Monitoring za EKS.",
+      "Uključiti Amazon Inspector skeniranje ECR repozitorija."
+    ],
+    "answer": [1, 3],
+    "explain": "EKS Protection daje signale iz Kubernetes audit logova (RBAC, privilegovani podovi), a Runtime Monitoring signale iz kontejnera (procesi, reverse shell). GuardDuty sam čita audit i flow logove pa ih ne treba ručno uključivati, a Inspector nalazi ranjivosti, ne napade."
+  },
+  {
+    "obj": "1.1",
+    "type": "order",
+    "q": "Poredaj korake za uvođenje GuardDuty u organizaciju sa centralnim obavještavanjem, od prvog do posljednjeg.",
+    "options": [
+      "U delegated admin nalogu napraviti EventBridge pravilo za nalaze sa severity >= 7 i SNS target.",
+      "Iz management naloga postaviti Security Tooling nalog kao GuardDuty delegated administrator u svakom Regionu.",
+      "Generisati sample findings i provjeriti da obavještenje stiže.",
+      "U delegated admin nalogu uključiti auto-enable za sve članove i potrebne zaštitne planove."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Prvo management nalog delegira administraciju, zatim admin uključuje GuardDuty i planove u članovima. Tek kada nalazi teku prema adminu ima smisla napraviti EventBridge pravilo, a na kraju se cijeli lanac testira sample nalazima."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari zahtjev sigurnosnog tima sa servisom koji ga NAJBOLJE ispunjava.",
+    "options": [
+      "Otkriti kriptominer proces u ECS Fargate tasku.",
+      "Pronaći brojeve kreditnih kartica u CSV fajlovima u S3.",
+      "Ocijeniti sve naloge prema CIS AWS Foundations Benchmarku sa skorom.",
+      "Vizualizovati koje API pozive je rola radila u satima oko nalaza i sa kojih IP adresa.",
+      "Pronaći poznate CVE ranjivosti u imageima u ECR-u."
+    ],
+    "targets": ["Amazon Detective", "AWS Trusted Advisor", "Amazon Inspector", "GuardDuty Runtime Monitoring", "Amazon Macie", "AWS Security Hub CSPM"],
+    "answer": [3, 4, 5, 0, 2],
+    "explain": "Procese u kontejneru vidi Runtime Monitoring, osjetljive podatke u S3 Macie, provjere prema CIS standardu Security Hub CSPM, istragu i kontekst oko nalaza Detective, a CVE u imageima Inspector. Trusted Advisor nema CIS standard sa skorom niti ostale mogućnosti."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari simptom sa NAJVJEROVATNIJIM rješenjem.",
+    "options": [
+      "Lambda funkcija se izvršava, ali u CloudWatch Logs nema nijedne log grupe za nju.",
+      "VPC Flow Logs ka S3 bucketu šifrovanom customer managed KMS ključem ne stižu nakon uvođenja SSE-KMS.",
+      "EventBridge pravilo okida, ali ciljna Lambda funkcija se nikad ne pokrene.",
+      "Route 53 health check za javni web server stalno javlja unhealthy, iako stranica radi iz browsera."
+    ],
+    "targets": [
+      "Dodati resource-based permission na funkciju za events.amazonaws.com",
+      "Dozvoliti IP opsege Route 53 health checkera u security grupi",
+      "Dodati delivery.logs.amazonaws.com u key policy sa kms:GenerateDataKey*",
+      "Dodati logs:CreateLogStream i logs:PutLogEvents u execution rolu",
+      "Povećati retention log grupe"
+    ],
+    "answer": [3, 2, 0, 1],
+    "explain": "Lambda bez log grupe znači da execution rola ne smije pisati u CloudWatch Logs. Servis za isporuku logova mora smjeti koristiti KMS ključ bucketa. EventBridge treba resource policy na funkciji da je pozove. Health checkeri dolaze sa AWS IP opsega koje security grupa mora dozvoliti. Retention ne utiče na isporuku."
+  }
+]

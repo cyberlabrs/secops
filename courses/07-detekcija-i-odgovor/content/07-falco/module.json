@@ -1,0 +1,11 @@
+{
+  "title": "Runtime detekcija sa Falcom",
+  "summary": "Falco pravila kao kod: liste, makroi, uslovi i outputi, testiranje u replay modu nad .scap snimcima, podešavanje kroz override i izuzetke, izlazi prema Wazuhu i Falcosidekicku i ATT&CK mapiranje kroz tagove.",
+  "minutes": 60,
+  "domain": 4,
+  "objectives": [
+    "4.1"
+  ],
+  "title_en": "Runtime detection with Falco",
+  "summary_en": "Falco rules as code: lists, macros, conditions and outputs, testing in replay mode against .scap captures, tuning via override and exceptions, outputs to Wazuh and Falcosidekick, and ATT&CK mapping through tags."
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "q": "Which function is NEW in NIST CSF 2.0?",
+    "options": ["Identify", "Govern", "Recover", "Detect"],
+    "answer": 1,
+    "explain": "CSF 2.0 (February 2024) added Govern, so it now has six functions: Govern, Identify, Protect, Detect, Respond, Recover."
+  },
+  {
+    "q": "Testing data restores from backup belongs primarily to which NIST CSF function?",
+    "options": ["Protect", "Detect", "Recover", "Govern"],
+    "answer": 2,
+    "explain": "Recover covers restoring systems and data after an incident. A backup that has never been tested is not evidence of recovery."
+  },
+  {
+    "q": "What is CIS Implementation Group 1 (IG1)?",
+    "options": ["The most advanced level, for banks", "Essential cyber hygiene: the minimum set of safeguards for every organization", "A list for cloud providers", "A penetration testing group"],
+    "answer": 1,
+    "explain": "IG1 is the starting point for everyone. IG2 and IG3 add safeguards for more complex organizations and those exposed to sophisticated attackers."
+  },
+  {
+    "q": "What is the difference between CIS Controls and CIS Benchmarks?",
+    "options": ["There is no difference", "Controls are organizational controls (what to do), Benchmarks are detailed settings for a specific system (how to configure it)", "Benchmarks is the old name for Controls", "Controls are only for Windows"],
+    "answer": 1,
+    "explain": "E.g. CIS Control 4 requires secure configuration, and the CIS Benchmark for Ubuntu or Kubernetes provides hundreds of specific settings to satisfy it."
+  },
+  {
+    "q": "How many controls does Annex A of ISO/IEC 27001:2022 have?",
+    "options": ["114", "93", "18", "153"],
+    "answer": 1,
+    "explain": "The 2022 version has 93 controls in four themes (37 organizational, 8 people, 14 physical, 34 technological). The 2013 version had 114 controls."
+  },
+  {
+    "q": "What is the Statement of Applicability (SoA) in ISO 27001?",
+    "options": ["A contract with a customer", "A document that states for each Annex A control whether it applies and why", "A penetration test report", "A list of employees"],
+    "answer": 1,
+    "explain": "The SoA is one of the key ISMS documents and the first one an auditor asks for."
+  },
+  {
+    "q": "A customer asks for evidence that your controls actually operated over the past year. Which report?",
+    "options": ["SOC 2 Type I", "SOC 2 Type II", "ISO 27002", "CIS IG1"],
+    "answer": 1,
+    "explain": "Type I confirms the design of controls at a point in time. Type II tests their operating effectiveness over a period (usually 3 to 12 months)."
+  },
+  {
+    "q": "Which SOC 2 Trust Services criterion is ALWAYS included?",
+    "options": ["Availability", "Privacy", "Security", "Processing Integrity"],
+    "answer": 2,
+    "explain": "Security (Common Criteria) is mandatory. The other four are chosen based on the service and customer requirements."
+  },
+  {
+    "q": "Introducing Trivy scanning of Docker images in CI most directly supports which CIS control?",
+    "options": ["CIS 7 Continuous Vulnerability Management", "CIS 14 Security Awareness", "CIS 11 Data Recovery", "CIS 9 Email Protections"],
+    "answer": 0,
+    "explain": "Vulnerability scanning and remediation are the core of control 7. It also supports CIS 16 (Application Software Security)."
+  },
+  {
+    "q": "Which EU regulation addresses the digital operational resilience of the financial sector and its ICT suppliers?",
+    "options": ["GDPR", "NIS2", "DORA", "Cyber Resilience Act"],
+    "answer": 2,
+    "explain": "DORA (Digital Operational Resilience Act) has applied since January 2025 and also covers critical ICT suppliers of financial institutions, including cloud providers."
+  },
+  {
+    "q": "Why do mature teams maintain one list of controls mapped to multiple frameworks?",
+    "options": ["Because it's a legal requirement", "One technical control and its evidence cover the requirements of several frameworks, so the work isn't done multiple times", "To avoid audits", "Because frameworks forbid duplicates"],
+    "answer": 1,
+    "explain": "E.g. a central CloudTrail with protected logs simultaneously satisfies NIST DE, CIS 8, ISO A.8.15 and SOC 2 CC7. The evidence is collected once."
+  }
+]

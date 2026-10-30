@@ -1,0 +1,298 @@
+[
+  {
+    "obj": "6.1",
+    "q": "Novi CISO želi da organizacija naruči penetracioni test cijele infrastrukture. Šta treba uraditi PRVO?",
+    "options": [
+      "Pokrenuti automatsko skeniranje svih IP opsega kako bi se ubrzao test.",
+      "Obavijestiti sve zaposlene da će test biti izveden.",
+      "Dobiti pisano odobrenje uprave i dogovoriti obim i pravila angažmana.",
+      "Izabrati alate koje će testeri koristiti."
+    ],
+    "answer": 2,
+    "explain": "Bez pisane dozvole uprave i definisanog obima test je neovlašten pristup. Pravila angažmana definišu šta je dozvoljeno, kada, ko su kontakti i kako se postupa sa podacima. Tehnički koraci dolaze poslije."
+  },
+  {
+    "obj": "6.1",
+    "q": "Banka mora pokazati regulatoru da su njene kontrole efikasne, a regulator zahtijeva procjenu koju organizacija ne može usmjeravati ni po obimu ni po zaključcima. Koja vrsta procjene NAJBOLJE odgovara?",
+    "options": [
+      "Interna procjena od strane IT tima",
+      "Eksterna procjena koja je van kontrole organizacije",
+      "Samoprocjena rukovodilaca odjeljenja",
+      "Procjena koju radi interni red team"
+    ],
+    "answer": 1,
+    "explain": "Eksterna procjena (van kontrole organizacije) daje najveću nezavisnost i kredibilitet prema regulatoru. Interne procjene i samoprocjene su korisne za poboljšanje, ali nemaju potrebnu nezavisnost."
+  },
+  {
+    "obj": "6.1",
+    "q": "Organizacija želi da izvede penetracioni test svojih workloada kod javnog IaaS provajdera. Šta je NAJVAŽNIJE provjeriti prije testa?",
+    "options": [
+      "Politiku provajdera o testiranju i granice shared responsibility modela, kako bi se testiralo samo ono za šta je organizacija odgovorna i na dozvoljen način",
+      "Da li provajder ima SOC 3 izvještaj",
+      "Da li test može uključiti DoS napad na hipervizor provajdera",
+      "Da li provajder koristi IPv6"
+    ],
+    "answer": 0,
+    "explain": "Lokacija mijenja strategiju: u cloudu smiješ testirati samo svoj dio okruženja i u skladu sa politikom provajdera (najava, zabranjeni testovi poput DoS-a). Testiranje infrastrukture provajdera bez dozvole je neovlašteno."
+  },
+  {
+    "obj": "6.1",
+    "q": "Program procjene je godinu dana radio mjesečna skeniranja, ali incident je pokazao da čitav OT segment nikad nije bio obuhvaćen. Koji element strategije je izostao?",
+    "options": [
+      "Responsible disclosure",
+      "Exception handling",
+      "Synthetic transactions",
+      "Validacija strategije, uključujući analizu pokrivenosti u odnosu na inventar imovine"
+    ],
+    "answer": 3,
+    "explain": "Strategiju treba dizajnirati i validirati: da li testovi zaista pokrivaju svu kritičnu imovinu. Coverage analysis naspram inventara bi otkrila da OT segment nedostaje."
+  },
+  {
+    "obj": "6.2",
+    "q": "Organizacija želi redovno, svakog mjeseca, identifikovati poznate ranjivosti na svim serverima uz najmanji rizik po produkciju i najmanje lažnih pozitiva. Koji pristup je NAJBOLJI?",
+    "options": [
+      "Mjesečni black box penetracioni test",
+      "Credentialed (autentifikovano) skeniranje ranjivosti",
+      "Non-credentialed skeniranje sa interneta",
+      "Double-blind red team vježba"
+    ],
+    "answer": 1,
+    "explain": "Vulnerability assessment je namijenjen redovnom, širokom identifikovanju poznatih ranjivosti. Credentialed skeniranje vidi instalirani softver i konfiguraciju, pa je tačnije i ima manje lažnih pozitiva. Pentest i red team su dublji, rjeđi i rizičniji."
+  },
+  {
+    "obj": "6.2",
+    "q": "Uprava želi saznati da li SOC zaista detektuje i reaguje na napad, bez da analitičari znaju da se test izvodi. Kakav test je NAJPRIKLADNIJI?",
+    "options": [
+      "Blind test, gdje SOC zna za test, a tester nema informacije",
+      "White box test sa punom dokumentacijom",
+      "Double-blind test, gdje ni SOC ni tester nemaju unaprijed informacije o detaljima",
+      "Targeted test uz punu saradnju SOC-a"
+    ],
+    "answer": 2,
+    "explain": "Double-blind test provjerava i otpornost i stvarnu sposobnost detekcije i odgovora jer branioci ne znaju za test. Kod blind testa SOC zna da se test izvodi, pa ne mjeri realnu reakciju."
+  },
+  {
+    "obj": "6.2",
+    "q": "E-commerce tim želi da zna da li proces naručivanja radi i noću, kada skoro nema kupaca, i da dobije alarm prije nego što se kupci požale. Šta je NAJBOLJI izbor?",
+    "options": [
+      "Real User Monitoring",
+      "Mjesečni pregled logova",
+      "Statička analiza koda",
+      "Synthetic transactions koje periodično izvršavaju skriptovanu kupovinu"
+    ],
+    "answer": 3,
+    "explain": "Synthetic transactions su unaprijed definisane transakcije koje se izvršavaju periodično i otkrivaju problem i bez stvarnih korisnika. RUM zavisi od stvarnih korisnika, pa noću ne daje signal."
+  },
+  {
+    "obj": "6.2",
+    "q": "Tim piše test koji provjerava da kupac ne može promijeniti cijenu artikla mijenjanjem parametra u zahtjevu i ne može vidjeti tuđu narudžbu promjenom ID-a. Kako se zove ova vrsta testiranja?",
+    "options": [
+      "Misuse case testing",
+      "Regression testing",
+      "Synthetic transaction",
+      "Load testing"
+    ],
+    "answer": 0,
+    "explain": "Misuse (abuse) case opisuje kako bi zlonamjeran akter zloupotrijebio funkciju; testovi potvrđuju da sistem to odbija. Ovakve greške poslovne logike automatski skeneri obično ne nalaze."
+  },
+  {
+    "obj": "6.2",
+    "q": "Testovi aplikacije izvršavaju 92% linija koda, ali samo 61% grana uslovnih izraza. Šta je NAJTAČNIJI zaključak?",
+    "options": [
+      "Aplikacija je dovoljno testirana jer je statement coverage iznad 90%.",
+      "Značajan dio logičkih putanja nije testiran; branch coverage je stroža mjera i ukazuje na nepokrivene slučajeve, uključujući obradu grešaka.",
+      "Branch coverage je uvijek veći od statement coveragea, pa su mjerenja pogrešna.",
+      "Coverage analysis nije relevantan za sigurnost."
+    ],
+    "answer": 1,
+    "explain": "Coverage analysis mjeri koliko je testirano. Branch coverage zahtijeva da se izvrši svaka grana odluke, pa je stroži od statement coveragea. Nepokrivene grane često su upravo putanje grešaka i rubnih slučajeva."
+  },
+  {
+    "obj": "6.2",
+    "q": "Organizacija želi kontinuirano, svake sedmice, provjeravati da li EDR i SIEM pravila detektuju poznate tehnike napadača mapirane na MITRE ATT&CK, bez angažovanja ljudskog tima. Šta je NAJPRIKLADNIJE?",
+    "options": [
+      "Godišnji penetracioni test",
+      "Fagan inspekcija",
+      "Automatizovane attack simulations (BAS)",
+      "Compliance check prema CIS benchmarku"
+    ],
+    "answer": 2,
+    "explain": "Attack simulations (u outlineu iz 2024. breach attack simulations) bezbjedno i ponovljivo izvode tehnike napadača i mjere da li kontrole detektuju i blokiraju. Pentest je rjeđi i oslanja se na ljude, a compliance check provjerava konfiguraciju, ne detekciju."
+  },
+  {
+    "obj": "6.3",
+    "q": "Uprava traži NAJBOLJI dokaz da proces backupa zaista omogućava oporavak. Šta treba prikazati?",
+    "options": [
+      "Rezultate periodičnih testova restauracije, uključujući izmjereno vrijeme oporavka naspram RTO-a",
+      "Izvještaj da su svi backup poslovi u zadnjih 30 dana završeni uspješno",
+      "Ugovor sa dobavljačem backup softvera",
+      "Politiku backupa koju je odobrila uprava"
+    ],
+    "answer": 0,
+    "explain": "Backup koji nije restauriran nije dokazan. Uspješan posao backupa ne garantuje da su podaci čitljivi i da se oporavak može izvesti u roku RTO-a. Politika i ugovor su administrativni dokazi, ne dokaz efikasnosti."
+  },
+  {
+    "obj": "6.3",
+    "q": "Koja od navedenih metrika je NAJBOLJI primjer key risk indicatora (KRI), a ne KPI-ja?",
+    "options": [
+      "Procenat zaposlenih koji su završili godišnju obuku",
+      "Prosječno vrijeme zatvaranja incidenta u prošlom kvartalu",
+      "Broj zakrpa primijenjenih prošlog mjeseca",
+      "Rastući broj servera na operativnom sistemu bez podrške proizvođača, sa pragom za eskalaciju"
+    ],
+    "answer": 3,
+    "explain": "KRI je rani signal rasta rizika, vezan za sklonost riziku i prag eskalacije. Ostali primjeri mjere učinak procesa u prošlosti (KPI)."
+  },
+  {
+    "obj": "6.3",
+    "q": "CISO želi pokazati da program podizanja svijesti zaista smanjuje rizik. Koji podatak je NAJUVJERLJIVIJI?",
+    "options": [
+      "Broj održanih prezentacija",
+      "Trend pada stope klikova i rasta stope prijava u phishing simulacijama kroz vrijeme",
+      "Procenat zaposlenih koji su potpisali politiku",
+      "Broj poslatih e-mail upozorenja"
+    ],
+    "answer": 1,
+    "explain": "Efikasnost obuke se mjeri promjenom ponašanja, ne aktivnostima. Pad klikova i rast prijava pokazuju da zaposleni prepoznaju i prijavljuju prijetnje."
+  },
+  {
+    "obj": "6.3",
+    "q": "Od 4.000 endpointa, 260 nema aktivan EDR agent. Prag KRI-ja je: zeleno ispod 2%, žuto 2–5%, crveno iznad 5% uz eskalaciju CISO-u. Šta je ispravan zaključak?",
+    "options": [
+      "Vrijednost je 6,5%, crveno, pa se rizik eskalira CISO-u.",
+      "Vrijednost je 2,6%, žuto, pa je potrebno samo praćenje.",
+      "Vrijednost je 0,65%, zeleno.",
+      "Vrijednost je 65%, što ukazuje na pogrešan inventar."
+    ],
+    "answer": 0,
+    "explain": "260 / 4.000 = 0,065 = 6,5%, što je iznad praga od 5%, pa se prema definisanom pragu rizik eskalira."
+  },
+  {
+    "obj": "6.4",
+    "q": "Pentest je otkrio kritičnu ranjivost u legacy sistemu za upravljanje proizvodnjom koji se ne može zakrpiti naredne dvije godine. Šta je NAJBOLJI postupak?",
+    "options": [
+      "Ugasiti sistem odmah, bez obzira na proizvodnju.",
+      "Zanemariti nalaz jer se ionako ne može popraviti.",
+      "Formalni izuzetak: procjena rizika, kompenzacione kontrole, odobrenje vlasnika rizika, rok važenja i periodično preispitivanje.",
+      "Ukloniti nalaz iz izvještaja kako se ne bi brinula uprava."
+    ],
+    "answer": 2,
+    "explain": "Exception handling je formalno prihvatanje rizika uz kompenzacione kontrole, odobreno na odgovarajućem nivou, sa rokom i evidencijom u registru rizika. Gašenje bez analize ugrožava poslovanje, a skrivanje nalaza je neetično."
+  },
+  {
+    "obj": "6.4",
+    "q": "Skener je prijavio tri nalaza: RCE (CVSS 9,8) na izolovanom test serveru bez podataka, zaobilaženje autentifikacije (CVSS 8,1) na javnom portalu sa ličnim podacima koje se aktivno iskorištava, i zastarjelu TLS verziju (CVSS 5,3) na internom API-ju. Koji nalaz treba PRVO sanirati?",
+    "options": [
+      "RCE na test serveru, jer ima najviši CVSS",
+      "Zastarjeli TLS, jer je najlakši za popravku",
+      "Sve istovremeno, bez prioriteta",
+      "Zaobilaženje autentifikacije na javnom portalu"
+    ],
+    "answer": 3,
+    "explain": "Prioritet se određuje po riziku: izloženost internetu, lični podaci i aktivno iskorištavanje čine nalaz na portalu najvećim poslovnim rizikom, iako CVSS nije najviši."
+  },
+  {
+    "obj": "6.4",
+    "q": "Tokom angažmana kod klijenta konsultant otkrije ozbiljnu, javno nepoznatu ranjivost u komercijalnom proizvodu koji koriste hiljade organizacija. Šta je NAJISPRAVNIJE uraditi?",
+    "options": [
+      "Odmah objaviti sve detalje na blogu kako bi svi bili upozoreni.",
+      "Obavijestiti klijenta prema ugovoru i proizvođača kroz koordinisano otkrivanje, uz razuman rok za popravku prije javne objave.",
+      "Ne reći nikome, jer ranjivost nije u sistemu klijenta.",
+      "Prodati informaciju onome ko ponudi najviše."
+    ],
+    "answer": 1,
+    "explain": "Responsible (coordinated) disclosure, u outlineu iz 2024. ethical disclosure, štiti korisnike: proizvođač dobija vrijeme za popravku, a javnost se informiše kada postoji zaštita. Full disclosure izlaže korisnike prije zakrpe, a prećutkivanje ostavlja rizik. Obaveze prema klijentu i etički kodeks ISC2 se poštuju."
+  },
+  {
+    "obj": "6.4",
+    "q": "CISO priprema izvještaj o rezultatima testiranja za upravni odbor. Šta treba da bude u FOKUSU izvještaja?",
+    "options": [
+      "Kompletna lista svih 14.000 ranjivosti sa CVE oznakama",
+      "Detaljni tehnički koraci za reprodukciju svakog nalaza",
+      "Poslovni rizik, trendovi, stanje sanacije u odnosu na rokove i odluke koje se traže od uprave",
+      "Spisak alata korištenih u testiranju"
+    ],
+    "answer": 2,
+    "explain": "Izvještaj se prilagođava publici. Upravi treba executive summary sa poslovnim rizikom, trendom i potrebnim odlukama (resursi, prihvatanje rizika). Tehnički detalji idu timovima koji saniraju."
+  },
+  {
+    "obj": "6.5",
+    "q": "Organizacija ne može izvesti sopstveni audit data centra SaaS provajdera. Koji dokaz je NAJBOLJI za procjenu operativne efikasnosti sigurnosnih kontrola provajdera?",
+    "options": [
+      "SOC 3 izvještaj objavljen na sajtu provajdera",
+      "SOC 1 Type I izvještaj",
+      "Marketinški whitepaper o sigurnosti provajdera",
+      "SOC 2 Type II izvještaj za relevantan period, uz provjeru izuzetaka i complementary user entity controls"
+    ],
+    "answer": 3,
+    "explain": "SOC 2 pokriva sigurnosne Trust Services Criteria, a Type II testira operativnu efikasnost kroz period. SOC 3 je sažetak bez detalja, SOC 1 se odnosi na finansijsko izvještavanje, a Type I samo na dizajn u jednom trenutku."
+  },
+  {
+    "obj": "6.5",
+    "q": "Kome interna revizija IT kontrola treba da izvještava da bi zadržala nezavisnost?",
+    "options": [
+      "Odboru za reviziju (audit committee) ili najvišem upravljačkom tijelu",
+      "Direktoru IT-a čije kontrole revidira",
+      "Administratoru sistema",
+      "Prodajnom direktoru"
+    ],
+    "answer": 0,
+    "explain": "Interna revizija mora biti nezavisna od oblasti koju revidira. Izvještavanje prema odboru za reviziju to obezbjeđuje; izvještavanje prema IT direktoru stvara sukob interesa."
+  },
+  {
+    "obj": "6.5",
+    "q": "Revizor želi NAJJAČI dokaz da se nalozi bivših zaposlenih zaista gase. Koja tehnika prikupljanja dokaza je najjača?",
+    "options": [
+      "Intervju sa IAM administratorom",
+      "Re-performance: uzorak bivših zaposlenih iz HR sistema i provjera stanja njihovih naloga u direktorijumu",
+      "Pregled pisane procedure offboardinga",
+      "Izjava rukovodioca IT-a da se procedura poštuje"
+    ],
+    "answer": 1,
+    "explain": "Dokaz koji revizor sam proizvede iz nezavisnog izvora (HR) upoređivanjem sa stvarnim stanjem je najjači. Intervjui i izjave su najslabiji, a procedura pokazuje dizajn, ne izvršavanje."
+  },
+  {
+    "obj": "6.5",
+    "q": "Kompanija planira audit hibridnog okruženja (on-prem AD sinhronizovan sa cloud IdP-om, aplikacije na obje strane). Šta treba posebno uključiti u obim?",
+    "options": [
+      "Samo on-prem sisteme, jer je cloud odgovornost provajdera",
+      "Samo cloud, jer je on-prem zastario",
+      "Veze i povjerenje između okruženja (sinhronizacija, federacija, VPN), dosljednost kontrola na obje strane i podjelu odgovornosti sa provajderom",
+      "Fizički pregled data centra cloud provajdera"
+    ],
+    "answer": 2,
+    "explain": "U hibridnom okruženju rizik je na granicama i u nedosljednosti kontrola. Organizacija ostaje odgovorna za svoj dio u cloudu (konfiguracija, IAM, podaci), a za dio provajdera se oslanja na atestacije."
+  },
+  {
+    "obj": "6.2",
+    "type": "order",
+    "q": "Poredaj faze penetracionog testa po NIST SP 800-115 od prve do posljednje.",
+    "options": [
+      "Attack",
+      "Reporting",
+      "Planning",
+      "Discovery"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Planning (obim, pravila, odobrenje), Discovery (izviđanje i identifikacija ranjivosti), Attack (pokušaj iskorištavanja i dodatno otkrivanje), Reporting (nalazi i preporuke)."
+  },
+  {
+    "obj": "6.5",
+    "type": "match",
+    "q": "Upari potrebu sa izvještajem koji je NAJBOLJE zadovoljava.",
+    "options": [
+      "Eksterni revizor finansija korisnika treba dokaz o kontrolama provajdera obračuna plata",
+      "Tim za sigurnost treba detaljan dokaz da su sigurnosne kontrole provajdera radile tokom cijele godine",
+      "Potencijalni kupac želi javno dostupan, sažet dokaz bez potpisivanja NDA",
+      "Treba dokaz da su kontrole dobro dizajnirane na određeni dan, prije prvog perioda posmatranja"
+    ],
+    "targets": [
+      "SOC 2 Type I",
+      "SOC 2 Type II",
+      "SOC 3",
+      "SOC 1"
+    ],
+    "answer": [3, 1, 2, 0],
+    "explain": "SOC 1 se odnosi na kontrole relevantne za finansijsko izvještavanje. SOC 2 Type II pokazuje operativnu efikasnost tokom perioda. SOC 3 je javni sažetak. Type I pokazuje dizajn u jednom trenutku."
+  }
+]

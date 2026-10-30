@@ -1,0 +1,243 @@
+[
+  {
+    "obj": "3.4",
+    "q": "On node01 there is a file /etc/apparmor.d/deny-write with the line profile k8s-deny-write flags=(attach_disconnected) {. Which command loads the profile into the kernel in enforce mode?",
+    "options": [
+      "systemctl reload k8s-deny-write",
+      "aa-status --load k8s-deny-write",
+      "apparmor_parser -q /etc/apparmor.d/deny-write",
+      "kubectl apply -f /etc/apparmor.d/deny-write"
+    ],
+    "answer": 2,
+    "explain": "apparmor_parser reads the file and loads the profile into the kernel (without -C it is enforce). aa-status only shows the state, a profile isn't a systemd service, and Kubernetes doesn't load AppArmor profiles."
+  },
+  {
+    "obj": "3.4",
+    "q": "The profile from the file /etc/apparmor.d/deny-write (line: profile k8s-deny-write ...) is loaded on node01. Which container securityContext applies it correctly?",
+    "options": [
+      "appArmorProfile: {type: Localhost, localhostProfile: deny-write}",
+      "appArmorProfile: {type: Localhost, localhostProfile: /etc/apparmor.d/deny-write}",
+      "appArmorProfile: {type: Localhost, localhostProfile: k8s-deny-write}",
+      "appArmorProfile: {type: RuntimeDefault, localhostProfile: k8s-deny-write}"
+    ],
+    "answer": 2,
+    "explain": "localhostProfile is the profile name from the file (after the word profile), not the file name or path. localhostProfile is specified only, and mandatorily, with type: Localhost."
+  },
+  {
+    "obj": "3.4",
+    "q": "A Pod with appArmorProfile type: Localhost, localhostProfile: k8s-deny-write stays Pending, and kubectl describe shows: Error: failed to get container spec opts: failed to generate apparmor spec opts: apparmor profile not found. You loaded the profile on controlplane. What is the cause?",
+    "options": [
+      "The profile is in complain mode",
+      "The Pod was scheduled on node01, and the profile is loaded only on controlplane",
+      "The annotation container.apparmor.security.beta.kubernetes.io is missing",
+      "AppArmor doesn't work with the busybox image"
+    ],
+    "answer": 1,
+    "explain": "The profile must be loaded into the kernel of the node where the container runs; the scheduler doesn't know where profiles are. A complain-mode profile would still be found, and the annotations are deprecated and replaced by the field."
+  },
+  {
+    "obj": "3.4",
+    "q": "The profile k8s-deny-write is loaded only on node01. Task: the Deployment web must use that profile and all Pods must run. What is the correct solution with the fewest changes on the nodes?",
+    "options": [
+      "Add appArmorProfile to the Deployment's spec and a label on controlplane",
+      "Add appArmorProfile and nodeName: node01 to the Deployment's metadata",
+      "Change type to RuntimeDefault so it works on all nodes",
+      "Label node01 (e.g. apparmor=deny-write) and in spec.template.spec add a nodeSelector with that label and appArmorProfile in the container's securityContext"
+    ],
+    "answer": 3,
+    "explain": "Pod fields in a Deployment go into spec.template.spec, and the nodeSelector sends Pods only to the node with the loaded profile. RuntimeDefault doesn't apply the requested profile, and fields in metadata are ignored."
+  },
+  {
+    "obj": "3.4",
+    "q": "What is the fastest way to prove that the container writer in the Pod secure really runs under the AppArmor profile k8s-deny-write in enforce mode?",
+    "options": [
+      "kubectl exec secure -c writer -- cat /proc/1/attr/current",
+      "kubectl get pod secure -o yaml | grep apparmor",
+      "kubectl exec secure -c writer -- grep Seccomp /proc/1/status",
+      "aa-status on controlplane"
+    ],
+    "answer": 0,
+    "explain": "/proc/1/attr/current in the container prints the active profile and mode, e.g. k8s-deny-write (enforce). The YAML shows only what was requested, the Seccomp field refers to seccomp, and aa-status on controlplane doesn't see processes on node01."
+  },
+  {
+    "obj": "3.4",
+    "q": "You edited /etc/apparmor.d/deny-write on node01 (added a new deny rule), but the existing containers behave as before. What is missing?",
+    "options": [
+      "systemctl restart kubelet",
+      "apparmor_parser -r /etc/apparmor.d/deny-write to reload the profile into the kernel",
+      "kubectl rollout restart so the kubelet reads the file",
+      "aa-complain /etc/apparmor.d/deny-write"
+    ],
+    "answer": 1,
+    "explain": "The kernel uses the loaded version of the profile; the file isn't read on its own. -r replaces the loaded profile with the new version. Restarting the kubelet doesn't touch AppArmor, and aa-complain would turn off blocking."
+  },
+  {
+    "obj": "3.4",
+    "q": "On node01 there is a file /var/lib/kubelet/seccomp/profiles/audit.json. Which seccompProfile references it correctly?",
+    "options": [
+      "type: Localhost, localhostProfile: /var/lib/kubelet/seccomp/profiles/audit.json",
+      "type: RuntimeDefault, localhostProfile: profiles/audit.json",
+      "type: Localhost, localhostProfile: profiles/audit.json",
+      "type: Localhost, localhostProfile: audit"
+    ],
+    "answer": 2,
+    "explain": "localhostProfile is a path relative to the kubelet's seccomp folder /var/lib/kubelet/seccomp/, including the subfolder and extension. RuntimeDefault doesn't accept localhostProfile."
+  },
+  {
+    "obj": "3.4",
+    "q": "You applied a Pod with a seccomp profile containing only {\"defaultAction\": \"SCMP_ACT_ERRNO\"}. What will happen?",
+    "options": [
+      "The Pod runs normally, because ERRNO only logs calls",
+      "The Pod stays Pending until the scheduler finds a node with the profile",
+      "kubectl apply rejects the Pod because of invalid JSON",
+      "All syscalls are denied so the process can't run; the container crashes (e.g. CrashLoopBackOff)"
+    ],
+    "answer": 3,
+    "explain": "Without a list of allowed syscalls, ERRNO is returned for every call, so the application can't even start. Only SCMP_ACT_LOG just logs, and the API server doesn't read the profile contents on the node."
+  },
+  {
+    "obj": "3.4",
+    "q": "You want to find out which syscalls an application uses, without the risk of blocking it. Which defaultAction do you put in a temporary profile?",
+    "options": [
+      "SCMP_ACT_LOG",
+      "SCMP_ACT_ERRNO",
+      "SCMP_ACT_KILL_PROCESS",
+      "SCMP_ACT_TRAP"
+    ],
+    "answer": 0,
+    "explain": "SCMP_ACT_LOG allows the call and writes it to the kernel/audit log, so you build the allowlist from the log. ERRNO, KILL_PROCESS and TRAP block or terminate the process."
+  },
+  {
+    "obj": "3.4",
+    "q": "What must be added to this profile so the application can do everything except mount and ptrace? {\"defaultAction\": \"SCMP_ACT_ALLOW\", \"syscalls\": [{\"names\": [\"mount\", \"ptrace\"], \"action\": ???}]}",
+    "options": [
+      "\"SCMP_ACT_ALLOW\"",
+      "\"SCMP_ACT_ERRNO\"",
+      "\"SCMP_ACT_LOG\"",
+      "\"RuntimeDefault\""
+    ],
+    "answer": 1,
+    "explain": "This is a denylist: allow by default, and deny the listed calls with SCMP_ACT_ERRNO. LOG would only record them, and RuntimeDefault is a profile type in the Pod, not an action in the JSON."
+  },
+  {
+    "obj": "3.4",
+    "q": "Task: all new containers on node01 that have no seccompProfile should use RuntimeDefault. What do you do?",
+    "options": [
+      "Add seccompDefault: true to /var/lib/kubelet/config.yaml on node01 and restart the kubelet",
+      "Add --seccomp-default=true to the kube-apiserver manifest",
+      "Copy RuntimeDefault.json to /var/lib/kubelet/seccomp/",
+      "Enable the SeccompDefault admission plugin"
+    ],
+    "answer": 0,
+    "explain": "seccompDefault is a per-node kubelet setting (a field in KubeletConfiguration or the --seccomp-default flag). The API server has no such flag, RuntimeDefault comes from the runtime, and no such admission plugin exists."
+  },
+  {
+    "obj": "3.4",
+    "q": "In a container you run grep Seccomp /proc/1/status and get Seccomp: 0, even though the Pod has seccompProfile type: RuntimeDefault. What is the most likely reason?",
+    "options": [
+      "RuntimeDefault doesn't exist in containerd",
+      "The field must be written as an annotation",
+      "The container has securityContext.privileged: true, so it runs without seccomp",
+      "The value 0 means the filter is active"
+    ],
+    "answer": 2,
+    "explain": "Privileged containers always run as Unconfined regardless of seccompProfile. The value 2 means the filter is active, 0 that it isn't; containerd supports RuntimeDefault, and the annotations are deprecated."
+  },
+  {
+    "obj": "3.4",
+    "q": "Match the mechanism with what it restricts.",
+    "type": "match",
+    "options": [
+      "seccomp",
+      "AppArmor",
+      "Linux capabilities",
+      "NetworkPolicy"
+    ],
+    "targets": [
+      "Traffic between Pods at L3/L4",
+      "Access to files and resources by path, via a profile loaded into the kernel",
+      "Which system calls a process may make",
+      "Privileges root normally has, e.g. NET_ADMIN or SYS_ADMIN",
+      "Which images may run in the cluster"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "seccomp filters syscalls, AppArmor controls resource access by path, capabilities split root privileges into parts, and NetworkPolicy filters Pod network traffic. Controlling images is the job of admission control."
+  },
+  {
+    "obj": "3.4",
+    "q": "Order the steps to apply a given AppArmor profile to a new Pod that must run on node01.",
+    "type": "order",
+    "options": [
+      "kubectl exec <pod> -- cat /proc/1/attr/current and test a forbidden action",
+      "ssh node01 and apparmor_parser -q /etc/apparmor.d/<file>",
+      "Write a Pod with nodeName: node01 and securityContext.appArmorProfile (Localhost, profile name), then kubectl apply",
+      "aa-status | grep <profile-name> to confirm enforce mode",
+      "grep profile /etc/apparmor.d/<file> to find the profile name"
+    ],
+    "answer": [
+      4,
+      1,
+      3,
+      2,
+      0
+    ],
+    "explain": "First find the profile name in the file, then load it on node01 and confirm enforce mode. Only then create the Pod on that node with that name in localhostProfile and verify in the container that the profile works."
+  },
+  {
+    "obj": "3.4",
+    "q": "You need a list of the syscalls used by the process of the container app on node01. Which sequence of commands on the node gives that?",
+    "options": [
+      "kubectl logs app | grep syscall",
+      "aa-status | grep app",
+      "crictl inspect <id> | grep seccomp, then cat the profile",
+      "crictl ps --name app and crictl inspect <id> for the PID, then strace -f -c -p <pid>"
+    ],
+    "answer": 3,
+    "explain": "crictl gives the ID and the process PID on the host, and strace -c counts the syscalls the process makes. Application logs don't contain syscalls, aa-status shows AppArmor, and crictl inspect shows only the already applied profile."
+  },
+  {
+    "obj": "3.4",
+    "q": "The prod namespace has the label pod-security.kubernetes.io/enforce=restricted. A Pod without seccompProfile was rejected. Which TWO changes satisfy the seccomp requirement? (Choose TWO.)",
+    "options": [
+      "seccompProfile: {type: Unconfined}",
+      "seccompProfile: {type: RuntimeDefault}",
+      "appArmorProfile: {type: RuntimeDefault} instead of seccomp",
+      "seccompProfile: {type: Localhost, localhostProfile: profiles/app.json}",
+      "capabilities: {drop: [ALL]} instead of seccomp"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "The restricted level requires seccompProfile to be RuntimeDefault or Localhost. Unconfined is forbidden, and AppArmor and capabilities don't replace seccomp (drop ALL is a separate requirement of the restricted level)."
+  },
+  {
+    "obj": "3.4",
+    "q": "A Pod with seccompProfile type: Localhost, localhostProfile: profiles/strict.json doesn't start on node01 (error creating the container). The file exists on controlplane in /var/lib/kubelet/seccomp/profiles/. What is the fix?",
+    "options": [
+      "Copy strict.json to /var/lib/kubelet/seccomp/profiles/ on node01 (or bind the Pod to controlplane) and recreate the Pod",
+      "Load the profile with apparmor_parser -q on node01",
+      "Change localhostProfile to the absolute path on controlplane",
+      "Restart kube-apiserver so it distributes the profile"
+    ],
+    "answer": 0,
+    "explain": "The seccomp profile is read by the kubelet/runtime from the local disk of the node where the container runs, so the file must be on node01. apparmor_parser is for AppArmor, and Kubernetes doesn't distribute profiles or accept absolute paths."
+  },
+  {
+    "obj": "3.4",
+    "q": "You want a tool with strace next to the container app in the Pod web, in the same PID namespace, without SSH to the node. Which command is correct?",
+    "options": [
+      "kubectl exec -it web -c app -- strace",
+      "kubectl debug -it web --image=<image-with-strace> --target=app --profile=sysadmin",
+      "kubectl debug node/web -it --image=busybox:1.36",
+      "kubectl run debug --image=<image-with-strace> --overrides='{\"spec\":{\"hostPID\":false}}'"
+    ],
+    "answer": 1,
+    "explain": "kubectl debug adds an ephemeral container; --target puts it in the app container's PID namespace, and the sysadmin profile gives the privileges needed to trace processes. exec requires strace to already be in the image, node/ expects a node name, and a new Pod without hostPID can't see another Pod's processes."
+  }
+]

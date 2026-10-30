@@ -1,0 +1,13 @@
+{
+  "title": "Kontinuitet poslovanja, kadrovi i upravljanje rizikom",
+  "summary": "Faze BCP-a i Business Impact Analysis (MTD, RTO, WRT, RPO), spoljne zavisnosti, sigurnost kadrova kroz životni ciklus zaposlenja (provjera, NDA/AUP, SoD, rotacija, obavezan odmor, otkaz), ugovori sa trećim stranama (SLA, OLA, MOU, ISA), procjena rizika i ALE račun (AV, EF, SLE, ARO), tretman rizika i cyber osiguranje, tipovi kontrola, procjena kontrola (800-53A), ISCM, izvještavanje, modeli zrelosti i okviri rizika (ISO 31000/27005, NIST RMF, COBIT, SABSA, PCI DSS, HIPAA).",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.7",
+    "1.8",
+    "1.9"
+  ],
+  "title_en": "Business Continuity, Personnel Security and Risk Management",
+  "summary_en": "BCP phases and Business Impact Analysis (MTD, RTO, WRT, RPO), external dependencies, personnel security across the employment life cycle (screening, NDA/AUP, SoD, job rotation, mandatory vacation, termination), third-party agreements (SLA, OLA, MOU, ISA), risk assessment and ALE calculation (AV, EF, SLE, ARO), risk treatment and cyber insurance, control types, control assessment (800-53A), ISCM, reporting, maturity models and risk frameworks (ISO 31000/27005, NIST RMF, COBIT, SABSA, PCI DSS, HIPAA)."
+}

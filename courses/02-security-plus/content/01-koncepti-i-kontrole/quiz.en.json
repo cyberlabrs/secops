@@ -1,0 +1,244 @@
+[
+  {
+    "obj": "1.1",
+    "q": "A factory runs an old SCADA server that the vendor no longer supports and that cannot be patched. The security team moves it into an isolated VLAN with strict ACL rules and increased monitoring. Which control type is this MOST precisely?",
+    "options": [
+      "Corrective",
+      "Deterrent",
+      "Compensating",
+      "Directive"
+    ],
+    "answer": 2,
+    "explain": "The primary control (patching) isn't feasible, so a substitute measure covering the same risk is introduced: that is a compensating control. Corrective would fix damage after an incident, and deterrent only discourages."
+  },
+  {
+    "obj": "1.1",
+    "q": "A web application in AWS is protected by a WAF, Security Groups, data encryption via KMS, containers without a root user, and SIEM alerts. The architect says none of these measures is sufficient on its own, but together they make an attack significantly harder. Which concept is being described?",
+    "options": [
+      "Defense in depth",
+      "Zero Trust",
+      "Separation of duties",
+      "Non-repudiation"
+    ],
+    "answer": 0,
+    "explain": "Defense in depth is layered defense: if one layer (e.g., the WAF) is bypassed, the next one (segmentation, encryption, detection) still protects against or detects the attack. Zero Trust focuses on verifying every request, and separation of duties on splitting responsibilities among people."
+  },
+  {
+    "obj": "1.1",
+    "q": "A DevOps team publishes a binary for download and wants users to be able to verify that the file wasn't modified in transit. Which CIA triad concept is PRIMARILY being protected here, and with what measure?",
+    "options": [
+      "Confidentiality, by encrypting the file with AES-256",
+      "Availability, by publishing it on a CDN",
+      "Confidentiality, by transferring it over a VPN",
+      "Integrity, by publishing the file's SHA-256 hash"
+    ],
+    "answer": 3,
+    "explain": "Verifying that data wasn't modified is integrity, and it is achieved with a hash (or a digital signature). Encryption and VPNs protect confidentiality, a CDN protects availability."
+  },
+  {
+    "obj": "1.1",
+    "q": "Two microservices exchange messages protected by an HMAC with a shared secret key. An auditor claims this does not provide non-repudiation. Why is the auditor right?",
+    "options": [
+      "HMAC does not protect message integrity",
+      "Both sides hold the same key, so either one could have created the message",
+      "HMAC uses outdated hash algorithms",
+      "Non-repudiation requires encrypting the whole channel with TLS"
+    ],
+    "answer": 1,
+    "explain": "Non-repudiation requires that only one party can create the proof, which is what a digital signature with a private key provides. With HMAC, both sides share the key. HMAC still protects integrity, and TLS by itself does not provide non-repudiation."
+  },
+  {
+    "obj": "1.1",
+    "q": "In a Zero Trust architecture, which component makes the final decision on whether a user's request to access an application is allowed, based on policies, identity, and device posture?",
+    "options": [
+      "Policy Enforcement Point",
+      "Implicit trust zone",
+      "Policy Engine",
+      "Subject/system"
+    ],
+    "answer": 2,
+    "explain": "The Policy Engine decides. The Policy Administrator executes that decision (establishes or terminates the session), and the Policy Enforcement Point is the point in the data plane that traffic passes through and where the decision is enforced."
+  },
+  {
+    "obj": "1.1",
+    "q": "Someone deleted a production RDS snapshot. The manager asks: \"Who did it and when?\" Which element of the AAA framework makes it possible to answer?",
+    "options": [
+      "Accounting",
+      "Authentication",
+      "Authorization",
+      "Identification"
+    ],
+    "answer": 0,
+    "explain": "Accounting records user actions (e.g., a CloudTrail DeleteDBSnapshot event with the identity and time). Authentication confirms identity and authorization determines what is allowed, but neither keeps a trail of the action."
+  },
+  {
+    "obj": "1.1",
+    "q": "The security team personally delivers phishing training to all new employees and manually reviews the list of active accounts once a month. Which control category do these activities belong to?",
+    "options": [
+      "Technical",
+      "Physical",
+      "Managerial",
+      "Operational"
+    ],
+    "answer": 3,
+    "explain": "Controls carried out day to day by people (training, manual reviews, guards) are operational. Managerial controls are management-level decisions and documents (the policy that mandates training, risk assessment), and technical controls are enforced by a system."
+  },
+  {
+    "obj": "1.1",
+    "q": "Over three years an engineer moved through four teams and kept the permissions from each. He now has admin access to production that he doesn't need. Which principle is violated, and how is the problem BEST solved?",
+    "options": [
+      "Defense in depth, by adding another firewall",
+      "Least privilege, through regular review and removal of permissions (access review)",
+      "Non-repudiation, by introducing digital signatures",
+      "Availability, by adding redundant accounts"
+    ],
+    "answer": 1,
+    "explain": "Accumulating permissions (privilege creep) violates least privilege. The fix is a periodic access review and removing permissions when a role changes. The other options don't address excess permissions."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match each control with its PRIMARY type.",
+    "options": [
+      "A Security Group allows only port 443",
+      "A GuardDuty alert on an unusual API call",
+      "Restoring a database from backup after ransomware",
+      "A login banner: \"Unauthorized access will be prosecuted\"",
+      "An acceptable use policy (AUP) that employees sign",
+      "Isolating an unpatched device in a separate VLAN because no patch exists"
+    ],
+    "targets": [
+      "Directive",
+      "Preventive",
+      "Compensating",
+      "Deterrent",
+      "Detective",
+      "Corrective"
+    ],
+    "answer": [
+      1,
+      4,
+      5,
+      3,
+      0,
+      2
+    ],
+    "explain": "A Security Group blocks traffic (preventive). An alert detects (detective). A restore brings back the state after an incident (corrective). A banner discourages (deterrent). An AUP tells people what to do (directive). Isolation substitutes for the impossible patch (compensating)."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match each control with its CATEGORY.",
+    "options": [
+      "A fence and barrier gate around the data center",
+      "An annual risk assessment approved by management",
+      "A guard who checks ID badges",
+      "EBS volume encryption via KMS",
+      "A fire suppression system in the server room"
+    ],
+    "targets": [
+      "Technical",
+      "Managerial",
+      "Operational",
+      "Physical"
+    ],
+    "answer": [
+      3,
+      1,
+      2,
+      0,
+      3
+    ],
+    "explain": "The fence and fire suppression are physical/environmental. Risk assessment is managerial (risk management). A guard is operational because a person carries out the control. Encryption is technical."
+  },
+  {
+    "obj": "1.2",
+    "q": "A team is planning a PostgreSQL version upgrade in production. The CAB rejects the request because it lacks one key element in case the upgrade fails. What is MOST likely missing?",
+    "options": [
+      "A list of stakeholders",
+      "A standard operating procedure",
+      "An updated network diagram",
+      "A backout plan"
+    ],
+    "answer": 3,
+    "explain": "A backout plan describes in advance how to reverse the change if it fails. Without one, a failed change can cause a long outage. The other items are useful, but they don't answer the question \"what if it fails?\""
+  },
+  {
+    "obj": "1.2",
+    "q": "A database migration has already modified the schema and written new data when a bug is found in the application. Rolling back to the old version would lose data, so the team immediately ships a fix through the pipeline. What is this approach called?",
+    "options": [
+      "Backout planning",
+      "Maintenance window",
+      "Fail forward",
+      "Impact analysis"
+    ],
+    "answer": 2,
+    "explain": "Fail forward means solving the problem with a new fix instead of reverting to the previous state, typically when a rollback is impossible or riskier. Backout would mean going back."
+  },
+  {
+    "obj": "1.2",
+    "q": "After an approved upgrade of a monitoring agent, the new binary fails to start on the servers, even though it passed tests in the lab. Application control is active on the production servers. Which technical implication was MOST likely overlooked?",
+    "options": [
+      "Updating the allow list for the new application version",
+      "Updating the network diagram",
+      "Notifying stakeholders",
+      "Restarting the application"
+    ],
+    "answer": 0,
+    "explain": "An application allow list often permits files by hash or signature, so the new version gets blocked. Updating allow/deny lists must be part of the change. A diagram or notifications would not have prevented the block."
+  },
+  {
+    "obj": "1.2",
+    "q": "Before the CAB approves a TLS configuration change on a load balancer, which TWO items should be attached to the request? Choose TWO.",
+    "options": [
+      "A list of all open ports in the company",
+      "An impact analysis (which clients and legacy systems may stop working)",
+      "A lessons learned report",
+      "Test results from the staging environment"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "The CAB decides based on the impact analysis and test results. Disabling older TLS versions can break legacy clients, which the impact analysis should uncover. Lessons learned come after an incident, and a list of all ports isn't relevant."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Match each situation from the change process with the corresponding term.",
+    "options": [
+      "Every change has a named person accountable for carrying it out and for the result",
+      "Users and the support team are notified about the change in advance",
+      "The change is performed on Sunday from 02:00 to 04:00 when traffic is lowest",
+      "Routine certificate rotation follows documented steps from a runbook",
+      "The admin must not change anything outside the approved scope of the change along the way",
+      "Changing a single DNS record took down three services that relied on it",
+      "The Terraform code is in git, so you can see who changed a rule and roll it back",
+      "After adding a new VPC, the network map was updated",
+      "A kernel patch requires a reboot, so a short service outage is planned"
+    ],
+    "targets": [
+      "Version control",
+      "Ownership",
+      "Downtime",
+      "Stakeholders",
+      "Dependencies",
+      "Maintenance window",
+      "Restricted activities",
+      "Standard operating procedures (SOPs)",
+      "Updating diagrams"
+    ],
+    "answer": [
+      1,
+      3,
+      5,
+      7,
+      6,
+      4,
+      0,
+      8,
+      2
+    ],
+    "explain": "The accountable person is ownership, the notified affected parties are stakeholders, the agreed low-impact period is the maintenance window, documented routine steps are an SOP, the ban on changes outside the scope is restricted activities, the chain of failures shows dependencies, history and rollback are version control, the updated map is updating diagrams, and the planned outage for a reboot is downtime."
+  }
+]

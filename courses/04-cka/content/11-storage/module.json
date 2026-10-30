@@ -1,0 +1,13 @@
+{
+  "title": "Storage: PV, PVC, StorageClass",
+  "summary": "Volumeni u Podu, PersistentVolume i PersistentVolumeClaim, access modes, reclaim policy, StorageClass sa dinamičkim provisioningom, proširenje PVC-a i rješavanje PVC-a koji ostaje Pending.",
+  "minutes": 90,
+  "domain": 4,
+  "objectives": [
+    "4.1",
+    "4.2",
+    "4.3"
+  ],
+  "title_en": "Storage: PV, PVC, StorageClass",
+  "summary_en": "Volumes in a Pod, PersistentVolumes and PersistentVolumeClaims, access modes, reclaim policy, StorageClass with dynamic provisioning, PVC expansion and fixing a PVC stuck in Pending."
+}

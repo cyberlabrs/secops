@@ -1,0 +1,12 @@
+{
+  "title": "Zaštita podataka i otpornost",
+  "summary": "Vrste, stanja i klasifikacije podataka, metode i uloge zaštite, životni ciklus i compliance, te otpornost: lokacije za oporavak, redundantnost, napajanje, backupi, testiranje i metrike RTO/RPO/MTTR/MTBF.",
+  "minutes": 100,
+  "domain": 3,
+  "objectives": [
+    "3.3",
+    "3.4"
+  ],
+  "title_en": "Data protection and resilience",
+  "summary_en": "Data types, states, and classifications, protection methods and roles, lifecycle and compliance, plus resilience: recovery sites, redundancy, power, backups, testing, and the RTO/RPO/MTTR/MTBF metrics."
+}

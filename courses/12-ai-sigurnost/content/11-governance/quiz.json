@@ -1,0 +1,276 @@
+[
+  {
+    "obj": "6.1",
+    "q": "Uprava pita koji od tri dokumenta je obavezujući, koji je dobrovoljni okvir, a koji se može certifikovati. Šta je tačno?",
+    "options": [
+      "Sva tri su obavezujuća u EU",
+      "EU AI Act je obavezujuća uredba, NIST AI RMF dobrovoljni okvir, a ISO/IEC 42001 standard sistema upravljanja koji se može certifikovati",
+      "NIST AI RMF je obavezujući za sve kompanije koje koriste cloud",
+      "ISO/IEC 42001 je uredba EU, a EU AI Act standard"
+    ],
+    "answer": 1,
+    "explain": "AI Act je Uredba (EU) 2024/1689; NIST AI RMF 1.0 je dobrovoljan; ISO/IEC 42001:2023 definiše AIMS i certifikuje ga akreditovani organ."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija iz Srbije razvija sistem za rangiranje kandidata za posao i prodaje ga poslodavcima u Njemačkoj. Da li se na nju odnosi EU AI Act i u kojoj ulozi?",
+    "options": [
+      "Ne, jer kompanija nije registrovana u EU",
+      "Da, ali samo kao distributer",
+      "Samo ako sistem koristi model treniran u EU",
+      "Da, kao pružalac sistema koji se stavlja na tržište EU; zapošljavanje je oblast iz Aneksa III"
+    ],
+    "answer": 3,
+    "explain": "AI Act se primjenjuje i na pružaoce van EU koji stavljaju sistem na tržište EU. Rangiranje kandidata je visokorizična upotreba (Aneks III, zapošljavanje)."
+  },
+  {
+    "obj": "6.1",
+    "q": "Prema AI Omnibusu (Uredba (EU) 2026/1744), od kada najkasnije važe obaveze za samostalne visokorizične sisteme iz Aneksa III?",
+    "options": [
+      "Od 2. 12. 2027",
+      "Od 2. 8. 2025",
+      "Od 2. 8. 2026",
+      "Od 2. 8. 2028"
+    ],
+    "answer": 0,
+    "explain": "Omnibus je pomjerio Aneks III na najkasnije 2. 12. 2027, a Aneks I (AI u reguliranim proizvodima) na najkasnije 2. 8. 2028. 2. 8. 2025 su počele GPAI obaveze."
+  },
+  {
+    "obj": "6.1",
+    "q": "Tim kaže: „Obaveze za visokorizične sisteme su odgođene, pa nam AI Act trenutno ništa ne traži.“ Šta je pogrešno?",
+    "options": [
+      "Ništa, cijela uredba je odgođena do 2028",
+      "AI Act važi samo za javni sektor",
+      "Zabranjene prakse i AI pismenost važe od 2. 2. 2025, GPAI obaveze od 2. 8. 2025, a obaveze transparentnosti iz čl. 50 od 2. 8. 2026",
+      "Odgođene su samo kazne"
+    ],
+    "answer": 2,
+    "explain": "Odgođene su obaveze za visokorizične sisteme; ostale odredbe se primjenjuju ranije. Uz to, kontrole kao što su inventar, logovi i ljudski nadzor traže mjesece pripreme."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija postavi chatbota podrške na sajt za klijente u EU. Sistem ne odlučuje o pravima korisnika. Koja obaveza iz AI Acta je najrelevantnija?",
+    "options": [
+      "Ocjena usklađenosti i CE oznaka",
+      "Registracija u EU bazi visokorizičnih sistema",
+      "Procjena uticaja na osnovna prava (FRIA)",
+      "Član 50: korisnici moraju znati da komuniciraju sa AI sistemom"
+    ],
+    "answer": 3,
+    "explain": "Chatbot je tipičan primjer obaveze transparentnosti. Ocjena usklađenosti, registracija i FRIA vezane su za visokorizične sisteme i određene deployere."
+  },
+  {
+    "obj": "6.1",
+    "q": "Koji član AI Acta traži da visokorizični sistemi budu otporni na pokušaje izmjene upotrebe ili ponašanja iskorišćavanjem ranjivosti, uključujući trovanje podataka i modela i adversarial primjere?",
+    "options": [
+      "Član 15: tačnost, robusnost i kibernetička sigurnost",
+      "Član 4: AI pismenost",
+      "Član 50: transparentnost",
+      "Član 99: kazne"
+    ],
+    "answer": 0,
+    "explain": "Član 15 eksplicitno navodi mjere protiv trovanja podataka i modela, adversarial primjera i napada na povjerljivost. Tu se regulativa direktno oslanja na sigurnosni inženjering."
+  },
+  {
+    "obj": "6.1",
+    "q": "Koje su četiri funkcije NIST AI RMF 1.0?",
+    "options": [
+      "Identify, Protect, Detect, Respond",
+      "Plan, Do, Check, Act",
+      "GOVERN, MAP, MEASURE, MANAGE",
+      "Assess, Authorize, Monitor, Retire"
+    ],
+    "answer": 2,
+    "explain": "AI RMF koristi GOVERN (prožima ostale), MAP, MEASURE i MANAGE. Identify/Protect/Detect/Respond su funkcije NIST CSF-a, a PDCA je ciklus ISO sistema upravljanja."
+  },
+  {
+    "obj": "6.1",
+    "q": "Organizacija gradi asistenta na velikom jezičkom modelu i želi katalog rizika specifičnih za generativni AI, mapiran na NIST AI RMF. Koji dokument treba da koristi?",
+    "options": [
+      "NIST SP 800-53",
+      "NIST AI 600-1 (Generative AI Profile)",
+      "ISO/IEC 27002",
+      "NIST SP 800-61"
+    ],
+    "answer": 1,
+    "explain": "AI 600-1 (jul 2024) primjenjuje AI RMF na generativni AI, navodi 12 rizika (npr. konfabulacija, informaciona sigurnost, privatnost podataka) i predlaže radnje po funkcijama RMF-a."
+  },
+  {
+    "obj": "6.1",
+    "q": "Organizacija ima certifikovan ISMS po ISO/IEC 27001 i želi certifikaciju po ISO/IEC 42001. Koji pristup je najbolji?",
+    "options": [
+      "Proširiti postojeći sistem upravljanja: isti proces rizika, audit i upravljački pregled, uz AI rizike i kontrole iz Aneksa A 42001",
+      "Napraviti potpuno odvojen sistem sa drugim registrom rizika",
+      "Ukinuti 27001 jer ga 42001 zamjenjuje",
+      "Čekati harmonizovane standarde AI Acta"
+    ],
+    "answer": 0,
+    "explain": "42001 ima istu strukturu klauzula kao 27001, pa se integriše u postojeći sistem. 42001 ne zamjenjuje 27001; pokrivaju različite oblasti."
+  },
+  {
+    "obj": "6.1",
+    "q": "Koji ISO/IEC standard daje zahtjeve za tijela koja auditiraju i certifikuju sisteme upravljanja AI-jem?",
+    "options": [
+      "ISO/IEC 23894",
+      "ISO/IEC 42005",
+      "ISO/IEC 5962",
+      "ISO/IEC 42006"
+    ],
+    "answer": 3,
+    "explain": "ISO/IEC 42006 se odnosi na certifikaciona tijela za AIMS. 23894 daje smjernice za upravljanje AI rizikom, 42005 za procjenu uticaja AI sistema, a 5962 je SPDX."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija koristi komercijalni LLM kao deployer, a zatim ga fine-tunuje i prodaje kao proizvod za ocjenu kreditne sposobnosti pod svojim imenom. Šta se mijenja?",
+    "options": [
+      "Ništa, ostaje deployer",
+      "Postaje pružalac visokorizičnog sistema (Aneks III, bitne usluge), sa obavezama čl. 9–15",
+      "Postaje distributer",
+      "Obaveze prelaze na dobavljača baznog modela"
+    ],
+    "answer": 1,
+    "explain": "Uloga se određuje po sistemu: ko stavlja sistem na tržište pod svojim imenom je pružalac. Ocjena kreditne sposobnosti fizičkih lica je u Aneksu III. Dobavljač GPAI modela ima svoje obaveze (čl. 53), ali ne preuzima obaveze pružaoca sistema."
+  },
+  {
+    "obj": "6.1",
+    "q": "HR želi alat koji kamerom procjenjuje emocije zaposlenih tokom sastanaka radi „mjerenja angažovanosti“. Šta governance tim treba da odgovori?",
+    "options": [
+      "Dozvoljeno uz obavještenje zaposlenih",
+      "Visokorizično, potrebna ocjena usklađenosti",
+      "Zabranjena praksa po članu 5 (prepoznavanje emocija na radnom mjestu, uz uske medicinske i sigurnosne izuzetke); slučaj zaustaviti",
+      "Minimalni rizik"
+    ],
+    "answer": 2,
+    "explain": "Prepoznavanje emocija na radnom mjestu i u obrazovanju je zabranjeno od 2. 2. 2025, osim iz medicinskih ili sigurnosnih razloga. Mjerenje angažovanosti nije takav razlog."
+  },
+  {
+    "obj": "6.2",
+    "q": "CASB logovi pokazuju da stotine zaposlenih koriste javne AI chat servise, a odobrena alternativa ne postoji. Koji je najbolji redoslijed mjera?",
+    "options": [
+      "Odmah blokirati sve AI domene i disciplinski postupiti",
+      "Ništa ne raditi dok AI Act ne počne da važi za visokorizične sisteme",
+      "Poslati e-mail da je korištenje zabranjeno, bez drugih mjera",
+      "Ponuditi odobrenu enterprise alternativu sa ugovorom o neiskorišćavanju podataka za treniranje, jasnu politiku klasa podataka i jednostavan intake, pa blokirati nedozvoljene servise"
+    ],
+    "answer": 3,
+    "explain": "Zabrana bez alternative tjera ljude na zaobilaženje. Odobren put, jasna pravila i tek onda tehnička blokada smanjuju curenje podataka i daju vidljivost."
+  },
+  {
+    "obj": "6.2",
+    "q": "Koje polje u inventaru AI sistema je najvažnije da bi se pri promjeni modela dobavljača brzo našli pogođeni sistemi?",
+    "options": [
+      "Model sa dobavljačem i pinovanom verzijom, uz vlasnika sistema",
+      "Boja logotipa proizvoda",
+      "Broj zaposlenih u timu",
+      "Datum osnivanja dobavljača"
+    ],
+    "answer": 0,
+    "explain": "Inventar treba da kaže koji sistem koristi koji model i verziju, i ko je odgovoran. Tada se pri promjeni ili incidentu kod dobavljača odmah zna koga obavijestiti i šta ponovo evaluirati."
+  },
+  {
+    "obj": "6.2",
+    "q": "Tim je dobio odobrenje za interni asistent sa RAG-om nad javnom dokumentacijom. Tri mjeseca kasnije dodali su alat koji kreira narudžbenice u ERP-u. Šta governance proces treba da zahtijeva?",
+    "options": [
+      "Ništa, sistem je već odobren",
+      "Samo ažuriranje korisničkog uputstva",
+      "Ponovnu procjenu rizika, jer novi alat sa pravom pisanja mijenja profil rizika (excessive agency)",
+      "Novu nabavku licenci"
+    ],
+    "answer": 2,
+    "explain": "Značajne izmjene (novi alat, novi model, nova klasa podataka, nova grupa korisnika) vraćaju sistem u procjenu. Alat koji piše u ERP traži kontrole kao što su allowlista i potvrda čovjeka."
+  },
+  {
+    "obj": "6.2",
+    "q": "Dobavljač LLM API-ja je bez najave zamijenio model, a guardraili i evaluacija su bili kalibrisani za staru verziju. Koja ugovorna stavka bi to spriječila?",
+    "options": [
+      "Popust za veći obim",
+      "Mogućnost pinovanja verzije modela i obaveza najave promjene u dogovorenom roku",
+      "Obaveza plaćanja unaprijed",
+      "Ekskluzivnost za region"
+    ],
+    "answer": 1,
+    "explain": "Pinovanje verzije i rok najave daju vremena da se pokrene vlastita evaluacija (modul 10) prije prelaska na novu verziju."
+  },
+  {
+    "obj": "6.2",
+    "q": "Koje pitanje u procjeni AI dobavljača najdirektnije adresira rizik da povjerljivi ulazi završe u budućim verzijama njegovog modela?",
+    "options": [
+      "Koliko dugo dobavljač posluje",
+      "Koji programski jezik koristi",
+      "Kolika je latencija API-ja",
+      "Da li se naši ulazi i izlazi koriste za treniranje i može li se to ugovorom isključiti"
+    ],
+    "answer": 3,
+    "explain": "Korištenje podataka klijenata za treniranje je direktan put curenja i problema sa intelektualnom svojinom. Ostala pitanja su operativna."
+  },
+  {
+    "obj": "6.2",
+    "q": "Novi slučaj upotrebe stiže kroz intake. Koji je ispravan redoslijed prvih koraka?",
+    "options": [
+      "Intake sa namjenom, podacima, korisnicima, modelom i alatima, zatim trijaža i klasifikacija, pa procjena proporcionalna riziku",
+      "Odmah puna procjena sa svim kontrolama za svaki slučaj",
+      "Prvo kupovina alata, pa procjena nakon lansiranja",
+      "Klasifikacija bez ikakvih informacija o sistemu"
+    ],
+    "answer": 0,
+    "explain": "Intake daje činjenice, trijaža odvaja minimalni rizik (brzi put) od ostalih, klasifikacija određuje regulatorne obaveze, a procjena bira kontrole prema stvarnim rizicima."
+  },
+  {
+    "obj": "6.2",
+    "q": "Koja kombinacija izvora najbolje otkriva AI sisteme koji nisu u inventaru?",
+    "options": [
+      "Samo anketa zaposlenih jednom godišnje",
+      "CASB i proxy logovi, troškovi i pretplate, ugovori iz nabavke, registry modela i API ključevi dobavljača u secret manageru",
+      "Samo lista licenci iz IT odjela",
+      "Samo pretraga koda za riječ „AI“"
+    ],
+    "answer": 1,
+    "explain": "Shadow AI i AI funkcije u SaaS-u ne prijavljuju se same; više tehničkih i finansijskih izvora daje realnu sliku. Anketa i lista licenci propuštaju veliki dio."
+  },
+  {
+    "obj": "6.2",
+    "q": "Pružalac downstream sistema ugrađuje GPAI model dobavljača. Koja odredba AI Acta mu daje osnov da od dobavljača traži informacije o mogućnostima i ograničenjima modela?",
+    "options": [
+      "Član 5",
+      "Član 99",
+      "Član 53, obaveze pružalaca GPAI modela, uključujući informacije za pružaoce koji model ugrađuju",
+      "Član 27"
+    ],
+    "answer": 2,
+    "explain": "Član 53 obavezuje pružaoce GPAI modela da vode dokumentaciju i daju informacije pružaocima nizvodno. Član 5 su zabrane, 99 kazne, 27 FRIA."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Upari slučaj upotrebe sa vjerovatnom klasom po EU AI Actu.",
+    "options": [
+      "Ocjena kreditne sposobnosti fizičkih lica za odobravanje kredita",
+      "Generisanje marketinških slika za društvene mreže",
+      "Interni filter neželjene pošte",
+      "Sistem društvenog bodovanja građana koji dovodi do nepovoljnog tretmana"
+    ],
+    "targets": [
+      "Zabranjena praksa (čl. 5)",
+      "Minimalni rizik",
+      "Visokorizičan (Aneks III)",
+      "Obaveze transparentnosti (čl. 50)",
+      "GPAI model sa sistemskim rizikom"
+    ],
+    "answer": [2, 3, 1, 0],
+    "explain": "Kreditna sposobnost je u Aneksu III (bitne usluge); sintetički sadržaj traži označavanje; filter spama je tipičan minimalni rizik; društveno bodovanje je zabranjeno. GPAI sa sistemskim rizikom je kategorija modela, ne slučaja upotrebe."
+  },
+  {
+    "obj": "6.2",
+    "type": "order",
+    "q": "Poredaj faze životnog ciklusa upravljanja AI sistemom u organizaciji.",
+    "options": [
+      "Monitoring i periodični pregled; značajna izmjena vraća sistem u procjenu",
+      "Odluka: odobreno, odobreno uz uslove ili odbijeno",
+      "Intake: namjena, podaci, korisnici, model, alati, autonomija",
+      "Procjena: sigurnost, DPIA, FRIA ako je potrebna",
+      "Trijaža i klasifikacija (EU AI Act, uloga organizacije)"
+    ],
+    "answer": [2, 4, 3, 1, 0],
+    "explain": "Činjenice iz intakea omogućavaju trijažu i klasifikaciju, one određuju obim procjene, procjena vodi do odluke, a odobren sistem se prati i ponovo procjenjuje pri izmjenama."
+  }
+]

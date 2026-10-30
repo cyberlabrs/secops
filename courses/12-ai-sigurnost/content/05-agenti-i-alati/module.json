@@ -1,0 +1,12 @@
+{
+  "title": "Agenti, alati i MCP",
+  "summary": "Agent pretvara grešku modela u akciju: OWASP LLM06 Excessive Agency i Top 10 za agentne aplikacije, policy gateway sa allowlistom i JSON Schema validacijom, čovjek u petlji, sigurnost MCP-a i limiti protiv neograničene potrošnje (LLM10).",
+  "minutes": 75,
+  "domain": 2,
+  "objectives": [
+    "2.3",
+    "2.4"
+  ],
+  "title_en": "Agents, tools and MCP",
+  "summary_en": "An agent turns a model error into an action: OWASP LLM06 Excessive Agency and the Top 10 for Agentic Applications, a policy gateway with an allowlist and JSON Schema validation, human-in-the-loop, MCP security and limits against unbounded consumption (LLM10)."
+}

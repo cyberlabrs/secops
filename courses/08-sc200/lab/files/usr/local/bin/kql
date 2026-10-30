@@ -1,0 +1,12 @@
+#!/bin/bash
+# Izvršava KQL nad tabelama kursa (StormEvents, SecurityEvent, DeviceProcessEvents, AzureFirewall).
+# Upotreba: kql upit.kql             upite u istom fajlu odvoji praznim redom
+#           kql -c 'StormEvents | count'
+# U fajlu: .save /root/rezultat.csv snima rezultat prethodnog upita.
+t=$(mktemp); trap 'rm -f "$t"' EXIT
+{ cat /opt/kurs/tabele.kql; echo; echo ".echo ===KURS==="; echo; } > "$t"
+if [ "$1" = "-c" ]; then shift; printf '%s\n' "$*" >> "$t"
+elif [ -f "$1" ]; then cat "$1" >> "$t"
+else sed -n '2,5p' "$0"; exit 2; fi
+/opt/lokql/lokql run -f "$t" 2>&1 | awk 'f; /^===KURS===$/ {f=1}'
+exit ${PIPESTATUS[0]}

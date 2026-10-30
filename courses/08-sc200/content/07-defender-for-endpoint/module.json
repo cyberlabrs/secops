@@ -1,0 +1,11 @@
+{
+  "title": "Defender for Endpoint: konfiguracija i odgovor",
+  "summary": "Odgovor na alarme u Defender for Endpointu: device timeline (MITRE tehnike, flagovi, izvoz), response akcije (isolate, contain, restrict app execution), investigation package, live response i biblioteka skripti, evidence i stranice entiteta, Action center i istraga incidenata nakon automatic attack disruptiona.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.2"
+  ],
+  "title_en": "Defender for Endpoint: configuration and response",
+  "summary_en": "Responding to alerts in Defender for Endpoint: device timeline (MITRE techniques, flags, export), response actions (isolate, contain, restrict app execution), investigation package, live response and the script library, evidence and entity pages, the Action center and investigating incidents after automatic attack disruption."
+}

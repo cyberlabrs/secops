@@ -1,0 +1,8 @@
+#!/bin/bash
+# Pokreće lokalni OCI registry na 127.0.0.1:5000 (slike iz /opt/registry kopiraju se pri prvom pokretanju).
+[ -d /var/lib/registry/docker ] || { mkdir -p /var/lib/registry && cp -a /opt/registry/. /var/lib/registry/; }
+if ! curl -fs http://127.0.0.1:5000/v2/ >/dev/null 2>&1; then
+  nohup registry serve /etc/kurs/registry.yml >/var/log/registry.log 2>&1 &
+  for i in $(seq 50); do curl -fs http://127.0.0.1:5000/v2/ >/dev/null 2>&1 && break; sleep 0.2; done
+fi
+curl -fs http://127.0.0.1:5000/v2/ >/dev/null || { echo "registry ne radi"; exit 1; }

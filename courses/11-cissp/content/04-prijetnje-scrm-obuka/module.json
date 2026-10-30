@@ -1,0 +1,13 @@
+{
+  "title": "Modelovanje prijetnji, lanac snabdijevanja i obuka",
+  "summary": "Modelovanje prijetnji (četiri pitanja, DFD i granice povjerenja, STRIDE, PASTA, VAST, DREAD, Trike, LINDDUN, attack trees, ATT&CK, AI sistemi), upravljanje rizikom lanca snabdijevanja (tampering, krivotvorine, implantati, reputacioni rizik; procjena i monitoring dobavljača, minimalni zahtjevi, SLA, silicon root of trust, PUF, SBOM i VEX) te program svijesti, obuke i edukacije sa security championsima, gamifikacijom, mjerenjem efikasnosti, angažmanom stakeholdera i temama AI, kriptovaluta i blockchaina.",
+  "minutes": 60,
+  "domain": 1,
+  "objectives": [
+    "1.10",
+    "1.11",
+    "1.12"
+  ],
+  "title_en": "Threat Modeling, Supply Chain and Training",
+  "summary_en": "Threat modeling (the four questions, DFDs and trust boundaries, STRIDE, PASTA, VAST, DREAD, Trike, LINDDUN, attack trees, ATT&CK, AI systems), supply chain risk management (tampering, counterfeits, implants, reputational risk; supplier assessment and monitoring, minimum requirements, SLAs, silicon root of trust, PUF, SBOM and VEX), and a security awareness, training and education program with security champions, gamification, effectiveness measurement, stakeholder engagement, and AI, cryptocurrency and blockchain topics."
+}

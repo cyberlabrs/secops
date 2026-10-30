@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Imate Microsoft Sentinel workspace i 200 Windows servera u on-premises data centru. Servere ne upravlja nijedna Azure usluga. Trebate prikupljati Windows Security evente konektorom Windows Security Events via AMA. Šta trebate uraditi PRVO?",
+    "options": [
+      "Instalirati Log Analytics agent (MMA) na svaki server i povezati ga sa workspaceom.",
+      "Onboardovati servere u Azure Arc.",
+      "Kreirati data collection endpoint u istom regionu kao workspace.",
+      "Uključiti Windows Event Forwarding na svim serverima."
+    ],
+    "answer": 1,
+    "explain": "Mašine koje nisu Azure VM moraju imati Azure Arc (Connected Machine agent) prije nego što AMA konektor može na njih instalirati agenta i povezati DCR. MMA je penzionisan, a DCE i WEF nisu preduslov za ovaj konektor."
+  },
+  {
+    "obj": "1.3",
+    "q": "Imate Microsoft Sentinel. Trebate sa domain controllera prikupljati samo evente 4624, 4625 i 4768 i minimizovati troškove unosa. Koristite konektor Windows Security Events via AMA. Šta trebate konfigurisati u data collection rule-u?",
+    "options": [
+      "Event set Minimal.",
+      "Event set All events i analytics rule koji filtrira EventID.",
+      "Event set Custom sa XPath upitom.",
+      "Event set Common i transformaciju u workspace transformation DCR-u."
+    ],
+    "answer": 2,
+    "explain": "Custom event set sa XPath upitom (npr. Security!*[System[(EventID=4624 or EventID=4625 or EventID=4768)]]) filtrira na izvoru, pa agent šalje samo te evente. Minimal i Common imaju unaprijed definisan skup koji ne odgovara tačno zahtjevu, a analytics rule ne smanjuje unos."
+  },
+  {
+    "obj": "1.3",
+    "q": "Organizacija već ima Windows Event Collector (WEC) server koji preko WEF-a skuplja Security evente sa 500 radnih stanica. Instalirali ste AMA na WEC i uključili konektor Windows Forwarded Events. Eventi stižu, ali ugrađeno analytics pravilo za brute force ne generiše alarme. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Eventi se upisuju u tabelu WindowsEvent, a pravilo čita SecurityEvent.",
+      "WEF ne prosljeđuje evente iz Security loga.",
+      "AMA na WEC serveru nema Azure Arc licencu.",
+      "Pravilo je NRT i ne podržava podatke sa WEC servera."
+    ],
+    "answer": 0,
+    "explain": "Eventi prikupljeni preko WEF-a završavaju u WindowsEvent, uključujući i one iz Security loga, a ne u SecurityEvent. Ugrađena pravila koja čitaju SecurityEvent ih ne vide; treba prilagoditi upit ili koristiti ASIM parsere."
+  },
+  {
+    "obj": "1.3",
+    "q": "Imate firewall koji može slati logove u CEF formatu. Trebate da podaci budu parsirani u kolone kao DeviceVendor, SourceIP i DestinationIP i da rade ugrađena analytics pravila za taj firewall. Koju tabelu i konektor trebate koristiti?",
+    "options": [
+      "Syslog via AMA, tabela Syslog.",
+      "Custom Logs via AMA, tabela Firewall_CL.",
+      "Azure Firewall konektor, tabela AzureDiagnostics.",
+      "Common Event Format (CEF) via AMA, tabela CommonSecurityLog."
+    ],
+    "answer": 3,
+    "explain": "CEF via AMA upisuje u CommonSecurityLog sa parsiranim kolonama, a ugrađena pravila za CEF uređaje čitaju tu tabelu. Syslog via AMA bi dao neparsiranu poruku u SyslogMessage."
+  },
+  {
+    "obj": "1.3",
+    "q": "Na Linux log forwarderu ste kreirali DCR za CEF via AMA i DCR za Syslog via AMA. Primjećujete da se iste poruke sa firewalla pojavljuju i u CommonSecurityLog i u Syslog tabeli. Šta trebate uraditi?",
+    "options": [
+      "Ukloniti Syslog via AMA konektor iz workspacea.",
+      "Ukloniti iz Syslog DCR-a facility koji firewall koristi za CEF poruke.",
+      "Promijeniti port na kojem rsyslog sluša sa 514 na 28330.",
+      "Dodati analytics rule koji briše duplikate iz Syslog tabele."
+    ],
+    "answer": 1,
+    "explain": "Dupliranje nastaje kada Syslog i CEF stream koriste isti facility. Rješenje je razdvojiti facilityje ili filtrirati u DCR-u. Uklanjanje konektora gubi ostale Syslog izvore, port 28330 je interni port prema AMA, a analytics rule ne briše podatke."
+  },
+  {
+    "obj": "1.3",
+    "q": "Postavljate Linux log forwarder u on-premises data centru za CEF via AMA. Forwarder nije Azure VM. U DCR wizardu forwarder se ne pojavljuje u listi resursa. Šta trebate uraditi?",
+    "options": [
+      "Instalirati Azure Arc Connected Machine agent na forwarder.",
+      "Pokrenuti skriptu Forwarder_AMA_installer.py prije kreiranja DCR-a.",
+      "Otvoriti port 514 UDP na firewallu prema forwarderu.",
+      "Dodijeliti sebi ulogu Microsoft Sentinel Contributor."
+    ],
+    "answer": 0,
+    "explain": "Ne-Azure mašine se u DCR wizardu pojavljuju tek kada su Arc-enabled. Instalaciona skripta podešava syslog daemon nakon što je AMA instaliran, port 514 ne utiče na listu resursa, a za DCR je potrebna uloga Monitoring Contributor, ne Sentinel Contributor."
+  },
+  {
+    "obj": "1.3",
+    "q": "Na Syslog via AMA DCR-u za facility auth ste odabrali minimalni log level LOG_ERR. Koje nivoe će AMA prikupljati za taj facility?",
+    "options": [
+      "Samo LOG_ERR.",
+      "LOG_ERR, LOG_WARNING, LOG_NOTICE, LOG_INFO i LOG_DEBUG.",
+      "LOG_ERR, LOG_CRIT, LOG_ALERT i LOG_EMERG.",
+      "Sve nivoe, jer se log level primjenjuje samo na CEF."
+    ],
+    "answer": 2,
+    "explain": "Odabrani nivo je minimalni: prikuplja se on i svi teži nivoi (CRIT, ALERT, EMERG). Lakši nivoi kao WARNING ili INFO se ne prikupljaju."
+  },
+  {
+    "obj": "1.3",
+    "q": "Imate 40 Azure subscriptiona u jednoj management grupi i stalno se dodaju novi. Trebate da Azure Activity logovi svih postojećih i budućih subscriptiona stižu u Sentinel workspace uz NAJMANJE administrativnog napora. Šta trebate uraditi?",
+    "options": [
+      "U svakom subscriptionu ručno kreirati diagnostic setting za Activity log.",
+      "Kreirati Logic App koja svaki dan provjerava nove subscriptione.",
+      "Dodijeliti politiku na svaku resource grupu u svakom subscriptionu.",
+      "Dodijeliti politiku Configure Azure Activity logs to stream to specified Log Analytics workspace na management grupu i kreirati remediation task."
+    ],
+    "answer": 3,
+    "explain": "Politika sa DeployIfNotExists na nivou management grupe pokriva nove subscriptione automatski, a remediation task primjenjuje diagnostic setting na postojeće. Activity log je na nivou subscriptiona, pa resource grupa nije pravi scope."
+  },
+  {
+    "obj": "1.3",
+    "q": "Dodijelili ste politiku za Azure Activity logove na subscription Prod-01 bez remediation taska. Nakon dva dana u tabeli AzureActivity nema podataka iz Prod-01. Šta trebate uraditi?",
+    "options": [
+      "Kreirati remediation task za postojeću dodjelu politike.",
+      "Promijeniti efekat politike u Audit.",
+      "Sačekati sedam dana da se politika evaluira.",
+      "Instalirati AMA na sve VM-ove u subscriptionu."
+    ],
+    "answer": 0,
+    "explain": "DeployIfNotExists ne mijenja postojeće resurse bez remediation taska. Audit samo izvještava, čekanje ne pomaže, a Activity log se ne skuplja agentom."
+  },
+  {
+    "obj": "1.3",
+    "q": "Vaša organizacija koristi threat intelligence platformu (TIP) koja može slati STIX objekte preko REST-a. Trebate u Sentinel unositi indikatore, ali i threat actor i attack pattern objekte i njihove relacije. Šta trebate koristiti?",
+    "options": [
+      "Konektor Threat Intelligence Platforms.",
+      "Threat Intelligence upload API.",
+      "Konektor Microsoft Defender Threat Intelligence.",
+      "Watchlistu sa CSV fajlom indikatora."
+    ],
+    "answer": 1,
+    "explain": "Upload API prima STIX objekte (ne samo indikatore), ne traži konektor i preporučen je za TIP integracije. TIP konektor koristi stari tiIndicators API, podržava samo indikatore i ide u deprecation. MDTI donosi Microsoftove indikatore, ne vaše."
+  },
+  {
+    "obj": "1.3",
+    "q": "Partner vam daje pristup TAXII 2.1 serveru sa STIX feedom. Šta trebate pripremiti da biste uključili konektor Threat Intelligence - TAXII?",
+    "options": [
+      "Client secret Entra aplikacije sa ulogom Microsoft Sentinel Contributor.",
+      "Data collection endpoint i DCR sa streamom Custom-TI_CL.",
+      "API root i collection ID TAXII servera.",
+      "Linux forwarder sa otvorenim portom 514."
+    ],
+    "answer": 2,
+    "explain": "TAXII konektor je ugrađeni TAXII klijent kojem trebaju API root i collection ID (uz eventualne kredencijale servera). Entra aplikacija sa Sentinel Contributor ulogom je za upload API, a DCR i forwarder nisu dio TI unosa."
+  },
+  {
+    "obj": "1.3",
+    "q": "Analitičar piše hunting upit nad threat intelligence podacima i dobija više redova za isti indikator. Zašto, i kako to riješiti?",
+    "options": [
+      "Indikator je uvezen iz dva TAXII servera; treba obrisati jedan konektor.",
+      "Tabela ThreatIntelIndicators ne podržava deduplikaciju; treba koristiti ThreatIntelligenceIndicator.",
+      "Indikator je istekao; treba filtrirati po IsDeleted.",
+      "Sentinel upisuje novi red pri svakoj promjeni i periodičnom ponovnom upisu; treba uzeti posljednju verziju sa summarize arg_max(TimeGenerated, *) by Id."
+    ],
+    "answer": 3,
+    "explain": "Svako kreiranje, izmjena ili periodični re-ingest (svakih 7–10 dana) dodaje novi red. Važi verzija sa najnovijim TimeGenerated po polju Id. Stara tabela ThreatIntelligenceIndicator više ne prima podatke."
+  },
+  {
+    "obj": "1.3",
+    "q": "Aplikacija u vašem data centru treba slati JSON zapise u Sentinel. Zapisi imaju polje EventTime koje treba postati TimeGenerated, a polje Password se nikad ne smije upisati. Koje rješenje trebate implementirati?",
+    "options": [
+      "Custom tabela _CL, DCR sa transformacijom i slanje preko Logs Ingestion API-ja.",
+      "HTTP Data Collector API i analytics rule koji briše polje Password.",
+      "Custom Logs via MMA i workspace transformation DCR.",
+      "Syslog via AMA i parse operator u hunting upitu."
+    ],
+    "answer": 0,
+    "explain": "Logs Ingestion API šalje podatke u DCR čija transformacija (source | extend TimeGenerated = todatetime(EventTime) | project-away Password) radi prije upisa. HTTP Data Collector API i MMA su legacy, a brisanje upitom ne sprečava upis."
+  },
+  {
+    "obj": "1.3",
+    "q": "Kreirate custom tabelu iz Azure CLI-ja za podatke iz vlastitog skenera. Koje ime tabele je ispravno?",
+    "options": [
+      "ScannerFindings",
+      "ScannerFindings_CL",
+      "ScannerFindings_CF",
+      "Custom-ScannerFindings"
+    ],
+    "answer": 1,
+    "explain": "Custom tabele moraju imati sufiks _CL; portal ga dodaje automatski, ali CLI i API ne. _CF je sufiks za custom kolone u Azure tabelama, a Custom- je prefiks imena streama u DCR-u, ne tabele."
+  },
+  {
+    "obj": "1.3",
+    "q": "Imate DCR transformaciju za Syslog stream. Koji transformKql je ISPRAVAN?",
+    "options": [
+      "source | summarize count() by Facility",
+      "source | join kind=inner (Watchlist) on HostName",
+      "source | where not(Facility == \"daemon\" and SeverityLevel == \"info\") | project-away ProcessID",
+      "source | top 100 by TimeGenerated"
+    ],
+    "answer": 2,
+    "explain": "Transformacija se izvršava zapis po zapis, pa su dozvoljeni where, extend, project, project-away i skalarne funkcije. summarize, join i top rade nad više redova i nisu podržani."
+  },
+  {
+    "obj": "1.3",
+    "q": "Imate Sentinel i trebate prikupljati: (1) Security evente sa Windows servera tako da ugrađena pravila rade bez izmjena i (2) logove Linux servera za facility auth i authpriv. Koja DVA konektora trebate konfigurisati? (Izaberi DVA.)",
+    "options": [
+      "Windows Security Events via AMA",
+      "Windows Forwarded Events",
+      "Syslog via AMA",
+      "Common Event Format (CEF) via AMA",
+      "Azure Activity"
+    ],
+    "answer": [0, 2],
+    "explain": "Windows Security Events via AMA puni SecurityEvent koji koriste ugrađena pravila, a Syslog via AMA prikuplja auth i authpriv sa Linux servera. Forwarded Events piše u WindowsEvent, CEF je za uređaje koji šalju CEF, a Azure Activity je za control plane Azurea."
+  },
+  {
+    "obj": "1.3",
+    "q": "Trebate da logovi Azure Key Vaulta (pristup tajnama) stižu u Sentinel u resource-specific tabele, za sve postojeće i buduće Key Vaultove. Koja DVA koraka trebate preduzeti? (Izaberi DVA.)",
+    "options": [
+      "Instalirati AMA na sve VM-ove koji koriste Key Vault.",
+      "Dodijeliti Azure Policy koja konfiguriše diagnostic settings za Key Vault prema workspaceu.",
+      "Kreirati remediation task za postojeće Key Vaultove.",
+      "Uključiti konektor Threat Intelligence - TAXII.",
+      "Kreirati custom tabelu KeyVault_CL."
+    ],
+    "answer": [1, 2],
+    "explain": "Logovi Azure resursa idu preko diagnostic settings; politika (DeployIfNotExists) pokriva nove Key Vaultove, a remediation task postojeće. AMA i custom tabela nisu potrebni za resource logove."
+  },
+  {
+    "obj": "1.3",
+    "type": "order",
+    "q": "Poredaj korake za prikupljanje CEF logova sa on-premises firewalla preko Linux forwardera, od prvog do posljednjeg.",
+    "options": [
+      "Na forwarderu pokrenuti Forwarder_AMA_installer.py da rsyslog sluša na portu 514.",
+      "Instalirati Azure Arc Connected Machine agent na Linux forwarder.",
+      "Podesiti firewall da šalje CEF poruke na IP forwardera i provjeriti CommonSecurityLog.",
+      "Iz Content huba instalirati solution i na stranici CEF via AMA konektora kreirati DCR sa forwarderom kao resursom."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Ne-Azure forwarder prvo treba Arc da bi se pojavio u DCR wizardu. Kreiranje DCR-a instalira AMA, zatim skripta podešava syslog daemon, a tek onda se uređaj usmjerava na forwarder i provjeravaju podaci."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari izvor podataka sa tabelom u koju ga Sentinel upisuje.",
+    "options": [
+      "Windows Security Events via AMA",
+      "Windows Forwarded Events (WEF/WEC)",
+      "CEF via AMA",
+      "Azure Activity konektor",
+      "Threat Intelligence upload API (indikatori)"
+    ],
+    "targets": ["Syslog", "CommonSecurityLog", "SecurityEvent", "AzureActivity", "WindowsEvent", "ThreatIntelIndicators"],
+    "answer": [2, 4, 1, 3, 5],
+    "explain": "AMA Security konektor puni SecurityEvent, WEF ide u WindowsEvent, CEF u CommonSecurityLog, Activity log u AzureActivity, a STIX indikatori u ThreatIntelIndicators. Syslog tabela je za Syslog via AMA."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari zahtjev sa mjestom gdje filtriranje treba uraditi.",
+    "options": [
+      "Prikupljati samo EventID 4624 i 4625 sa Windows servera.",
+      "Odbaciti Syslog poruke koje u tekstu sadrže riječ heartbeat.",
+      "Ne upisivati TI indikatore iz TAXII feeda sa confidence ispod 30.",
+      "Sa Linux servera uzimati samo poruke nivoa LOG_WARNING i teže za facility cron."
+    ],
+    "targets": ["TI ingestion rule", "XPath upit u DCR-u", "Facility i minimalni log level u DCR-u", "transformKql u DCR-u"],
+    "answer": [1, 3, 0, 2],
+    "explain": "EventID filter je XPath u DCR-u, filtriranje po sadržaju poruke radi transformKql, TI iz konektora se filtrira ingestion pravilom, a grubo filtriranje Sysloga po facilityju i nivou radi se u Collect koraku DCR-a."
+  },
+  {
+    "type": "spot",
+    "obj": "1.3",
+    "q": "Deploy DCR-a sa ovom transformacijom se odbija. Označi redove sa operatorima koje DCR transformacija ne podržava.",
+    "snippet": "// transformKql u DCR-u za custom tabelu KursApp_CL\nsource\n| extend TimeGenerated = todatetime(EventTime)\n| where Severity != \"Debug\"\n| extend UserMasked = strcat(substring(UserName, 0, 2), \"***\")\n| summarize Count = count() by bin(TimeGenerated, 1m), Computer, Severity, Message, UserMasked\n| project TimeGenerated, Computer, Severity, Message, UserMasked\n| sort by TimeGenerated desc",
+    "lang": "kql",
+    "answer": [
+      5,
+      7
+    ],
+    "explain": "Transformacija se izvršava zapis po zapis prije upisa, pa ne podržava operatore koji gledaju više redova: summarize i sort (ni join, union, top). Agregaciju uradi kasnije (summary rule ili upit), a u transformaciji ostavi where, extend i project. todatetime, strcat i substring su skalarne funkcije i dozvoljene su."
+  }
+]

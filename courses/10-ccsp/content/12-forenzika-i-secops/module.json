@@ -1,0 +1,13 @@
+{
+  "title": "Forenzika, komunikacija i sigurnosne operacije",
+  "summary": "Cloud forenzika (prikupljanje, akvizicija, očuvanje, chain of custody, forensic readiness), komunikacija sa dobavljačima, korisnicima, partnerima i regulatorima, te SOC, nadzor kontrola (IDS/IPS, honeypot, AI), SIEM i threat intelligence, incident response, procjena ranjivosti i pentest u cloudu.",
+  "minutes": 75,
+  "domain": 5,
+  "objectives": [
+    "5.4",
+    "5.5",
+    "5.6"
+  ],
+  "title_en": "Forensics, communication, and security operations",
+  "summary_en": "Cloud forensics (collection, acquisition, preservation, chain of custody, forensic readiness), communication with vendors, customers, partners, and regulators, and the SOC, monitoring of controls (IDS/IPS, honeypot, AI), SIEM and threat intelligence, incident response, vulnerability assessment, and pentesting in the cloud."
+}

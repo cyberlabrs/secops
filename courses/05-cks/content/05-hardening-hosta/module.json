@@ -1,0 +1,13 @@
+{
+  "title": "Hardening host OS-a, identiteti i mrežni pristup",
+  "summary": "Smanjenje površine napada na čvorovima: nepotrebni servisi, paketi i portovi, least privilege za korisnike, sudo, SSH i cloud IAM, te host firewall i security grupe sa samo potrebnim Kubernetes portovima.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.1",
+    "3.2",
+    "3.3"
+  ],
+  "title_en": "Host OS hardening, identities and network access",
+  "summary_en": "Reducing the attack surface of nodes: unneeded services, packages and ports, least privilege for users, sudo, SSH and cloud IAM, plus host firewalls and security groups that allow only the required Kubernetes ports."
+}

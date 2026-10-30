@@ -1,0 +1,76 @@
+[
+  {
+    "q": "In the output of 'ss -tulpn' you see 0.0.0.0:6379 (Redis). What does that mean?",
+    "options": ["Redis is stopped", "Redis listens on all interfaces and is reachable by anyone who can reach the server over the network", "Redis listens only locally", "Redis uses TLS"],
+    "answer": 1,
+    "explain": "0.0.0.0 means all IPv4 interfaces. A service used only by local applications should bind to 127.0.0.1, or at least have a firewall/security group restricting access."
+  },
+  {
+    "q": "nmap shows a port as 'filtered'. What is most likely?",
+    "options": ["The service is running and accepting connections", "The host replied with RST, nothing is listening", "No response: the packet was probably dropped by a firewall", "The port uses UDP"],
+    "answer": 2,
+    "explain": "open = something is listening, closed = the host replied with RST, filtered = no response or an ICMP 'unreachable', typically due to a firewall."
+  },
+  {
+    "q": "What does forward secrecy in TLS protect?",
+    "options": ["It protects against certificate expiry", "Previously captured traffic stays protected even if the server's private key leaks later", "It prevents MITM without a certificate", "It speeds up the handshake"],
+    "answer": 1,
+    "explain": "With (EC)DHE, session keys are ephemeral and not derived from the server's long-term key, so stealing that key doesn't unlock past sessions."
+  },
+  {
+    "q": "curl reports 'unable to get local issuer certificate', but the browser opens the site without errors. Most common cause?",
+    "options": ["The certificate has expired", "The server doesn't send the intermediate certificate in the chain", "Wrong hostname", "TLS 1.3 is not supported"],
+    "answer": 1,
+    "explain": "Browsers often fill in a missing intermediate on their own (cache, AIA fetching), while curl and application libraries don't. The server should send the full chain, excluding the root."
+  },
+  {
+    "q": "What does a client use to verify that a certificate belongs to the host it is connecting to?",
+    "options": ["The Issuer field", "Subject Alternative Name (SAN)", "The serial number", "The Organization field"],
+    "answer": 1,
+    "explain": "Modern clients compare the hostname against the SAN field. Relying on CN is deprecated and browsers ignore it."
+  },
+  {
+    "q": "Which TLS versions are acceptable under current recommendations (Mozilla intermediate, NIST)? (multiple answers)",
+    "options": ["SSLv3", "TLS 1.0", "TLS 1.2", "TLS 1.3"],
+    "answer": [2, 3],
+    "explain": "TLS 1.0 and 1.1 are formally deprecated (RFC 8996), and SSL was broken long ago. Today TLS 1.2 and 1.3 are used."
+  },
+  {
+    "q": "What is the core idea of the zero trust model?",
+    "options": ["Trust no one, so block all traffic", "Network location doesn't grant trust; every request is verified based on identity, device and context", "Replace the firewall with a VPN", "Use only cloud services"],
+    "answer": 1,
+    "explain": "Zero trust (NIST SP 800-207) doesn't mean 'block everything', but that trust is not derived from someone being 'inside'. Verification is continuous and per request."
+  },
+  {
+    "q": "Why is controlling OUTBOUND (egress) traffic important?",
+    "options": ["It reduces costs", "Malware has to communicate with a C2 server and exfiltrate data, and restricted egress makes that harder and more visible", "It speeds up DNS", "It doesn't matter if ingress is protected"],
+    "answer": 1,
+    "explain": "If a database server may not open connections to the internet, a compromise has a harder time turning into exfiltration and C2. Unexpected outbound traffic is also a good detection signal."
+  },
+  {
+    "q": "What is the best starting mode when introducing a WAF in front of an existing application?",
+    "options": ["Block mode for all rules right away", "Detection/count mode, analyze false positives, then gradually block", "Disable the OWASP CRS", "WAF only in the staging environment"],
+    "answer": 1,
+    "explain": "Going straight to block easily breaks legitimate requests. Observe first, tune exceptions, then block."
+  },
+  {
+    "q": "Which sign in DNS logs points to DNS tunneling?",
+    "options": ["Queries for google.com", "Many queries with long, random subdomains to a single domain", "A TTL of 300 seconds", "AAAA records"],
+    "answer": 1,
+    "explain": "Tunneling encodes data in subdomain names, so you see long, high-entropy names and an unusually high number of queries to the same domain."
+  },
+  {
+    "q": "In Kubernetes a pod has no NetworkPolicy at all. What traffic is allowed?",
+    "options": ["None", "Only within the namespace", "All ingress and egress traffic", "Only DNS"],
+    "answer": 2,
+    "explain": "By default everything is allowed. Only once a policy 'selects' a pod does deny apply to it, except for what the policies allow. That's why a default-deny policy per namespace is good practice."
+  },
+  {
+    "type": "spot",
+    "q": "This nginx configuration should match the Mozilla \"intermediate\" profile from the lesson. Click the line that violates it.",
+    "lang": "text",
+    "snippet": "server {\n    listen 443 ssl;\n    server_name shop.example.com;\n    ssl_certificate     /etc/ssl/shop/fullchain.pem;\n    ssl_certificate_key /etc/ssl/shop/privkey.pem;\n    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;\n    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-CHACHA20-POLY1305;\n    ssl_prefer_server_ciphers off;\n    add_header Strict-Transport-Security \"max-age=63072000\" always;\n    location / {\n        proxy_pass http://127.0.0.1:8080;\n    }\n}",
+    "answer": [5],
+    "explain": "ssl_protocols includes TLSv1 and TLSv1.1, which are obsolete and disabled in the intermediate profile. The correct line is ssl_protocols TLSv1.2 TLSv1.3;. The ciphers are ECDHE with AEAD (AES-GCM, ChaCha20-Poly1305), so they provide forward secrecy, HSTS is set, and proxy_pass to localhost is normal TLS termination on the same host."
+  }
+]

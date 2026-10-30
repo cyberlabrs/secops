@@ -1,0 +1,10 @@
+[Unit]
+Description=Lokalni registry mirror za labove
+Before=containerd.service
+
+[Service]
+ExecStart=/usr/local/bin/registry serve /etc/kurs/registry.yml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,216 @@
+[
+  {
+    "obj": "5.1",
+    "q": "Tim želi svake sedmice provjeriti da Wazuh i Sigma pravila za pojedinačne Linux tehnike i dalje rade poslije updatea ruleseta. Koji pristup najbolje odgovara?",
+    "options": [
+      "Godišnji red team angažman",
+      "Mali, ponovljivi Atomic Red Team testovi po tehnici, sa GUID-om testa u dnevniku",
+      "Penetration test web aplikacije",
+      "Ručno čitanje svih pravila nakon updatea"
+    ],
+    "answer": 1,
+    "explain": "Atomic testovi su mali i ponovljivi, pa su idealni za regresiju pojedinačnih pravila. Red team i pentest imaju drugi cilj i rijetko se ponavljaju, a čitanje pravila ne dokazuje da log stiže i da se alarm pravi."
+  },
+  {
+    "obj": "5.1",
+    "q": "Treba validirati detekciju za gašenje CloudTraila (T1562.008) u AWS-u. Koji alat je pravljen upravo za takve cloud tehnike i u kojem okruženju se koristi?",
+    "options": [
+      "Caldera sa Sandcat agentom na produkcijskom EC2",
+      "Atomic Red Team test u produkcijskom nalogu, uz obavještenje SOC-a",
+      "Stratus Red Team u posebnom, izolovanom sandbox AWS nalogu",
+      "Falco event-generator na Kubernetes čvoru"
+    ],
+    "answer": 2,
+    "explain": "Stratus Red Team je fokusiran na cloud i Kubernetes tehnike i ima životni ciklus warmup/detonate/revert/cleanup. Cloud testovi se rade u izolovanom nalogu, ne u produkciji. Event-generator proizvodi syscall događaje za Falco."
+  },
+  {
+    "obj": "5.1",
+    "q": "U Calderi, šta je „adversary“?",
+    "options": [
+      "Profil koji grupiše abilityje da predstavi TTP-ove neke prijetnje",
+      "Program na meti koji se javlja serveru",
+      "Pojedinačna implementacija jedne ATT&CK tehnike",
+      "Logika koja određuje redoslijed izvođenja"
+    ],
+    "answer": 0,
+    "explain": "Agent je program na meti, ability je implementacija tehnike, planner određuje redoslijed, a adversary je profil sastavljen od abilityja. Operation pokreće adversary profil nad grupom agenata."
+  },
+  {
+    "obj": "5.1",
+    "q": "Analitičar vidi alarm Wazuh 5902 u 09:12 na hostu na kojem je taj dan zakazan purple team test. Šta mu omogućava da brzo i pouzdano utvrdi da je alarm posljedica testa?",
+    "options": [
+      "Nivo alarma 8",
+      "Činjenica da je test zakazan za taj dan",
+      "Odsustvo drugih alarma na hostu",
+      "Dnevnik testa sa tačnim vremenom, hostom, korisnikom, tehnikom i GUID-om, uz prepoznatljiv prefiks testnog naloga"
+    ],
+    "answer": 3,
+    "explain": "Samo precizan trag testa omogućava da se alarm poveže sa testom, a ne sa stvarnim napadom koji se slučajno poklopio. Zakazan dan ili nivo alarma nisu dokaz."
+  },
+  {
+    "obj": "5.1",
+    "q": "Šta je najvažnija razlika između purple teama i klasičnog red teama?",
+    "options": [
+      "Purple team koristi samo automatizovane alate",
+      "U purple teamu red i blue rade otvoreno zajedno, tehniku po tehniku, sa ciljem da poprave detekciju",
+      "Purple team se radi samo u cloudu",
+      "Purple team ne mapira tehnike na ATT&CK"
+    ],
+    "answer": 1,
+    "explain": "Purple team je način rada: napadačka strana izvede tehniku, odbrana odmah provjerava šta je vidjela, i zajedno popravljaju praznine. Red team testira organizaciju kao cjelinu, često bez znanja SOC-a."
+  },
+  {
+    "obj": "5.1",
+    "q": "Prije pokretanja Atomic testa u labu koji dijele tri tima, šta je obavezno?",
+    "options": [
+      "Pročitati test (komande, preduslove, cleanup), imati odobrenje i opseg i dogovoriti ko provjerava čišćenje",
+      "Ugasiti Wazuh da test ne pravi šum",
+      "Pokrenuti sve testove za Linux odjednom da se uštedi vrijeme",
+      "Iskoristiti stvarne korisničke naloge da test bude realističan"
+    ],
+    "answer": 0,
+    "explain": "Neki testovi mijenjaju sistem ili skidaju fajlove. Pravila angažmana traže odobrenje, opseg, lažne podatke i provjeru čišćenja. Gašenje SIEM-a poništava svrhu testa."
+  },
+  {
+    "obj": "5.1",
+    "q": "Zašto bi tim izabrao Calderu umjesto pojedinačnih Atomic testova?",
+    "options": [
+      "Caldera ne traži nikakav softver na meti",
+      "Caldera radi samo nad logovima, bez izvršavanja",
+      "Želi testirati lanac tehnika (izvršenje, otkrivanje, perzistencija), jer neke detekcije koreliraju više događaja",
+      "Caldera automatski piše Sigma pravila"
+    ],
+    "answer": 2,
+    "explain": "Caldera izvodi operacije kao lance abilityja preko agenata, što je korisno za korelacione detekcije. Cijena je složenost: server, agenti i njihovo uklanjanje poslije testa."
+  },
+  {
+    "obj": "5.2",
+    "q": "Purple team test za T1552.001: u /var/log/audit/audit.log postoji zapis o čitanju fajla sa kredencijalima, ali u SIEM-u nema alarma. Kako klasifikuješ rezultat i gdje je popravka?",
+    "options": [
+      "Nema telemetrije; treba dodati auditd watch",
+      "Detekcija; ništa ne treba mijenjati",
+      "Odgovor; treba ažurirati runbook",
+      "Telemetrija bez alarma; prvo potvrditi da log stiže u SIEM, pa dodati ili ispraviti pravilo"
+    ],
+    "answer": 3,
+    "explain": "Zapis postoji, pa vidljivost na hostu nije problem. Lanac je pukao poslije: ili log ne stiže u SIEM ili nema odgovarajućeg pravila. To je praznina u logici ili prikupljanju, ne u senzoru."
+  },
+  {
+    "obj": "5.2",
+    "q": "Novo Wazuh pravilo prolazi wazuh-logtest nad uzorkom iz repoa. Šta taj test NE dokazuje?",
+    "options": [
+      "Da se pravilo okida nad tim uzorkom",
+      "Da će se u produkciji pojaviti log u istom formatu i da će stići do managera",
+      "Da je sintaksa pravila ispravna",
+      "Da pravilo daje očekivani nivo"
+    ],
+    "answer": 1,
+    "explain": "Jedinični test dokazuje logiku pravila nad poznatim uzorkom. Senzor, format u produkciji i prikupljanje provjerava tek test u okruženju."
+  },
+  {
+    "obj": "5.2",
+    "q": "Pravilo za kritičnu tehniku nije okinulo šest mjeseci. Šta je ispravan zaključak?",
+    "options": [
+      "Ne zna se dok se ne testira: moguće je da napada nije bilo, ali i da izvor ne šalje logove ili da je izuzetak preširok",
+      "Okruženje je sigurno",
+      "Pravilo treba obrisati jer je beskorisno",
+      "Treba mu podići nivo"
+    ],
+    "answer": 0,
+    "explain": "Tiho pravilo je kandidat za periodični test. Kvarovi poput prekinutog izvora ili preširokog izuzetka ne prave grešku, pa se vide tek testom ili praćenjem zdravlja izvora."
+  },
+  {
+    "obj": "5.2",
+    "q": "Tim prikazuje rezultate analize praznina u ATT&CK Navigatoru. Šta je najkorisnije upisati za tehniku koja je „pokrivena“?",
+    "options": [
+      "Samo zelenu boju",
+      "Broj pravila u SIEM-u",
+      "Ocjenu iz testa, datum zadnje validacije i komentar koju proceduru pravilo zaista hvata",
+      "Ime alata za emulaciju"
+    ],
+    "answer": 2,
+    "explain": "Boja bez konteksta lažno sugeriše potpunu pokrivenost. Ocjena, datum testa i opis onoga što pravilo stvarno hvata omogućavaju poređenje slojeva prije i poslije ciklusa."
+  },
+  {
+    "obj": "5.2",
+    "q": "Koja metrika najbolje pokazuje napredak programa detekcije?",
+    "options": [
+      "Ukupan broj pravila u SIEM-u",
+      "Broj alarma dnevno",
+      "Broj alata za emulaciju u upotrebi",
+      "Procenat prioritetnih tehnika sa validiranom detekcijom i starost zadnje validacije"
+    ],
+    "answer": 3,
+    "explain": "Broj pravila ili alarma ne govori ništa o tome da li se vide relevantne tehnike. Validirana pokrivenost prioritetnih tehnika i svježina testova su mjerljiv rezultat."
+  },
+  {
+    "obj": "5.2",
+    "q": "Za test detekcije novog naloga koristiš logger -p auth.info -t useradd \"new user: name=purple_x ...\" umjesto stvarnog useradd. Šta takav test provjerava?",
+    "options": [
+      "Prikupljanje loga i SIEM pravilo, ali ne i to da li stvarni alat ili senzor proizvodi takav zapis",
+      "Cijeli lanac, uključujući senzor",
+      "Ništa, jer sintetički logovi ne prolaze kroz rsyslog",
+      "Samo sintaksu pravila"
+    ],
+    "answer": 0,
+    "explain": "Sintetički log prolazi rsyslog, prikupljanje i pravila, ali ne potvrđuje da stvarna aktivnost daje isti zapis. U izvještaju treba naznačiti da je test bio sintetički."
+  },
+  {
+    "obj": "5.2",
+    "q": "Prilikom izbora tehnika za analizu praznina, odakle tim treba krenuti?",
+    "options": [
+      "Od prve kolone ATT&CK matrice, redom",
+      "Od tehnika za koje već postoje pravila",
+      "Od tehnika relevantnih za threat profil organizacije: prethodni incidenti, threat intel, grupe koje napadaju sektor",
+      "Od tehnika sa najviše Atomic testova"
+    ],
+    "answer": 2,
+    "explain": "Ograničeni resursi idu na tehnike koje su vjerovatne za tvoje okruženje. Broj dostupnih testova ili postojećih pravila nije mjera rizika."
+  },
+  {
+    "obj": "5.2",
+    "q": "Repo detekcija ima tests/positive i tests/negative uzorke za svako pravilo. Čemu služe negativni uzorci?",
+    "options": [
+      "Da se pravilo okine i nad njima",
+      "Da dokažu da se pravilo ne okida nad legitimnom aktivnošću, pa izmjena koja povećava lažne pozitive ruši build",
+      "Da zamijene pozitivne testove",
+      "Da se iz njih automatski generišu izuzeci"
+    ],
+    "answer": 1,
+    "explain": "Pozitivni uzorci čuvaju od propuštanja, negativni od šuma. Oba se pokreću u CI-ju pri svakoj izmjeni pravila."
+  },
+  {
+    "obj": "5.1",
+    "type": "order",
+    "q": "Poredaj korake jednog purple team ciklusa za jednu tehniku, od prvog.",
+    "options": [
+      "Ponoviti isti test nakon popravke",
+      "Zapisati hipotezu: očekivani log izvor, pravilo, nivo i ATT&CK oznaku",
+      "Izvesti test i zabilježiti tačno vrijeme i parametre",
+      "Provjeriti telemetriju, dolazak u SIEM i alarm",
+      "Izabrati tehniku iz threat profila"
+    ],
+    "answer": [4, 1, 2, 3, 0],
+    "explain": "Izbor tehnike, hipoteza, izvođenje sa dnevnikom, posmatranje, i nakon popravke ponovni test. Praznina je zatvorena tek kad ponovni test prođe."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Upari nalaz iz purple team testa sa ocjenom na skali iz lekcije.",
+    "options": [
+      "Nigdje nema zapisa o događaju",
+      "Log je u SIEM-u, ali nema alarma",
+      "Alarm je nastao, ali bez ATT&CK oznake i sa preniskim nivoom",
+      "Alarm ispravnog nivoa sa ATT&CK oznakom i kontekstom"
+    ],
+    "targets": [
+      "4 Odgovor",
+      "3 Detekcija",
+      "2 Alarm",
+      "1 Telemetrija",
+      "0 Nema telemetrije"
+    ],
+    "answer": [4, 3, 2, 1],
+    "explain": "Bez zapisa je 0, log bez alarma 1, alarm sa nedovoljnim kontekstom 2, a potpun alarm 3. Ocjena 4 traži i dokaz da je alarm trijažiran po runbooku."
+  }
+]

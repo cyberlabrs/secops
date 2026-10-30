@@ -1,0 +1,257 @@
+[
+  {
+    "obj": "5.3",
+    "q": "Task: in namespace prod, find the Pod with label app=api that currently uses the most CPU. metrics-server is running. Which command gives the answer in the first line?",
+    "options": [
+      "k get pods -n prod -l app=api --sort-by=.spec.containers[0].resources.requests.cpu",
+      "k top pod -n prod -l app=api --sort-by=cpu",
+      "k describe node | grep -A5 'Allocated resources'",
+      "k top node --sort-by=cpu"
+    ],
+    "answer": 1,
+    "explain": "kubectl top pod shows actual usage from the Metrics API, and --sort-by=cpu sorts from highest to lowest. Sorting by requests shows reservations, not usage, and describe node and top node do not show individual Pods."
+  },
+  {
+    "obj": "5.3",
+    "q": "k top node returns: error: Metrics API not available. What is the cause?",
+    "options": [
+      "The kubelet on the nodes does not have cAdvisor enabled",
+      "The user has no RBAC permission for nodes",
+      "kube-controller-manager is not running",
+      "metrics-server, which provides the metrics.k8s.io API, is not installed (or not running) in the cluster"
+    ],
+    "answer": 3,
+    "explain": "kubectl top reads the Metrics API, which is registered by metrics-server. Without it, the API does not exist. A missing RBAC permission would give a Forbidden error, and the controller-manager has nothing to do with metrics."
+  },
+  {
+    "obj": "5.3",
+    "q": "You installed metrics-server in the lab cluster, but its Pod is not Ready, and the log says: x509: cannot validate certificate for 172.18.0.3 because it doesn't contain any IP SANs. Which change is usual for a lab environment?",
+    "options": [
+      "Add the --kubelet-insecure-tls argument to the metrics-server container",
+      "Add --enable-aggregator-routing=true to the API server",
+      "Restart the kubelet on all nodes",
+      "Change the metrics-server Service to NodePort"
+    ],
+    "answer": 0,
+    "explain": "metrics-server cannot verify the kubelet's self-signed serving certificate; in the lab, verification is disabled with --kubelet-insecure-tls (in production: signed serving certificates). Restarting the kubelet does not change the certificate, and the Service type is not the problem."
+  },
+  {
+    "obj": "5.3",
+    "q": "Pod web has containers app and cache. You need to determine which of them uses more memory. Which command?",
+    "options": [
+      "k top pod web --sort-by=memory",
+      "k describe pod web | grep -i memory",
+      "k top pod web --containers",
+      "k get pod web -o jsonpath='{.spec.containers[*].resources.limits.memory}'"
+    ],
+    "answer": 2,
+    "explain": "--containers shows usage per container. Without it, top gives the total for the whole Pod, and describe and jsonpath show the configured requests/limits, not actual usage."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pod worker is in CrashLoopBackOff with RESTARTS 6. k logs worker prints nothing useful. How do you see the output of the container that just crashed?",
+    "options": [
+      "k logs worker -f",
+      "k logs worker --since=1h",
+      "k logs worker --previous",
+      "k attach worker"
+    ],
+    "answer": 2,
+    "explain": "--previous (-p) reads the logs of the previous container instance, and that is exactly the one containing the error message. -f and --since look at the current instance, which may have only just started, and attach connects to the current process."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pod web has containers nginx and log-agent. k logs web prints Defaulted container \"nginx\" out of: nginx, log-agent and the nginx logs. The task asks for the last 100 lines of container log-agent in the file /opt/agent.log. Which command?",
+    "options": [
+      "k logs web -c log-agent --tail=100 > /opt/agent.log",
+      "k logs web --all-containers --tail=100 > /opt/agent.log",
+      "k logs log-agent --tail=100 > /opt/agent.log",
+      "k exec web -c log-agent -- tail -100 /proc/1/fd/1 > /opt/agent.log"
+    ],
+    "answer": 0,
+    "explain": "-c selects the container, --tail the number of lines. --all-containers mixes the logs of both containers, log-agent is not a Pod name, and reading fd/1 through exec does not return the log history."
+  },
+  {
+    "obj": "5.4",
+    "q": "Deployment web has 3 Pods. k logs -l app=web prints only a few lines per Pod, although each Pod has hundreds of lines. Why?",
+    "options": [
+      "With -l, kubectl shows only one Pod",
+      "Logs are rotated every 10 minutes",
+      "You need to add --all-containers",
+      "With a selector, kubectl logs shows the last 10 lines per Pod by default; for all of them you need --tail=-1"
+    ],
+    "answer": 3,
+    "explain": "When a selector is used, the default --tail is 10 (without a selector it is -1, i.e. everything). All Pods are shown (up to --max-log-requests, 5 by default), and --all-containers applies to containers, not to the number of lines."
+  },
+  {
+    "obj": "5.4",
+    "q": "A legacy application writes logs only to /var/log/app.log inside the container, so k logs is empty. Following the Kubernetes recommendation, how do you make the logs available through kubectl logs without changing the application?",
+    "options": [
+      "Set terminationMessagePath: /var/log/app.log",
+      "Add a sidecar container that shares an emptyDir volume and runs tail -F /var/log/app.log to its own stdout",
+      "Mount /var/log/pods from the node into the container via hostPath",
+      "Run k logs web --file=/var/log/app.log"
+    ],
+    "answer": 1,
+    "explain": "A sidecar with a shared volume prints the file to stdout, so the kubelet records it and k logs <pod> -c <sidecar> reads it. terminationMessagePath is for a short message at termination, hostPath does not solve the problem, and --file does not exist."
+  },
+  {
+    "obj": "5.5",
+    "q": "k describe svc web shows Selector: app=web and Endpoints: <none>. k get pods --show-labels shows three Running, 1/1 Pods with label app=web-app. What is the quickest correct fix if the Deployment must not be changed?",
+    "options": [
+      "Change the Service targetPort",
+      "Restart kube-proxy",
+      "Change the Service selector to app=web-app",
+      "Add a readiness probe to the Pods"
+    ],
+    "answer": 2,
+    "explain": "The endpoints are empty because the selector does not match the Pod labels. Once the selector is fixed, the EndpointSlice is populated immediately. targetPort and kube-proxy do not affect Pod selection, and the Pods are already Ready."
+  },
+  {
+    "obj": "5.5",
+    "q": "Service api has endpoints (three Pod IP addresses). wget http://api from a temporary Pod returns connection refused. The container listens on port 80, and the Service has port: 80, targetPort: 8080. What should be changed?",
+    "options": [
+      "The Service targetPort to 80 (the port the container actually listens on)",
+      "The Service port to 8080",
+      "containerPort in the Pod to 8080",
+      "The Service type to NodePort"
+    ],
+    "answer": 0,
+    "explain": "The Service sends traffic to the Pod's targetPort; if nothing listens on that port, the connection is refused. Changing the Service port changes only the entry point, and containerPort is informational and does not change the port the application listens on."
+  },
+  {
+    "obj": "5.5",
+    "q": "The Pods of Deployment frontend are Running, but READY 0/1, and Service frontend has no endpoints. What is the most likely cause?",
+    "options": [
+      "The Service selector does not match the labels",
+      "CoreDNS is not running",
+      "The liveness probe is failing, so the kubelet restarts the containers",
+      "The readiness probe is failing, so the Pods are not Ready and are not added to the endpoints"
+    ],
+    "answer": 3,
+    "explain": "Running with 0/1 READY means the readiness probe is not passing; a Service sends traffic only to Ready Pods. A liveness probe would cause restarts and CrashLoopBackOff, and DNS does not affect endpoints."
+  },
+  {
+    "obj": "5.5",
+    "q": "From a temporary busybox Pod, wget -qO- http://10.96.40.12 (the ClusterIP of Service db) works, but wget -qO- http://db returns wget: bad address 'db'. The Pod and the Service are in the same namespace. What should you check?",
+    "options": [
+      "NetworkPolicy in the namespace",
+      "CoreDNS: k -n kube-system get pods -l k8s-app=kube-dns and its logs",
+      "The targetPort of Service db",
+      "kube-proxy on the node"
+    ],
+    "answer": 1,
+    "explain": "The Service IP works, so the Service, endpoints and kube-proxy are fine; only name resolution fails, which is CoreDNS's job. A NetworkPolicy would also block access via the IP."
+  },
+  {
+    "obj": "5.5",
+    "q": "Service backend in namespace app responds from a temporary Pod in namespace default, but Pods from namespace frontend get a timeout. Endpoints exist and DNS works. What is the most likely cause?",
+    "options": [
+      "The Service targetPort is wrong",
+      "kube-proxy is not running on the node where the frontend Pods are",
+      "A NetworkPolicy in namespace app allows ingress only from specific namespaces or Pods",
+      "The Service selector does not match the labels"
+    ],
+    "answer": 2,
+    "explain": "When traffic works from one source but times out from another, the cause is source-based filtering, i.e. a NetworkPolicy. A wrong targetPort or selector would break access from all namespaces."
+  },
+  {
+    "obj": "5.3",
+    "q": "Pod cache keeps restarting. k describe pod cache shows Last State: Terminated, Reason: OOMKilled, Exit Code: 137, and limits.memory is 64Mi. What is the correct fix?",
+    "options": [
+      "Increase limits.memory (and requests.memory if needed) in Deployment cache",
+      "Increase limits.cpu",
+      "Add restartPolicy: Never",
+      "Increase terminationGracePeriodSeconds"
+    ],
+    "answer": 0,
+    "explain": "OOMKilled means the container exceeded its memory limit and the kernel killed it (SIGKILL, 128+9). A CPU limit only throttles the process, and restartPolicy and the grace period do not prevent exceeding memory."
+  },
+  {
+    "obj": "5.3",
+    "q": "A new Pod is Pending with the event: 0/2 nodes are available: 1 Insufficient memory, 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }. k top node shows that node01 uses only 30% of its memory. What is the cause?",
+    "options": [
+      "metrics-server shows incorrect data",
+      "The scheduler looks at actual usage with a 15 s delay",
+      "The taint must be removed from the controlplane node",
+      "The sum of the memory requests of the Pods on node01 plus the new Pod's requests exceeds the node's allocatable memory; the scheduler counts requests, not actual usage"
+    ],
+    "answer": 3,
+    "explain": "The scheduler compares requests with allocatable capacity (k describe node, Allocated resources), not current usage from top. The solution is a smaller request or more capacity. Removing the taint from the controlplane changes cluster policy and was not asked for."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pod tool has command: [\"sh\", \"-c\", \"ngnix -g 'daemon off;'\"] and keeps failing. describe shows Exit Code: 127. What does k logs tool --previous most likely show, and what is the cause?",
+    "options": [
+      "OOMKilled: the container exceeded its memory limit",
+      "sh: ngnix: not found; a typo in the command name",
+      "permission denied; the file is not executable",
+      "Nothing, because exit code 127 means the container was killed by a signal"
+    ],
+    "answer": 1,
+    "explain": "127 is the code the shell uses to report that a command was not found, here because of a typo. A missing execute permission gives 126, and 137 (128+9) is SIGKILL, e.g. with OOMKilled."
+  },
+  {
+    "obj": "5.5",
+    "q": "Pod payments uses a distroless image with no shell or tools. You need to check DNS and HTTP connectivity from the Pod's network context and from the cluster. Which two commands are useful? (Choose TWO.)",
+    "options": [
+      "k exec -it payments -- sh",
+      "k debug -it payments --image=busybox:1.37 --target=payments",
+      "k attach -it payments",
+      "k cp busybox payments:/bin/sh",
+      "k run tmp --rm -it --restart=Never --image=busybox:1.37 -- sh"
+    ],
+    "answer": [1, 4],
+    "explain": "An ephemeral container shares the network namespace (and, with --target, the processes) with the Pod and brings the tools, and a temporary Pod tests the Service as another client in the cluster. exec requires a shell in the image, attach connects to the existing process, and kubectl cp requires tar in the container."
+  },
+  {
+    "obj": "5.5",
+    "type": "order",
+    "q": "Service web does not respond. Order the diagnostic steps from the most basic to the more complex.",
+    "options": [
+      "Check whether the Service has endpoints: k get endpointslices -l kubernetes.io/service-name=web",
+      "Check the DNS name from a temporary Pod: nslookup web",
+      "Check that the Pods are Running and Ready: k get pods -l app=web",
+      "Check the NetworkPolicies in the namespace",
+      "Check targetPort and access via the ClusterIP: wget http://<ClusterIP>"
+    ],
+    "answer": [2, 0, 4, 1, 3],
+    "explain": "First the Pods, because without Ready Pods there are no endpoints; then the endpoints (selector), then targetPort via the ClusterIP, then the DNS name, and finally traffic filtering by a NetworkPolicy."
+  },
+  {
+    "obj": "5.4",
+    "type": "match",
+    "q": "Match the Pod state with its most likely cause.",
+    "options": [
+      "ImagePullBackOff",
+      "CreateContainerConfigError",
+      "CrashLoopBackOff, Last State: Completed, Exit Code 0, in a Deployment",
+      "ContainerCreating, event FailedMount",
+      "Pending, event FailedScheduling: untolerated taint"
+    ],
+    "targets": [
+      "env.valueFrom.secretKeyRef points to a non-existent Secret or key",
+      "A volume points to a ConfigMap that does not exist",
+      "Wrong image tag or missing imagePullSecret",
+      "All nodes have a taint that the Pod does not tolerate",
+      "The container exceeded its memory limit",
+      "The command finishes immediately, but the Deployment expects a long-running process"
+    ],
+    "answer": [2, 0, 5, 1, 3],
+    "explain": "The image is not pulled because of its name or credentials, CreateContainerConfigError is caused by a missing env reference, a process that exits cleanly in a Deployment is restarted by the kubelet over and over, a missing volume gives FailedMount, and a taint gives FailedScheduling. The memory limit (OOMKilled) is a distractor."
+  },
+  {
+    "obj": "5.3",
+    "q": "The report pod keeps restarting. Based on the output, what is the cause and what is the correct next step?",
+    "lang": "text",
+    "snippet": "$ kubectl -n shop describe pod report-7f9c6d-x2l8p\nContainers:\n  report:\n    Image:          registry.example.com/report:2.4.1\n    State:          Waiting\n      Reason:       CrashLoopBackOff\n    Last State:     Terminated\n      Reason:       OOMKilled\n      Exit Code:    137\n    Restart Count:  6\n    Limits:\n      cpu:     500m\n      memory:  128Mi\n    Requests:\n      cpu:     100m\n      memory:  64Mi",
+    "options": [
+      "The liveness probe kills the container; increase initialDelaySeconds",
+      "The container exceeds its 128Mi memory limit; check usage (kubectl top pod) and raise the limit or fix the application",
+      "The container exceeds its 500m CPU limit; raise the CPU limit",
+      "The node ran out of memory and the pod was evicted; add a node"
+    ],
+    "answer": 1,
+    "explain": "Reason OOMKilled and exit code 137 (128 + 9, SIGKILL) mean the kernel killed the container because it exceeded its 128Mi memory limit. When a liveness probe kills a container, the reason is Error, not OOMKilled. Exceeding the CPU limit causes throttling, not termination. An eviction would mark the pod as Evicted rather than restart the container."
+  }
+]

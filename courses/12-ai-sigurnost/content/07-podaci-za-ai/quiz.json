@@ -1,0 +1,253 @@
+[
+  {
+    "obj": "3.2",
+    "q": "Tim želi fine-tunovati model za klasifikaciju tiketa na istoriji tiketa koji sadrže imena, brojeve telefona i JMBG klijenata. Koja odluka je u skladu sa principom minimizacije?",
+    "options": [
+      "Trenirati na punim podacima i kasnije filtrirati izlaz modela",
+      "Ukloniti ili pseudonimizovati direktne identifikatore prije treniranja jer nisu potrebni za klasifikaciju",
+      "Trenirati na punim podacima jer su to interni podaci",
+      "Šifrovati skup podataka i trenirati na šifrovanim vrijednostima"
+    ],
+    "answer": 1,
+    "explain": "Minimizacija znači koristiti samo podatke potrebne za svrhu. Identifikatori ne pomažu klasifikaciji, a jednom naučeni ne mogu se pouzdano ukloniti iz težina bez ponovnog treniranja. Filtriranje izlaza je dodatni sloj, „interno“ nije pravni osnov, a model ne uči korisno iz šifrovanih vrijednosti."
+  },
+  {
+    "obj": "3.2",
+    "q": "Klijent traži brisanje svojih podataka. Njegovi tiketi su korišteni za fine-tuning modela koji je u produkciji. Šta je tačno?",
+    "options": [
+      "Dovoljno je obrisati tikete iz helpdeska; model ne čuva podatke",
+      "Dovoljno je dodati u sistemski prompt da model ne pominje tog klijenta",
+      "Podatak u težinama se ne može pouzdano ukloniti bez ponovnog treniranja; zato je minimizacija prije treniranja ključna, a za ovaj slučaj treba procijeniti ponovno treniranje bez tih zapisa",
+      "Model treba odmah ugasiti i nikad ga ne vraćati"
+    ],
+    "answer": 2,
+    "explain": "Modeli mogu memorisati podatke za treniranje. Prompt ne briše ništa iz težina, a brisanje izvora ne utiče na već trenirani model. Gašenje bez procjene je nesrazmjerno; lineage omogućava da se zna koji modeli su pogođeni i da se ponovo treniraju."
+  },
+  {
+    "obj": "3.2",
+    "q": "Zaposleni lijepe ugovore klijenata u javni LLM servis preko ličnih naloga. Šta je prvi korak za smanjenje rizika?",
+    "options": [
+      "Odobren poslovni servis sa ugovorom koji isključuje treniranje na promptovima i definiše zadržavanje, uz politiku upotrebe i blokadu neodobrenih servisa",
+      "Zabraniti svaku upotrebu AI alata bez alternative",
+      "Tražiti od zaposlenih da ručno brišu imena iz ugovora",
+      "Ništa, jer dobavljači ne čitaju promptove"
+    ],
+    "answer": 0,
+    "explain": "Problem je obrada podataka kod dobavljača bez ugovora i kontrole. Odobrena alternativa sa jasnim uslovima, politika i tehnička blokada smanjuju shadow AI. Zabrana bez alternative vodi u zaobilaženje, ručna redakcija je nepouzdana, a uslovi ličnih naloga često dozvoljavaju korištenje podataka."
+  },
+  {
+    "obj": "3.2",
+    "q": "Aplikacija loguje pune promptove i odgovore na neodređeno vrijeme u isti log sistem koji čitaju svi developeri. Koja kombinacija kontrola je najprikladnija?",
+    "options": [
+      "Šifrovanje log diska, bez drugih promjena",
+      "Prestati logovati bilo šta",
+      "Prebaciti logove na jeftiniji storage",
+      "Redakcija ličnih podataka i tajni prije upisa, definisan rok čuvanja sa automatskim brisanjem i uži pristup punim promptovima uz audit"
+    ],
+    "answer": 3,
+    "explain": "Logovi sa promptovima su produkcioni podaci i važe ograničenje čuvanja i povjerljivost. Šifrovanje diska ne ograničava ko čita logove, potpuni prestanak logovanja uništava mogućnost istrage, a jeftiniji storage ne mijenja rizik."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tim koristi regex za redakciju e-mail adresa, IBAN-a i JMBG-a prije logovanja. Šta je ispravna procjena ovog pristupa?",
+    "options": [
+      "Regex hvata sve lične podatke i dovoljan je",
+      "Regex treba izbaciti i ne raditi redakciju",
+      "Regex je dobar početak za strukturisane identifikatore, ali propušta imena, adrese i slobodan tekst; treba namjenski alat (pravila + NER) i mjerenje propuštanja na označenom uzorku",
+      "Regex treba primijeniti tek na izlaz modela"
+    ],
+    "answer": 2,
+    "explain": "Strukturisani identifikatori se dobro hvataju pravilima, ali nestrukturisani lični podaci traže NER i slične pristupe. Mjerenje na uzorku pokazuje koliko se propušta. Redakcija na ulazu u log je korisna, a samo filtriranje izlaza ne štiti logove."
+  },
+  {
+    "obj": "3.2",
+    "q": "Revizor pita na kojoj tačno verziji podataka je treniran model koji je trenutno u produkciji. ML tim zna samo da je to bio folder na zajedničkom disku koji se u međuvremenu mijenjao. Koja praksa nedostaje?",
+    "options": [
+      "Veći disk",
+      "Nepromjenjivi verzionisani snapshotovi skupa sa manifestom hash vrijednosti i lineage od modela do verzije podataka, koda i konfiguracije",
+      "Češće treniranje modela",
+      "Dokumentovanje tačnosti modela"
+    ],
+    "answer": 1,
+    "explain": "Bez nepromjenjivog snapshota i lineagea ne može se reprodukovati treniranje, istražiti trovanje niti dokazati usklađenost. Tačnost modela je korisna, ali ne govori na čemu je treniran; disk i učestalost treniranja nisu relevantni."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pipeline za treniranje provjerava manifest sa SHA-256 svakog fajla prije starta. Manifest se čuva u istom bucketu i sa istim pravima pisanja kao podaci. Šta je slabost?",
+    "options": [
+      "Ko može izmijeniti podatke, može izmijeniti i manifest; manifest treba čuvati odvojeno sa užim pravima pisanja i idealno ga potpisati",
+      "SHA-256 je preslab za ovu namjenu",
+      "Manifest treba provjeravati tek poslije treniranja",
+      "Manifest treba sadržati i kopiju podataka"
+    ],
+    "answer": 0,
+    "explain": "Integritet zavisi od zaštite referentne vrijednosti. Manifest pod istom kontrolom kao podaci ne štiti od napadača sa pravom pisanja. SHA-256 je dovoljan, provjera poslije treniranja je prekasna, a kopija podataka u manifestu nema smisla."
+  },
+  {
+    "obj": "3.2",
+    "q": "Skup za treniranje preuzima se po listi URL-ova objavljenoj prije dvije godine. Neki domeni sa liste su u međuvremenu istekli. Koja kontrola smanjuje rizik trovanja u ovom scenariju?",
+    "options": [
+      "Preuzimati podatke češće",
+      "Koristiti brži mrežni link",
+      "Ukloniti sve URL-ove sa HTTPS-om",
+      "Uporediti hash preuzetog sadržaja sa hashom zabilježenim pri prvom preuzimanju i odbaciti sadržaj koji se promijenio, ili preuzimati iz pouzdane kopije"
+    ],
+    "answer": 3,
+    "explain": "Sadržaj na URL-u se može promijeniti nakon objave liste, npr. kad istekli domen preuzme neko drugi. Provjera hasha i porijekla (AML.M0025) to otkriva. Češće preuzimanje povećava izloženost, a brzina i HTTPS ne garantuju da je sadržaj isti."
+  },
+  {
+    "obj": "3.2",
+    "q": "Model za detekciju prevara radi normalno na svim testovima, ali propušta transakcije koje sadrže određen neobičan niz u polju napomene. Kojoj klasi trovanja po NIST AI 100-2 ovo najviše odgovara?",
+    "options": [
+      "Availability poisoning",
+      "Model extraction",
+      "Backdoor poisoning",
+      "Membership inference"
+    ],
+    "answer": 2,
+    "explain": "Normalno ponašanje uz pogrešan izlaz kad se pojavi okidač je obilježje backdoora. Availability poisoning pogoršava model za sve, a ekstrakcija i membership inference su napadi na povjerljivost modela i podataka, ne trovanje."
+  },
+  {
+    "obj": "3.2",
+    "q": "Nova verzija skupa ima isti broj zapisa, ali je udio klase „nije prevara“ porastao sa 70 % na 82 %, a 9 % novih zapisa dolazi od jednog izvora. Šta pipeline treba da uradi?",
+    "options": [
+      "Zaustaviti treniranje i otvoriti review: promjena raspodjele oznaka i velik doprinos jednog izvora su signali greške ili trovanja",
+      "Nastaviti treniranje jer je broj zapisa isti",
+      "Automatski obrisati sve zapise tog izvora i nastaviti",
+      "Povećati broj epoha da model nadoknadi razliku"
+    ],
+    "answer": 0,
+    "explain": "Statistički gate hvata nagle promjene raspodjele i koncentraciju doprinosa. Review utvrđuje da li je uzrok legitiman. Broj zapisa nije mjera kvaliteta, automatsko brisanje bez analize može ukloniti legitimne podatke, a epohe ne rješavaju loše podatke."
+  },
+  {
+    "obj": "3.2",
+    "q": "Ocjene „palac gore“ iz chat aplikacije automatski se dodaju u skup za sljedeći fine-tuning. Koji rizik ovo stvara i koja je kontrola?",
+    "options": [
+      "Nema rizika jer ocjene daju samo prijavljeni korisnici",
+      "Rizik je samo veći trošak treniranja",
+      "Ocjene treba potpuno ignorisati",
+      "Svaki korisnik efektivno piše u podatke za treniranje (trovanje kroz povratnu petlju); potrebni su limit doprinosa po korisniku, review uzorka i poseban nivo povjerenja za takve podatke"
+    ],
+    "answer": 3,
+    "explain": "Povratna petlja je put trovanja koji se često zanemaruje. Prijava ne čini korisnika pouzdanim izvorom podataka za treniranje. Ocjene su vrijedne, ali uz kontrole; ignorisanje gubi korisne signale."
+  },
+  {
+    "obj": "3.2",
+    "q": "Koja kombinacija OWASP i MITRE ATLAS oznaka odgovara ubacivanju zatrovanih primjera u podatke za treniranje?",
+    "options": [
+      "LLM08 Vector and Embedding Weaknesses; AML.T0051",
+      "LLM04 Data and Model Poisoning; AML.T0020 Poison Training Data",
+      "LLM10 Unbounded Consumption; AML.T0034",
+      "LLM06 Excessive Agency; AML.T0053"
+    ],
+    "answer": 1,
+    "explain": "OWASP LLM04:2025 pokriva trovanje podataka i modela, a ATLAS AML.T0020 trovanje podataka za treniranje. Ostali parovi su slabosti vektora i prompt injection, neograničena potrošnja i zloupotreba alata agenta."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tim preuzima javni skup instrukcija za fine-tuning sa platforme za dijeljenje skupova. Šta je razuman minimum prije upotrebe?",
+    "options": [
+      "Ništa, popularni skupovi su provjereni",
+      "Samo provjeriti licencu",
+      "Zabilježiti izvor, verziju i hash, provjeriti licencu, uraditi deduplikaciju i statističku i uzorkovanu ručnu provjeru, i evaluirati model u odnosu na prethodni na fiksnom skupu",
+      "Trenirati direktno u produkcionom okruženju da se uštedi vrijeme"
+    ],
+    "answer": 2,
+    "explain": "Javni skupovi su dio lanca snabdijevanja podataka (AML.T0010.002, AML.T0019). Porijeklo, licenca, provjera sadržaja i evaluacija su minimum. Popularnost nije dokaz integriteta, licenca je samo jedan aspekt, a treniranje u produkciji krši izolaciju."
+  },
+  {
+    "obj": "3.2",
+    "q": "Koja kontrola najdirektnije smanjuje vjerovatnoću da model memoriše i doslovno reprodukuje lične podatke iz skupa za treniranje?",
+    "options": [
+      "Deduplikacija i uklanjanje direktnih identifikatora prije treniranja",
+      "Veći model",
+      "Duže treniranje",
+      "Više GPU-ova"
+    ],
+    "answer": 0,
+    "explain": "Ponovljeni zapisi se memorišu lakše, a uklonjeni identifikatori se ne mogu ni reprodukovati. Veći modeli i duže treniranje u pravilu povećavaju sklonost memorisanju, a broj GPU-ova nije relevantan."
+  },
+  {
+    "obj": "3.2",
+    "q": "Otkriveno je da je jedna verzija skupa zatrovana. Koji je prvi korak u odgovoru?",
+    "options": [
+      "Odmah obrisati sve verzije skupa",
+      "Zaustaviti treniranje i deploy koji koriste tu verziju i preko lineagea pronaći sve modele trenirane na njoj",
+      "Objaviti javno saopštenje prije analize",
+      "Fine-tunovati produkcioni model na ispravnim podacima preko postojećih težina"
+    ],
+    "answer": 1,
+    "explain": "Prvo se zaustavlja širenje i utvrđuje obim (koji modeli su pogođeni). Brisanje uništava dokaze i mogućnost poređenja, saopštenje dolazi poslije procjene, a dodatni fine-tuning preko zatrovanog modela ne uklanja pouzdano naučeno ponašanje."
+  },
+  {
+    "obj": "3.2",
+    "q": "Prema članu 10 EU AI Acta, šta se traži za skupove za treniranje, validaciju i testiranje visokorizičnih sistema?",
+    "options": [
+      "Samo da skupovi budu šifrovani",
+      "Da skupovi budu javno objavljeni",
+      "Da se koriste isključivo sintetički podaci",
+      "Prakse upravljanja podacima: dokumentovano prikupljanje i porijeklo, priprema, ispitivanje i ublažavanje pristrasnosti, te relevantnost, reprezentativnost i što manje grešaka za namjenu"
+    ],
+    "answer": 3,
+    "explain": "Član 10 propisuje upravljanje podacima i kvalitet skupova u odnosu na namjenu, uključujući ispitivanje pristrasnosti. Ne traži javnu objavu, isključivo sintetičke podatke niti samo šifrovanje."
+  },
+  {
+    "obj": "3.2",
+    "q": "Firma razvija visokorizični AI sistem iz Aneksa III EU AI Acta. Od kada se, nakon izmjena iz AI Omnibusa (Uredba (EU) 2026/1744), primjenjuju obaveze za takve sisteme?",
+    "options": [
+      "Od 2. avgusta 2026.",
+      "Od 2. avgusta 2028.",
+      "Od 2. decembra 2027.",
+      "Odmah od stupanja Omnibusa na snagu"
+    ],
+    "answer": 2,
+    "explain": "Po AI Omnibusu obaveze za visokorizične sisteme iz Aneksa III važe od 2. 12. 2027, a za sisteme iz Aneksa I od 2. 8. 2028. Data governance prakse vrijedi uvesti ranije jer se traže kao dokaz."
+  },
+  {
+    "obj": "3.2",
+    "q": "Spoljni dobavljač označava podatke za treniranje koji sadrže zdravstvene podatke pacijenata. Koja kombinacija kontrola je najprikladnija?",
+    "options": [
+      "Pseudonimizacija prije slanja na označavanje, ugovor o obradi podataka, pristup samo potrebnim poljima i kontrola kvaliteta oznaka uzorkovanjem",
+      "Slanje punih kartona da bi oznake bile tačnije",
+      "Označavanje bez ugovora jer je dobavljač poznat",
+      "Prepustiti označavanje modelu bez ikakve provjere"
+    ],
+    "answer": 0,
+    "explain": "Označavanje je mjesto gdje ljudi van organizacije vide podatke i gdje se mogu ubaciti namjerno pogrešne oznake. Minimizacija, ugovor i kontrola kvaliteta adresiraju oba rizika. Ostale opcije krše minimizaciju ili uklanjaju kontrolu."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Upari mjesto u životnom ciklusu podataka sa primarnom kontrolom.",
+    "options": [
+      "Prikupljanje",
+      "Skladištenje skupa za treniranje",
+      "Promptovi i logovi",
+      "Povratna petlja",
+      "Evaluacija prije deploya"
+    ],
+    "targets": [
+      "Poređenje sa prethodnim modelom i testovi za ciljane klase",
+      "Redakcija i rok čuvanja",
+      "Inventar izvora sa pravnim osnovom i licencom",
+      "Limit doprinosa po korisniku i review uzorka",
+      "Nepromjenjivi snapshot sa manifestom i kontrolom pisanja"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "Pri prikupljanju se utvrđuje osnov i licenca, skladištenje štiti integritet snapshotom i manifestom, promptovi i logovi traže redakciju i rokove, povratna petlja limit i review, a evaluacija poređenje i ciljane testove."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Poredaj korake prijema novog skupa podataka u pipeline za treniranje, od prvog do posljednjeg.",
+    "options": [
+      "Treniranje u izolovanom okruženju uz provjeru manifesta",
+      "Validacija šeme, deduplikacija i statističke provjere u odnosu na prethodnu verziju",
+      "Provjera da je izvor na allowlisti i da ima pravni osnov i licencu",
+      "Pravljenje nepromjenjivog snapshota i manifesta sa hash vrijednostima",
+      "Preuzimanje i poređenje hasha sa zabilježenim porijeklom"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "Prvo se odlučuje smije li se izvor uopšte koristiti, zatim se preuzima uz provjeru integriteta, pa se sadržaj validira. Tek provjeren sadržaj postaje nepromjenjiv snapshot, a treniranje provjerava manifest tog snapshota."
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "title": "Retencija, auditabilnost i AI/ML podaci",
+  "summary": "Politike retencije, brisanje (NIST SP 800-88, crypto-shredding), arhiviranje i legal hold; izvori i atributi događaja, logovanje, chain of custody i non-repudiation; privatnost i sigurnost AI/ML skupova podataka i modela.",
+  "minutes": 75,
+  "domain": 2,
+  "objectives": [
+    "2.7",
+    "2.8",
+    "2.9"
+  ],
+  "title_en": "Retention, auditability, and AI/ML data",
+  "summary_en": "Retention policies, deletion (NIST SP 800-88, crypto-shredding), archiving and legal hold; event sources and attributes, logging, chain of custody, and non-repudiation; privacy and security of AI/ML datasets and models."
+}

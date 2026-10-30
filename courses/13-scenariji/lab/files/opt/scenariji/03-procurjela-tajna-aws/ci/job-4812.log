@@ -1,0 +1,42 @@
+# Job #4812 (export-probni) | pipeline #1934 | main | 2026-10-12T12:21:07Z | https://gitlab.kvadrat.ba/izvjestaji/izvjestaji-servis/-/jobs/4812
+Running with gitlab-runner 17.4.0 (b92ee590)
+  on kvadrat-shared-runner-02 t3_Xk9pQw, system ID: s_6b1f2e9a7c3d
+Preparing the "docker" executor
+Using Docker executor with image python:3.12-slim ...
+Pulling docker image python:3.12-slim ...
+Using docker image sha256:4f1c2e8d9a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d for python:3.12-slim
+Preparing environment
+Running on runner-t3xk9pqw-project-57-concurrent-0 via kvadrat-ci-02...
+Getting source from Git repository
+Fetching changes with git depth set to 20...
+Initialized empty Git repository in /builds/izvjestaji/izvjestaji-servis/.git/
+Created fresh repository.
+Checking out 111166eb as detached HEAD (ref is main)...
+Skipping Git submodules setup
+Executing "step_script" stage of the job script
+$ pip install -q -r requirements.txt
+$ echo "debug okruženja:" && env | sort
+debug okruženja:
+AWS_ACCESS_KEY_ID=AKIA4NQXR7ZK2LWB5HTM
+AWS_DEFAULT_REGION=eu-central-1
+AWS_SECRET_ACCESS_KEY=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
+CI=true
+CI_COMMIT_REF_NAME=main
+CI_COMMIT_SHORT_SHA=111166eb
+CI_JOB_ID=4812
+CI_JOB_NAME=export-probni
+CI_JOB_TOKEN=[MASKED]
+CI_PIPELINE_ID=1934
+CI_PROJECT_PATH=izvjestaji/izvjestaji-servis
+CI_PROJECT_VISIBILITY=public
+CI_REGISTRY_PASSWORD=[MASKED]
+CI_SERVER_URL=https://gitlab.kvadrat.ba
+GITLAB_CI=true
+HOME=/root
+HOSTNAME=runner-t3xk9pqw-project-57-concurrent-0
+PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+PYTHON_VERSION=3.12.7
+$ python -m app.export --datum 2026-10-11
+24817 redova
+Cleaning up project directory and file based variables
+Job succeeded

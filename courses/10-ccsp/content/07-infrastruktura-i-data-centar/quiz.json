@@ -1,0 +1,287 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Sigurnosni menadžer rangira komponente IaaS okruženja po potencijalnom uticaju kompromitacije na cijeli tenant. Koja komponenta je na prvom mjestu?",
+    "options": [
+      "Pojedinačna web aplikacija u VM-u",
+      "Ephemeral disk jedne instance",
+      "Management plane (konzola i API sa administratorskim pravima)",
+      "CDN keš statičkog sadržaja"
+    ],
+    "answer": 2,
+    "explain": "Kroz management plane se kreira, mijenja i briše sve u tenantu: mreže, identiteti, ključevi i podaci. Njegova kompromitacija ne traži nikakvu ranjivost u aplikacijama. Ostale komponente imaju ograničen uticaj."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koji tip hypervisora je NAJPRIKLADNIJI za multi-tenant javni cloud i zašto?",
+    "options": [
+      "Type 1, jer radi direktno na hardveru i ima manju površinu napada",
+      "Type 2, jer host OS daje dodatni sloj zaštite",
+      "Type 2, jer ga je lakše instalirati na laptopove administratora",
+      "Type 1, jer omogućava pokretanje kontejnera bez kernela"
+    ],
+    "answer": 0,
+    "explain": "Type 1 (bare metal) hypervisor nema host OS ispod sebe, pa je površina napada manja i performanse bolje. Host OS kod Type 2 je dodatna površina napada, a ne zaštita. Kontejneri uvijek koriste kernel."
+  },
+  {
+    "obj": "3.1",
+    "q": "Customer je zabrinut da bi kod u VM-u drugog tenanta mogao pristupiti njegovoj memoriji na istom fizičkom hostu. Koji napad opisuje ova zabrinutost?",
+    "options": [
+      "SQL injection",
+      "Economic denial of sustainability",
+      "VM sprawl",
+      "VM escape ili side-channel napad kroz dijeljeni hardver"
+    ],
+    "answer": 3,
+    "explain": "Pristup drugom gostu kroz hypervisor (VM escape) ili zaključivanje o podacima preko dijeljenog keša procesora (side-channel) su rizici multi-tenancyja. VM sprawl je problem upravljanja, a SQL injection i EDoS nisu povezani sa izolacijom."
+  },
+  {
+    "obj": "3.1",
+    "q": "U SDN arhitekturi, koja komponenta zahtijeva NAJSTROŽU zaštitu jer odlučuje o tokovima saobraćaja za cijelu mrežu?",
+    "options": [
+      "Pojedinačni virtuelni switch na hostu",
+      "SDN kontroler u control planeu",
+      "Kablovi između ormara",
+      "Load balancer jedne aplikacije"
+    ],
+    "answer": 1,
+    "explain": "SDN centralizuje odluke u control planeu (kontroleru). Ko kompromituje kontroler, može preusmjeriti ili presresti saobraćaj cijele mreže, pa se štiti kao management plane. Data plane komponente imaju lokalni uticaj."
+  },
+  {
+    "obj": "3.1",
+    "q": "Prema ISC2 podjeli storagea po modelu usluge, koji tip storagea je karakterističan za IaaS?",
+    "options": [
+      "Information storage and management",
+      "Volume, object i ephemeral storage",
+      "Content and file storage",
+      "Samo strukturirane managed baze"
+    ],
+    "answer": 1,
+    "explain": "IaaS nudi volume (block), object i ephemeral storage. Information storage and management i content/file storage su SaaS kategorije, a structured/unstructured su PaaS kategorije."
+  },
+  {
+    "obj": "3.1",
+    "q": "Tenant sa intenzivnim batch obradama degradira performanse drugih tenanta na istim hostovima. Koji mehanizam providera NAJBOLJE garantuje minimum resursa ostalim tenantima?",
+    "options": [
+      "Data dispersion",
+      "Shares bez rezervacija",
+      "Povećanje broja availability zona",
+      "Reservations uz limits za potrošnju"
+    ],
+    "answer": 3,
+    "explain": "Reservations garantuju minimum resursa, a limits ograničavaju maksimum koji jedan gost može potrošiti, što rješava noisy neighbor problem. Shares određuju prioritet samo pri nadmetanju i ne garantuju minimum. Data dispersion i zone nisu vezani za raspodjelu compute resursa."
+  },
+  {
+    "obj": "3.1",
+    "q": "Provider objektnog storagea dijeli svaki objekat na fragmente sa paritetom i raspoređuje ih na više lokacija tako da gubitak nekoliko fragmenata ne uzrokuje gubitak podataka. Kako se zove ova tehnika?",
+    "options": [
+      "Data dispersion (erasure coding)",
+      "Crypto-shredding",
+      "Tokenizacija",
+      "Data masking"
+    ],
+    "answer": 0,
+    "explain": "Data dispersion, npr. kroz erasure coding, dijeli podatke na fragmente sa paritetom i povećava otpornost i dostupnost. Crypto-shredding je brisanje, a tokenizacija i masking su tehnike zaštite povjerljivosti."
+  },
+  {
+    "obj": "3.2",
+    "q": "Data centar ima dva internet providera, ali revizija otkriva da oba kabla ulaze u zgradu kroz isti kanal. Šta je MOST important preporuka?",
+    "options": [
+      "Dodati treći ISP kroz isti kanal.",
+      "Povećati propusni opseg oba linka.",
+      "Osigurati fizički odvojene trase i ulaze u zgradu za linkove različitih providera.",
+      "Prebaciti oba linka na istog providera radi jednostavnijeg upravljanja."
+    ],
+    "answer": 2,
+    "explain": "Multi-vendor pathway connectivity traži i različite providere i fizički odvojene puteve. Zajednički kanal je single point of failure. Treći ISP kroz isti kanal i veći opseg ne uklanjaju taj rizik, a jedan provider ga povećava."
+  },
+  {
+    "obj": "3.2",
+    "q": "Organizacija traži data centar u kojem se svaka komponenta napajanja i hlađenja može planirano servisirati bez gašenja IT opreme, ali ne traži toleranciju na bilo koji neplanirani kvar. Koji Uptime Institute Tier minimalno ispunjava zahtjev?",
+    "options": [
+      "Tier I",
+      "Tier II",
+      "Tier III",
+      "Tier IV"
+    ],
+    "answer": 2,
+    "explain": "Tier III je concurrently maintainable: planirano održavanje bilo koje komponente bez prekida. Tier IV dodaje toleranciju na neplanirane kvarove (fault tolerant), što nije traženo i skuplje je. Tier I i II zahtijevaju gašenje za dio održavanja."
+  },
+  {
+    "obj": "3.2",
+    "q": "Startup treba vlastitu opremu u fizički sigurnom okruženju za tri mjeseca, uz minimalan početni kapital. Koja opcija je NAJPRIKLADNIJA?",
+    "options": [
+      "Izgraditi vlastiti data centar",
+      "Zakupiti prostor u colocation data centru",
+      "Kupiti postojeću zgradu i preurediti je",
+      "Smjestiti servere u kancelariju bez dodatnih mjera"
+    ],
+    "answer": 1,
+    "explain": "Colocation daje brz početak i nizak CapEx, uz zgradu, napajanje i hlađenje koje održava provider. Izgradnja i kupovina traže velik kapital i vrijeme, a kancelarija ne ispunjava sigurnosne zahtjeve."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pri izboru lokacije novog data centra, koji faktor je NAJBITNIJI sa stanovišta rizika?",
+    "options": [
+      "Izloženost prirodnim opasnostima i dostupnost nezavisnog napajanja i telekom infrastrukture",
+      "Arhitektonski izgled zgrade",
+      "Blizina sjedišta marketinškog odjeljenja",
+      "Broj parking mjesta za posjetioce"
+    ],
+    "answer": 0,
+    "explain": "Lokacija mora minimizirati prirodne i ljudske opasnosti i imati pouzdano, redundantno napajanje i konekcije. Izgled zgrade, blizina marketinga i parking nisu sigurnosni faktori."
+  },
+  {
+    "obj": "3.2",
+    "q": "Temperatura u serverskoj sali je stabilna, ali senzori pokazuju vrlo nisku vlažnost vazduha. Koji rizik je NAJVEĆI?",
+    "options": [
+      "Kondenzacija i korozija komponenti",
+      "Poplava u sali",
+      "Statički elektricitet koji može oštetiti opremu",
+      "Povećana potrošnja goriva generatora"
+    ],
+    "answer": 2,
+    "explain": "Preniska vlažnost povećava rizik elektrostatičkog pražnjenja. Kondenzacija i korozija su rizik previsoke vlažnosti. Poplava i gorivo nisu povezani sa vlažnošću vazduha."
+  },
+  {
+    "obj": "3.2",
+    "q": "Provider privatnog clouda želi spriječiti da administrator jednog tenanta pristupi resursima drugog. Koja mjera logičkog dizajna je NAJBOLJA?",
+    "options": [
+      "Tenant partitioning kroz odvojene virtuelne mreže, hypervisor izolaciju i ključeve enkripcije po tenantu",
+      "Zajednički administratorski nalog za sve tenante radi lakšeg upravljanja",
+      "Fizički odvojene zgrade za svakog tenanta",
+      "Smještanje svih tenanta u isti VLAN uz dobre lozinke"
+    ],
+    "answer": 0,
+    "explain": "Tenant partitioning kombinuje mrežnu, compute i kriptografsku izolaciju uz kontrolu pristupa. Zajednički nalog i zajednički VLAN ruše izolaciju, a odvojene zgrade su nepraktične i nisu logička mjera."
+  },
+  {
+    "obj": "3.2",
+    "q": "Koja konfiguracija napajanja NAJBOLJE odgovara zahtjevu da kvar cijele jedne distributivne staze ne prekine rad servera?",
+    "options": [
+      "N, sa jednim UPS-om dimenzionisanim tačno za opterećenje",
+      "N+1 UPS moduli na jednoj distributivnoj stazi",
+      "Jedan generator sa većim rezervoarom goriva",
+      "2N: dvije nezavisne staze (A i B) i serveri sa dvostrukim napajanjem povezanim na obje"
+    ],
+    "answer": 3,
+    "explain": "Samo 2N sa odvojenim stazama i dvostrukim napajanjem servera podnosi gubitak cijele staze. N+1 štiti od kvara jednog modula, ali jedna staza ostaje single point of failure. N i jedan generator nemaju redundansu."
+  },
+  {
+    "obj": "3.3",
+    "q": "Uprava traži da se prije odobrenja migracije u javni cloud odabere set sigurnosnih kontrola. Šta sigurnosni menadžer treba uraditi FIRST?",
+    "options": [
+      "Kupiti CASB i SIEM rješenja",
+      "Sprovesti procjenu rizika: identifikovati imovinu, prijetnje i ranjivosti i analizirati vjerovatnoću i uticaj",
+      "Uključiti enkripciju svih podataka customer-managed ključevima",
+      "Potpisati ugovor sa providerom koji ima najviše certifikata"
+    ],
+    "answer": 1,
+    "explain": "Kontrole se biraju na osnovu procijenjenog rizika. Kupovina alata, enkripcija i izbor providera bez procjene rizika mogu promašiti stvarne rizike ili trošiti više nego što rizik vrijedi."
+  },
+  {
+    "obj": "3.3",
+    "q": "Vrijednost baze je 400.000 EUR, procijenjeni exposure factor curenja je 25%, a očekuje se jedan incident u četiri godine. Kolika je ALE?",
+    "options": [
+      "100.000 EUR",
+      "400.000 EUR",
+      "1.600.000 EUR",
+      "25.000 EUR"
+    ],
+    "answer": 3,
+    "explain": "SLE = AV × EF = 400.000 × 0,25 = 100.000 EUR. ARO = 1/4 = 0,25. ALE = SLE × ARO = 100.000 × 0,25 = 25.000 EUR. 100.000 je SLE, a ostale vrijednosti su pogrešni izračuni."
+  },
+  {
+    "obj": "3.3",
+    "q": "Prema CSA Top Threats izvještajima, koji uzrok cloud incidenata je NAJČEŠĆE na vrhu liste?",
+    "options": [
+      "Pogrešna konfiguracija i neadekvatna kontrola promjena na strani customera",
+      "Fizička provala u data centar providera",
+      "VM escape napadi na hypervisor",
+      "Kvarovi hlađenja u data centru"
+    ],
+    "answer": 0,
+    "explain": "CSA Top Threats ističe misconfiguration i IAM probleme kao najveće rizike, uglavnom na strani customera. Fizičke provale, VM escape i kvarovi hlađenja su stvarni, ali znatno rjeđi uzroci incidenata."
+  },
+  {
+    "obj": "3.3",
+    "q": "Kompanija je kupila cyber osiguranje koje pokriva troškove curenja podataka iz cloud aplikacije. Šta je TAČNO u vezi sa ovim tretmanom rizika?",
+    "options": [
+      "Rizik je izbjegnut i više ne postoji.",
+      "Odgovornost prema regulatoru i klijentima je prenesena na osiguravača.",
+      "Finansijski uticaj je djelimično prenesen, ali odgovornost ostaje kompaniji.",
+      "Osiguranje zamjenjuje potrebu za tehničkim kontrolama."
+    ],
+    "answer": 2,
+    "explain": "Transfer prenosi finansijski uticaj, ali accountability ostaje na data owneru. Rizik i dalje postoji, a osiguravači tipično traže i tehničke kontrole kao uslov pokrića."
+  },
+  {
+    "obj": "3.3",
+    "q": "Nakon uvođenja kontrola ostaje rezidualni rizik od kratkog regionalnog ispada nekritične interne aplikacije. Ko treba formalno prihvatiti taj rizik?",
+    "options": [
+      "Cloud provider kroz SLA",
+      "Vlasnik rizika iz rukovodstva, u skladu sa risk appetiteom",
+      "Inženjer koji je konfigurisao aplikaciju",
+      "Eksterni revizor"
+    ],
+    "answer": 1,
+    "explain": "Prihvatanje rizika je poslovna odluka vlasnika rizika, unutar definisanog apetita, i dokumentuje se u risk registru. Provider, inženjer i revizor nemaju ovlaštenje da prihvate rizik u ime organizacije."
+  },
+  {
+    "obj": "3.3",
+    "q": "Organizacija gradi aplikaciju koristeći mnogo vlasničkih servisa jednog providera. Koji rizik procjena rizika MORA posebno adresirati?",
+    "options": [
+      "Data remanence na fizičkim diskovima",
+      "Previsoka vlažnost u data centru",
+      "Noisy neighbor efekat na CDN-u",
+      "Vendor lock-in i njegov uticaj na portabilnost i kontinuitet poslovanja"
+    ],
+    "answer": 3,
+    "explain": "Oslanjanje na vlasničke servise otežava prelazak drugom provideru u slučaju bankrota, promjene uslova ili ispada. To utiče na BC/DR i pregovaračku poziciju, pa se procjenjuje i tretira (izlazna strategija, apstrakcija, portabilni formati)."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Upari storage zahtjev sa tipom storagea prema ISC2 podjeli po modelu usluge.",
+    "options": [
+      "Virtuelni disk prikačen na VM za bazu podataka",
+      "Privremeni prostor koji nestaje kada se instanca ugasi",
+      "Fajlovi koje korisnici dijele kroz SaaS aplikaciju za saradnju",
+      "Milioni slika dostupnih kroz HTTP API sa metapodacima"
+    ],
+    "targets": [
+      "Ephemeral storage (IaaS)",
+      "Object storage (IaaS)",
+      "Volume storage (IaaS)",
+      "Content and file storage (SaaS)",
+      "Structured storage (PaaS)"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1
+    ],
+    "explain": "Virtuelni disk za VM je volume (block) storage, privremeni disk instance je ephemeral, fajlovi u SaaS aplikaciji su content and file storage, a velik broj objekata kroz API sa metapodacima je object storage. Structured (PaaS) se ovdje ne koristi."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Poredaj korake procesa upravljanja rizikom cloud infrastrukture, od prvog do posljednjeg.",
+    "options": [
+      "Analiza vjerovatnoće i uticaja",
+      "Izbor i provođenje tretmana (avoid, mitigate, transfer, accept)",
+      "Identifikacija imovine, prijetnji i ranjivosti",
+      "Evaluacija rizika u odnosu na risk appetite",
+      "Praćenje i prihvatanje rezidualnog rizika od strane vlasnika rizika"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1,
+      4
+    ],
+    "explain": "Rizik se prvo identifikuje, zatim analizira i evaluira prema apetitu organizacije. Tek tada se bira tretman, a rezidualni rizik se formalno prihvata i prati."
+  }
+]

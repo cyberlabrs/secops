@@ -1,0 +1,243 @@
+[
+  {
+    "obj": "2.1",
+    "q": "A developer committed an AWS key on 12 Oct and removed it in a new commit on 13 Oct. What is the correct first step when you find out?",
+    "options": [
+      "Nothing: the key was removed from the code and the repo is internal",
+      "Rewrite history with git filter-repo and force push, then the key is gone",
+      "Deactivate (rotate) the key in IAM immediately, then investigate its use in CloudTrail",
+      "Make the project private and wait for an alert"
+    ],
+    "answer": 2,
+    "explain": "The key stays in history, clones, forks and CI logs. The only fix is rotation: deactivate the old key (and investigate its use since first exposure). Rewriting history is cosmetic after rotation."
+  },
+  {
+    "obj": "2.1",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "$ pip install -q -r requirements.txt\n$ echo \"environment debug:\" && env | sort\nenvironment debug:\nAWS_ACCESS_KEY_ID=AKIA4NQXR7ZK2LWB5HTM\nAWS_DEFAULT_REGION=eu-central-1\nAWS_SECRET_ACCESS_KEY=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\nCI_JOB_ID=4812\nCI_JOB_TOKEN=[MASKED]\nCI_PROJECT_VISIBILITY=public\nCI_REGISTRY_PASSWORD=[MASKED]\n$ python -m app.export --datum 2026-10-11\n24817 rows\nJob succeeded",
+    "q": "An excerpt of the public log of CI job 4812. Which lines reveal secrets that must be rotated?",
+    "answer": [
+      3,
+      5
+    ],
+    "explain": "The AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY lines print the key pair in clear text, because the CI variables were not masked and a debug step ran env. CI_JOB_TOKEN and CI_REGISTRY_PASSWORD are masked. CI_PROJECT_VISIBILITY=public explains why the log was public, but it is not a secret."
+  },
+  {
+    "obj": "2.1",
+    "q": "`git log -S AKIA4NQXR7ZK2LWB5HTM --oneline` returns two commits: 347a894 (\"Clean up configuration\") and bcf32b3 (\"Quick fix\"). What does this mean for the timeline?",
+    "options": [
+      "347a894 introduced the key because it is listed first",
+      "bcf32b3 introduced the key (older commit), 347a894 removed it; exposure starts at bcf32b3",
+      "The key was added twice, so there are two different keys",
+      "-S only finds commits that deleted the string, so the key is still in the code"
+    ],
+    "answer": 1,
+    "explain": "The pickaxe (-S) shows commits where the number of occurrences of the string changed: the addition and the removal. git log lists the newest first, so the introduction is the second line (or the first with --reverse). The exposure window starts at the commit that added the key."
+  },
+  {
+    "obj": "2.1",
+    "lang": "bash",
+    "snippet": "$ cd izvjestaji-servis\n$ grep -rn AKIA .\n./tests/test_export.py:5:TEST_KEY = \"AKIAIOSFODNN7EXAMPLE\"\n$ gitleaks dir .\nINF scanned ~3034 bytes (3.03 KB) in 11ms\nINF no leaks found\n$ git log --oneline | wc -l\n6",
+    "q": "The analyst concludes that the repo contains no secrets. Why is this conclusion wrong?",
+    "options": [
+      "gitleaks dir only works on .env files",
+      "gitleaks does not recognize AWS keys; trufflehog is needed",
+      "AKIAIOSFODNN7EXAMPLE is a real key that gitleaks missed",
+      "gitleaks dir scans only the current files; a key removed by a later commit is found only with gitleaks git (full history)"
+    ],
+    "answer": 3,
+    "explain": "dir mode (formerly --no-git) looks at the working directory. A secret deleted in a later commit is still in history, so gitleaks git finds it. AKIAIOSFODNN7EXAMPLE is the AWS documentation example, which gitleaks deliberately ignores."
+  },
+  {
+    "obj": "2.2",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "2026-10-19T02:15:20Z  svc-izvjestaji  GetAccountAuthorizationDetails  -\n2026-10-19T02:16:55Z  svc-izvjestaji  GetObject                       AccessDenied\n2026-10-19T02:19:12Z  svc-izvjestaji  CreatePolicyVersion             v3, setAsDefault\n2026-10-19T02:20:03Z  svc-izvjestaji  CreateUser                      aws-support-sync\n2026-10-19T02:20:15Z  svc-izvjestaji  AttachUserPolicy                AdministratorAccess\n2026-10-19T02:20:31Z  svc-izvjestaji  CreateAccessKey                 aws-support-sync -> AKIA...6PQA\n2026-10-19T02:20:48Z  svc-izvjestaji  CreateLoginProfile              aws-support-sync\n2026-10-19T02:21:30Z  svc-izvjestaji  CreateAccessKey                 jenkins-legacy -> AKIA...YVCE\n2026-10-19T02:23:05Z  svc-izvjestaji  GetObject                       baza/kupci-full-2026-10.csv.gz\n2026-10-19T02:41:10Z  aws-support-sync  GetCallerIdentity             -",
+    "q": "Which lines show the attacker creating NEW credentials to get back into the account (credential-based persistence)?",
+    "answer": [
+      5,
+      6,
+      7
+    ],
+    "explain": "CreateAccessKey for aws-support-sync, CreateLoginProfile (a console password) and CreateAccessKey for the existing jenkins-legacy are new credentials (T1098.001). CreateUser and AttachUserPolicy are also persistence and escalation, but do not by themselves give a credential; CreatePolicyVersion is escalation."
+  },
+  {
+    "obj": "2.2",
+    "lang": "json",
+    "snippet": "{\n  \"eventTime\": \"2026-10-19T02:19:12Z\",\n  \"eventSource\": \"iam.amazonaws.com\",\n  \"eventName\": \"CreatePolicyVersion\",\n  \"userIdentity\": { \"type\": \"IAMUser\", \"userName\": \"svc-izvjestaji\",\n                    \"accessKeyId\": \"AKIA4NQXR7ZK2LWB5HTM\" },\n  \"sourceIPAddress\": \"203.0.113.45\",\n  \"requestParameters\": {\n    \"policyArn\": \"arn:aws:iam::111122223333:policy/izvjestaji-s3-export\",\n    \"policyDocument\": \"{\\\"Version\\\":\\\"2012-10-17\\\",\\\"Statement\\\":[{\\\"Effect\\\":\\\"Allow\\\",\n                        \\\"Action\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}]}\",\n    \"setAsDefault\": true\n  },\n  \"responseElements\": { \"policyVersion\": { \"versionId\": \"v3\", \"isDefaultVersion\": true } }\n}",
+    "q": "What did the attacker achieve with this call?",
+    "options": [
+      "Created a new policy that still has to be attached with AttachUserPolicy",
+      "Changed the trust policy of the izvjestaji-s3-export role",
+      "Tried a change, but without SetDefaultPolicyVersion it does not take effect",
+      "Created a new default version of the policy attached to their own user, gaining Allow * on all resources"
+    ],
+    "answer": 3,
+    "explain": "With setAsDefault: true the new version (v3) takes effect immediately, without SetDefaultPolicyVersion. Since the policy was already attached to svc-izvjestaji, the user got administrator rights at that moment. That is why iam:CreatePolicyVersion on your own policy means escalation."
+  },
+  {
+    "obj": "2.2",
+    "q": "Why is `sts:GetCallerIdentity` as the first call from a new IP address a strong indicator of a stolen key?",
+    "options": [
+      "CloudTrail logs GetCallerIdentity only for attackers",
+      "The attacker uses it to check whether the key works and whom it belongs to; legitimate services rarely call it, and never from a new address",
+      "The call always requires administrator rights",
+      "GetCallerIdentity rotates the key and creates a new session"
+    ],
+    "answer": 1,
+    "explain": "GetCallerIdentity needs no permissions and returns the account, ARN and user ID. That makes it the first step of every tool that tests a found key. Combined with a new IP address and a new User-Agent it is a classic signature."
+  },
+  {
+    "obj": "2.2",
+    "type": "multi",
+    "q": "The same key is used by both the legitimate service and the attacker. Which CloudTrail data helps you separate their calls? (select all that apply)",
+    "options": [
+      "recipientAccountId",
+      "sourceIPAddress (the known server address versus a new one)",
+      "call pattern: the service runs the same GetObject/PutObject every night, the attacker enumerates IAM and gets AccessDenied",
+      "userAgent (the service's Boto3 versus AWS CLI with md/distrib#kali)",
+      "userIdentity.accessKeyId"
+    ],
+    "answer": [
+      1,
+      2,
+      3
+    ],
+    "explain": "accessKeyId and recipientAccountId are the same for both sides, because the key is the same. The address, the tool (User-Agent) and the behaviour differ: the service has a fixed schedule and narrow calls, while the attacker asks who it is, enumerates and probes the key's limits."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Match the CloudTrail call with the ATT&CK technique.",
+    "options": [
+      "GetAccountAuthorizationDetails",
+      "CreateUser",
+      "CreateAccessKey for another user",
+      "GetObject on the customer database",
+      "StopLogging"
+    ],
+    "targets": [
+      "T1530 Data from Cloud Storage",
+      "T1087.004 Account Discovery: Cloud Account",
+      "T1685.002 Disable or Modify Cloud Log",
+      "T1136.003 Create Account: Cloud Account",
+      "T1098.001 Additional Cloud Credentials"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "IAM enumeration is account discovery, a new user is Create Account, an extra key is Additional Cloud Credentials, reading from S3 is Data from Cloud Storage, and stopping the trail is Disable or Modify Cloud Log (formerly T1562.008)."
+  },
+  {
+    "obj": "2.3",
+    "q": "S3 data events are NOT enabled for the kvadrat-kupci-prod bucket. What can you claim in the damage assessment?",
+    "options": [
+      "Only the objects that appear in ListBuckets were read",
+      "The data was not read, because there are no GetObject events in CloudTrail",
+      "It cannot be determined which objects were read; since the attacker had the permissions, you must assume the data could have been taken",
+      "Looking at GetBucketAcl events is enough"
+    ],
+    "answer": 2,
+    "explain": "Management events do not record GetObject. Without data events (or S3 server access logs) you can prove neither that the data was read nor that it was not. The legal assessment then starts from the assumption that access was possible."
+  },
+  {
+    "obj": "2.3",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "eventTime             sourceIPAddress  identity            key                              errorCode\n2026-10-19T01:00:21Z  192.0.2.50       svc-izvjestaji      exports/dnevni/2026-10-18.csv    -\n2026-10-19T02:05:44Z  10.20.3.14       kupci-api-ecs-task  profili/154822.json              -\n2026-10-19T02:16:55Z  203.0.113.45     svc-izvjestaji      baza/kupci-full-2026-10.csv.gz   AccessDenied\n2026-10-19T02:23:05Z  203.0.113.45     svc-izvjestaji      baza/kupci-full-2026-10.csv.gz   -\n2026-10-19T02:25:12Z  10.20.3.14       kupci-api-ecs-task  profili/187310.json              -\n2026-10-19T02:41:56Z  198.51.100.23    aws-support-sync    baza/adrese-isporuke.csv.gz      -\n2026-10-19T02:43:21Z  198.51.100.23    aws-support-sync    exports/dnevni/2026-10-18.csv    -\n2026-10-19T08:30:02Z  10.20.3.14       kupci-api-ecs-task  profili/120077.json              -",
+    "q": "The attacker uses 203.0.113.45 and 198.51.100.23. Which lines are SUCCESSFUL reads that go into the list of leaked objects?",
+    "answer": [
+      4,
+      6,
+      7
+    ],
+    "explain": "The attacker's successful reads are the 203.0.113.45 line without an error and both 198.51.100.23 lines. The AccessDenied line is an attempt, not a leak. The same object exports/dnevni/2026-10-18.csv is read legitimately at 01:00 by the report server (192.0.2.50); it goes into the list because of the read at 02:43. The kupci-api role reads are normal application activity."
+  },
+  {
+    "obj": "2.3",
+    "type": "multi",
+    "q": "What belongs in the damage assessment (scope and impact) for this incident? (select all that apply)",
+    "options": [
+      "the number of legitimate GetObject calls by the kupci-api application",
+      "the list of objects the attacker read successfully, per bucket",
+      "the amount of data downloaded (bytesTransferredOut) and the key's exposure window",
+      "the denied StopLogging, recorded as a successful logging shutdown",
+      "data classification (customer personal data, card tokens, finance) and the resulting notification obligations"
+    ],
+    "answer": [
+      1,
+      2,
+      4
+    ],
+    "explain": "Scope is the exact objects, volume and time window; impact depends on the type of data (GDPR notification within 72 hours, PCI DSS for card tokens). Legitimate calls are not damage, and the denied StopLogging should be reported as an attempt, not as a shutdown."
+  },
+  {
+    "obj": "2.4",
+    "q": "The attacker created a second access key for the existing user jenkins-legacy, whose first key is used by the production build. What is the correct containment?",
+    "options": [
+      "Leave jenkins-legacy alone, since the attacker did not create it",
+      "Attach Deny * to jenkins-legacy",
+      "Deactivate only the key the attacker created, keep the legitimate key and plan moving Jenkins to a role",
+      "Delete the jenkins-legacy user with both keys"
+    ],
+    "answer": 2,
+    "explain": "Deny * or deleting the user would break build and deploy. The attacker's key (AKIA...YVCE) is deactivated precisely, and the legitimate one stays until the service moves to temporary credentials. Ignoring it leaves the attacker a way back in."
+  },
+  {
+    "obj": "2.4",
+    "type": "order",
+    "q": "Put the containment and eradication steps for this incident in order.",
+    "options": [
+      "Delete aws-support-sync and the attacker's keys, after preserving evidence",
+      "Deactivate the leaked key and both attacker keys (Inactive)",
+      "Attach an inline Deny * policy to svc-izvjestaji and aws-support-sync",
+      "Delete the aws-support-sync login profile and roll the policy back to v2",
+      "Search the whole account and all regions for other traces (roles, Lambda, key pairs)"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      4,
+      0
+    ],
+    "explain": "Deny * first, because it immediately blocks all credentials of those users, including ones you have not found yet. Then deactivate the keys (reversible), remove the login profile and the escalated policy version, then hunt for other traces. Deletion comes last, once evidence is preserved."
+  },
+  {
+    "obj": "2.4",
+    "lang": "yaml",
+    "snippet": "title: AWS CloudTrail stopped or deleted\nstatus: test\nlogsource:\n  product: aws\n  service: cloudtrail\ndetection:\n  selection:\n    eventSource: cloudtrail.amazonaws.com\n  filter_ok:\n    errorCode: AccessDenied\n  condition: selection and not filter_ok\nlevel: high",
+    "q": "What is wrong with this Sigma rule for stopping CloudTrail?",
+    "options": [
+      "level: high is not allowed for AWS rules",
+      "The logsource for CloudTrail must be product: cloudtrail",
+      "Sigma does not support filters with not in the condition",
+      "It matches every call to CloudTrail (DescribeTrails, LookupEvents…) and drops exactly the denied StopLogging/DeleteTrail attempts"
+    ],
+    "answer": 3,
+    "explain": "Without an eventName filter the rule alerts on every configuration read and on the SOC's own investigation. The AccessDenied filter removes exactly the case from this incident: a denied attempt to stop logging means someone already holds serious credentials. Correct: eventName StopLogging or DeleteTrail, with no error filter."
+  },
+  {
+    "obj": "2.4",
+    "type": "multi",
+    "q": "Which controls would have prevented this incident or detected it within minutes? (select all that apply)",
+    "options": [
+      "turning off low-severity GuardDuty findings to reduce noise",
+      "an alert (Sigma/EventBridge) on CreatePolicyVersion with setAsDefault, CreateUser and CreateAccessKey for another user",
+      "gitleaks in a pre-commit hook and in CI, plus masked CI variables",
+      "rewriting git history every month",
+      "IAM roles and OIDC for CI and the service instead of static keys"
+    ],
+    "answer": [
+      1,
+      2,
+      4
+    ],
+    "explain": "Secret scanning and masking prevent the leak, temporary credentials remove what could leak, and alerts on IAM changes cut time to detection from six hours to minutes. Rewriting history does not help once the key has been copied, and the low-severity PenTest:IAMUser/KaliLinux finding was the first sign of the attack."
+  }
+]

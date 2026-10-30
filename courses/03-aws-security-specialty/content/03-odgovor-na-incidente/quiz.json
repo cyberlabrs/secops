@@ -1,0 +1,250 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Operativni i sigurnosni tim žele jedno mjesto gdje se Security Hub nalazi i CloudWatch alarmi pojavljuju kao radne stavke sa povezanim resursima, istorijom i mogućnošću da se direktno pokrene Systems Manager Automation runbook za remedijaciju. Koji servis ispunjava zahtjev?",
+    "options": [
+      "AWS Trusted Advisor",
+      "Amazon Detective",
+      "AWS Config aggregator",
+      "AWS Systems Manager OpsCenter"
+    ],
+    "answer": 3,
+    "explain": "OpsCenter pravi OpsItems iz Security Hub nalaza, alarma i EventBridge pravila, prikazuje povezane resurse i omogućava pokretanje Automation runbooka. Detective je za istragu, Config aggregator za usklađenost, a Trusted Advisor daje preporuke bez radnih stavki i runbooka."
+  },
+  {
+    "obj": "2.1",
+    "q": "Analitičari u SOC-u pri svakoj istrazi ručno kopiraju Athena upite iz wiki stranice, a rezultate analiziraju u Excelu. Rukovodilac traži da istrage budu ponovljive, dokumentovane i da kombinuju SQL upite nad Security Lake sa Python analizom. Koje rješenje to NAJBOLJE ispunjava?",
+    "options": [
+      "CloudWatch dashboard sa Logs Insights widgetima.",
+      "Jupyter notebookovi u Amazon SageMaker AI u security nalogu, sa IAM rolom za Athena upite nad Security Lake tabelama.",
+      "Lambda funkcija koja svake noći pokreće sve upite i šalje rezultate emailom.",
+      "AWS Glue ETL posao koji kopira podatke u Excel fajlove."
+    ],
+    "answer": 1,
+    "explain": "Notebook kombinuje objašnjenje, SQL i Python kod u jednom dokumentu koji se može ponovo pokrenuti, pa je istraga ponovljiva i dokumentovana. Dashboard i noćna Lambda nisu interaktivna istraga, a Glue u Excel ne rješava ponovljivost."
+  },
+  {
+    "obj": "2.1",
+    "q": "Organizacija ima 200 naloga. Tokom incidenta IR tim mora za nekoliko minuta dobiti pristup bilo kom nalogu, sa dozvolama dovoljnim za istragu i izolaciju, ali ne više od toga. Šta treba pripremiti PRIJE incidenta?",
+    "options": [
+      "IR role (ReadOnly i Containment) u svim nalozima preko CloudFormation StackSets, sa trust policyjem koji dozvoljava preuzimanje samo iz Security Tooling naloga uz MFA.",
+      "IAM korisnika sa AdministratorAccess u svakom nalogu, čiji su ključevi u dijeljenom password manageru.",
+      "Proceduru da IR tim tokom incidenta zatraži od vlasnika naloga da im napravi korisnike.",
+      "Root kredencijale svih naloga u sefu IR tima."
+    ],
+    "answer": 0,
+    "explain": "Unaprijed deployovane IR role sa ograničenim dozvolama i trustom samo iz Security Tooling naloga daju brz i kontrolisan pristup. Dugotrajni admin ključevi su rizik, pravljenje korisnika tokom incidenta je sporo, a root pristup krši najmanje privilegije."
+  },
+  {
+    "obj": "2.1",
+    "q": "Kompanija koristi AWS Shield Advanced za CloudFront distribuciju i ALB i ima Business Support plan. Želi da je Shield Response Team sam kontaktira kada je aplikacija pod DDoS napadom koji utiče na njeno zdravlje. Šta treba uraditi?",
+    "options": [
+      "Uključiti AWS WAF Bot Control na web ACL-u.",
+      "Preći na Enterprise On-Ramp i otvoriti support slučaj tokom napada.",
+      "Uključiti proactive engagement, povezati Route 53 health checks sa zaštićenim resursima i unijeti kontakte za hitne slučajeve.",
+      "Uključiti Shield Standard na svim resursima."
+    ],
+    "answer": 2,
+    "explain": "Proactive engagement traži Route 53 health checks povezane sa zaštićenim resursima, da SRT zna kada napad utiče na aplikaciju, i kontakt podatke. Business Support je već dovoljan za SRT, Bot Control ne uključuje kontakt, a Shield Standard nema SRT."
+  },
+  {
+    "obj": "2.1",
+    "q": "Tim je napravio automatsku remedijaciju koja zamjenjuje neispravne instance i šalje alarme. Žele dokaz da sistem zaista reaguje kada se instance ugase u produkciji, ali eksperiment se mora automatski prekinuti ako stopa grešaka za korisnike pređe 2%. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "AWS Fault Injection Service experiment template sa akcijom aws:ec2:stop-instances, targetima po tagu i stop condition vezanim za CloudWatch alarm na stopu grešaka.",
+      "Lambda funkcija koja nasumično gasi instance svakog petka.",
+      "AWS Resilience Hub assessment aplikacije.",
+      "Tabletop vježba sa timom za aplikaciju."
+    ],
+    "answer": 0,
+    "explain": "FIS izvodi kontrolisan kvar, a stop condition sa CloudWatch alarmom prekida eksperiment čim se pređe prag. Vlastita Lambda nema siguran prekid, Resilience Hub procjenjuje arhitekturu ali sam ne izaziva kvar, a tabletop ne testira stvarni sistem."
+  },
+  {
+    "obj": "2.1",
+    "q": "Za kritičnu aplikaciju uprava je odredila RTO od 1 sata i RPO od 15 minuta. Sigurnosni tim treba procijeniti da li trenutna arhitektura može ispuniti te ciljeve nakon incidenta i dobiti konkretne preporuke, uz NAJMANJE ručnog rada. Šta koristiti?",
+    "options": [
+      "AWS Trusted Advisor provjere otpornosti.",
+      "AWS Backup audit izvještaj.",
+      "Amazon Detective behavior graph.",
+      "AWS Resilience Hub sa resiliency policy koja definiše RTO i RPO."
+    ],
+    "answer": 3,
+    "explain": "Resilience Hub procjenjuje aplikaciju prema resiliency policyju (RTO/RPO) i daje preporuke, alarme, SOP-ove i FIS eksperimente. Trusted Advisor i Backup Audit Manager daju uže provjere, a Detective je alat za istragu."
+  },
+  {
+    "obj": "2.1",
+    "q": "Kada GuardDuty prijavi nalaz tipa CryptoCurrency:EC2 za instancu, treba automatski: izolovati instancu, napraviti snapshote svih volumena, sačekati da se snapshoti završe, zatim obavijestiti tim, a kod greške u bilo kom koraku eskalirati. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "Cron posao na bastion instanci koji svakih 5 minuta čita GuardDuty nalaze i izvršava skripte.",
+      "Jedna Lambda funkcija koja radi sve korake i u petlji čeka završetak snapshota.",
+      "EventBridge pravilo za taj tip nalaza koje pokreće AWS Step Functions state machine sa koracima, čekanjem i obradom grešaka.",
+      "AWS Config pravilo sa automatskom remedijacijom."
+    ],
+    "answer": 2,
+    "explain": "Step Functions je namijenjen višekoračnim tokovima sa čekanjem, grananjem i obradom grešaka, a EventBridge ga pokreće bez servera. Lambda u petlji rizikuje timeout i komplikuje obradu grešaka, cron na bastionu je infrastruktura za održavanje, a Config reaguje na konfiguraciju, ne na GuardDuty nalaze."
+  },
+  {
+    "obj": "2.1",
+    "q": "SOC želi AWS rješenje koje na osnovu Security Hub nalaza automatski prikuplja memoriju i disk sumnjive EC2 instance, izoluje je i omogućava analizu u posebnom forenzičkom nalogu uz chain of custody. Tim ne želi razvijati workflow od nule. Šta treba deployovati?",
+    "options": [
+      "Amazon Inspector sa skeniranjem EC2 instanci.",
+      "Automated Forensics Orchestrator for Amazon EC2 iz AWS Solutions Library.",
+      "GuardDuty Malware Protection for EC2 sa on-demand skeniranjem.",
+      "AWS Elastic Disaster Recovery."
+    ],
+    "answer": 1,
+    "explain": "Automated Forensics Orchestrator koristi EventBridge i Step Functions za akviziciju memorije i diska, izolaciju i analizu u forenzičkom nalogu. Inspector i Malware Protection traže ranjivosti ili malver, ali ne prikupljaju memoriju niti vode forenzički proces, a Elastic Disaster Recovery služi za oporavak."
+  },
+  {
+    "obj": "2.1",
+    "q": "Nakon kompromitovanog deploya u jednoj Availability Zone, instance u toj AZ vraćaju pogrešne odgovore. Tim mora odmah skloniti saobraćaj load balancera iz te AZ dok istražuje, bez izmjene aplikacije. Koje rješenje to radi NAJBRŽE?",
+    "options": [
+      "Promijeniti Route 53 weighted zapise za svaku instancu.",
+      "Pokrenuti zonal shift u Amazon Application Recovery Controller za taj load balancer.",
+      "Terminirati sve instance u toj AZ.",
+      "Izmijeniti subnet NACL tako da blokira sav saobraćaj u toj AZ."
+    ],
+    "answer": 1,
+    "explain": "Zonal shift privremeno sklanja saobraćaj podržanog resursa (npr. load balancera) iz jedne AZ i lako se poništava. Terminacija uništava dokaze, NACL izmjena je gruba i može prekinuti i potrebni pristup, a Route 53 zapisi po instanci nisu način na koji radi load balancer."
+  },
+  {
+    "obj": "2.2",
+    "q": "AWS Health je poslao događaj AWS_RISK_CREDENTIALS_EXPOSED: access key IAM korisnika ci-deployer objavljen je u javnom GitHub repozitoriju. Šta sigurnosni inženjer treba uraditi PRVO?",
+    "options": [
+      "Deaktivirati access key komandom aws iam update-access-key --status Inactive.",
+      "Obrisati IAM korisnika ci-deployer.",
+      "Pokrenuti Athena upit nad CloudTrail logovima za posljednjih 90 dana.",
+      "Obrisati repozitorij na GitHubu."
+    ],
+    "answer": 0,
+    "explain": "Prvo treba zaustaviti dalju upotrebu ključa, a deaktivacija je brza i reverzibilna i čuva vezu sa dokazima. Brisanje korisnika uništava kontekst i može slomiti pipeline, Athena analiza dolazi poslije containmenta, a ključ je već kopiran pa brisanje repozitorija ne pomaže."
+  },
+  {
+    "obj": "2.2",
+    "q": "Kompromitovani access key je deaktiviran, ali CloudTrail i dalje bilježi sumnjive pozive iz role ProdAdmin koju je napadač preuzeo tim ključem prije deaktivacije. Kako zaustaviti napadača uz NAJMANJI uticaj na legitimne korisnike role?",
+    "options": [
+      "Obrisati rolu ProdAdmin i napraviti je ponovo.",
+      "Promijeniti maksimalno trajanje sesije role na 1 sat.",
+      "Deaktivirati sve access ključeve u nalogu.",
+      "Opozvati aktivne sesije role (Revoke active sessions), što dodaje deny za tokene izdate prije tog trenutka."
+    ],
+    "answer": 3,
+    "explain": "Privremeni kredencijali važe do isteka i nezavisni su od deaktiviranog ključa; revoke sessions odbija sve tokene izdate prije opoziva, a legitimni korisnici samo ponovo preuzmu rolu. Brisanje role ruši sve koji je koriste, promjena trajanja ne utiče na već izdate sesije, a ostali ključevi nisu problem."
+  },
+  {
+    "obj": "2.2",
+    "q": "Inženjer je kompromitovanoj EC2 instanci dodijelio novu security grupu bez ikakvih pravila. Flow logovi pokazuju da napadačeva postojeća SSH konekcija i dalje radi. Šta je uzrok i šta treba uraditi?",
+    "options": [
+      "Security grupe se primjenjuju tek nakon restarta instance; restartovati instancu.",
+      "Prazna security grupa podrazumijevano dozvoljava sav saobraćaj; dodati eksplicitno deny pravilo.",
+      "Postojeća konekcija je praćena (tracked) i promjena SG-a je ne prekida; dodati deny pravila u NACL subneta ili prvo dodijeliti SG koja dozvoljava sav saobraćaj pa onda izolacionu SG.",
+      "Flow logovi kasne 10 minuta; konekcija je zapravo već prekinuta."
+    ],
+    "answer": 2,
+    "explain": "Security grupe su stateful i već praćene konekcije se ne prekidaju promjenom pravila. NACL je stateless i odmah prekida saobraćaj, a trik sa SG koja dozvoljava sve pretvara konekcije u untracked pa ih izolaciona SG zatim prekida. SG nema deny pravila, restart uništava memoriju, a pretpostavka o kašnjenju nije rješenje."
+  },
+  {
+    "obj": "2.2",
+    "q": "Kompromitovana instanca je dio Auto Scaling grupe iza ALB-a sa ELB health checkovima. Tim planira izolovati instancu i prikupiti memoriju. Šta treba uraditi PRIJE izolacije da se dokazi ne izgube?",
+    "options": [
+      "Odvojiti instancu iz Auto Scaling grupe (ili je staviti u Standby) i deregistrovati je iz target grupe.",
+      "Smanjiti desired capacity ASG-a na nulu.",
+      "Ugasiti instancu da se zaustavi napad.",
+      "Napraviti AMI iz instance sa reboot opcijom."
+    ],
+    "answer": 0,
+    "explain": "Izolovana instanca pada na health checku i ASG bi je terminirao i zamijenio, čime nestaju memorija i disk. Odvajanje iz ASG-a i target grupe to sprečava. Desired capacity nula terminira sve instance, gašenje briše memoriju, a AMI sa rebootom takođe gubi memorijsko stanje."
+  },
+  {
+    "obj": "2.2",
+    "q": "Nakon incidenta uprava traži da se utvrdi kako je rola kompromitovana, sa kojih IP adresa i kako se njena aktivnost mijenjala tokom posljednje dvije sedmice u poređenju sa uobičajenom. GuardDuty i Detective su uključeni. Koje rješenje daje odgovor uz NAJMANJE truda?",
+    "options": [
+      "Ručno pretražiti CloudTrail Event history u svakom Regionu.",
+      "Izvesti VPC Flow Logs u Excel.",
+      "Napisati Athena upite nad org trailom i napraviti grafikone u QuickSight-u.",
+      "Otvoriti profil role u Amazon Detective (pivot iz GuardDuty nalaza) i pregledati API aktivnost, geolokacije i odstupanja od baseline-a."
+    ],
+    "answer": 3,
+    "explain": "Detective već ima behavior graph sa istorijom i baseline-om i vizualizuje aktivnost entiteta. Athena i QuickSight daju sličan odgovor uz mnogo ručnog rada, Event history je po Regionu i ograničen, a flow logovi ne pokazuju API aktivnost role."
+  },
+  {
+    "obj": "2.2",
+    "q": "EC2 instanca sa EBS volumenima šifrovanim customer managed KMS ključem je kompromitovana. Analiza će se raditi u posebnom forenzičkom nalogu. Koja DVA koraka čuvaju dokaze? (Izaberi DVA.)",
+    "options": [
+      "Ugasiti instancu da se zamrzne stanje diska prije snapshota.",
+      "Prikupiti memoriju preko SSM Run Command alata u S3 prije bilo kakvog gašenja.",
+      "Terminirati instancu i zadržati samo root volumen.",
+      "Napraviti AMI i obrisati originalne volumene.",
+      "Napraviti EBS snapshote, podijeliti ih sa forenzičkim nalogom i dati tom nalogu dozvolu za korištenje KMS ključa."
+    ],
+    "answer": [1, 4],
+    "explain": "Memorija nestaje gašenjem pa se prikuplja prva, a snapshoti šifrovanih volumena su upotrebljivi u drugom nalogu tek kada taj nalog dobije pravo na KMS ključ. Gašenje i terminacija gube memoriju i druge volumene, a brisanje originala uništava dokaze."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Poredaj korake odgovora na kompromitovan IAM access key, od prvog do posljednjeg.",
+    "options": [
+      "Analizirati CloudTrail aktivnost ključa i svih sesija nastalih iz njega.",
+      "Deaktivirati access key.",
+      "Obrisati kompromitovani ključ i preći na role ili izdati novi ključ.",
+      "Identifikovati ključ i vlasnika iz nalaza i CloudTrail polja userIdentity.accessKeyId.",
+      "Ukloniti resurse i persistence koje je napadač napravio (novi korisnici, ključevi, role).",
+      "Opozvati aktivne sesije rola koje su preuzete tim ključem."
+    ],
+    "answer": [3, 1, 5, 0, 4, 2],
+    "explain": "Prvo se utvrdi o kom ključu je riječ, zatim se ključ deaktivira i opozovu sesije jer privremeni kredencijali i dalje važe. Tek kada je napadač zaustavljen analizira se šta je radio, uklanja se persistence, a ključ se briše na kraju, kada više ne treba kao dokaz."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Poredaj korake odgovora na kompromitovanu EC2 instancu u Auto Scaling grupi.",
+    "options": [
+      "Napraviti EBS snapshote i podijeliti ih sa forenzičkim nalogom.",
+      "Uključiti termination protection i tagovati instancu brojem slučaja.",
+      "Dodijeliti izolacionu security grupu i ukloniti instance profile.",
+      "Terminirati instancu i deployovati novu iz provjerenog AMI-ja.",
+      "Odvojiti instancu iz Auto Scaling grupe i target grupe.",
+      "Prikupiti memoriju preko SSM u S3 bucket sa Object Lock."
+    ],
+    "answer": [1, 4, 2, 5, 0, 3],
+    "explain": "Prvo se instanca zaštiti od slučajne terminacije i označi, zatim izvadi iz ASG-a i load balancera da je ASG ne zamijeni. Slijedi izolacija mreže i kredencijala, pa prikupljanje dokaza po volatilnosti (memorija pa disk). Rebuild dolazi tek na kraju."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Upari situaciju sa NAJPRIKLADNIJOM containment mjerom.",
+    "options": [
+      "Cijeli sandbox nalog je kompromitovan i napadač pravi resurse u više Regiona.",
+      "S3 bucket sa izvještajima je greškom postao javno čitljiv.",
+      "Jedna IP adresa šalje hiljade zahtjeva za prijavu na ALB aplikaciju.",
+      "EC2 instance šalju podatke na poznati zlonamjerni domen.",
+      "Napadač koristi privremene kredencijale preuzete iz IMDS-a kompromitovane instance."
+    ],
+    "targets": [
+      "Uključiti S3 Block Public Access za bucket",
+      "Revoke active sessions za rolu instance profila",
+      "Premjestiti nalog u karantinski OU sa SCP koja odbija sve akcije",
+      "Dodati IP u WAF IP set sa Block pravilom",
+      "Povećati retenciju CloudTrail logova",
+      "Dodati domen u Route 53 Resolver DNS Firewall ili Network Firewall deny listu"
+    ],
+    "answer": [2, 0, 3, 5, 1],
+    "explain": "SCP u karantinskom OU zaustavlja sve u kompromitovanom nalogu, Block Public Access zatvara javni bucket, WAF IP set blokira jednu adresu na ALB-u, DNS Firewall ili Network Firewall blokiraju zlonamjerni domen, a revoke sessions poništava ukradene kredencijale role. Retencija logova nije containment."
+  },
+  {
+    "obj": "2.2",
+    "type": "multi",
+    "q": "Na osnovu ovog GuardDuty nalaza, koje akcije su ispravne kao prvi odgovor? (više odgovora)",
+    "lang": "json",
+    "snippet": "{\n  \"type\": \"UnauthorizedAccess:IAMUser/InstanceCredentialExfiltration.OutsideAWS\",\n  \"severity\": 8,\n  \"resource\": {\n    \"resourceType\": \"AccessKey\",\n    \"accessKeyDetails\": {\n      \"accessKeyId\": \"ASIAEXAMPLE4H7KJ2LMN\",\n      \"principalId\": \"AROAEXAMPLEID:i-0abc123def4567890\",\n      \"userName\": \"web-app-role\",\n      \"userType\": \"AssumedRole\"\n    }\n  },\n  \"service\": { \"action\": { \"awsApiCallAction\": {\n    \"api\": \"ListBuckets\",\n    \"remoteIpDetails\": { \"ipAddressV4\": \"203.0.113.77\" } } } }\n}",
+    "options": [
+      "Opozvati aktivne sesije role web-app-role (Deny sa uslovom aws:TokenIssueTime)",
+      "Izolovati instancu i-0abc123def4567890 uz očuvanje dokaza i istražiti kako su kredencijali izvučeni (npr. SSRF i IMDSv1)",
+      "Deaktivirati access ključ IAM korisnika web-app-role",
+      "Odmah terminirati instancu da napadač izgubi pristup"
+    ],
+    "answer": [0, 1],
+    "explain": "Kredencijali instance profila (ASIA…, AssumedRole, principalId sa ID-jem instance) korišteni su sa adrese van AWS-a. Privremeni kredencijali važe do isteka, pa se opozivaju politikom koja odbija tokene izdate prije trenutka opoziva. Izvor je instanca, pa se ona izoluje i istražuje, a IMDSv2 smanjuje rizik SSRF krađe. IAM korisnika i dugoročnog ključa ovdje nema, a terminiranje uništava memoriju i dokaze."
+  }
+]

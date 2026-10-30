@@ -1,0 +1,241 @@
+[
+  {
+    "obj": "4.1",
+    "q": "Napisao si novo Falco pravilo u /root/falco/kurs_rules.yaml koje koristi makro open_write. Pokrećeš falco -V /root/falco/kurs_rules.yaml i dobijaš grešku da makro nije definisan. Šta je ispravno?",
+    "options": [
+      "Ukloniti makro i prepisati uslov ručno, jer Falco ne podržava makroe u lokalnim fajlovima",
+      "Validirati zajedno sa zvaničnim fajlom, prvo njega: falco -V /etc/falco/falco_rules.yaml -V /root/falco/kurs_rules.yaml",
+      "Dodati override: condition: append u pravilo",
+      "Pokrenuti Falco u replay modu, jer -V ne razumije makroe"
+    ],
+    "answer": 1,
+    "explain": "Makro open_write je definisan u falco_rules.yaml. Fajl koji ga koristi mora se učitati poslije fajla koji ga definiše, i pri validaciji i u radu. Makroi rade u svim fajlovima; override ne rješava nedefinisan makro."
+  },
+  {
+    "obj": "4.1",
+    "q": "U labu nema eBPF privilegija, a treba provjeriti da li pravilo „Read sensitive file untrusted“ hvata događaje iz snimka read-sensitive-file-untrusted.scap. Koja komanda to radi?",
+    "options": [
+      "falco -o engine.kind=modern_ebpf -r /etc/falco/falco_rules.yaml < /opt/kurs/falco-traces/read-sensitive-file-untrusted.scap",
+      "falco -V /opt/kurs/falco-traces/read-sensitive-file-untrusted.scap",
+      "falco -o engine.kind=replay -o engine.replay.capture_file=/opt/kurs/falco-traces/read-sensitive-file-untrusted.scap -r /etc/falco/falco_rules.yaml",
+      "falco -l \"Read sensitive file untrusted\" /opt/kurs/falco-traces/read-sensitive-file-untrusted.scap"
+    ],
+    "answer": 2,
+    "explain": "Replay engine čita .scap snimak umjesto živog kernela; fajl se zadaje ključem engine.replay.capture_file. -V validira fajlove pravila, -l samo opisuje pravilo, a modern_ebpf ne čita snimak sa stdin."
+  },
+  {
+    "obj": "4.1",
+    "q": "Tim želi dodati interni alat kurs-healthcheck u listu user_known_shell_spawn_binaries iz zvaničnih pravila, tako da sljedeći update pravila ne pregazi izmjenu. Šta je ispravno?",
+    "options": [
+      "U /etc/falco/rules.d/ dodati listu sa istim imenom, items: [kurs-healthcheck] i override: items: append",
+      "Urediti listu direktno u /etc/falco/falco_rules.yaml",
+      "Dodati listu sa append: true u falco_rules.yaml",
+      "Ugasiti pravilo Run shell untrusted u falco.yaml"
+    ],
+    "answer": 0,
+    "explain": "Zvanični fajl se ne mijenja jer ga update pregazi. Lokalni fajl, učitan kasnije, dodaje stavke kroz override sa items: append. append: true je zastario, a gašenje pravila uklanja i detekciju."
+  },
+  {
+    "obj": "4.1",
+    "q": "Pravilo ima izuzetak sa fields: [proc.name, fd.name], comps: [=, =] i values: [[useradd, /etc/passwd], [chpasswd, /etc/shadow]]. Šta Falco dodaje uslovu?",
+    "options": [
+      "and (proc.name in (useradd, chpasswd) or fd.name in (/etc/passwd, /etc/shadow))",
+      "and not proc.name in (useradd, chpasswd) and not fd.name in (/etc/passwd, /etc/shadow)",
+      "or (proc.name=useradd and fd.name=/etc/passwd)",
+      "and not ((proc.name=useradd and fd.name=/etc/passwd) or (proc.name=chpasswd and fd.name=/etc/shadow))"
+    ],
+    "answer": 3,
+    "explain": "Svaka torka postaje and-izraz nad svim poljima, torke se spajaju sa or, a cjelina ide u jedan not (...). Varijanta sa dva odvojena not in bi isključila svaki useradd bez obzira na fajl, što je šira rupa od zamišljene."
+  },
+  {
+    "obj": "4.1",
+    "q": "Pravilo „Run shell untrusted“ pravi šum zbog procesa /opt/backup/bin/agent koji legitimno pokreće sh. Koji izuzetak napadaču najteže zloupotrijebiti?",
+    "options": [
+      "proc.pname = agent",
+      "proc.pname = agent i proc.aname[2] = systemd",
+      "Izuzetak po putanji izvršnog fajla roditelja i komandi, npr. proc.pexepath = /opt/backup/bin/agent i proc.cmdline startswith \"sh -c /opt/backup/\"",
+      "Spustiti prioritet pravila na DEBUG"
+    ],
+    "answer": 2,
+    "explain": "Ime procesa napadač lako bira sam. Putanja izvršnog fajla roditelja uz očekivanu komandu sužava izuzetak na stvarni posao. Spuštanje prioriteta ne smanjuje šum nego sakriva i prave napade."
+  },
+  {
+    "obj": "4.1",
+    "q": "Falco pri učitavanju vlastitog pravila upozorava da pravilo nije ograničeno na tipove događaja. Uslov je proc.name = nc and fd.sport = 4444. Zašto je to problem i kako ga rješavaš?",
+    "options": [
+      "Pravilo se provjerava za svaki syscall, što troši CPU; dodaje se evt.type (npr. evt.type in (connect, accept, accept4)) ili makro koji ga sadrži",
+      "Upozorenje je kozmetičko; ignoriše se sa -o priority=error",
+      "fd.sport nije dozvoljeno polje u uslovu, samo u outputu",
+      "Pravila bez evt.type ne mogu imati tags"
+    ],
+    "answer": 0,
+    "explain": "Falco indeksira pravila po tipu događaja. Bez evt.type pravilo ulazi u provjeru za sve događaje i usporava engine. Ograniči ga na relevantne syscalle; warn_evttypes postoji upravo da bi upozorio na to."
+  },
+  {
+    "obj": "4.1",
+    "q": "Alarmi treba da idu u Wazuh. Falco radi na istom hostu kao Wazuh manager. Koja je najjednostavnija ispravna kombinacija?",
+    "options": [
+      "program_output sa programom /var/ossec/bin/wazuh-logtest",
+      "http_output prema portu 1514 Wazuh managera",
+      "syslog_output i Wazuh pravilo nad /var/log/auth.log",
+      "json_output: true i file_output u /var/log/falco-events.json, a u ossec.conf localfile sa log_format json za taj fajl"
+    ],
+    "answer": 3,
+    "explain": "Wazuh čita JSON fajl kroz localfile i JSON dekoder sam raspakuje polja (rule, priority, output_fields). wazuh-logtest je alat za testiranje, ne za ingest, a port 1514 služi za agente, ne za HTTP."
+  },
+  {
+    "obj": "4.1",
+    "q": "Želiš ugasiti sva pravila sa tagom maturity_incubating, ali bez diranja ijednog fajla pravila. Gdje to radiš?",
+    "options": [
+      "U falco.yaml, ključ rules sa - disable: tag: maturity_incubating",
+      "U falco_rules.yaml, brisanjem tih pravila",
+      "Flagom -p maturity_incubating",
+      "U output pravila, dodavanjem %tags"
+    ],
+    "answer": 0,
+    "explain": "Konfiguracioni ključ rules u falco.yaml gasi i pali pravila po imenu (sa wildcardom) ili tagu, poslije učitavanja svih fajlova i overridea. -p je zastario flag za dodatni output, ne za filtriranje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Replay snimka napravljenog prije tri dana daje alarm. Koje vrijeme stoji u polju time JSON alarma?",
+    "options": [
+      "Vrijeme pokretanja replaya",
+      "Vrijeme kad je Falco upisao alarm u fajl",
+      "Vrijeme događaja zabilježeno u snimku",
+      "Vrijeme kreiranja .scap fajla na disku"
+    ],
+    "answer": 2,
+    "explain": "Falco uzima vremensku oznaku događaja iz snimka. Zato replay starog snimka daje tačnu vremensku liniju za istragu, ne vrijeme analize."
+  },
+  {
+    "obj": "4.1",
+    "q": "Novo pravilo ne daje nijedan alarm nad snimkom write-etc.scap, iako znaš da je u snimku upis u /etc. Šta je najbolji sljedeći korak?",
+    "options": [
+      "Podići prioritet pravila na CRITICAL",
+      "Privremenim pravilom koje ispisuje sve evt.type in (open, openat, openat2) sa evt.is_open_write=true vidjeti koji proces i putanja su zaista u snimku",
+      "Prebaciti rule_matching na all",
+      "Obrisati falco_rules.yaml iz -r da ne smeta"
+    ],
+    "answer": 1,
+    "explain": "Široko debug pravilo pokazuje šta snimak stvarno sadrži (ime procesa, privremeni fajl, rename), pa vidiš koji dio uslova ne prolazi. Prioritet ne utiče na poklapanje, a bez falco_rules.yaml nestaju makroi koje pravilo koristi."
+  },
+  {
+    "obj": "4.1",
+    "q": "Dva pravila se poklapaju sa istim događajem, a vidiš alarm samo za prvo. Šta je razlog?",
+    "options": [
+      "Falco deduplicira alarme po procesu",
+      "Drugo pravilo ima niži prioritet",
+      "Drugo pravilo nema tags",
+      "Podrazumijevani rule_matching: first zaustavlja provjeru na prvom poklopljenom pravilu"
+    ],
+    "answer": 3,
+    "explain": "Sa rule_matching: first Falco za dati događaj prijavljuje prvo pravilo koje se poklopi. rule_matching: all prijavljuje sva, uz cijenu performansi."
+  },
+  {
+    "obj": "4.1",
+    "q": "Želiš zvaničnom pravilu Run shell untrusted promijeniti prioritet na CRITICAL i output, a uslov ostaviti nepromijenjen. Koji je ispravan blok override?",
+    "options": [
+      "override: { priority: replace, output: replace }",
+      "override: { priority: append, output: append }",
+      "override: { condition: replace }",
+      "append: true"
+    ],
+    "answer": 0,
+    "explain": "priority se može samo zamijeniti (replace); output podržava i append i replace, a ovdje ga zamjenjuješ. condition ostaje netaknut jer nije naveden. append: true je zastario."
+  },
+  {
+    "obj": "4.1",
+    "q": "Analitičar pita zašto je alarm pokazao user.name=root, a znaš da se u sistem prijavio korisnik marko pa koristio sudo. Koje polje treba u outputu da bi se vidjelo ko je pokrenuo sesiju?",
+    "options": [
+      "proc.pname",
+      "user.loginuid",
+      "container.id",
+      "evt.res"
+    ],
+    "answer": 1,
+    "explain": "loginuid se postavlja pri prijavi i ne mijenja se sa sudo/su, pa pokazuje originalnog korisnika (njegov UID). user.name je efektivni korisnik procesa, ovdje root."
+  },
+  {
+    "obj": "4.1",
+    "q": "Vlastito Falco pravilo hvata pokretanje shella iz nginx procesa. Kako ga mapiraš na ATT&CK da bi se pojavilo u istom filteru u SIEM-u kao Wazuh i Sigma detekcije za istu tehniku?",
+    "options": [
+      "U desc napišeš „MITRE“",
+      "Postaviš priority: ALERT",
+      "U tags dodaš taktiku i tehniku, npr. mitre_execution, T1059.004, a u SIEM-u filtriraš po tagu",
+      "Dodaš source: mitre"
+    ],
+    "answer": 2,
+    "explain": "Zvanična pravila nose ATT&CK u tags (mitre_<taktika>, T<ID>), i ti tagovi stižu u JSON alarm. source određuje izvor događaja (syscall, k8s_audit), ne mapiranje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Pravilo Read sensitive file untrusted okida se svake noći kad legitimni backup proces (pokreće ga cron) čita /etc/shadow. Pravilo ima kuku user_known_read_sensitive_files_activities sa (never_true). Šta radiš?",
+    "options": [
+      "Ugasiš pravilo",
+      "Dodaš /etc/shadow u neku listu izuzetaka svih pravila",
+      "Spustiš priority u falco.yaml na ERROR",
+      "Lokalno zamijeniš makro: condition: (proc.exepath = /usr/local/bin/kurs-backup and proc.pname = cron) uz override: condition: replace"
+    ],
+    "answer": 3,
+    "explain": "user_known_* makroi su predviđeni za ovakvo podešavanje: zamijeniš never_true uskim uslovom koji opisuje legitimnu aktivnost. Gašenje ili izuzetak za fajl ukidaju detekciju za sve, a viši prag u falco.yaml utišava i druga pravila."
+  },
+  {
+    "obj": "4.1",
+    "q": "Falco treba slati alarme u Slack, Loki i Elasticsearch istovremeno. Šta je uobičajena arhitektura?",
+    "options": [
+      "Tri instance Falca, svaka sa svojim izlazom",
+      "http_output prema Falcosidekicku, koji prosljeđuje alarme na više odredišta",
+      "file_output u tri fajla",
+      "syslog_output, pa Slack čita syslog"
+    ],
+    "answer": 1,
+    "explain": "Falcosidekick prima alarme preko HTTP-a i fan-out ih šalje na desetine odredišta. Više instanci Falca bi tri puta hvatalo iste syscalle."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari Falco element sa onim što radi.",
+    "options": [
+      "macro",
+      "list",
+      "exceptions",
+      "override: items: append",
+      "required_engine_version"
+    ],
+    "targets": [
+      "Imenovan niz vrijednosti za upotrebu uz in",
+      "Imenovan dio uslova koji koristi više pravila",
+      "Strukturisane torke polja i vrijednosti koje postaju and not (...)",
+      "Dodaje stavke postojećoj listi iz ranije učitanog fajla",
+      "Odbija učitavanje fajla na prestarom Falcu",
+      "Određuje kuda idu alarmi"
+    ],
+    "answer": [1, 0, 2, 3, 4],
+    "explain": "Makro je dio uslova, lista niz vrijednosti, exceptions strukturisani izuzeci, override append proširuje postojeći element, a required_engine_version štiti od nekompatibilne verzije. Izlaze određuje falco.yaml, ne nijedan od navedenih elemenata."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Poredaj korake uvođenja novog Falco pravila, od prvog.",
+    "options": [
+      "Pustiti pravilo u produkciju sa praćenjem broja alarma",
+      "Napisati pravilo u lokalnom fajlu uz tags za ATT&CK",
+      "Pokrenuti replay nad pozitivnim i negativnim snimcima",
+      "Validirati sintaksu sa falco -V zajedno sa zvaničnim fajlom",
+      "Dodati izuzetke za legitimne procese uočene u testu"
+    ],
+    "answer": [1, 3, 2, 4, 0],
+    "explain": "Prvo pravilo, pa validacija sintakse, test nad snimcima, podešavanje izuzetaka na osnovu rezultata testa i tek onda produkcija uz praćenje šuma."
+  },
+  {
+    "type": "spot",
+    "obj": "4.1",
+    "q": "Pravilo se učitava bez greške, ali kad uradiš kubectl exec -it web -- bash, alarma nema. Klikni red koji je uzrok.",
+    "snippet": "- list: kurs_shell_binaries\n  items: [bash, sh, zsh, dash, ash]\n\n- macro: kurs_container\n  condition: (container.id = host)\n\n- rule: Shell u kurs kontejneru\n  desc: Interaktivni shell pokrenut u kontejneru aplikacije kurs\n  condition: >\n    spawned_process and kurs_container\n    and proc.name in (kurs_shell_binaries)\n    and proc.tty != 0\n  output: \"Shell u kontejneru (user=%user.name container=%container.id cmd=%proc.cmdline)\"\n  priority: WARNING",
+    "lang": "yaml",
+    "answer": [
+      4
+    ],
+    "explain": "container.id = host važi za procese na samom hostu, van kontejnera, pa makro isključuje upravo kontejnere. Treba (container.id != host), kao u ugrađenom makrou container. Lista, spawned_process i proc.tty != 0 (interaktivni terminal) su ispravni."
+  }
+]

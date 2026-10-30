@@ -1,0 +1,249 @@
+[
+  {
+    "obj": "3.2",
+    "q": "In a selection you have eventSource: iam.amazonaws.com and eventName with the list [CreateAccessKey, CreateLoginProfile]. What is the logic?",
+    "options": [
+      "eventSource AND (eventName = CreateAccessKey OR CreateLoginProfile)",
+      "eventSource OR eventName",
+      "eventSource AND eventName = CreateAccessKey AND CreateLoginProfile",
+      "The rule is invalid because the list must be in a separate identifier"
+    ],
+    "answer": 0,
+    "explain": "Fields in a map are joined with AND, and values in the list of one field with OR. For AND over a list there is the all modifier."
+  },
+  {
+    "obj": "3.2",
+    "q": "You need to detect a command that contains both 'curl' and '| sh', in any order. Which notation is correct?",
+    "options": [
+      "CommandLine: '*curl*| sh*'",
+      "CommandLine|contains|all: ['curl', '| sh']",
+      "CommandLine|contains: ['curl', '| sh']",
+      "CommandLine|re: 'curl&| sh'"
+    ],
+    "answer": 1,
+    "explain": "contains|all requires all values (AND). Without all, the list is OR, and the wildcard notation imposes an order."
+  },
+  {
+    "obj": "3.2",
+    "q": "A K8s audit rule should exclude failed requests (HTTP code 400 and above). Which filter?",
+    "options": [
+      "responseStatus.code: '>=400'",
+      "responseStatus.code|re: '^4'",
+      "responseStatus.code|gte: 400",
+      "responseStatus.code|exists: false"
+    ],
+    "answer": 2,
+    "explain": "The numeric modifiers gt, gte, lt, lte compare numbers. The string '>=400' would be matched literally, and the regex ^4 misses 5xx."
+  },
+  {
+    "obj": "3.2",
+    "q": "What does condition: selection_exec and not 1 of filter_* mean?",
+    "options": [
+      "The condition is invalid because not cannot be used with 1 of",
+      "Fire if exactly one filter matches",
+      "Fire if all filters match",
+      "Fire if selection_exec matches and none of the identifiers starting with filter_ match"
+    ],
+    "answer": 3,
+    "explain": "1 of filter_* is an OR over all filter_ identifiers, and not negates it. This is the standard SigmaHQ pattern of selection minus the known good."
+  },
+  {
+    "obj": "3.2",
+    "q": "sigma convert -t splunk rule.yml reports that the backend requires a processing pipeline. What does the pipeline do?",
+    "options": [
+      "Adapts the rule to the environment: maps field names and adds conditions such as an index or sourcetype",
+      "Changes the SPL syntax",
+      "Runs the rule against logs",
+      "Validates the YAML"
+    ],
+    "answer": 0,
+    "explain": "The backend knows the syntax of the target language, the pipeline knows your environment (fields, indexes, tables). --without-pipeline is for practice, because the query uses the field names from the rule."
+  },
+  {
+    "obj": "3.2",
+    "q": "Which transformation in a pipeline YAML renames userIdentity.arn to user_arn for Splunk?",
+    "options": [
+      "add_condition",
+      "field_name_mapping",
+      "drop_detection_item",
+      "set_state"
+    ],
+    "answer": 1,
+    "explain": "field_name_mapping changes field names. add_condition adds a condition (e.g. index=aws), and rule_conditions restricts the transformation to a specific logsource."
+  },
+  {
+    "obj": "3.2",
+    "q": "You need a password spraying detection: one IP address, 10 or more distinct users in 10 minutes. Which correlation type?",
+    "options": [
+      "event_count with group-by user",
+      "temporal_ordered",
+      "value_count with group-by src_ip, field: user, gte: 10",
+      "event_count with timespan 10"
+    ],
+    "answer": 2,
+    "explain": "value_count counts distinct values of a field per group. event_count counts events, so even 10 attempts against the same account would fire. timespan requires a unit (10m)."
+  },
+  {
+    "obj": "3.2",
+    "q": "Converting a temporal_ordered correlation with -t splunk returns an error that the type is not supported. What is the correct conclusion?",
+    "options": [
+      "The rule is syntactically invalid",
+      "You need to add --without-pipeline",
+      "Sigma does not support temporal_ordered",
+      "The backend does not support that type; use another type (e.g. temporal) or write the correlation in the target language"
+    ],
+    "answer": 3,
+    "explain": "The specification defines temporal_ordered, but support depends on the backend. In the lab, splunk does not support temporal_ordered, and kusto supports no correlations at all."
+  },
+  {
+    "obj": "3.2",
+    "q": "You want to silence a SigmaHQ CloudTrail rule for the Terraform CI role, but without modifying the rule itself (you update it from upstream). What do you use?",
+    "options": [
+      "A Sigma meta filter (filter: rules: [id], selection, condition: not selection) and sigma convert --filter",
+      "You delete the rule from the repo",
+      "You lower the level to low",
+      "You add the tag tlp.white"
+    ],
+    "answer": 0,
+    "explain": "A meta filter is a separate file that is applied to the referenced rules at conversion time; its condition is ANDed, so you write the exclusion as not selection."
+  },
+  {
+    "obj": "3.3",
+    "q": "A SigmaHQ K8s rule using objectRef.resource never fires against an audit log in Zircolite, even though the log contains exec requests. What is the most likely cause?",
+    "options": [
+      "Zircolite does not support JSON",
+      "Zircolite flattens nested fields to the leaf name (resource), so the field objectRef.resource does not exist; you need a mapping in the config",
+      "The rule is deprecated",
+      "The K8s audit log has no verb field"
+    ],
+    "answer": 1,
+    "explain": "--keepflat shows the actual column names. The mapping objectRef.resource: objectRef.resource in the Zircolite config keeps the full name. A rule that silently stays quiet is a classic field-mapping problem."
+  },
+  {
+    "obj": "3.3",
+    "q": "Why does a rule need a negative test (true_negative) in addition to a positive one?",
+    "options": [
+      "So that Zircolite runs faster",
+      "Because sigma check requires it",
+      "The negative test protects the filter: if someone removes or breaks the exclusion, the test fails before the false positives come back",
+      "So that the rule gets the stable status"
+    ],
+    "answer": 2,
+    "explain": "The positive test proves the rule sees the attack, the negative one that it does not alert on the known good. Together they prevent regressions in both directions."
+  },
+  {
+    "obj": "3.3",
+    "q": "Which filter for excluding a CI process is the most resistant to abuse?",
+    "options": [
+      "userAgent|contains: 'terraform'",
+      "eventName|startswith: 'Update'",
+      "sourceIPAddress|cidr: '0.0.0.0/0'",
+      "userIdentity.arn|endswith: ':assumed-role/terraform-deploy/ci'"
+    ],
+    "answer": 3,
+    "explain": "A filter on a stable identity (role ARN) cannot easily be faked by an attacker, unlike a user agent. The other options are too broad."
+  },
+  {
+    "obj": "3.3",
+    "q": "On the Pyramid of Pain, which indicator is hardest for the attacker to evade?",
+    "options": [
+      "TTPs, e.g. stopping CloudTrail before exfiltration",
+      "The attacker's IP address",
+      "The SHA-256 hash of a binary",
+      "The C2 server domain"
+    ],
+    "answer": 0,
+    "explain": "The attacker changes a hash, IP or domain cheaply. Behavioral detection (TTPs) forces them to change how they operate, which is the most expensive."
+  },
+  {
+    "obj": "3.3",
+    "q": "A new rule has passed its tests. What is the next step before it starts creating tickets for analysts?",
+    "options": [
+      "Immediately set status stable",
+      "Silent rollout in the SIEM for 1-2 weeks, measuring the number of alerts and false positives",
+      "Deleting the falsepositives field",
+      "Converting to all backends at once"
+    ],
+    "answer": 1,
+    "explain": "Tests prove the logic, but not the noise in the real environment. A silent rollout provides data for tuning; only then does the rule go to production with a runbook."
+  },
+  {
+    "obj": "3.3",
+    "q": "In a detection-as-code CI pipeline, what does the step sigma check --fail-on-issues rules/ do?",
+    "options": [
+      "Runs the rules against production logs",
+      "Deploys the rules to Splunk",
+      "Fails the build on rule errors, condition errors and validator warnings (e.g. duplicate id)",
+      "Generates an ATT&CK layer"
+    ],
+    "answer": 2,
+    "explain": "check validates syntax, conditions and best practices. Without --fail-on-issues, warnings do not fail the build. Tests against events and deployment are separate steps."
+  },
+  {
+    "obj": "3.3",
+    "q": "Which sequence of rule statuses matches the Sigma lifecycle?",
+    "options": [
+      "deprecated -> experimental -> stable",
+      "stable -> test -> experimental",
+      "test -> unsupported -> stable",
+      "experimental -> test -> stable, and finally deprecated with a related link to the replacement"
+    ],
+    "answer": 3,
+    "explain": "A new rule is experimental, after tuning test, after a long quiet run stable. deprecated marks a replaced rule and is linked via the related field."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Match the requirement with the Sigma modifier.",
+    "options": [
+      "The source address is in the internal network 10.0.0.0/8",
+      "The errorCode field does not exist in the event",
+      "The comparison must be case-sensitive",
+      "The value appears anywhere in a base64-encoded string"
+    ],
+    "targets": [
+      "|base64offset|contains",
+      "|exists: false",
+      "|cidr",
+      "|cased",
+      "|windash"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "cidr for IP ranges, exists: false for a missing field, cased for case-sensitive comparison, base64offset|contains for a value inside base64 text. windash is for Windows command-line switches."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Order the steps of a detection CI pipeline, starting with the first.",
+    "options": [
+      "Deploy savedsearches.conf to Splunk from the default branch",
+      "Conversion with pipeline and filters (sigma convert)",
+      "sigma check --fail-on-issues",
+      "Rule unit tests (zircolite --test-rules)"
+    ],
+    "answer": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "First validation (cheap and fast), then tests against events, then conversion into an artifact, and only at the end deployment, from the main branch only."
+  },
+  {
+    "type": "spot",
+    "obj": "3.2",
+    "q": "The rule should catch command lines that contain both curl and '| sh', except when the process is started by apt-get. In testing it fires on almost every process. Mark the lines with an error.",
+    "snippet": "title: Script download executed in a shell\nid: 9b1e2c47-5d3a-4e8f-a6b0-2c7d9e1f4a53\nstatus: experimental\nlogsource:\n    product: linux\n    category: process_creation\ndetection:\n    selection:\n        CommandLine|contains:\n            - 'curl'\n            - '| sh'\n    filter_main_apt:\n        ParentImage|endswith: '/apt-get'\n    condition: selection or not filter_main_apt\nlevel: high",
+    "lang": "yaml",
+    "answer": [
+      8,
+      13
+    ],
+    "explain": "A list under contains is ORed by default, so the rule would fire on every curl; for both substrings you need CommandLine|contains|all. The condition selection or not filter_main_apt is true for every process whose parent is not apt-get, regardless of selection, which is why the rule fires almost always; the correct form is selection and not filter_main_apt."
+  }
+]

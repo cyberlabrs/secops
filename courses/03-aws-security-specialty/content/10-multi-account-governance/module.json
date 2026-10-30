@@ -1,0 +1,11 @@
+{
+  "title": "Multi-account governance: Organizations, Control Tower i root pristup",
+  "summary": "Dizajn organizacije po AWS SRA, Control Tower landing zone i kontrole, organization policies (SCP, RCP, declarative, AI opt-out, tag i backup), delegated administrator za sigurnosne servise i centralizovano upravljanje root pristupom sa break-glass procedurom.",
+  "minutes": 100,
+  "domain": 6,
+  "objectives": [
+    "6.1"
+  ],
+  "title_en": "Multi-account governance: Organizations, Control Tower, and root access",
+  "summary_en": "Organization design per the AWS SRA, Control Tower landing zone and controls, organization policies (SCP, RCP, declarative, AI opt-out, tag, and backup), delegated administrator for security services, and centralized root access management with a break-glass procedure."
+}

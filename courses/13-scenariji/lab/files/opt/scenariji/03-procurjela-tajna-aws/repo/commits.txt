@@ -1,0 +1,6 @@
+01|2026-09-28T10:02:00+02:00|Marko Petrović|marko.petrovic@kvadrat.ba|Početna verzija servisa za izvještaje
+02|2026-10-05T11:30:00+02:00|Jelena Ilić|jelena.ilic@kvadrat.ba|Dnevni izvještaj kupaca u Excel
+03|2026-10-12T13:58:00+02:00|Marko Petrović|marko.petrovic@kvadrat.ba|Brzi fix: export radi i sa laptopa
+04|2026-10-12T14:20:00+02:00|Marko Petrović|marko.petrovic@kvadrat.ba|CI: probni export job
+05|2026-10-13T09:12:00+02:00|Marko Petrović|marko.petrovic@kvadrat.ba|Očisti konfiguraciju, kredencijali iz okruženja
+06|2026-10-15T16:40:00+02:00|Jelena Ilić|jelena.ilic@kvadrat.ba|README: lokalno pokretanje

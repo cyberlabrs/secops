@@ -1,0 +1,302 @@
+[
+  {
+    "obj": "4.2",
+    "q": "The IAM role AppRole in account 111122223333 has an identity policy that allows s3:* on all resources. The account is in an OU with an attached SCP whose only statements are Allow ec2:* and Allow s3:GetObject. There is no bucket policy. The role attempts s3:PutObject in a bucket in the same account. What is the result?",
+    "options": [
+      "Allow, because the identity policy allows s3:*",
+      "Deny, because the SCP does not allow s3:PutObject, and the SCP sets the maximum permissions for principals in the account",
+      "Allow, because the SCP contains no explicit Deny",
+      "Deny, because the bucket has no bucket policy"
+    ],
+    "answer": 1,
+    "explain": "An SCP used as an allow list defines the maximum; an action that no SCP allows is implicitly denied regardless of the identity policy. An explicit Deny is not needed, and in the same account a bucket policy is not required if the identity policy grants the permission."
+  },
+  {
+    "obj": "4.2",
+    "q": "The IAM user marko in account 111122223333 has no identity policies. A bucket policy in the same account allows s3:GetObject for Principal arn:aws:iam::111122223333:user/marko. There are no SCPs or RCPs other than the defaults. What happens when marko calls GetObject?",
+    "options": [
+      "Deny, because every principal must have an identity policy",
+      "Deny, because the bucket policy must name the whole account as the principal",
+      "Deny, because a permissions boundary is also required",
+      "Allow, because in the same account an Allow in a resource policy that directly names the IAM user is sufficient"
+    ],
+    "answer": 3,
+    "explain": "In the same account the effective permissions are the union of the identity and resource policies, so a resource policy that names the user grants access even without an identity policy. A boundary is not required, and the principal can be a specific user."
+  },
+  {
+    "obj": "4.2",
+    "q": "The role DataRole has a permissions boundary that allows only dynamodb:*. A bucket policy in the same account allows s3:GetObject for Principal arn:aws:iam::111122223333:role/DataRole. An application that has assumed DataRole calls GetObject. What is the result?",
+    "options": [
+      "Deny, because the permission in the resource policy is granted to the role ARN, so it is limited by the implicit deny in the permissions boundary",
+      "Allow, because a resource policy in the same account always bypasses the boundary",
+      "Allow, because the boundary affects only IAM actions",
+      "Deny, because a bucket policy cannot name an IAM role"
+    ],
+    "answer": 0,
+    "explain": "When a resource policy names the role ARN, the request is made by that role's session, and an implicit deny in the boundary or session policy blocks it. Had the policy named the session ARN or an IAM user, the boundary would not block it."
+  },
+  {
+    "obj": "4.2",
+    "q": "The role Reader in account A (111122223333) has an identity policy that allows s3:GetObject on arn:aws:s3:::partner-data/*. The bucket partner-data is in account B and has no bucket policy. What is the result of the request and why?",
+    "options": [
+      "Allow, because the identity policy names the exact bucket ARN",
+      "Allow, if accounts A and B are not in the same organization",
+      "Deny, because for cross-account access the resource policy in account B must also allow the principal from account A",
+      "Deny, because S3 does not support cross-account access"
+    ],
+    "answer": 2,
+    "explain": "For a cross-account request AWS evaluates both accounts, and both evaluations must result in Allow: the identity policy in A and the resource policy in B. Without a bucket policy in B the request is implicitly denied; S3 does support cross-account access."
+  },
+  {
+    "obj": "4.2",
+    "q": "A Lambda function in account A reads objects from a bucket in account B. The bucket policy in B and the role's identity policy in A allow s3:GetObject. The objects are encrypted with an SSE-KMS customer managed key from account B. The Lambda function gets AccessDenied. Which solution fixes the problem with least privilege?",
+    "options": [
+      "Change the bucket encryption to SSE-C",
+      "Add s3:* to the bucket policy",
+      "Add kms:Decrypt for the role from A only to the identity policy in account A",
+      "Add kms:Decrypt for the role from A to the key policy of the key in B, and add kms:Decrypt on that key's ARN to the role's identity policy in A"
+    ],
+    "answer": 3,
+    "explain": "Cross-account KMS requires permission on both sides: the key policy in B must allow the role from A, and the identity policy in A must allow use of the key. The identity policy in A alone is not enough, s3:* is too broad, and SSE-C does not solve authorization."
+  },
+  {
+    "obj": "4.2",
+    "q": "The security team wants to guarantee that no S3 bucket in the organization's member accounts can be accessed by principals outside the organization, even if a team mistakenly writes a bucket policy with Principal \"*\". Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "An SCP that denies s3:PutBucketPolicy in all accounts",
+      "A resource control policy (RCP) at the organization root with a Deny for s3:* when aws:PrincipalOrgID is not the organization ID, with an exception for AWS service principals",
+      "An AWS Config rule that detects public buckets and sends an email",
+      "Manually changing all bucket policies with an aws:PrincipalOrgID condition"
+    ],
+    "answer": 1,
+    "explain": "An RCP centrally limits access to member account resources regardless of who accesses them, so even a badly written bucket policy cannot open access from outside. An SCP limits only principals inside the organization, Config only detects, and manual changes do not cover future buckets."
+  },
+  {
+    "obj": "4.2",
+    "q": "An SCP at the organization root denies ec2:RunInstances outside the eu-central-1 Region. An administrator in the management account successfully launches an instance in us-east-1. Why?",
+    "options": [
+      "SCPs do not affect principals in the management account",
+      "SCPs do not affect EC2",
+      "The administrator uses the root user, and root is never limited by an SCP",
+      "SCPs take effect only after 24 hours"
+    ],
+    "answer": 0,
+    "explain": "SCPs do not limit the management account, which is why workloads are not kept there. Root users of member accounts are limited by SCPs, and SCP enforcement is not delayed by 24 hours."
+  },
+  {
+    "obj": "4.2",
+    "q": "A company has hundreds of projects and adds new ones every month. Developers may stop and start only the EC2 instances of their own project. The project attribute comes from the IdP through IAM Identity Center. The security team does not want to change IAM policies for every new project. Which solution meets the requirements?",
+    "options": [
+      "Create a separate permission set for each project with the instance ARNs",
+      "Create an IAM group per project and add users manually",
+      "Enable attributes for access control in Identity Center and use one policy with the condition aws:ResourceTag/Project equals ${aws:PrincipalTag/Project}, with a Deny on changing tags",
+      "Create a separate VPC for each project and restrict access with security groups"
+    ],
+    "answer": 2,
+    "explain": "ABAC with session tags from the IdP and a PrincipalTag/ResourceTag comparison works for new projects without policy changes, and a Deny on tagging prevents bypassing it. A permission set or group per project is RBAC that grows with the number of projects, and security groups do not control the EC2 API."
+  },
+  {
+    "obj": "4.2",
+    "q": "An ABAC policy allows ec2:StopInstances when aws:ResourceTag/Project matches aws:PrincipalTag/Project. An auditor found that a developer can stop another project's instances. What is the MOST LIKELY flaw?",
+    "options": [
+      "The developer has the ec2:CreateTags permission and can change the Project tag on someone else's instance",
+      "The policy uses StringEquals instead of StringLike",
+      "The instances do not have IMDSv2",
+      "The developer has no MFA"
+    ],
+    "answer": 0,
+    "explain": "ABAC is secure only if the user cannot change the tags the decision is based on; the CreateTags permission allows changing the tag and taking over the resource. StringEquals is the correct operator, and IMDSv2 and MFA are unrelated to this flaw."
+  },
+  {
+    "obj": "4.2",
+    "q": "Developers must be able to create IAM roles for their Lambda functions themselves. No role they create may have permissions outside the DevBoundary policy, and developers must not be able to bypass this restriction. Which solution meets the requirements?",
+    "options": [
+      "An SCP that denies iam:CreateRole in the account",
+      "A session policy on every Lambda function invocation",
+      "IAM Access Analyzer unused access analyzer that reports overly broad roles once a month",
+      "Allow iam:CreateRole only with the condition iam:PermissionsBoundary equal to the DevBoundary ARN, and deny deleting the boundary and modifying the DevBoundary policy"
+    ],
+    "answer": 3,
+    "explain": "A permissions boundary with the iam:PermissionsBoundary condition ensures every new role has an upper limit, and a Deny on DeleteRolePermissionsBoundary and policy modification prevents bypassing it. An SCP would forbid role creation entirely, a session policy does not apply to a Lambda execution role, and Access Analyzer only reports after the fact."
+  },
+  {
+    "obj": "4.2",
+    "q": "A multi-tenant SaaS application uses one IAM role to access an S3 bucket in which each tenant has its own prefix. When processing a request, the application must get credentials that see only that tenant's prefix, without creating a role per tenant. Which solution meets the requirements?",
+    "options": [
+      "Create a separate bucket and role for each tenant",
+      "On AssumeRole, pass a session policy that allows s3:GetObject only on that tenant's prefix",
+      "Set a permissions boundary on the role with all prefixes",
+      "Add a per-object S3 ACL for each tenant"
+    ],
+    "answer": 1,
+    "explain": "A session policy dynamically narrows the permissions of a single role for a specific session. A role per tenant is exactly what should be avoided, a boundary is static for all sessions, and ACLs are legacy and hard to maintain."
+  },
+  {
+    "obj": "4.2",
+    "q": "A bucket with payroll data must be accessible only through the S3 gateway VPC endpoint vpce-0a1b2c3d4e5f67890. Analysts use Athena queries over this bucket, and these must keep working. Which bucket policy meets the requirement?",
+    "options": [
+      "Deny s3:* when aws:SourceIp is not the VPC CIDR",
+      "Allow s3:* only for Principal vpce-0a1b2c3d4e5f67890",
+      "Deny s3:* when aws:SourceVpce is not vpce-0a1b2c3d4e5f67890, with the condition BoolIfExists aws:ViaAWSService = false",
+      "Deny s3:* when aws:SecureTransport is not true"
+    ],
+    "answer": 2,
+    "explain": "aws:SourceVpce restricts access to the endpoint, and the exception via aws:ViaAWSService lets through requests that Athena sends on the user's behalf. aws:SourceIp does not carry the private IP through an endpoint, an endpoint is not a principal, and SecureTransport does not restrict the network path."
+  },
+  {
+    "obj": "4.2",
+    "q": "Analysts may read objects from the data lake bucket only through Amazon Athena queries, not directly through the S3 API. Which condition in the identity policy for s3:GetObject meets the requirement?",
+    "options": [
+      "aws:SourceVpce equal to Athena's endpoint",
+      "ForAnyValue:StringEquals aws:CalledVia = athena.amazonaws.com",
+      "aws:PrincipalIsAWSService = true",
+      "aws:SourceAccount equal to Athena's account"
+    ],
+    "answer": 1,
+    "explain": "aws:CalledVia contains the services that sent the request on the principal's behalf, so the permission applies only when the call comes through Athena. PrincipalIsAWSService is for service principals, not for a user who uses Athena, and SourceVpce and SourceAccount do not describe this chain."
+  },
+  {
+    "obj": "4.2",
+    "q": "The platform team wants the payments team to be able to pass (iam:PassRole) to services only the roles intended for that team, including future roles, without changing the policy for every new role. Which solution meets the requirement?",
+    "options": [
+      "Create the team's roles under the IAM path /app/payments/ and allow iam:PassRole on arn:aws:iam::111122223333:role/app/payments/*",
+      "Allow iam:PassRole on * with an SCP that restricts it",
+      "List every role's ARN in the policy and update it for every new role",
+      "Use a session policy on every deployment"
+    ],
+    "answer": 0,
+    "explain": "An IAM path groups roles and allows a wildcard in the ARN, so new roles under the same path are automatically included in the permission. PassRole on * violates least privilege, listing ARNs requires constant maintenance, and a session policy does not solve team-level PassRole control."
+  },
+  {
+    "obj": "4.2",
+    "q": "On-premises servers must send backups to S3 every night. The security policy forbids long-lived access keys, and the company has its own PKI infrastructure and X.509 certificates on the servers. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "An IAM user with an access key rotated every 30 days through Secrets Manager",
+      "A Cognito identity pool with guest access",
+      "An S3 presigned URL generated manually every day",
+      "IAM Roles Anywhere with a trust anchor on the corporate CA, a profile that allows the backup role, and the credential helper on the servers"
+    ],
+    "answer": 3,
+    "explain": "Roles Anywhere exchanges an X.509 certificate for temporary credentials without long-lived keys and uses the existing PKI. A rotated access key is still long-lived, guest Cognito access is insecure, and manual presigned URLs require constant work."
+  },
+  {
+    "obj": "4.2",
+    "q": "A healthcare application has complex rules: a doctor sees only the records of their own department, and confidential records only with a special clearance, and the rules are currently scattered across the code of several microservices. The company wants centralized and auditable authorization for application users. Which solution meets the requirements?",
+    "options": [
+      "Create an IAM role for each doctor",
+      "Use S3 bucket policies for each record",
+      "Amazon Verified Permissions with Cedar policies in a policy store, which the microservices call through IsAuthorized",
+      "IAM Access Analyzer custom policy checks"
+    ],
+    "answer": 2,
+    "explain": "Verified Permissions is designed for authorization inside an application, with Cedar policies that support RBAC and ABAC and record decisions. IAM roles and bucket policies are for AWS resources, and Access Analyzer checks IAM policies, not application decisions."
+  },
+  {
+    "obj": "4.2",
+    "q": "A developer gets the error: \"User: arn:aws:sts::111122223333:assumed-role/DevRole/ana is not authorized to perform: s3:GetObject on resource ... with an explicit deny in a resource-based policy\". Where should they look FIRST?",
+    "options": [
+      "The SCP on the account's OU",
+      "The bucket's bucket policy (resource-based policy) and its Deny statement",
+      "The permissions boundary of the DevRole role",
+      "The identity policies of the DevRole role"
+    ],
+    "answer": 1,
+    "explain": "The message explicitly states that the reason is an explicit deny in a resource-based policy, and for an S3 object that is the bucket policy. For an SCP, boundary, or identity policy, the message would name that policy type."
+  },
+  {
+    "obj": "4.2",
+    "q": "The security team wants the CI/CD pipeline to automatically stop any Terraform plan in which a new version of an IAM policy grants more access than the current version in production. Which solution meets the requirement?",
+    "options": [
+      "The IAM Access Analyzer custom policy check CheckNoNewAccess in a pipeline step",
+      "IAM Policy Simulator run manually before every release",
+      "IAM Access Analyzer external access analyzer",
+      "The AWS Config rule iam-policy-no-statements-with-admin-access"
+    ],
+    "answer": 0,
+    "explain": "CheckNoNewAccess compares the new policy with a reference and returns FAIL if it grants additional access, so it is suitable for an automated gate. The Simulator is manual, the external access analyzer looks at sharing outside the zone of trust, and the Config rule detects only admin access after deployment."
+  },
+  {
+    "obj": "4.2",
+    "q": "A company wants to find all S3 buckets, KMS keys, IAM roles, and SQS queues across the organization that are accessible to principals outside the organization, and then remove permissions that roles have not used in the last 90 days. Which TWO IAM Access Analyzer features should be used? (Choose TWO.)",
+    "options": [
+      "External access analyzer with the organization as the zone of trust",
+      "Policy validation",
+      "Unused access analyzer",
+      "IAM Policy Simulator in custom mode",
+      "CheckNoPublicAccess for every identity policy"
+    ],
+    "answer": [0, 2],
+    "explain": "The external access analyzer finds resources shared outside the zone of trust (the organization), and the unused access analyzer finds unused roles, keys, and permissions. Policy validation checks grammar, the Simulator is not part of Access Analyzer, and CheckNoPublicAccess is for resource policies."
+  },
+  {
+    "obj": "4.2",
+    "type": "order",
+    "q": "Order the steps AWS uses to evaluate a request within a single account, from first to last.",
+    "options": [
+      "Check the principal's permissions boundary",
+      "Check whether the SCPs of the principal's account allow the action",
+      "Look for an explicit Deny in all applicable policies",
+      "Check the session policy (if the principal is a session)",
+      "Check whether the RCPs of the resource owner's account allow the action",
+      "Check the resource-based policy",
+      "Check the identity-based policies"
+    ],
+    "answer": [2, 4, 1, 5, 6, 0, 3],
+    "explain": "AWS first looks for an explicit Deny in all policies, then checks the RCP, then the SCP, the resource-based policy, the identity policies, the permissions boundary, and finally the session policy. Guardrail steps can only deny a request, never allow it."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Match the requirement with the condition key that addresses it.",
+    "options": [
+      "The bucket may be used by all accounts in our organization, including future ones.",
+      "Requests to the bucket may come only through a specific VPC endpoint.",
+      "Deny any request to the bucket that did not go over HTTPS.",
+      "A user may manage only resources with the same Team tag as theirs.",
+      "The CostCenter tag must be sent when creating a resource.",
+      "Allow requests from corporate public IP addresses over the internet."
+    ],
+    "targets": [
+      "aws:SecureTransport",
+      "aws:RequestTag/CostCenter",
+      "aws:SourceIp",
+      "aws:PrincipalOrgID",
+      "aws:ResourceTag/Team = ${aws:PrincipalTag/Team}",
+      "aws:SourceVpce",
+      "aws:CalledVia"
+    ],
+    "answer": [3, 5, 0, 4, 1, 2],
+    "explain": "PrincipalOrgID covers all current and future accounts of the organization, SourceVpce restricts the endpoint, SecureTransport enforces TLS, comparing ResourceTag and PrincipalTag is ABAC, RequestTag checks the tags in a create request, and SourceIp covers public addresses. CalledVia is a distractor."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Match the mechanism with the description that fits it exactly.",
+    "options": [
+      "Service control policy (SCP)",
+      "Resource control policy (RCP)",
+      "Permissions boundary",
+      "Session policy",
+      "Role trust policy"
+    ],
+    "targets": [
+      "Limits a session obtained through AssumeRole for one call",
+      "Determines who may assume the role",
+      "Grants permissions to an IAM user",
+      "Maximum permissions for principals of member accounts",
+      "Maximum access to member account resources, including for external principals",
+      "Maximum permissions for a single IAM user or role"
+    ],
+    "answer": [3, 4, 5, 0, 1],
+    "explain": "An SCP limits principals, an RCP limits resources (including external access), a boundary limits one user or role, a session policy limits one session, and a trust policy determines who may assume the role. None of the first four mechanisms grants permissions."
+  },
+  {
+    "obj": "4.2",
+    "type": "spot",
+    "q": "The CI role should only: update the code of the app-* Lambda functions, READ artifacts from the acme-artifacts bucket, and pass (PassRole) only the app-lambda-exec role. Click the lines that violate least privilege.",
+    "lang": "json",
+    "snippet": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\"Effect\": \"Allow\", \"Action\": [\"lambda:UpdateFunctionCode\", \"lambda:GetFunction\"],\n     \"Resource\": \"arn:aws:lambda:eu-central-1:111122223333:function:app-*\"},\n    {\"Effect\": \"Allow\", \"Action\": \"s3:*\",\n     \"Resource\": \"arn:aws:s3:::acme-artifacts/*\"},\n    {\"Effect\": \"Allow\", \"Action\": \"iam:PassRole\",\n     \"Resource\": \"*\",\n     \"Condition\": {\"StringEquals\": {\"iam:PassedToService\": \"lambda.amazonaws.com\"}}}\n  ]\n}",
+    "answer": [5, 8],
+    "explain": "Line 6: s3:* also grants PutObject and DeleteObject on the artifacts, so a compromised CI can plant an artifact; use \"s3:GetObject\". Line 9: PassRole with Resource \"*\" allows passing ANY role to the Lambda service, including an admin role, which is a classic privilege escalation path. The iam:PassedToService condition only limits the service, not the role; Resource should be arn:aws:iam::111122223333:role/app-lambda-exec."
+  }
+]

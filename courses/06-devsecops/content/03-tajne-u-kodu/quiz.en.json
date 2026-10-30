@@ -1,0 +1,234 @@
+[
+  {
+    "obj": "2.3",
+    "q": "A developer committed an AWS access key in config/settings.py, pushed to GitLab and immediately deleted it in the next commit. What is the FIRST step?",
+    "options": [
+      "Rewrite history with git filter-repo and force push",
+      "Add the finding's fingerprint to .gitleaksignore",
+      "Deactivate the key in IAM (aws iam update-access-key --status Inactive)",
+      "Create a new repo without the old history"
+    ],
+    "answer": 2,
+    "explain": "The secret is compromised from the moment of the push, and deleting or rewriting history doesn't undo copies that have already been made. First the key is deactivated, followed by rotation, investigation and only then possibly cleaning up history. .gitleaksignore without revocation only hides the problem."
+  },
+  {
+    "obj": "2.1",
+    "q": "You run gitleaks dir . over /root/kurs-shop and don't see the AWS key you know leaked in the commit \"Početna verzija API-ja\". Why?",
+    "options": [
+      "gitleaks doesn't recognize AWS keys without .gitleaks.toml",
+      "gitleaks dir scans only the current files on disk; the key is in the history, so you need gitleaks git",
+      "--redact is missing",
+      "You need to add --log-opts=\"--all\" to dir"
+    ],
+    "answer": 1,
+    "explain": "dir (files) looks at files as they are now, and the key was removed by a later commit. gitleaks git reads the history via git log -p. The default rules cover AWS, --redact only hides the value, and --log-opts applies to the git subcommand, not to dir."
+  },
+  {
+    "obj": "2.1",
+    "q": "An old pipeline calls gitleaks detect --source . -v and developers ask whether that's correct for gitleaks 8.30. What is the correct modern equivalent?",
+    "options": [
+      "gitleaks scan --git .",
+      "gitleaks protect --staged",
+      "trufflehog git file://.",
+      "gitleaks git . -v"
+    ],
+    "answer": 3,
+    "explain": "Since 8.19, detect and protect are deprecated (they work, but are hidden); scanning history is gitleaks git, and files gitleaks dir. protect --staged is the old pre-commit way, the scan subcommand doesn't exist, and TruffleHog is a different tool."
+  },
+  {
+    "obj": "2.1",
+    "q": "The secret detection job prints the full values of found tokens in the CI log. What do you add to the command gitleaks git . -v?",
+    "options": [
+      "--redact",
+      "--no-banner",
+      "--exit-code 0",
+      "--report-format sarif"
+    ],
+    "answer": 0,
+    "explain": "--redact replaces the secret's value in the output and the report (optionally a percentage, e.g. --redact=50). --no-banner only removes the logo, --exit-code 0 would disable the gate, and the report format doesn't affect what is printed in the log."
+  },
+  {
+    "obj": "2.1",
+    "q": "kurs-shop's internal tokens have the format kshop_ followed by 32 lowercase alphanumeric characters. The default rules don't catch them. How do you add them while keeping all the built-in rules?",
+    "options": [
+      "In .gitleaks.toml you create [[rules]] with regex kshop_[a-z0-9]{32}, without [extend]",
+      "In .gitleaksignore you add the line kshop_*",
+      "In .gitleaks.toml you put [extend] useDefault = true and add [[rules]] with id, regex and keywords = [\"kshop_\"]",
+      "You run gitleaks git --enable-rule kshop"
+    ],
+    "answer": 2,
+    "explain": "[extend] useDefault = true keeps the built-in rules, and [[rules]] adds a new one; keywords speed up the scan. Without [extend], your own configuration replaces the default one, .gitleaksignore is for exceptions, and --enable-rule only selects existing rules by ID."
+  },
+  {
+    "obj": "2.1",
+    "q": "The security team has 300 findings from scanning all repos and wants to deal first with secrets that are actually active. Which tool and option most directly give that list?",
+    "options": [
+      "gitleaks git --baseline-path",
+      "TruffleHog with --results=verified",
+      "gitleaks dir --max-target-megabytes 1",
+      "TruffleHog with --no-verification"
+    ],
+    "answer": 1,
+    "explain": "TruffleHog verifies a secret against the vendor's API and with --results=verified shows only confirmed active ones. gitleaks has no verification; a baseline only hides old findings, and --no-verification disables exactly what you need."
+  },
+  {
+    "obj": "2.1",
+    "q": "In an MR pipeline, a job runs trufflehog git file://. --since-commit main --branch HEAD --results=verified,unknown --fail. The job ends with exit code 183. What does that mean?",
+    "options": [
+      "TruffleHog found results that match the --results filter",
+      "The git clone failed because GIT_DEPTH isn't 0",
+      "Verification failed because of the network",
+      "TruffleHog couldn't update itself"
+    ],
+    "answer": 0,
+    "explain": "With --fail, TruffleHog returns 183 when there are results; 0 means no findings, and 1 that an error occurred. Failed verification gives the finding an unknown status, not a separate exit code."
+  },
+  {
+    "obj": "2.1",
+    "type": "match",
+    "q": "Match the task with the command that accomplishes it in the lab (without network access).",
+    "options": [
+      "Scan staged changes in a pre-commit hook",
+      "Scan the entire kurs-shop git history with TruffleHog",
+      "Produce a SARIF report for the history",
+      "Test a new rule against a single string"
+    ],
+    "targets": ["echo '...' | gitleaks stdin -c .gitleaks.toml -v", "gitleaks dir . --log-opts=\"--all\"", "gitleaks git . --redact --report-format sarif --report-path gitleaks.sarif", "gitleaks git --pre-commit --staged --redact", "trufflehog git file:///root/kurs-shop --no-verification --no-update"],
+    "answer": [3, 4, 2, 0],
+    "explain": "The hook uses git --pre-commit --staged, TruffleHog reads the local repo via a file:// URL without verification because there is no network, SARIF comes from --report-format and --report-path, and stdin is handy for testing a rule. dir with --log-opts is a distractor: log-opts applies to the git subcommand."
+  },
+  {
+    "obj": "2.2",
+    "q": "You are introducing gitleaks into a repo with 8 years of history. The first scan finds 45 old findings (all the secrets have already been revoked), and the team wants MRs to fail only on NEW secrets. What do you do?",
+    "options": [
+      "Set allow_failure: true on the job",
+      "Disable the generic-api-key rule",
+      "Add --exit-code 0",
+      "Create a redacted baseline report and use --baseline-path in the pipeline"
+    ],
+    "answer": 3,
+    "explain": "--baseline-path ignores findings already in the baseline report, so the job fails only on new ones. allow_failure and --exit-code 0 disable the gate for everything, including new secrets, and turning off a rule doesn't distinguish old from new."
+  },
+  {
+    "obj": "2.2",
+    "q": "A developer says a pre-commit hook with gitleaks is enough and that a pipeline job isn't needed. What is the key counterargument?",
+    "options": [
+      "The hook is slow and doesn't support .gitleaks.toml",
+      "The hook only works on Linux",
+      "The hook is on the developer's machine: it can be bypassed with git commit --no-verify or never installed, so you also need a control on the server",
+      "pre-commit can't call a binary, only Python scripts"
+    ],
+    "answer": 2,
+    "explain": "A local hook is a convenience, not a guaranteed control. Push protection and a mandatory pipeline job are on the server and don't depend on a laptop. The hook supports configuration, works on all platforms, and language: system calls any binary."
+  },
+  {
+    "obj": "2.2",
+    "q": "Which .pre-commit-config.yaml works in the lab without network access and scans only staged changes?",
+    "options": [
+      "repos:\n  - repo: local\n    hooks:\n      - id: gitleaks\n        name: gitleaks\n        entry: gitleaks git --pre-commit --staged --redact\n        language: system\n        pass_filenames: false",
+      "repos:\n  - repo: https://github.com/gitleaks/gitleaks\n    rev: v8.30.0\n    hooks:\n      - id: gitleaks",
+      "repos:\n  - repo: local\n    hooks:\n      - id: gitleaks\n        entry: gitleaks dir .\n        language: python",
+      "hooks:\n  pre-commit: gitleaks protect"
+    ],
+    "answer": 0,
+    "explain": "repo: local with language: system calls the installed gitleaks without downloading anything, and git --pre-commit --staged looks only at what goes into the commit. The official hook from GitHub needs network access for cloning, language: python would try to build an environment and dir scans the whole directory, and the fourth option isn't the pre-commit format."
+  },
+  {
+    "obj": "2.2",
+    "q": "tests/fixtures/ contains deliberately fake keys for tests, and gitleaks reports 12 findings every time. What is the most appropriate exception?",
+    "options": [
+      "Add # gitleaks:allow at the end of every file",
+      "[[allowlists]] in .gitleaks.toml with paths = ['''tests/fixtures/.*'''] and a description of the reason",
+      "Run gitleaks with --exit-code 0",
+      "Disable [extend] useDefault"
+    ],
+    "answer": 1,
+    "explain": "A path allowlist is narrow, documented and goes through review via an MR. gitleaks:allow applies only to the line it is on, --exit-code 0 turns off the gate for everything, and disabling the built-in rules also removes real detection."
+  },
+  {
+    "obj": "2.2",
+    "q": "A developer on a GitLab Ultimate project with secret push protection enabled gets a push rejected because of a test token and pushes with git push -o secret_push_protection.skip_all. What is true?",
+    "options": [
+      "The push goes through, the bypass is recorded as an audit event, and pipeline secret detection will still scan the commits if it's enabled",
+      "The push fails again because push protection can't be bypassed",
+      "The push goes through and leaves no trace anywhere",
+      "The push goes through, but GitLab automatically revokes the token"
+    ],
+    "answer": 0,
+    "explain": "Push protection can be bypassed with a push option or with [skip secret push protection] in the commit message, and every bypass is recorded in the audit log. Pipeline secret detection is a separate control. GitLab doesn't automatically revoke third-party tokens."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Order the layers of protection against secret leaks by the moment they act, earliest first.",
+    "options": [
+      "Periodic (scheduled) scan of the entire history of all branches",
+      "pre-commit hook on the developer's machine",
+      "gitleaks job in the MR pipeline over the MR's commits",
+      "Push protection on the Git server"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "The hook acts before the commit, push protection at push time, the MR job after the push in the pipeline, and the periodic scan later catches what slipped through or what new rules only now recognize."
+  },
+  {
+    "obj": "2.2",
+    "q": "The line 3f2c9a1…:config/settings.py:aws-access-token:4 was added to .gitleaksignore without a comment, and there is no ticket for revoking the key. What is the problem?",
+    "options": [
+      "The fingerprint format is wrong; it must start with the rule name",
+      ".gitleaksignore applies only to gitleaks dir",
+      "The fingerprint must be in .gitleaks.toml",
+      "The exception was added without evidence that the secret was revoked and without a reason; the finding is hidden, and the key may still be active"
+    ],
+    "answer": 3,
+    "explain": "An exception should mean \"handled\": revoked, with a reason, date and incident number. The commit:file:rule:line format is correct for a git scan, .gitleaksignore also applies to history, and fingerprints go precisely in that file."
+  },
+  {
+    "obj": "2.3",
+    "type": "order",
+    "q": "Order the steps for responding to the leaked AWS key from the kurs-shop history.",
+    "options": [
+      "Rewrite history (git filter-repo) if needed and add the fingerprint to .gitleaksignore with the incident number",
+      "Deactivate the key",
+      "Review CloudTrail events for that AccessKeyId",
+      "Issue a new secret (or an OIDC role), move the services over and delete the old key"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "Revocation (deactivation) always comes first, then rotation so the services keep working, investigation of the usage, and finally cleaning up history and documenting the exception. The investigation can run in parallel with rotation, but never before deactivation."
+  },
+  {
+    "obj": "2.3",
+    "q": "The key has been deactivated. What is the fastest way to see what was done with that key in the last 90 days?",
+    "options": [
+      "aws iam get-access-key-last-used --access-key-id AKIA...",
+      "aws sts get-caller-identity",
+      "aws cloudtrail lookup-events --lookup-attributes AttributeKey=AccessKeyId,AttributeValue=AKIA...",
+      "aws iam list-access-keys --user-name kurs-shop-ci"
+    ],
+    "answer": 2,
+    "explain": "lookup-events filtered by AccessKeyId returns management events from the CloudTrail event history (90 days). get-access-key-last-used gives only the last use, get-caller-identity shows your own identity, and list-access-keys only lists the keys."
+  },
+  {
+    "obj": "2.3",
+    "q": "The repo is private, has 60 active developers and 40 open MRs. The leaked Slack webhook has been revoked and replaced. What is a reasonable next step?",
+    "options": [
+      "Rewrite history and force push no matter what, regardless of the consequences",
+      "Delete the repo and create a new one",
+      "Do nothing further; the finding will go away on its own",
+      "Don't rewrite history; add the fingerprint to .gitleaksignore with the incident number and revocation date, and introduce a hook and push protection"
+    ],
+    "answer": 3,
+    "explain": "A revoked secret is harmless, and rewriting history would change all hashes and break open MRs and local branches. A documented exception and prevention are more sensible. Without an exception, the periodic scan would keep reporting the same finding."
+  },
+  {
+    "obj": "2.3",
+    "q": "After git filter-repo --replace-text and a force push of all branches, gitleaks finds no secret in a fresh clone. What is still exposed?",
+    "options": [
+      "Nothing: filter-repo removes the secret from the server and from all clones",
+      "Developers' old clones, forks, artifacts and runner caches, and on GitLab also the old objects until Repository cleanup / Remove blobs is run",
+      "Only tags, because filter-repo doesn't change them",
+      "Only the .gitleaksignore file"
+    ],
+    "answer": 1,
+    "explain": "Rewriting changes only the repo you push; copies outside it remain, and the server keeps old objects (e.g. via MR references) until it is cleaned up. filter-repo rewrites tags too. That's why revoking the secret is always mandatory."
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "title": "Prijetnje, akteri i vektori napada",
+  "summary": "Threat intelligence i feedovi, CVE i CVSS, prioritizacija ranjivosti, akteri prijetnji i njihove motivacije, te svi vektori napada od e-maila i QR kodova do supply chaina i signala.",
+  "minutes": 100,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.2",
+    "2.3"
+  ],
+  "title_en": "Threats, actors, and attack vectors",
+  "summary_en": "Threat intelligence and feeds, CVE and CVSS, vulnerability prioritization, threat actors and their motivations, and every attack vector from email and QR codes to the supply chain and signals."
+}

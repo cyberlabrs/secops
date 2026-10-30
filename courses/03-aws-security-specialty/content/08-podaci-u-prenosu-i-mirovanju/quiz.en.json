@@ -1,0 +1,271 @@
+[
+  {
+    "obj": "5.1",
+    "q": "An auditor found that a public Application Load Balancer accepts TLS 1.0 and 1.1 connections. The listener was created with a CloudFormation template without a specified SSL policy. The company must accept only TLS 1.2 and 1.3, without changing the application. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "Add an AWS WAF rule that blocks requests with old TLS versions",
+      "Move TLS termination to the EC2 instances and configure nginx",
+      "Set the HTTPS listener's SslPolicy to ELBSecurityPolicy-TLS13-1-2-2021-06 (or a newer TLS 1.2+ policy) in the template",
+      "Replace the ACM certificate with a certificate with a stronger key"
+    ],
+    "answer": 2,
+    "explain": "The listener's security policy determines the allowed TLS versions and ciphers; without a specified policy, IaC uses the old ELBSecurityPolicy-2016-08. WAF does not control the TLS handshake, termination on the instances adds effort, and the certificate key strength does not change protocol versions."
+  },
+  {
+    "obj": "5.1",
+    "q": "An S3 bucket with medical records must reject every request that does not use TLS. Which solution meets the requirement?",
+    "options": [
+      "A bucket policy with a Deny for s3:* when aws:SecureTransport is false",
+      "Bucket default encryption set to SSE-KMS",
+      "S3 Block Public Access at the account level",
+      "A bucket policy with an Allow only when aws:SecureTransport is true, without a Deny statement"
+    ],
+    "answer": 0,
+    "explain": "A Deny with aws:SecureTransport=false rejects HTTP requests regardless of other Allow permissions. Encryption at rest and Block Public Access do not control transport, and an Allow alone does not prevent access granted by an identity policy in the same account."
+  },
+  {
+    "obj": "5.1",
+    "q": "A company uses CloudFront in front of an ALB origin. Traffic must be encrypted both from the client to CloudFront and from CloudFront to the ALB, and client HTTP requests must be redirected to HTTPS. Which configuration meets the requirements?",
+    "options": [
+      "Viewer protocol policy HTTP and HTTPS and origin protocol policy HTTP only",
+      "Viewer protocol policy HTTPS only and origin protocol policy Match viewer",
+      "Field-level encryption without changing the protocol policy",
+      "Viewer protocol policy Redirect HTTP to HTTPS and origin protocol policy HTTPS only, with an ACM certificate on the ALB for the origin domain"
+    ],
+    "answer": 3,
+    "explain": "Redirect HTTP to HTTPS enforces TLS toward clients with redirection, and HTTPS only toward the origin encrypts the second part of the path. HTTPS only without a redirect rejects HTTP instead of redirecting it, Match viewer could still use HTTP, and field-level encryption protects only individual fields."
+  },
+  {
+    "obj": "5.1",
+    "q": "EC2 instances in private subnets without internet access must read from S3 in the same Region. The company wants the lowest cost and wants S3 access through that path restricted to the organization's buckets only. Which solution meets the requirements?",
+    "options": [
+      "A NAT gateway and a bucket policy with aws:SourceIp",
+      "An S3 gateway VPC endpoint in the private subnets' route tables with an endpoint policy that uses aws:ResourceOrgID",
+      "An S3 interface VPC endpoint in every subnet without an endpoint policy",
+      "AWS Client VPN to S3"
+    ],
+    "answer": 1,
+    "explain": "A gateway endpoint for S3 has no charge, and an endpoint policy with aws:ResourceOrgID prevents access to other buckets. NAT charges for data processing and goes out to the internet, an interface endpoint costs per hour and per GB and without a policy does not restrict buckets, and Client VPN is for users."
+  },
+  {
+    "obj": "5.1",
+    "q": "An on-premises application connected through AWS Direct Connect must access S3 privately, with no traffic over the public internet. Which solution meets the requirement?",
+    "options": [
+      "An S3 gateway endpoint in the VPC connected to Direct Connect",
+      "An S3 interface VPC endpoint (PrivateLink) and resolution of S3 names to the endpoint's private IP addresses from on-premises DNS",
+      "S3 Transfer Acceleration",
+      "A CloudFront distribution in front of the bucket"
+    ],
+    "answer": 1,
+    "explain": "An interface endpoint has private IP addresses reachable over a DX or VPN connection. A gateway endpoint works only for traffic originating in the VPC itself, and Transfer Acceleration and CloudFront use public endpoints."
+  },
+  {
+    "obj": "5.1",
+    "q": "Employees must access an internal web application behind an ALB without a VPN client. Access is allowed only to users from the IAM Identity Center group Finance and only from devices that CrowdStrike marks as compliant, and the decision must be made on every request. Which solution meets the requirements?",
+    "options": [
+      "AWS Client VPN with SAML authentication and authorization rules per group",
+      "A public ALB with an AWS WAF IP set rule for office addresses",
+      "AWS Verified Access with Identity Center and CrowdStrike trust providers and a Cedar policy that checks the group and device posture",
+      "An ALB with Cognito authentication"
+    ],
+    "answer": 2,
+    "explain": "Verified Access evaluates every request based on identity and device posture, without a VPN. Client VPN requires a VPN client and does not check device posture, a WAF IP set knows nothing about identity, and Cognito on an ALB does not integrate device posture."
+  },
+  {
+    "obj": "5.1",
+    "q": "A SaaS provider wants to expose an API to customers in their VPCs privately, without VPC peering, without the internet, and with possibly overlapping CIDR ranges. Which solution meets the requirements?",
+    "options": [
+      "A VPC endpoint service (PrivateLink) behind a Network Load Balancer, with customers creating interface endpoints",
+      "A Transit Gateway with all customer VPCs",
+      "A public API Gateway with API keys",
+      "VPC peering with each customer"
+    ],
+    "answer": 0,
+    "explain": "PrivateLink exposes only the service through the NLB, works with overlapping CIDRs, and does not expose the whole VPC. Transit Gateway and peering require non-overlapping addresses and open up the network, and a public API Gateway goes over the internet."
+  },
+  {
+    "obj": "5.1",
+    "q": "An HPC application on EC2 must encrypt all traffic between instances because of regulation, without changing the application and without a drop in performance. The instances are in the same VPC and communicate directly. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Configure IPsec tunnels between all instances",
+      "Place a Network Load Balancer with a TLS listener between the instances",
+      "Enable EBS encryption by default",
+      "Use instance types that support Nitro automatic encryption in transit and keep direct communication with no virtual appliances in between"
+    ],
+    "answer": 3,
+    "explain": "Supported Nitro instance types automatically encrypt traffic between instances in the same or a peered VPC when it does not pass through a load balancer or transit gateway, with no performance impact. IPsec requires maintenance and consumes CPU, an NLB would break the direct communication condition, and EBS encryption is for data at rest."
+  },
+  {
+    "obj": "5.1",
+    "q": "A data science team runs a distributed training job on SageMaker AI with multiple instances. Regulation requires that traffic between the training containers be encrypted. What should be enabled?",
+    "options": [
+      "SSE-KMS on the S3 bucket with the training data",
+      "EnableNetworkIsolation on the training job",
+      "A KMS key for the ML storage volumes",
+      "EnableInterContainerTrafficEncryption on the training job"
+    ],
+    "answer": 3,
+    "explain": "Inter-container traffic encryption encrypts communication between containers in distributed training. Network isolation blocks outbound network access, and SSE-KMS and KMS for volumes protect data at rest."
+  },
+  {
+    "obj": "5.2",
+    "q": "A regulator requires that the encryption keys for data in S3 and EBS be in a single-tenant HSM under the company's exclusive control, but the company wants to keep the native integration of AWS services with encryption. Which solution meets the requirements?",
+    "options": [
+      "AWS KMS customer managed keys in the standard key store",
+      "An AWS KMS custom key store connected to an AWS CloudHSM cluster",
+      "AWS CloudHSM with an application that encrypts data before writing via PKCS#11",
+      "SSE-C with keys from an on-premises HSM"
+    ],
+    "answer": 1,
+    "explain": "A custom key store keeps the material in your single-tenant CloudHSM cluster, while services still use the KMS integration. Standard KMS is multi-tenant, direct CloudHSM requires your own encryption in the application, and SSE-C does not work for EBS and requires sending the key with every request."
+  },
+  {
+    "obj": "5.2",
+    "q": "An application writes millions of small objects to a bucket encrypted with an SSE-KMS customer managed key. KMS costs are rising and KMS throttling occasionally occurs. Which solution reduces the number of KMS calls while keeping SSE-KMS?",
+    "options": [
+      "Enable S3 Bucket Keys for the bucket",
+      "Switch to DSSE-KMS",
+      "Enable automatic rotation of the KMS key",
+      "Switch to SSE-C"
+    ],
+    "answer": 0,
+    "explain": "A Bucket Key is a short-lived bucket-level key derived from the KMS key, so S3 calls KMS less often. DSSE-KMS does not support Bucket Keys and adds a second layer, rotation does not reduce the number of calls, and SSE-C abandons KMS."
+  },
+  {
+    "obj": "5.2",
+    "q": "The security team must ensure that all new EBS volumes and snapshots in the account are encrypted with a customer managed key, in all Regions the company uses. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "A Lambda function that encrypts unencrypted volumes every hour",
+      "The AWS Config rule encrypted-volumes with manual remediation",
+      "Enable EBS encryption by default and set the default KMS key in every Region in use",
+      "Instruct developers to choose encryption in the launch template"
+    ],
+    "answer": 2,
+    "explain": "EBS encryption by default is a per-Region setting that automatically encrypts all new volumes and snapshots with the chosen key. Config only detects, a Lambda function cannot encrypt an existing volume in place, and relying on developers is not a control."
+  },
+  {
+    "obj": "5.2",
+    "q": "An unencrypted production RDS for PostgreSQL instance must become encrypted with a KMS key. What is the correct procedure?",
+    "options": [
+      "Enable encryption in the instance settings and reboot",
+      "Create an unencrypted read replica and promote it",
+      "Enable EBS encryption by default; the existing RDS instance will be encrypted automatically",
+      "Create a snapshot, copy it with encryption and a KMS key, then restore a new instance from the encrypted copy"
+    ],
+    "answer": 3,
+    "explain": "RDS encryption is chosen at creation and cannot be enabled on an existing instance; the way is snapshot, encrypted copy, and restore. A read replica inherits the source's encryption state, and the EBS default does not affect existing RDS instances."
+  },
+  {
+    "obj": "5.2",
+    "q": "A financial firm must keep transaction records in S3 for seven years in WORM form. Nobody, including the root user and AWS Support, may delete objects or shorten their retention. Which solution meets the requirement?",
+    "options": [
+      "S3 Versioning with MFA Delete",
+      "S3 Object Lock in governance mode with a 7-year retention",
+      "S3 Object Lock in compliance mode with a default retention of 7 years",
+      "An S3 Lifecycle rule that deletes objects after 7 years"
+    ],
+    "answer": 2,
+    "explain": "Compliance mode does not allow anyone to delete an object or shorten the retention before it expires. Governance mode can be bypassed by a user with s3:BypassGovernanceRetention, MFA Delete only protects versions with MFA, and lifecycle does not prevent deletion."
+  },
+  {
+    "obj": "5.2",
+    "q": "The legal team requires that certain objects in a bucket with Object Lock must not be deleted for the duration of litigation whose end is unknown. The retention of those objects expires next week. Which solution meets the requirement?",
+    "options": [
+      "Change the retention of all objects in the bucket to compliance mode for 10 years",
+      "Place a legal hold on those objects and remove it when the litigation ends",
+      "Disable versioning on the bucket",
+      "Copy the objects to Glacier Deep Archive"
+    ],
+    "answer": 1,
+    "explain": "A legal hold protects an object with no end date, independent of the retention period, until an authorized user removes it. A long compliance retention would unnecessarily lock all objects, versioning cannot be disabled with Object Lock, and a copy in Deep Archive does not protect against deletion."
+  },
+  {
+    "obj": "5.2",
+    "q": "The security team must prevent deployment of Lambda code that is not signed with an approved profile or was modified after signing. Which solution meets the requirement?",
+    "options": [
+      "An AWS Signer signing profile and a Lambda code signing configuration with the Enforce policy for unsigned and invalid artifacts",
+      "Amazon Inspector Lambda code scanning",
+      "S3 Object Lock on the bucket with deployment packages",
+      "A Lambda code signing configuration with the Warn policy"
+    ],
+    "answer": 0,
+    "explain": "A code signing configuration with Enforce rejects deployment of code without a valid signature from an allowed profile. Warn only logs a warning and allows the deployment, Inspector looks for vulnerabilities, and Object Lock does not check code provenance."
+  },
+  {
+    "obj": "5.2",
+    "q": "A company wants to protect backups from a ransomware attacker who might gain administrative access to the production account. Which TWO steps increase resilience the MOST? (Choose TWO.)",
+    "options": [
+      "Copy recovery points with AWS Backup to a vault in a separate backup account (or a logically air-gapped vault) locked with Vault Lock in compliance mode",
+      "Enable S3 Versioning on production buckets as the only protection",
+      "Keep backups in the same account, but in another Region",
+      "Use an SCP to deny deleting recovery points, modifying vault policies, and scheduling KMS key deletion except for a break-glass role",
+      "Reduce backup retention to 1 day so the attacker has less data"
+    ],
+    "answer": [0, 3],
+    "explain": "An isolated and immutable vault survives a compromise of the production account, and an SCP prevents deletion of backups and keys even by member account administrators. An attacker with admin rights can undo versioning and another Region in the same account, and shorter retention reduces the ability to recover."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Match the requirement with the MOST APPROPRIATE service or feature.",
+    "options": [
+      "Automatic daily EBS snapshots of instances tagged Backup=true and a copy to another Region, with no other services.",
+      "Migrate 300 TB from on-premises NFS to S3 with TLS and integrity verification.",
+      "Files on EFS that have not been used for 90 days should move to a cheaper class.",
+      "A central backup plan for RDS, DynamoDB, and EFS in all accounts of the organization.",
+      "Prove that CloudTrail log files were not modified after delivery."
+    ],
+    "targets": [
+      "AWS Backup with backup policies in Organizations",
+      "CloudTrail log file integrity validation",
+      "Amazon Data Lifecycle Manager",
+      "AWS DataSync",
+      "Amazon Macie",
+      "EFS Lifecycle management"
+    ],
+    "answer": [2, 3, 5, 0, 1],
+    "explain": "DLM automates EBS snapshots by tag with a cross-Region copy, DataSync transfers data with TLS and verification, EFS Lifecycle moves inactive files, AWS Backup centralizes plans across the organization, and log file integrity validation proves the integrity of CloudTrail logs. Macie is a distractor."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Match the S3 data encryption requirement with the appropriate type.",
+    "options": [
+      "The simplest encryption with no key management and no additional cost.",
+      "Audit of every key use in CloudTrail and control over who may decrypt.",
+      "Regulation requires two independent layers of server-side encryption.",
+      "Data must be encrypted before it leaves the company's application."
+    ],
+    "targets": [
+      "DSSE-KMS",
+      "SSE-S3",
+      "Client-side encryption (AWS Encryption SDK)",
+      "SSE-KMS",
+      "SSE-C"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "SSE-S3 is the default and requires no key management, SSE-KMS provides a key policy and CloudTrail audit, DSSE-KMS applies two layers of encryption, and client-side encrypts before sending to AWS. SSE-C is a distractor and is blocked by default for new buckets."
+  },
+  {
+    "obj": "5.2",
+    "type": "order",
+    "q": "Order the steps for replacing an existing unencrypted EBS volume with an encrypted one.",
+    "options": [
+      "Copy the snapshot with encryption enabled and the chosen KMS key",
+      "Stop the instance, detach the old volume, and attach the new one on the same device",
+      "Create a snapshot of the unencrypted volume",
+      "Create a new volume from the encrypted snapshot in the same AZ as the instance"
+    ],
+    "answer": [2, 0, 3, 1],
+    "explain": "An existing volume cannot be encrypted in place: first a snapshot, then an encrypted copy of the snapshot, a new volume from it in the same AZ, and finally swapping the volume on the instance."
+  },
+  {
+    "obj": "5.1",
+    "type": "spot",
+    "q": "The bucket policy should deny all access to the acme-records bucket and its objects over HTTP or TLS older than 1.2. Click the lines that prevent it from working.",
+    "lang": "json",
+    "snippet": "{\"Version\": \"2012-10-17\", \"Statement\": [\n  {\n    \"Sid\": \"DenyHttp\",\n    \"Effect\": \"Deny\",\n    \"Principal\": \"*\",\n    \"Action\": \"s3:*\",\n    \"Resource\": [\"arn:aws:s3:::acme-records\", \"arn:aws:s3:::acme-records/*\"],\n    \"Condition\": { \"Bool\": { \"aws:SecureTransport\": \"true\" } }\n  },\n  {\n    \"Sid\": \"DenyOldTls\", \"Effect\": \"Deny\", \"Principal\": \"*\", \"Action\": \"s3:*\",\n    \"Resource\": \"arn:aws:s3:::acme-records\",\n    \"Condition\": { \"NumericLessThan\": { \"s3:TlsVersion\": \"1.2\" } }\n  }\n]}",
+    "answer": [7, 11],
+    "explain": "Line 8: Deny when aws:SecureTransport is \"true\" blocks exactly the HTTPS requests and lets HTTP through. It must be \"false\". Line 12: Resource contains only the bucket ARN, so the TLS version condition applies to bucket operations (e.g. ListBucket) but not to GetObject/PutObject on objects. Add \"arn:aws:s3:::acme-records/*\", as in the first statement. The AWS Config rule s3-bucket-ssl-requests-only would catch the first mistake."
+  }
+]

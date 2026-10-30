@@ -1,0 +1,12 @@
+{
+  "title": "Wazuh: dekoderi, pravila i active response",
+  "summary": "Vlastiti Wazuh dekoderi i pravila, korelacija sa frequency i if_matched_sid, testiranje u wazuh-logtest, utišavanje lažnih pozitiva i active response sa njegovim rizicima.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.2",
+    "2.4"
+  ],
+  "title_en": "Wazuh: decoders, rules and active response",
+  "summary_en": "Custom Wazuh decoders and rules, correlation with frequency and if_matched_sid, testing in wazuh-logtest, suppressing false positives, and active response with its risks."
+}

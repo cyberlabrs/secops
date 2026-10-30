@@ -1,0 +1,251 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Platni gateway mora prije svake transakcije provjeriti da klijentski certifikat nije opozvan, sa što svježijim podatkom i bez preuzimanja velike liste. Koje rješenje NAJBOLJE odgovara?",
+    "options": [
+      "CRL preuzet jednom dnevno",
+      "OCSP",
+      "Certificate pinning",
+      "Key escrow"
+    ],
+    "answer": 1,
+    "explain": "OCSP vraća status jednog certifikata skoro u realnom vremenu. CRL je periodična lista svih opozvanih certifikata, može biti velika i zastarjela do sljedećeg objavljivanja. Pinning i escrow ne provjeravaju opoziv."
+  },
+  {
+    "obj": "1.3",
+    "q": "Kompanija je kupila wildcard certifikat za *.example.com. Za koje od sljedećih imena certifikat NEĆE biti važeći?",
+    "options": [
+      "api.example.com",
+      "www.example.com",
+      "mail.example.com",
+      "api.dev.example.com"
+    ],
+    "answer": 3,
+    "explain": "Wildcard pokriva samo jedan nivo poddomena, pa api.dev.example.com (dva nivoa) nije pokriven. Za njega treba poseban certifikat, wildcard *.dev.example.com ili SAN unos."
+  },
+  {
+    "obj": "1.3",
+    "q": "Inženjer generiše CSR za novi API server. Šta od navedenog se šalje certifikacionom tijelu u okviru CSR-a?",
+    "options": [
+      "Javni ključ i podaci o identitetu (CN, SAN)",
+      "Privatni ključ i javni ključ",
+      "Privatni ključ šifrovan lozinkom",
+      "Root certifikat organizacije"
+    ],
+    "answer": 0,
+    "explain": "CSR sadrži javni ključ i identifikacione podatke, potpisan privatnim ključem. Privatni ključ nikad ne napušta server, a CA ga ne treba da bi potpisao certifikat."
+  },
+  {
+    "obj": "1.3",
+    "q": "Zaposleni je napustio firmu, a njegov laptop i nekoliko šifrovanih arhiva sadrže poslovne podatke. Firma želi da ubuduće uvijek može vratiti ovakve podatke bez saradnje korisnika. Šta treba uvesti?",
+    "options": [
+      "OCSP stapling",
+      "Perfect forward secrecy",
+      "Key escrow",
+      "Steganografiju"
+    ],
+    "answer": 2,
+    "explain": "Key escrow čuva kopiju ključeva kod pouzdanog sistema ili treće strane (npr. BitLocker recovery ključevi u Entra ID), pa se podaci mogu vratiti. PFS i OCSP stapling se odnose na TLS, a steganografija na skrivanje podataka."
+  },
+  {
+    "obj": "1.3",
+    "q": "Nakon curenja baze, napadač je odmah prepoznao lozinke nekoliko hiljada korisnika jer su njihovi SHA-256 hashevi bili identični unosima iz unaprijed izračunatih tabela. Koja mjera bi NAJDIREKTNIJE spriječila ovaj napad?",
+    "options": [
+      "Prelazak na MD5",
+      "Dodavanje jedinstvenog salta svakoj lozinki prije hashovanja",
+      "Enkripcija lozinki AES-om sa ključem u konfiguracionom fajlu",
+      "Skraćivanje hash vrijednosti radi uštede prostora"
+    ],
+    "answer": 1,
+    "explain": "Jedinstven salt po korisniku čini rainbow tabele beskorisnim i daje različite hasheve za iste lozinke. MD5 je slabiji, a reverzibilna enkripcija lozinki sa ključem pored baze je loša praksa."
+  },
+  {
+    "obj": "1.3",
+    "q": "Release pipeline potpisuje container image prije objave u registry. Kojim ključem se image potpisuje i kojim se potpis provjerava u klasteru?",
+    "options": [
+      "Potpisuje se javnim ključem, provjerava privatnim",
+      "Potpisuje se i provjerava istim simetričnim ključem",
+      "Potpisuje se javnim ključem klastera, provjerava privatnim ključem pipelinea",
+      "Potpisuje se privatnim ključem pipelinea, provjerava javnim ključem pipelinea"
+    ],
+    "answer": 3,
+    "explain": "Digitalni potpis se pravi privatnim ključem potpisnika, a provjerava njegovim javnim ključem, koji može imati svako. Tako se dobijaju integritet, autentičnost i non-repudiation. Simetrični ključ ne daje neporecivost."
+  },
+  {
+    "obj": "1.3",
+    "q": "Prodajni tim često putuje i laptopi se povremeno izgube. Koja mjera NAJBOLJE štiti sve podatke na izgubljenom laptopu, uključujući privremene fajlove i swap?",
+    "options": [
+      "Full disk encryption sa ključem u TPM-u",
+      "Enkripcija pojedinačnih dokumenata",
+      "Data masking",
+      "TLS 1.3 za sav saobraćaj"
+    ],
+    "answer": 0,
+    "explain": "Full disk encryption šifruje cijeli disk uključujući OS, swap i privremene fajlove, pa ukradeni uređaj ne otkriva ništa. Enkripcija fajlova ostavlja ostale podatke nezaštićene, a TLS štiti samo podatke u prenosu."
+  },
+  {
+    "obj": "1.3",
+    "q": "U bazi korisnika samo kolona sa brojem pasoša mora biti šifrovana tako da je ne mogu pročitati ni administratori baze. Ostale kolone trebaju ostati dostupne za izvještaje. Koji nivo enkripcije je NAJPRIKLADNIJI?",
+    "options": [
+      "Full disk",
+      "Volume",
+      "Record (kolona/polje)",
+      "Transparent database encryption cijele baze"
+    ],
+    "answer": 2,
+    "explain": "Enkripcija na nivou zapisa ili kolone štiti samo osjetljiva polja i ključ ne mora biti dostupan DBA-u. TDE i disk enkripcija su transparentni za svakoga ko ima pristup bazi, pa ne štite od administratora."
+  },
+  {
+    "obj": "1.3",
+    "q": "Revizor zahtijeva da kompromitacija privatnog ključa web servera ne smije omogućiti dešifrovanje ranije snimljenog TLS saobraćaja. Koju razmjenu ključeva treba koristiti?",
+    "options": [
+      "RSA key transport",
+      "ECDHE",
+      "Statički Diffie-Hellman",
+      "Pre-shared key dijeljen sa svim klijentima"
+    ],
+    "answer": 1,
+    "explain": "Ephemeral Diffie-Hellman (ECDHE) pravi novi ključ za svaku sesiju i daje Perfect Forward Secrecy. Kod RSA key transporta i statičkog DH, isti dugotrajni ključ otključava i staru snimljenu sesiju."
+  },
+  {
+    "obj": "1.3",
+    "q": "Skener ranjivosti prijavljuje da interni API gateway prihvata konekcije preko TLS 1.0 i SSLv3. Šta je NAJBOLJA preporuka?",
+    "options": [
+      "Prebaciti API na HTTP i koristiti VPN",
+      "Zamijeniti certifikat wildcard certifikatom",
+      "Uvesti OCSP stapling",
+      "Isključiti zastarjele verzije i dozvoliti samo TLS 1.2 i TLS 1.3"
+    ],
+    "answer": 3,
+    "explain": "SSL i TLS 1.0/1.1 imaju poznate slabosti i treba ih isključiti, uz zadržavanje TLS 1.2 i 1.3. Wildcard i OCSP stapling ne utiču na verziju protokola, a HTTP uklanja transportnu enkripciju."
+  },
+  {
+    "obj": "1.3",
+    "q": "Tim pravi novu aplikaciju i bira kako da čuva korisničke lozinke. Koji pristup je NAJBOLJI?",
+    "options": [
+      "Argon2 ili bcrypt sa jedinstvenim saltom po korisniku",
+      "SHA-256 bez salta jer je brz",
+      "AES-256 enkripcija lozinki",
+      "MD5 sa zajedničkim saltom za sve korisnike"
+    ],
+    "answer": 0,
+    "explain": "Argon2, bcrypt, scrypt i PBKDF2 su key stretching algoritmi: namjerno spori, što usporava brute force, a salt sprečava rainbow tabele. Brz SHA-256 i MD5 su loši za lozinke, a enkripcija je reverzibilna."
+  },
+  {
+    "obj": "1.3",
+    "q": "IoT senzori imaju slab procesor i malo memorije, a moraju koristiti asimetričnu kriptografiju za autentifikaciju prema cloudu. Koji izbor daje jaku sigurnost uz najmanje resursa?",
+    "options": [
+      "RSA sa ključem od 4096 bita",
+      "3DES",
+      "ECC (npr. P-256)",
+      "RSA sa ključem od 1024 bita"
+    ],
+    "answer": 2,
+    "explain": "ECC daje sličnu sigurnost kao RSA uz mnogo kraći ključ (256-bitni ECC je otprilike kao RSA 3072), pa troši manje resursa. RSA 4096 je težak za slab uređaj, RSA 1024 je nesiguran, a 3DES je zastario simetrični algoritam."
+  },
+  {
+    "obj": "1.3",
+    "q": "Zaposleni dobijaju upozorenje „certifikat nije pouzdan“ kada otvore interni wiki. Certifikat je ispravan, ali ga je izdao interni CA kompanije. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Distribuirati root certifikat internog CA u trust store svih uređaja (npr. preko GPO/MDM)",
+      "Reći korisnicima da ignorišu upozorenje",
+      "Zamijeniti certifikat self-signed certifikatom",
+      "Isključiti HTTPS na wikiju"
+    ],
+    "answer": 0,
+    "explain": "Pregledač vjeruje certifikatu samo ako lanac vodi do root of trust u trust store-u. Dodavanjem internog root CA certifikata na uređaje lanac postaje pouzdan. Self-signed bi imao isti problem, a ignorisanje upozorenja uči korisnike lošoj praksi."
+  },
+  {
+    "obj": "1.3",
+    "q": "Pri reviziji kripto konfiguracije, koja DVA algoritma treba označiti kao zastarjela za sigurnosnu upotrebu? Izaberi DVA.",
+    "options": [
+      "MD5",
+      "AES-256-GCM",
+      "SHA-1",
+      "SHA-384"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "MD5 i SHA-1 imaju praktične kolizije i ne smiju se koristiti za potpise ili integritet. AES-256-GCM i SHA-384 (SHA-2 porodica) su aktuelni standardi."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari svaki algoritam sa njegovom kategorijom.",
+    "options": [
+      "AES-256",
+      "RSA",
+      "SHA-256",
+      "ECDHE",
+      "ChaCha20",
+      "ECDSA",
+      "bcrypt"
+    ],
+    "targets": [
+      "Simetrična enkripcija",
+      "Asimetrična enkripcija / potpis",
+      "Hashing",
+      "Razmjena ključeva",
+      "Key stretching za lozinke"
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      3,
+      0,
+      1,
+      4
+    ],
+    "explain": "AES i ChaCha20 su simetrični. RSA i ECDSA su asimetrični (ECDSA za potpise). SHA-256 je hash. ECDHE služi za razmjenu ključeva i daje PFS. bcrypt je spor algoritam za hashovanje lozinki (key stretching)."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari svaki scenarij sa tehnologijom koja mu NAJBOLJE odgovara.",
+    "options": [
+      "Web shop zamjenjuje broj kartice nasumičnom vrijednošću, a original čuva u odvojenom vault-u",
+      "Agent podrške vidi samo zadnje 4 cifre broja kartice",
+      "Malver preuzima komande sakrivene u pikselima naizgled obične slike",
+      "Privatni ključ offline root CA mora biti u otpornom namjenskom hardveru",
+      "Ključ za enkripciju diska je vezan za matičnu ploču jednog laptopa",
+      "Centralno kreiranje, rotacija i politike pristupa za ključeve svih S3 bucketa",
+      "Obrada osjetljivih podataka izolovana od operativnog sistema tokom izvršavanja"
+    ],
+    "targets": [
+      "Data masking",
+      "KMS",
+      "HSM",
+      "Steganography",
+      "Secure enclave",
+      "TPM",
+      "Tokenization"
+    ],
+    "answer": [
+      6,
+      0,
+      3,
+      2,
+      5,
+      1,
+      4
+    ],
+    "explain": "Zamjena tokenom uz vault je tokenizacija, prikaz zadnje 4 cifre je maskiranje, skrivanje u slici je steganografija. Root CA ključ ide u HSM, ključ vezan za jedan uređaj u TPM, centralno upravljanje i rotacija su KMS, a zaštita podataka u upotrebi je secure enclave."
+  },
+  {
+    "obj": "1.3",
+    "q": "https://www.example.com radi, ali https://example.com u browseru javlja grešku certifikata. Danas je 30. oktobar 2026. Na osnovu izlaza, šta je uzrok?",
+    "lang": "bash",
+    "snippet": "$ openssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null \\\n    | openssl x509 -noout -subject -issuer -dates -ext subjectAltName\nsubject=CN = *.example.com\nissuer=C = US, O = Let's Encrypt, CN = R11\nnotBefore=Sep 30 06:12:44 2026 GMT\nnotAfter=Dec 29 06:12:43 2026 GMT\nX509v3 Subject Alternative Name:\n    DNS:*.example.com",
+    "options": [
+      "Certifikat je istekao",
+      "Certifikat je self-signed",
+      "Wildcard *.example.com ne pokriva sam domen example.com; treba dodati DNS:example.com u SAN",
+      "Let's Encrypt ne izdaje wildcard certifikate"
+    ],
+    "answer": 2,
+    "explain": "Wildcard pokriva tačno jedan nivo ispod domena (www.example.com, api.example.com), ali ne i example.com. Rješenje je certifikat čiji SAN sadrži i DNS:example.com i DNS:*.example.com. Certifikat važi do 29. decembra 2026, a izdao ga je javni CA (Let's Encrypt R11), pa nije ni istekao ni self-signed."
+  }
+]

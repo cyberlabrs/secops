@@ -1,0 +1,251 @@
+[
+  {
+    "obj": "5.1",
+    "q": "Dockerfile builda Go aplikaciju: FROM golang:1.25, COPY . ., RUN go build -o /app, CMD [\"/app\"]. Slika ima 900 MB i stotine CVE-ova. Koja izmjena najviše smanjuje površinu napada bez gubitka funkcionalnosti?",
+    "options": [
+      "Dodati RUN apt-get upgrade -y na kraj",
+      "Multi-stage build: build u golang fazi sa CGO_ENABLED=0, pa COPY --from=build /app u gcr.io/distroless/static-debian12:nonroot",
+      "Zamijeniti golang:1.25 sa golang:latest",
+      "Dodati .dockerignore sa .git"
+    ],
+    "answer": 1,
+    "explain": "Finalna slika tada sadrži samo statički binarni fajl, bez kompajlera, izvornog koda i shella. upgrade ne uklanja toolchain, latest pogoršava predvidivost, a .dockerignore samo smanjuje build kontekst."
+  },
+  {
+    "obj": "5.1",
+    "q": "Pod sa runAsNonRoot: true je u CreateContainerConfigError, poruka: container has runAsNonRoot and image has non-numeric user (app), cannot verify user is non-root. Dockerfile ima USER app. Koja popravka u Dockerfileu?",
+    "options": [
+      "Promijeniti USER app u USER 10001 (numerički UID korisnika app)",
+      "Ukloniti USER red",
+      "Dodati RUN chmod 777 /",
+      "Promijeniti USER app u USER app:root"
+    ],
+    "answer": 0,
+    "explain": "Kubelet može potvrditi non-root samo za numerički UID, pa ime korisnika ne prolazi provjeru. Bez USER kontejner radi kao root, chmod 777 je novi rizik, a app:root i dalje nije numerički."
+  },
+  {
+    "obj": "5.1",
+    "q": "Dockerfile sadrži: COPY id_rsa /root/.ssh/id_rsa, RUN git clone git@github.com:org/lib.git, RUN rm /root/.ssh/id_rsa. Šta je problem?",
+    "options": [
+      "Nema problema, jer je ključ obrisan prije kraja builda",
+      "Problem je samo u tome što git ne radi bez known_hosts",
+      "Ključ ostaje u sloju koji je napravio COPY i može se izvući iz slike; treba RUN --mount=type=secret ili ssh mount",
+      "Problem je što COPY ne može kopirati u /root"
+    ],
+    "answer": 2,
+    "explain": "Svaki red pravi sloj, a brisanje u kasnijem sloju samo sakriva fajl; raniji sloj ga i dalje sadrži. BuildKit secret/ssh mount daje fajl samo tokom tog RUN koraka bez upisa u sloj."
+  },
+  {
+    "obj": "5.1",
+    "q": "Koji FROM red garantuje da će svaki build koristiti potpuno istu baznu sliku?",
+    "options": [
+      "FROM nginx:stable",
+      "FROM nginx:1.27",
+      "FROM nginx:latest",
+      "FROM nginx:1.27.5@sha256:<digest>"
+    ],
+    "answer": 3,
+    "explain": "Digest je hash sadržaja slike i ne može pokazivati na drugi sadržaj. Tagovi, uključujući konkretnu verziju, mogu se pomjeriti na novu sliku."
+  },
+  {
+    "obj": "5.1",
+    "q": "Dockerfile: (Izaberi DVA prekršaja dobre prakse.) FROM python:3.13-slim / ADD https://example.com/app.tar.gz /opt/ / ENV DB_PASSWORD=Pa55w0rd / USER 10001 / ENTRYPOINT [\"python\", \"/opt/app/main.py\"]",
+    "options": [
+      "ENTRYPOINT u exec formi",
+      "ADD sa URL-om umjesto eksplicitnog preuzimanja i COPY",
+      "USER sa numeričkim UID-om",
+      "Lozinka u ENV redu, vidljiva u slici i u env kontejnera",
+      "Korištenje -slim varijante bazne slike"
+    ],
+    "answer": [1, 3],
+    "explain": "ADD preuzima URL i raspakuje arhive implicitno i bez provjere hasha, a ENV upisuje tajnu u metapodatke slike. Exec forma, numerički USER i slim baza su dobre prakse."
+  },
+  {
+    "obj": "5.1",
+    "q": "Napadač je dobio RCE u aplikaciji koja radi na gcr.io/distroless/static-debian12:nonroot slici. Zašto mu je teže nego na ubuntu slici?",
+    "options": [
+      "Distroless šifruje memoriju procesa",
+      "Distroless automatski uključuje seccomp profil",
+      "Nema shella, paket menadžera ni alata kao curl, pa ne može lako pokretati komande ni preuzimati alate, a proces nije root",
+      "Distroless slike rade u gVisoru"
+    ],
+    "answer": 2,
+    "explain": "Distroless sadrži samo runtime aplikacije; bez /bin/sh i alata napadač ne može koristiti uobičajene tehnike, a :nonroot tag pokreće UID 65532. Seccomp i sandbox su postavke Poda i čvora, ne slike."
+  },
+  {
+    "obj": "5.1",
+    "type": "order",
+    "q": "Poredaj redove Dockerfilea za Node aplikaciju po dobroj praksi.",
+    "options": [
+      "USER node",
+      "FROM node:22-alpine",
+      "RUN npm ci --omit=dev",
+      "COPY package*.json ./",
+      "COPY . .",
+      "WORKDIR /app"
+    ],
+    "answer": [1, 5, 3, 2, 4, 0],
+    "explain": "Baza, radni direktorijum, pa prvo samo package fajlovi i instalacija zavisnosti (keš sloja), zatim ostatak koda i na kraju USER da proces ne radi kao root. node slike već imaju korisnika node."
+  },
+  {
+    "obj": "5.1",
+    "type": "match",
+    "q": "Upari baznu sliku sa opisom.",
+    "options": [
+      "scratch",
+      "alpine",
+      "gcr.io/distroless/base-debian12",
+      "ubuntu"
+    ],
+    "targets": [
+      "Mala slika sa busybox shellom i apk, musl libc",
+      "Puna distribucija sa apt i bashom",
+      "Uvijek uključuje Docker HEALTHCHECK",
+      "Prazna slika, samo za statičke binarne fajlove",
+      "glibc i CA certifikati, bez shella i paket menadžera"
+    ],
+    "answer": [3, 0, 4, 1],
+    "explain": "scratch je prazna, alpine ima busybox i apk, distroless base ima glibc bez shella, a ubuntu je puna distribucija. Nijedna bazna slika ne garantuje HEALTHCHECK."
+  },
+  {
+    "obj": "5.4",
+    "q": "kubesec scan pod.yaml vraća score: -30 i u scoring.critical selektor containers[] .securityContext .privileged == true. Šta radiš da Pod pređe u pozitivan skor?",
+    "options": [
+      "Uklanjaš privileged: true (ili ga postavljaš na false)",
+      "Dodaješ serviceAccountName",
+      "Dodaješ resources.limits.cpu i memory",
+      "Dodaješ runAsNonRoot: true"
+    ],
+    "answer": 0,
+    "explain": "Privileged nosi -30 bodova; pozitivna pravila daju 1 do 3 boda, pa ih ne mogu nadoknaditi. Skor je zbir pogođenih pravila, a Failed je dok je manji od nule."
+  },
+  {
+    "obj": "5.4",
+    "q": "U /opt/manifests/ je 6 YAML fajlova sa po jednim Podom. Treba upisati ime fajla sa najnižim kubesec skorom. Koja komanda daje sortiranu listu?",
+    "options": [
+      "kube-linter lint /opt/manifests/ | sort",
+      "for f in /opt/manifests/*.yaml; do echo \"$f $(kubesec scan $f | jq '.[0].score')\"; done | sort -k2 -n",
+      "kubesec print-rules --format table | sort",
+      "trivy config /opt/manifests/ --format table | sort -k2"
+    ],
+    "answer": 1,
+    "explain": "kubesec vraća JSON niz, a .[0].score je skor prvog objekta; sort -n po drugoj koloni stavlja najniži skor na vrh. kube-linter i trivy ne daju kubesec skor, a print-rules ispisuje pravila, ne rezultat."
+  },
+  {
+    "obj": "5.4",
+    "q": "kube-linter lint deploy.yaml ispisuje: container \"web\" is not set to runAsNonRoot (check: run-as-non-root ...) i završava sa Error: found 1 lint errors. Šta popravljaš?",
+    "options": [
+      "Dodaješ anotaciju kube-linter.io/run-as-non-root: true",
+      "Dodaješ privileged: false",
+      "Dodaješ runAsNonRoot: true (i po potrebi runAsUser različit od 0) u securityContext Poda ili kontejnera web",
+      "Pokrećeš kube-linter sa --add-all-built-in"
+    ],
+    "answer": 2,
+    "explain": "Check run-as-non-root traži runAsNonRoot: true i ne-root UID. Ta anotacija ne postoji (izuzeci se pišu kao ignore-check.kube-linter.io/<check>), a --add-all-built-in bi samo dodao još provjera."
+  },
+  {
+    "obj": "5.4",
+    "q": "DaemonSet CNI agenta mora biti privileged, ali kube-linter u CI-ju pada na check privileged-container. Kako ga izuzeti samo za taj objekat, uz obrazloženje?",
+    "options": [
+      "Pokrenuti kube-linter sa --exclude privileged-container za cijeli repozitorijum",
+      "Dodati anotaciju kube-linter.io/ignore-all: \"true\" na sve objekte",
+      "Postaviti privileged: false i dodati SYS_ADMIN capability",
+      "Dodati anotaciju ignore-check.kube-linter.io/privileged-container: \"CNI agent treba pristup kernelu\" na taj DaemonSet"
+    ],
+    "answer": 3,
+    "explain": "Anotacija ignore-check.kube-linter.io/<check> izuzima samo taj objekat i nosi obrazloženje kao vrijednost. --exclude i ignore-all gase provjeru šire nego što treba, a SYS_ADMIN je jednako opasan."
+  },
+  {
+    "obj": "5.4",
+    "q": "Treba ti alat koji jednom komandom pronalazi pogrešne konfiguracije i u Dockerfileu i u Kubernetes manifestima u direktorijumu /opt/app i filtrira samo HIGH i CRITICAL. Koja komanda?",
+    "options": [
+      "trivy config --severity HIGH,CRITICAL /opt/app",
+      "trivy image --severity HIGH,CRITICAL /opt/app",
+      "kubesec scan /opt/app",
+      "hadolint /opt/app"
+    ],
+    "answer": 0,
+    "explain": "trivy config skenira IaC fajlove (Dockerfile, Kubernetes, Helm, Terraform) i podržava --severity. trivy image traži sliku, kubesec ocjenjuje samo Kubernetes workloade, a hadolint samo Dockerfile."
+  },
+  {
+    "obj": "5.4",
+    "q": "Ručno pregledaš tri Deploymenta i treba obrisati one koji omogućavaju direktan pristup fajl sistemu čvora. Koji nalaz to znači?",
+    "options": [
+      "readOnlyRootFilesystem: false",
+      "volumes sa emptyDir: {medium: Memory}",
+      "image: nginx bez taga",
+      "volumes sa hostPath: {path: /} montiran u kontejner"
+    ],
+    "answer": 3,
+    "explain": "hostPath na / daje kontejneru cijeli fajl sistem čvora. emptyDir je privremen volumen Poda, readOnlyRootFilesystem se tiče fajl sistema kontejnera, a tag slike nije pristup čvoru."
+  },
+  {
+    "obj": "5.4",
+    "q": "Koja dva nalaza u Pod manifestu kubesec boduje kao kritična (negativni bodovi)? (Izaberi DVA.)",
+    "options": [
+      "hostNetwork: true",
+      "readOnlyRootFilesystem: true",
+      "env.valueFrom.secretKeyRef za lozinku baze",
+      "serviceAccountName: app",
+      "capabilities.drop: [ALL]"
+    ],
+    "answer": [0, 2],
+    "explain": "kubesec daje -9 za hostNetwork i -5 za Secret u env varijabli. readOnlyRootFilesystem i drop ALL nose +1, a serviceAccountName +3."
+  },
+  {
+    "obj": "5.4",
+    "type": "match",
+    "q": "Upari alat sa onim što analizira.",
+    "options": [
+      "kubesec",
+      "kube-linter",
+      "hadolint",
+      "trivy config"
+    ],
+    "targets": [
+      "Dockerfile, sa pravilima DL3xxx",
+      "Potpisuje slike u registru",
+      "Kubernetes workload, rezultat je bodovni skor sa critical/advise",
+      "IaC fajlovi više tipova (Kubernetes, Dockerfile, Helm, Terraform) sa ozbiljnošću nalaza",
+      "Kubernetes YAML i Helm chartovi po imenovanim checkovima, ne-nula exit code kod nalaza"
+    ],
+    "answer": [2, 4, 0, 3],
+    "explain": "kubesec boduje, kube-linter vraća listu checkova, hadolint je linter za Dockerfile, a trivy config pokriva više IaC formata. Potpisivanje slika radi cosign, ne nijedan od ovih alata."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pregledaš Deployment i vidiš: image: registry.local/api:latest, env: [{name: API_KEY, value: \"sk-123...\"}], securityContext: {runAsUser: 0}. Koja izmjena rješava sva tri problema?",
+    "options": [
+      "Dodati privileged: false i readOnlyRootFilesystem: true",
+      "Pinovati sliku na konkretan tag ili digest, premjestiti API_KEY u Secret montiran kao volumen i postaviti runAsNonRoot: true sa ne-nula runAsUser",
+      "Premjestiti API_KEY u ConfigMap i dodati imagePullPolicy: Always",
+      "Dodati anotaciju ignore-check.kube-linter.io/latest-tag i runAsGroup: 1000"
+    ],
+    "answer": 1,
+    "explain": "Tri nalaza su latest tag, tajna u čistom tekstu u manifestu i root. ConfigMap nije za tajne, imagePullPolicy ne pinuje sliku, a anotacija samo sakriva nalaz."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pokrećeš kube-linter lint deploy.yaml i ne dobijaš nalaz za nedostajuće CPU limite iako ih nema. U direktorijumu postoji .kube-linter.yaml. Koji je najvjerovatniji razlog?",
+    "options": [
+      "kube-linter ne čita Deploymente, samo Podove",
+      "CPU limiti nisu sigurnosna provjera pa ih kube-linter nikad ne provjerava",
+      "Treba dodati --format json da bi se nalaz prikazao",
+      ".kube-linter.yaml isključuje unset-cpu-requirements (exclude) ili ima doNotAutoAddDefaults bez include za taj check"
+    ],
+    "answer": 3,
+    "explain": "kube-linter automatski čita .kube-linter.yaml iz trenutnog direktorijuma, a unset-cpu-requirements je podrazumijevan check koji konfiguracija može isključiti. Deploymenti se provjeravaju, a format izlaza ne mijenja skup nalaza."
+  },
+  {
+    "type": "spot",
+    "obj": "5.1",
+    "q": "Runtime slika treba da bude minimalna i da aplikacija ne radi kao root. Binarni fajl je statički (CGO_ENABLED=0). Označi problematične redove.",
+    "snippet": "FROM golang:1.23 AS build\nWORKDIR /src\nCOPY go.mod go.sum ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 go build -o /out/app ./cmd/app\n\nFROM golang:1.23\nCOPY --from=build /out/app /app\nUSER root\nENTRYPOINT [\"/app\"]",
+    "lang": "dockerfile",
+    "answer": [
+      7,
+      9
+    ],
+    "explain": "Druga faza ponovo kreće od golang:1.23, pune slike sa kompajlerom, shellom i package managerom, pa multi-stage ne donosi ništa. Statičkom binarnom fajlu ništa od toga ne treba: koristi gcr.io/distroless/static-debian12:nonroot (ili scratch) sa konkretnim tagom. USER root eksplicitno pokreće aplikaciju kao root; zamijeni ga neprivilegovanim korisnikom, npr. USER 65532:65532 (nonroot u distroless slici). Prva faza smije biti velika jer ne ide u produkciju."
+  }
+]

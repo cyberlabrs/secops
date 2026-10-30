@@ -1,0 +1,12 @@
+{
+  "title": "Troubleshooting čvorova i komponenti klastera",
+  "summary": "Dijagnostika čvorova u stanju NotReady (kubelet, containerd, CNI, certifikati, pritisak resursa) i komponenti kontrolne ravni preko systemctl, journalctl, crictl i static Pod manifesta.",
+  "minutes": 90,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.2"
+  ],
+  "title_en": "Troubleshooting nodes and cluster components",
+  "summary_en": "Diagnosing NotReady nodes (kubelet, containerd, CNI, certificates, resource pressure) and control plane components using systemctl, journalctl, crictl and static Pod manifests."
+}

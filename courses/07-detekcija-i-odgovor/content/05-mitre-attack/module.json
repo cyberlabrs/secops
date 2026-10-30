@@ -1,0 +1,11 @@
+{
+  "title": "MITRE ATT&CK u detekciji",
+  "summary": "Mapiranje detekcija na MITRE ATT&CK (v20, sa taktikama Stealth i Defense Impairment), mjerenje pokrivenosti i pravljenje ATT&CK Navigator slojeva iz Wazuh i Sigma pravila.",
+  "minutes": 60,
+  "domain": 3,
+  "objectives": [
+    "3.1"
+  ],
+  "title_en": "MITRE ATT&CK in detection",
+  "summary_en": "Mapping detections to MITRE ATT&CK (v20, with the Stealth and Defense Impairment tactics), measuring coverage, and building ATT&CK Navigator layers from Wazuh and Sigma rules."
+}

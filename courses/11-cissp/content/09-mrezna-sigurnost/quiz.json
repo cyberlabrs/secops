@@ -1,0 +1,312 @@
+[
+  {
+    "obj": "4.1",
+    "q": "Mrežni inženjer analizira problem u kojem uređaj prosljeđuje saobraćaj na osnovu MAC adresa i odbacuje okvire sa neispravnim FCS poljem. Na kojem OSI sloju PRIMARNO radi ovaj uređaj i koji način prosljeđivanja koristi?",
+    "options": [
+      "Sloj 3, cut-through",
+      "Sloj 1, store-and-forward",
+      "Sloj 2, store-and-forward",
+      "Sloj 2, cut-through"
+    ],
+    "answer": 2,
+    "explain": "Odluka po MAC adresi je sloj 2 (switch). Provjera FCS/CRC prije prosljeđivanja znači da uređaj prima cijeli okvir, što je store-and-forward. Cut-through prosljeđuje čim pročita odredišnu adresu i zato propušta oštećene okvire."
+  },
+  {
+    "obj": "4.1",
+    "q": "Dvije filijale treba povezati preko interneta tako da cijeli originalni IP paket, uključujući interne adrese, bude šifrovan i autentifikovan između dva gatewaya. Koja konfiguracija NAJBOLJE ispunjava zahtjev?",
+    "options": [
+      "IPSec ESP u tunnel modu",
+      "IPSec AH u transport modu",
+      "IPSec ESP u transport modu",
+      "IPSec AH u tunnel modu"
+    ],
+    "answer": 0,
+    "explain": "ESP daje povjerljivost, a tunnel mode enkapsulira cijeli originalni paket u novi, pa interne adrese ostaju skrivene. AH ne šifruje, a transport mode štiti samo payload i ostavlja originalno zaglavlje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Organizacija je uvela DNSSEC i uprava sada smatra da su DNS upiti zaposlenih zaštićeni od prisluškivanja na javnom Wi-Fi-ju. Šta je NAJTAČNIJI odgovor savjetnika za sigurnost?",
+    "options": [
+      "Tačno, DNSSEC šifruje i upite i odgovore između klijenta i resolvera.",
+      "Tačno, ali samo ako je uključen i IPv6.",
+      "Netačno, jer DNSSEC radi samo između autoritativnih servera, ne prema klijentu.",
+      "Netačno, DNSSEC daje integritet i autentičnost odgovora, a povjerljivost traži DoT ili DoH."
+    ],
+    "answer": 3,
+    "explain": "DNSSEC digitalno potpisuje zapise, pa štiti od lažiranja (integritet, autentičnost porijekla), ali ništa ne šifruje. Privatnost upita daju DNS over TLS ili DNS over HTTPS."
+  },
+  {
+    "obj": "4.1",
+    "q": "Elektrodistribucija koristi DNP3 između kontrolnog centra i trafostanica, a protokol sada ide preko TCP/IP WAN-a. Koja je NAJVEĆA sigurnosna implikacija ovakvog višeslojnog protokola?",
+    "options": [
+      "DNP3 ne može raditi preko IP-a, pa će doći do gubitka dostupnosti.",
+      "Protokol projektovan za zatvorene mreže, bez autentifikacije, sada je izložen šire i može se zloupotrijebiti ili tunelovati mimo filtera.",
+      "Enkapsulacija automatski dodaje enkripciju, pa se gubi mogućnost inspekcije.",
+      "Višeslojni protokoli zahtijevaju IPv6, pa treba nadograditi mrežu."
+    ],
+    "answer": 1,
+    "explain": "Ključna implikacija multilayer protokola je da nasljeđuju rizike nosioca i izlaze iz izolacije za koju su projektovani: nema autentifikacije, moguća su skrivena i tunelovana komunikacija. Kontrole su segmentacija OT mreže i protokolno-svjesna inspekcija."
+  },
+  {
+    "obj": "4.1",
+    "q": "Firma prelazi sa Fibre Channel SAN-a na iSCSI preko postojeće Ethernet infrastrukture radi uštede. Šta treba PRVO osigurati da bi se zadržao nivo zaštite koji je davala zasebna SAN mreža?",
+    "options": [
+      "Uvesti cut-through switcheve za manju latenciju.",
+      "Logički izolovati storage saobraćaj (poseban VLAN/segment) i uvesti autentifikaciju inicijatora, uz enkripciju gdje je potrebna.",
+      "Prebaciti iSCSI na UDP radi bržeg prenosa.",
+      "Uključiti multicast za replikaciju diskova."
+    ],
+    "answer": 1,
+    "explain": "Konvergencija gubi fizičku izolaciju zasebne mreže. Zamjena je logička izolacija plus autentifikacija (CHAP) i po potrebi IPSec. Performanse su sekundarne u odnosu na zadržavanje zaštite."
+  },
+  {
+    "obj": "4.1",
+    "q": "Napadač je kompromitovao jedan aplikacioni server i odatle se lateralno širi prema drugim serverima u istom subnetu. Perimetarski NGFW ništa nije zabilježio. Koja arhitektonska promjena NAJBOLJE rješava ovaj problem dugoročno?",
+    "options": [
+      "Zamjena perimetarskog NGFW-a jačim modelom sa više propusnosti.",
+      "Uvođenje dodatnog DMZ-a ispred interneta.",
+      "Prelazak sa IPv4 na IPv6 kako bi skeniranje subneta bilo nepraktično.",
+      "Mikrosegmentacija sa distribuiranim firewallom i politikom po workloadu, u skladu sa Zero Trust principima."
+    ],
+    "answer": 3,
+    "explain": "Lateralno kretanje je east-west saobraćaj koji perimetar ne vidi. Mikrosegmentacija primjenjuje politiku na svaki workload i uklanja implicitno povjerenje unutar subneta. Jači perimetar i DMZ rješavaju north-south saobraćaj."
+  },
+  {
+    "obj": "4.1",
+    "q": "Tokom DDoS napada produkcijska mreža je zagušena i administratori ne mogu pristupiti ruterima preko SSH-a da primijene filtere. Koji dizajn bi ovo NAJBOLJE spriječio?",
+    "options": [
+      "Out-of-band management mreža sa nezavisnim pristupom konzolama uređaja",
+      "In-band management sa jačom enkripcijom SSH sesija",
+      "Air-gapped produkcijska mreža",
+      "Dodatni VLAN za administratore na istim linkovima"
+    ],
+    "answer": 0,
+    "explain": "OOB management koristi fizički odvojen put, pa ostaje dostupan kada je produkcijski saobraćaj zagušen. Dodatni VLAN dijeli iste zagušene linkove, a air gap produkcije nije realan za mrežu koja mora biti povezana."
+  },
+  {
+    "obj": "4.1",
+    "q": "Uvodi se SDN u data centru: centralni kontroler upravlja svim switchevima kroz southbound API, a orkestracija koristi northbound REST API. Koja je NAJVEĆA nova sigurnosna briga?",
+    "options": [
+      "Switchevi više ne mogu prosljeđivati saobraćaj bez interneta.",
+      "SDN ne podržava VLAN-ove, pa nestaje segmentacija.",
+      "Kontroler i njegovi API-ji postaju centralna tačka čija kompromitacija daje kontrolu nad cijelom mrežom.",
+      "Data plane postaje spor jer svaki paket prolazi kroz kontroler."
+    ],
+    "answer": 2,
+    "explain": "SDN centralizuje control plane, pa kontroler postaje najvrijedniji cilj i potencijalni single point of failure. Kontrole: hardening, HA, mTLS prema uređajima, jaka autentifikacija i autorizacija na API-jima, logovanje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Sigurnosni tim u IaC repozitoriju definiše security grupe, pravila mikrosegmentacije i automatsku karantinu workloada koju pokreće SOAR. Šta je NAJVEĆI rizik ovog pristupa koji treba kontrolisati?",
+    "options": [
+      "Politike prestaju da važe kada se workload preseli na drugi host.",
+      "Greška u kodu ili kompromitovan pipeline može istovremeno promijeniti sigurnost cijelog okruženja, pa politika mora proći kroz change management i review.",
+      "Software-defined security ne radi u cloudu.",
+      "Pravila se ne mogu verzionisati, pa nema revizijskog traga."
+    ],
+    "answer": 1,
+    "explain": "Software-defined security donosi dosljednost i brzinu, a politike prate workload. Cijena je da se greška širi automatski i svuda. Zato se politika tretira kao kod: verzionisanje, review, testiranje, zaštita pipelinea."
+  },
+  {
+    "obj": "4.2",
+    "q": "Ključni core switch je dostigao end-of-support i dobavljač više ne izdaje firmware zakrpe. Zamjena je planirana za 9 mjeseci. Šta je NAJBOLJI postupak menadžera za sigurnost?",
+    "options": [
+      "Ignorisati problem jer switch radi bez greške.",
+      "Odmah isključiti switch bez obzira na uticaj na poslovanje.",
+      "Instalirati neslužbeni firmware iz zajednice.",
+      "Evidentirati rizik u registru, primijeniti kompenzacione kontrole i dobiti formalno prihvatanje rizika od vlasnika do zamjene."
+    ],
+    "answer": 3,
+    "explain": "Oprema bez podrške je rizik koji mora biti formalno upravljan: registar rizika, kompenzacione kontrole (izolacija management planea, ACL, monitoring) i prihvatanje od strane vlasnika. Isključenje bez analize ugrožava poslovanje, a neslužbeni firmware uvodi novi rizik."
+  },
+  {
+    "obj": "4.2",
+    "q": "Posjetioci u sali za sastanke priključuju lične laptopove u zidne utičnice i dobijaju IP adresu u internoj mreži. Koja kontrola NAJBOLJE rješava problem?",
+    "options": [
+      "802.1X NAC sa provjerom stanja uređaja i karantinskim VLAN-om za neusklađene uređaje",
+      "MAC filtriranje na switch portovima",
+      "Skrivanje SSID-a bežične mreže",
+      "Statičke IP adrese umjesto DHCP-a"
+    ],
+    "answer": 0,
+    "explain": "802.1X autentifikuje uređaj prije nego što port propusti saobraćaj, a posture provjera i karantin rješavaju neusklađene uređaje. MAC adrese se lako lažiraju, SSID nema veze sa žičanim portom, a statičke adrese ne sprečavaju pristup."
+  },
+  {
+    "obj": "4.2",
+    "q": "U 802.1X arhitekturi, koja komponenta ima ulogu authenticatora?",
+    "options": [
+      "Laptop zaposlenog sa EAP klijentom",
+      "RADIUS server",
+      "Switch ili bežična pristupna tačka",
+      "Direktorijum korisnika (LDAP)"
+    ],
+    "answer": 2,
+    "explain": "Supplicant je klijent, authenticator je mrežni uređaj (switch, WAP) koji kontroliše port, a authentication server je RADIUS koji donosi odluku, često uz direktorijum u pozadini."
+  },
+  {
+    "obj": "4.2",
+    "q": "Istraživački institut obrađuje osjetljive podatke u prostoriji pored industrijske opreme koja stvara jaku elektromagnetnu interferenciju. Postoji i bojazan od prisluškivanja zasnovanog na emanaciji. Koji prenosni medij je NAJBOLJI izbor?",
+    "options": [
+      "UTP Cat6",
+      "Optički kabl",
+      "Koaksijalni kabl",
+      "STP Cat6a"
+    ],
+    "answer": 1,
+    "explain": "Optika prenosi svjetlost, pa nije podložna EMI i ne emituje elektromagnetno zračenje koje bi se moglo presresti. STP je bolji od UTP-a, ali i dalje bakarni medij."
+  },
+  {
+    "obj": "4.2",
+    "q": "Data centar ima kritični firewall sa jednim napajanjem priključenim na UPS. Revizija traži poboljšanje dostupnosti. Koji korak NAJVIŠE smanjuje rizik od ispada zbog napajanja?",
+    "options": [
+      "Uređaj sa dvostrukim napajanjem priključenim na dva nezavisna strujna kruga, uz UPS i generator",
+      "Veći UPS istog kruga",
+      "Produžena garancija na firewall",
+      "Pravilo da se firewall restartuje jednom mjesečno"
+    ],
+    "answer": 0,
+    "explain": "Redundantna napajanja na nezavisnim krugovima uklanjaju jedinstvenu tačku otkaza (napajanje uređaja i krug), UPS premošćava kratke ispade, a generator duge. Veći UPS i dalje ostavlja jedno napajanje i jedan krug."
+  },
+  {
+    "obj": "4.2",
+    "q": "Sa uvođenjem Zero Trust modela, organizacija želi da se odluka o pristupu aplikaciji oslanja i na stanje uređaja. Koji izvor podataka je za to NAJKORISNIJI?",
+    "options": [
+      "Lista MAC adresa iz DHCP servera",
+      "NetFlow zapisi sa perimetarskog rutera",
+      "Telemetrija EDR/MDM agenta o zakrpama, enkripciji diska i aktivnoj zaštiti",
+      "Godišnji izvještaj o popisu imovine"
+    ],
+    "answer": 2,
+    "explain": "Host-based agenti daju trenutno stanje uređaja (posture) koje PDP koristi u odluci. MAC lista i NetFlow ne govore ništa o stanju uređaja, a godišnji popis je zastario."
+  },
+  {
+    "obj": "4.2",
+    "q": "Kablovi između dva sprata prolaze kroz prostor iznad spuštenog plafona koji služi i za cirkulaciju vazduha. Koji zahtjev je PRVENSTVENO vezan za bezbjednost ljudi?",
+    "options": [
+      "Kablovi moraju biti STP radi smanjenja preslušavanja.",
+      "Kablovi moraju biti označeni bojama po VLAN-u.",
+      "Kablovi moraju biti kraći od 100 m zbog slabljenja signala.",
+      "Kablovi moraju biti plenum-rated, jer obični PVC pri požaru ispušta toksičan dim u sistem ventilacije."
+    ],
+    "answer": 3,
+    "explain": "Ljudski život je na prvom mjestu. Plenum-rated izolacija ispušta manje toksičnog dima koji bi se kroz ventilaciju proširio zgradom. Ostali odgovori su tehnički tačni, ali se odnose na kvalitet signala."
+  },
+  {
+    "obj": "4.3",
+    "q": "Kompanija je otkrila da je kroz njen PBX tokom vikenda obavljeno hiljade skupih međunarodnih poziva. O kojoj prijetnji je riječ i koja je NAJBOLJA prva kontrola?",
+    "options": [
+      "Vishing; obuka zaposlenih o društvenom inženjeringu",
+      "Toll fraud; zaštita i ograničavanje daljinskog pristupa PBX-u (DISA), promjena podrazumijevanih lozinki i ograničenje odredišta",
+      "SPIT; filtriranje neželjenih poziva",
+      "Jitter; uvođenje QoS-a na voice VLAN-u"
+    ],
+    "answer": 1,
+    "explain": "Neovlašteni pozivi na račun organizacije su toll fraud, obično kroz zloupotrijebljen daljinski pristup ili podrazumijevane lozinke. Vishing i SPIT su druge prijetnje, a jitter je metrika kvaliteta."
+  },
+  {
+    "obj": "4.3",
+    "q": "Dobavljač hardvera treba povremeni udaljeni pristup SAN uređaju radi dijagnostike. Šta je NAJBOLJI pristup?",
+    "options": [
+      "Trajan VPN nalog za dobavljača sa pristupom cijeloj internoj mreži, radi brzog odziva",
+      "Otvoriti port za upravljanje SAN-om prema internetu, ograničen na IP adresu dobavljača",
+      "Na zahtjev odobren, vremenski ograničen pristup kroz PAM/jump host sa snimanjem sesije, uz ugovorne obaveze dobavljača",
+      "Dati dobavljaču kredencijale lokalnog administratora koji se nikad ne mijenjaju"
+    ],
+    "answer": 2,
+    "explain": "Pristup trećih strana treba biti najmanjih privilegija, vremenski ograničen, odobren, nadziran i pokriven ugovorom. Trajni VPN i stalni kredencijali daju preširoku i nekontrolisanu izloženost."
+  },
+  {
+    "obj": "4.3",
+    "q": "Mrežni administratori upravljaju stotinama rutera i switcheva i revizija traži da se za svaku izvršenu komandu zna ko ju je izvršio i da li je bila dozvoljena. Koji AAA protokol je NAJBOLJI izbor?",
+    "options": [
+      "TACACS+",
+      "RADIUS",
+      "PAP",
+      "CHAP"
+    ],
+    "answer": 0,
+    "explain": "TACACS+ odvaja autentifikaciju, autorizaciju i accounting, podržava autorizaciju po komandi i šifruje cijeli payload preko TCP-a. RADIUS kombinuje autentifikaciju i autorizaciju i šifruje samo lozinku. PAP i CHAP su metode autentifikacije, ne AAA rješenje."
+  },
+  {
+    "obj": "4.3",
+    "q": "Zaposleni rade od kuće preko VPN-a sa uključenim split tunnelingom. Nakon incidenta, malver sa kućne mreže je preko laptopa dospio u internu mrežu. Koja promjena NAJBOLJE smanjuje ovaj rizik uz zadržavanje rada od kuće?",
+    "options": [
+      "Zabraniti rad od kuće.",
+      "Preći na full tunnel ili ZTNA pristup sa provjerom stanja uređaja i EDR-om na upravljanim uređajima.",
+      "Povećati bandwidth VPN koncentratora.",
+      "Zamijeniti IPSec VPN SSL VPN-om uz zadržavanje split tunnelinga."
+    ],
+    "answer": 1,
+    "explain": "Split tunneling drži uređaj istovremeno na nepovjerljivoj mreži i u korporativnoj mreži. Full tunnel ili ZTNA uz posture provjeru i EDR smanjuje rizik, a poslovanje nastavlja. Zabrana ne služi poslovanju, a promjena tipa VPN-a ne rješava uzrok."
+  },
+  {
+    "obj": "4.3",
+    "q": "Udaljeni rudnik je povezan sa sjedištem isključivo preko geostacionarnog satelita, a kroz vezu idu i SCADA podaci i e-mail. Šta je NAJVAŽNIJE uzeti u obzir u dizajnu?",
+    "options": [
+      "Satelitske veze su fizički nedostupne napadačima, pa enkripcija nije potrebna.",
+      "Satelitska veza ima nisku latenciju, pa je pogodna za sve real-time aplikacije bez prilagođavanja.",
+      "Treba koristiti Telnet jer SSH ne radi preko satelita.",
+      "Signal se može presresti na širokom području i latencija je visoka, pa su potrebni enkripcija end-to-end, prilagođeni protokoli i rezervni komunikacioni put."
+    ],
+    "answer": 3,
+    "explain": "Satelitski footprint omogućava prisluškivanje sa širokog područja, GEO latencija je oko 600 ms round-trip, a jedna veza je single point of failure. Zato enkripcija, prilagođavanje aplikacija i rezervni put."
+  },
+  {
+    "obj": "4.3",
+    "q": "Uprava želi da sale za video sastanke budu stalno spremne: kamere, mikrofoni i ekrani su povezani na internu mrežu i nikad se ne gase. Koja je NAJBOLJA preporuka?",
+    "options": [
+      "Uređaje u salama tretirati kao IoT: poseban segment, redovno ažuriranje firmware-a, promjena podrazumijevanih kredencijala i kontrola kada su kamera i mikrofon aktivni.",
+      "Uređaje povezati direktno na internet bez firewalla radi kvaliteta slike.",
+      "Zabraniti video sastanke.",
+      "Isključiti enkripciju kako bi se smanjio jitter."
+    ],
+    "answer": 0,
+    "explain": "Sobna oprema za saradnju je IoT sa mikrofonima i kamerama u prostoru gdje se vode povjerljivi razgovori. Segmentacija, patching, kredencijali i kontrola aktivnosti smanjuju rizik i omogućavaju poslovanje."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Poredaj OSI slojeve od najnižeg (1) prema najvišem (7).",
+    "options": [
+      "Transport",
+      "Session",
+      "Physical",
+      "Application",
+      "Network",
+      "Presentation",
+      "Data Link"
+    ],
+    "answer": [2, 6, 4, 0, 1, 5, 3],
+    "explain": "Physical (1), Data Link (2), Network (3), Transport (4), Session (5), Presentation (6), Application (7). Mnemonika odozdo: Please Do Not Throw Sausage Pizza Away."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari protokol ili uređaj sa OSI slojem na kojem PRIMARNO radi.",
+    "options": [
+      "Ruter koji odlučuje po IP adresi",
+      "Switch koji odlučuje po MAC adresi",
+      "Stateful firewall koji prati TCP konekcije",
+      "WAF koji blokira SQL injection u HTTP zahtjevu",
+      "Repeater"
+    ],
+    "targets": [
+      "Sloj 1 (Physical)",
+      "Sloj 2 (Data Link)",
+      "Sloj 3 (Network)",
+      "Sloj 4 (Transport)",
+      "Sloj 7 (Application)"
+    ],
+    "answer": [2, 1, 3, 4, 0],
+    "explain": "Ruter je L3, switch L2, stateful firewall prati stanje na L4 (i L3), WAF razumije HTTP na L7, a repeater samo pojačava signal na L1."
+  },
+  {
+    "obj": "4.1",
+    "type": "spot",
+    "q": "Konfiguracija core switcha (Cisco IOS) prije audita. Politika traži da se za upravljanje koriste isključivo šifrovani i autentifikovani protokoli. Označi redove koji krše politiku.",
+    "snippet": "hostname core-sw01\nenable secret 9 $9$nhEmQVczB7dqsO$X.HsgL6x1il0RxkOSSvyQYwucySCt7qFm4v7pqCxkKM\nip ssh version 2\nline vty 0 4\n transport input telnet ssh\n access-class MGMT-ONLY in\nsnmp-server community public RW\nsnmp-server group NETOPS v3 priv\nip http server\nip http secure-server\nlogging host 10.0.9.20\nntp server 10.0.9.1",
+    "lang": "text",
+    "answer": [4, 6, 8],
+    "explain": "Red 5: transport input telnet dozvoljava Telnet, koji šalje kredencijale i komande u čistom tekstu; treba samo transport input ssh. Red 7: SNMP v1/v2c sa community stringom public i pravom RW šalje string u čistom tekstu i omogućava izmjenu konfiguracije svakome ko ga zna; ukloniti i koristiti samo SNMPv3 sa autentifikacijom i enkripcijom (red 8 je ispravan). Red 9: ip http server uključuje nešifrovan HTTP interfejs za upravljanje; ostaviti samo ip http secure-server (HTTPS) ili ga potpuno isključiti. SSHv2, enable secret tipa 9 (scrypt), ACL na vty, centralni log i NTP su dobra praksa."
+  }
+]

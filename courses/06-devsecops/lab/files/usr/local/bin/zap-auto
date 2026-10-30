@@ -1,0 +1,6 @@
+#!/bin/bash
+# Pokreće OWASP ZAP automation framework plan bez GUI-ja: zap-auto <plan.yaml>
+# ZAP-ov proxy sluša na 8090 (8080 je aplikacija), Java heap je ograničen za lab.
+[ -f "$1" ] || { echo "upotreba: zap-auto <plan.yaml>"; exit 2; }
+grep -q "$(hostname)" /etc/hosts 2>/dev/null || echo "127.0.1.1 $(hostname)" >> /etc/hosts
+exec /opt/zap/zap.sh -cmd -Xmx768m -port 8090 -dir /root/.ZAP -config start.checkForUpdates=false -autorun "$(readlink -f "$1")"

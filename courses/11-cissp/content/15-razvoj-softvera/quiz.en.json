@@ -1,0 +1,305 @@
+[
+  {
+    "obj": "8.1",
+    "q": "An organization is developing a new system for processing health data. The project manager wants to involve the security team \"when the code is ready for testing\". What is the BEST advice from the security advisor?",
+    "options": [
+      "Accept the plan, because a pentest before production is sufficient for regulated data.",
+      "Deploy a WAF in front of the application to compensate for the late involvement.",
+      "Involve security from the initiation and requirements phase: data classification, regulatory and security requirements, then threat modeling during design.",
+      "Require development to follow Waterfall, because Agile is not suitable for health data."
+    ],
+    "answer": 2,
+    "explain": "Security is cheapest and most effective when built in from the start (requirements, design). Pentesting and a WAF are verification or compensating controls. The methodology itself is not the problem."
+  },
+  {
+    "obj": "8.1",
+    "q": "A system has passed a technical assessment of its security controls. Who makes the decision to put the system into operation with the residual risk?",
+    "options": [
+      "An authorized management representative (Authorizing Official) through accreditation/authorization.",
+      "The testing team that performed the certification.",
+      "The development team lead, because they know the system best.",
+      "The external auditor who reviewed the documentation."
+    ],
+    "answer": 0,
+    "explain": "Certification is the technical assessment; accreditation (authorization in the NIST RMF) is management's formal decision to accept the residual risk. Risk is accepted by management, not by testers or developers."
+  },
+  {
+    "obj": "8.1",
+    "q": "An organization measures its development processes quantitatively and uses metrics for quality control, but does not yet have a systematic continuous improvement program. At which level of the original CMM is it?",
+    "options": [
+      "Level 2 – Repeatable",
+      "Level 3 – Defined",
+      "Level 5 – Optimizing",
+      "Level 4 – Managed"
+    ],
+    "answer": 3,
+    "explain": "Level 3 is a standardized and documented process, level 4 (Managed; Quantitatively Managed in CMMI) introduces quantitative measurement, and level 5 continuous improvement based on metrics."
+  },
+  {
+    "obj": "8.1",
+    "q": "A critical vulnerability has emerged in a widely used logging library. Management wants an answer within an hour: which of our applications contain the affected version? Which previously adopted practice helps the MOST?",
+    "options": [
+      "An annual penetration test of all applications.",
+      "A maintained SBOM for every release, in a machine-readable format.",
+      "A contractual right-to-audit clause for vendors.",
+      "WAF rules for known attacks."
+    ],
+    "answer": 1,
+    "explain": "An SBOM (SPDX, CycloneDX) provides an inventory of components and versions per release, so exposure is determined quickly. Pentests and WAFs do not provide an inventory, and the right to audit is a slow contractual mechanism."
+  },
+  {
+    "obj": "8.2",
+    "q": "An organization is developing a new network service that parses untrusted binary formats. Analysis of earlier incidents shows that most serious bugs were buffer overflows and use-after-free. What is the BEST strategic decision?",
+    "options": [
+      "Continue with C, but introduce an annual pentest.",
+      "Enable ASLR on the servers, which eliminates this class of bugs.",
+      "Write the new service in a memory-safe language and, for existing C code, keep compiler protections and strict review.",
+      "Move the service to an interpreted language so the source code is available for review."
+    ],
+    "answer": 2,
+    "explain": "Memory-safe languages prevent an entire class of memory management bugs. ASLR and similar protections make exploitation harder but do not remove the bugs. A pentest only measures, and code visibility does not mean memory safety."
+  },
+  {
+    "obj": "8.2",
+    "q": "A team wants a tool that, during QA tests, uses an agent inside the running application to track data flow and report vulnerabilities with the exact line of code and few false positives. Which technique is described?",
+    "options": [
+      "SAST",
+      "DAST",
+      "RASP",
+      "IAST"
+    ],
+    "answer": 3,
+    "explain": "IAST uses an agent in the application during testing and combines the advantages of SAST (location in code) and DAST (runtime context). RASP is a similar agent, but in production, and it blocks attacks."
+  },
+  {
+    "obj": "8.2",
+    "q": "An audit shows that the CI/CD pipeline uses a static cloud key with administrator rights, stored as a variable available to all branches. What is the BEST corrective measure?",
+    "options": [
+      "Replace it with short-lived credentials (OIDC federation) with the least necessary rights per environment, and restrict production credentials to protected branches.",
+      "Rotate the key every 90 days.",
+      "Encrypt the variable in the pipeline.",
+      "Move the key into the repository so that it is versioned."
+    ],
+    "answer": 0,
+    "explain": "The pipeline is a privileged system: least privilege, short-lived credentials, and restriction to protected branches address the root cause. Rotation and encryption do not reduce overly broad rights and exposure to all branches; a secret in the repository is worse."
+  },
+  {
+    "obj": "8.2",
+    "q": "A developer installed an IDE extension from an unknown publisher that has access to the workspace. What is the GREATEST risk and the appropriate control?",
+    "options": [
+      "IDE performance degradation; the control is stronger hardware.",
+      "License violation; the control is legal review.",
+      "Theft of code and secrets from the development environment; the control is an approved extension list and managed development endpoints.",
+      "Incorrect code formatting; the control is a linter."
+    ],
+    "answer": 2,
+    "explain": "IDE extensions have access to source code, secrets, and credentials, so they are a supply chain attack vector. The control is managing allowed extensions and protected development environments."
+  },
+  {
+    "obj": "8.2",
+    "q": "In a multilevel database, a lower-level user tries to write a record with a key that already exists at a higher level. The system creates a separate record for the lower level so as not to reveal the existence of the classified record. What is this technique called?",
+    "options": [
+      "Encapsulation",
+      "Polymorphism",
+      "Aggregation",
+      "Polyinstantiation"
+    ],
+    "answer": 3,
+    "explain": "Polyinstantiation allows multiple instances of the same record with different values per classification level and prevents inference. Encapsulation is hiding data within an object; polymorphism is different behavior of the same call."
+  },
+  {
+    "obj": "8.3",
+    "q": "During an audit, it was found that a version of the application is running in production whose hash does not match any approved release. What is the FIRST step?",
+    "options": [
+      "Immediately roll back to the last approved release and close the finding.",
+      "Treat it as a potential security incident: preserve evidence and use change logs to determine who made the unauthorized change, when, and how.",
+      "Update the release records to match the state in production.",
+      "Issue a warning to the development team to follow the procedure."
+    ],
+    "answer": 1,
+    "explain": "An unapproved artifact in production may be a supply chain compromise. Evidence is preserved first and the change trail analyzed; rolling back without analysis destroys evidence, and reconciling the records legitimizes an unauthorized change."
+  },
+  {
+    "obj": "8.3",
+    "q": "DAST found a critical SQL injection vulnerability in a revenue-generating application. A permanent fix requires three weeks. What is the BEST approach?",
+    "options": [
+      "Apply a compensating control (virtual patch on the WAF, enhanced monitoring), document the temporary risk accepted by the application owner, and fix the code within the agreed timeframe.",
+      "Shut down the application until the code is fixed.",
+      "Accept the risk at the security team level and fix it next quarter.",
+      "Set up a WAF rule and close the finding as resolved."
+    ],
+    "answer": 0,
+    "explain": "The decision balances business and risk: a compensating control immediately, formal acceptance of the temporary risk by the owner, and a permanent fix. Shutting down is disproportionate, the security team is not the risk owner, and a WAF is not a permanent fix."
+  },
+  {
+    "obj": "8.3",
+    "q": "The CISO wants a metric that best shows whether the effectiveness of the software security program is improving over time. Which one should be chosen?",
+    "options": [
+      "The total number of security tools in the pipeline.",
+      "The number of lines of code scanned per month.",
+      "The mean time to remediate (MTTR) vulnerabilities by severity and the trend of recurrence of the same classes of bugs.",
+      "The number of developers who attended training."
+    ],
+    "answer": 2,
+    "explain": "Effectiveness is measured by outcome: how quickly risk is remediated and whether the same classes of bugs recur. The number of tools, scanned lines, or training attendees are activity metrics, not effectiveness metrics."
+  },
+  {
+    "obj": "8.3",
+    "q": "A developer bypassed a failed security quality gate to ship an urgent fix. What should the change management process ensure?",
+    "options": [
+      "That such changes are technically prevented without exception, even in emergencies.",
+      "That the exception is approved, recorded with a justification and a deadline, and reviewed afterward.",
+      "That the developer is disciplined.",
+      "That the gate is permanently removed because it slows down delivery."
+    ],
+    "answer": 1,
+    "explain": "Emergency changes are allowed, but they must leave a trail: approval, justification, deadline, and post-implementation review. An absolute ban endangers the business, and removing the gate or punishment does not fix the process."
+  },
+  {
+    "obj": "8.4",
+    "q": "An organization plans to buy a specialized COTS system from a small vendor; the system is critical to the business. Which contractual control BEST protects against the risk of the vendor going out of business?",
+    "options": [
+      "The right to audit the vendor.",
+      "An SLA with penalties for unavailability.",
+      "A Common Criteria certification of the product.",
+      "Source code escrow with an independent third party."
+    ],
+    "answer": 3,
+    "explain": "Escrow gives the customer the source code if the vendor fails or ends support, which protects continuity. Penalties and the right to audit do not help when the vendor no longer exists, and certification relates to product security."
+  },
+  {
+    "obj": "8.4",
+    "q": "Before acquiring a new enterprise CRM service (managed service), what should be the FIRST step?",
+    "options": [
+      "Define security and regulatory requirements and conduct a vendor assessment (due diligence).",
+      "Sign the contract and perform a pentest after implementation.",
+      "Rely on the vendor's marketing documentation about security.",
+      "Migrate test data to verify functionality."
+    ],
+    "answer": 0,
+    "explain": "Requirements and due diligence (SOC 2 Type II, ISO/IEC 27001, questionnaires) come before signing. Testing after the contract leaves little leverage, and marketing is not evidence."
+  },
+  {
+    "obj": "8.4",
+    "q": "A team uses hundreds of open source packages, including transitive dependencies. The legal department is concerned about copyleft licenses, and security about known CVEs. Which control addresses BOTH problems?",
+    "options": [
+      "SAST",
+      "DAST",
+      "Software Composition Analysis (SCA)",
+      "Fuzzing"
+    ],
+    "answer": 2,
+    "explain": "SCA builds an inventory of third-party components and checks them against databases of known vulnerabilities and licenses. SAST analyzes your own code, DAST the running application, and fuzzing looks for input handling bugs."
+  },
+  {
+    "obj": "8.4",
+    "q": "An organization is moving to a FaaS (serverless) platform. What is the organization still responsible for?",
+    "options": [
+      "Patching the operating system and runtime on which the function executes.",
+      "The function code, its dependencies, the function's IAM permissions, and the data it processes.",
+      "Nothing, because serverless transfers all security responsibility to the provider.",
+      "Only the physical security of the data center."
+    ],
+    "answer": 1,
+    "explain": "In the FaaS model, the provider manages the runtime and execution environment, while the customer remains responsible for code, dependencies, permissions, and data. Data and access are always the customer's responsibility."
+  },
+  {
+    "obj": "8.4",
+    "q": "An organization has outsourced the development of a custom application. Which combination of contractual provisions BEST manages third-party risk?",
+    "options": [
+      "A fixed price and delivery deadline.",
+      "A guarantee that the vendor uses the Agile methodology.",
+      "A requirement that the vendor have its own SOC.",
+      "Security requirements and a coding standard, the right to code review and testing, ownership of the code (IP), and an obligation to remediate vulnerabilities within a set timeframe."
+    ],
+    "answer": 3,
+    "explain": "The risk of third-party custom software is controlled through the contract: requirements, right to verification, IP, and remediation obligations. Price, methodology, or the vendor's own SOC do not guarantee the security of the delivered code."
+  },
+  {
+    "obj": "8.5",
+    "q": "A code review reveals that the application builds SQL queries by concatenating strings with user input. What is the PRIMARY recommended defense?",
+    "options": [
+      "Parameterized queries (prepared statements), with a least-privilege database account.",
+      "Filtering apostrophes and special characters from input.",
+      "WAF rules for SQL injection.",
+      "Encrypting the database at rest."
+    ],
+    "answer": 0,
+    "explain": "Parameterization separates code from data and removes the cause of injection. Denylist filtering can be bypassed, a WAF is an additional layer, and encryption at rest does not affect injection."
+  },
+  {
+    "obj": "8.5",
+    "q": "An API returns account data based on an ID in the URL. Testing shows that an authenticated user can see other people's accounts by changing the ID. What is the weakness called, and what is the correct control?",
+    "options": [
+      "Weak authentication; introduce MFA.",
+      "Broken Object Level Authorization (BOLA/IDOR); verify on the server whether the user may access each requested object.",
+      "Lack of rate limiting; introduce quotas.",
+      "SSRF; introduce a destination allowlist."
+    ],
+    "answer": 1,
+    "explain": "The user is authenticated, but object-level authorization is missing (BOLA, first place in the OWASP API Top 10). MFA and rate limiting do not solve the check of object ownership."
+  },
+  {
+    "obj": "8.5",
+    "q": "When an error occurs in the authorization service, the application allows access \"so as not to interrupt the user's work\". Which secure coding principle is violated?",
+    "options": [
+      "Economy of mechanism",
+      "Open design",
+      "Fail secure (fail-safe defaults)",
+      "Least common mechanism"
+    ],
+    "answer": 2,
+    "explain": "Fail secure / fail-safe defaults: when a control fails, the default is to deny access. Note: in physical security and where human life is involved (e.g., doors during a fire), the priority is fail-safe for people, but that is not the case here."
+  },
+  {
+    "obj": "8.5",
+    "q": "During a code review, an undocumented login path that bypasses authentication was found, and the developer says it is \"for quick maintenance\". What is this and what should be done?",
+    "options": [
+      "A logic bomb; remove it after the condition expires.",
+      "A covert channel; monitor network traffic.",
+      "An acceptable practice if the password is strong.",
+      "A maintenance hook (backdoor); remove it before production and strengthen mandatory code review."
+    ],
+    "answer": 3,
+    "explain": "A maintenance hook or backdoor bypasses controls and must be removed before production; mandatory peer review is the control that detects it. A logic bomb is triggered by a condition, and a covert channel is an unauthorized transfer of information."
+  },
+  {
+    "obj": "8.1",
+    "type": "order",
+    "q": "Arrange the security activities by the SDLC phase in which they are first performed, from earliest to latest.",
+    "options": [
+      "DAST and pentesting of the running application",
+      "Threat modeling of the architecture",
+      "Data sanitization and revocation of accounts and keys",
+      "Defining security requirements and abuse cases",
+      "SAST and peer code review",
+      "Patch management and monitoring"
+    ],
+    "answer": [3, 1, 4, 0, 5, 2],
+    "explain": "Requirements (security requirements, abuse cases) → design (threat modeling) → development (SAST, review) → testing (DAST, pentest) → operations and maintenance (patches, monitoring) → disposal (sanitization, access revocation)."
+  },
+  {
+    "obj": "8.2",
+    "type": "match",
+    "q": "Match the description with the application testing or protection technique.",
+    "options": [
+      "Analysis of source code without execution, early in the IDE or CI.",
+      "Testing the running application from the outside, without access to the code.",
+      "An agent in production detects and blocks an attack from inside the application.",
+      "Sending unexpected and random inputs to discover crashes and parsing errors.",
+      "An agent tracks data flow during QA tests and points to the line of code."
+    ],
+    "targets": ["IAST", "Fuzzing", "SAST", "RASP", "DAST", "SCA"],
+    "answer": [2, 4, 3, 1, 0],
+    "explain": "SAST analyzes code without executing it, DAST the running application from the outside, RASP protects in production, fuzzing sends unexpected inputs, and IAST uses an agent during tests. SCA (third-party components) is a distractor."
+  },
+  {
+    "obj": "8.5",
+    "type": "spot",
+    "q": "Code review of a Flask API endpoint for invoices. A logged-in user may see only their own invoices. Mark the lines with security flaws.",
+    "snippet": "@app.route(\"/api/invoices/<invoice_id>\")\n@login_required\ndef get_invoice(invoice_id):\n    user = current_user()\n    sql = f\"SELECT * FROM invoices WHERE id = '{invoice_id}'\"\n    row = db.execute(sql).fetchone()\n    if row is None:\n        abort(404)\n    return jsonify(dict(row))\n\n@app.errorhandler(Exception)\ndef on_error(e):\n    return {\"error\": traceback.format_exc()}, 500",
+    "lang": "python",
+    "answer": [4, 12],
+    "explain": "Line 5: the query is built with an f-string from URL input, which is SQL injection; in addition the query does not filter by owner, so any logged-in user can read other users' invoices by changing the ID (IDOR/BOLA). Correct: a parameterized query with an ownership condition, e.g. WHERE id = ? AND owner_id = ?, with user.id from the session. Line 13: the error handler returns the full stack trace to the client (paths, queries, library versions); return a generic message to the user and write the details to an internal log."
+  }
+]

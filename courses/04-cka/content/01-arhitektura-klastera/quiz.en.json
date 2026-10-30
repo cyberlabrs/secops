@@ -1,0 +1,225 @@
+[
+  {
+    "obj": "1.7",
+    "q": "Node node01 is NotReady. After `ssh node01`, `systemctl status kubelet` shows `inactive (dead)` and `disabled`, and `journalctl -u kubelet` has no errors, only a stop message. Which command fixes the problem and survives a node reboot?",
+    "options": [
+      "systemctl enable --now kubelet",
+      "kubectl uncordon node01",
+      "systemctl restart containerd",
+      "kubeadm join --skip-phases=preflight"
+    ],
+    "answer": 0,
+    "explain": "The kubelet is stopped and disabled, so `enable --now` both starts it and enables it at boot. `uncordon` only removes the unschedulable mark and does not start the kubelet; restarting containerd does not start the kubelet."
+  },
+  {
+    "obj": "1.7",
+    "q": "A task asks for a static Pod `web-static` on node node01. On node01, `/var/lib/kubelet/config.yaml` says `staticPodPath: /etc/kubelet.d`. Where do you put the manifest?",
+    "options": [
+      "/etc/kubernetes/manifests/web-static.yaml on node01",
+      "/etc/kubelet.d/web-static.yaml on node01",
+      "/etc/kubernetes/manifests/web-static.yaml on controlplane",
+      "`kubectl apply -f web-static.yaml` with `spec.nodeName: node01` is enough"
+    ],
+    "answer": 1,
+    "explain": "The kubelet reads static Pods only from the `staticPodPath` directory on its own node. `/etc/kubernetes/manifests` is just the kubeadm default; `kubectl apply` with `nodeName` creates a regular Pod that goes through the API, not a static Pod."
+  },
+  {
+    "obj": "1.7",
+    "q": "In `kube-system` you see the Pod `nginx-static-node01`. You run `kubectl delete pod nginx-static-node01` and after a few seconds the Pod is back. How do you remove it permanently?",
+    "options": [
+      "kubectl delete pod nginx-static-node01 --force --grace-period=0",
+      "kubectl drain node01 --ignore-daemonsets",
+      "Delete or move its manifest out of the staticPodPath directory on node01",
+      "kubectl delete deployment nginx-static"
+    ],
+    "answer": 2,
+    "explain": "It is the mirror Pod of a static Pod; the kubelet brings it back as long as the file exists in staticPodPath. Force delete and drain act on the API object, and there is no Deployment that owns it."
+  },
+  {
+    "obj": "1.7",
+    "q": "After editing `/etc/kubernetes/manifests/kube-apiserver.yaml`, kubectl reports `The connection to the server 192.168.1.10:6443 was refused`. What is the fastest way to see the API server error?",
+    "options": [
+      "kubectl logs -n kube-system kube-apiserver-controlplane",
+      "kubectl describe pod -n kube-system kube-apiserver-controlplane",
+      "journalctl -u kube-apiserver",
+      "crictl ps -a | grep kube-apiserver, then crictl logs <container-id>"
+    ],
+    "answer": 3,
+    "explain": "Without the API server kubectl does not work, so you read the logs directly through the CRI with `crictl`. With kubeadm, kube-apiserver is not a systemd service but a static Pod, so `journalctl -u kube-apiserver` has nothing to show."
+  },
+  {
+    "obj": "1.7",
+    "q": "On node01 a Pod keeps crashing and immediately disappears from `crictl ps`. Which command also shows containers that have exited?",
+    "options": [
+      "crictl ps -a",
+      "crictl pods --state exited",
+      "crictl images -a",
+      "ctr containers list"
+    ],
+    "answer": 0,
+    "explain": "`crictl ps` without `-a` shows only running containers. `crictl pods` shows sandboxes, not containers, and `ctr` without `-n k8s.io` looks at the wrong containerd namespace."
+  },
+  {
+    "obj": "1.7",
+    "q": "A new worker node is NotReady. `kubectl describe node` shows `NetworkReady=false` and a message that the CNI plugin is not initialized. What do you check first on the node?",
+    "options": [
+      "Whether /etc/kubernetes/manifests/kube-proxy.yaml exists",
+      "Whether there is a configuration in /etc/cni/net.d/ and whether the CNI DaemonSet Pod is running on that node",
+      "Whether /etc/crictl.yaml is configured",
+      "Whether the CoreDNS Deployment is scaled to 2 replicas"
+    ],
+    "answer": 1,
+    "explain": "The runtime reports NetworkReady=false when there is no valid configuration in /etc/cni/net.d/, which is usually written by the CNI DaemonSet. kube-proxy is a DaemonSet, not a static Pod, crictl.yaml is only for the CLI tool, and CoreDNS does not affect node status."
+  },
+  {
+    "obj": "1.7",
+    "q": "A Pod hangs in ContainerCreating with the event `failed to setup network for sandbox ... failed to find plugin \"portmap\" in path [/opt/cni/bin]`. What is the cause?",
+    "options": [
+      "There is no configuration file at all in /etc/cni/net.d/",
+      "kube-proxy is not running on that node",
+      "The portmap plugin binary is missing from /opt/cni/bin/ even though the configuration lists it",
+      "The Service CIDR overlaps with the Pod CIDR"
+    ],
+    "answer": 2,
+    "explain": "The configuration exists (otherwise the error would say the CNI is not initialized), but the executable listed in the conflist is missing from /opt/cni/bin/. kube-proxy and the CIDRs do not affect sandbox network creation."
+  },
+  {
+    "obj": "1.7",
+    "q": "On a node, `/etc/cni/net.d/` contains `10-kindnet.conflist` and `87-podman-bridge.conflist`. Which configuration does the container runtime use?",
+    "options": [
+      "Both, merged in order",
+      "87-podman-bridge.conflist, because it was modified last",
+      "Neither, because only one file is allowed",
+      "10-kindnet.conflist, because the first file in lexical order is used"
+    ],
+    "answer": 3,
+    "explain": "The runtime reads the first configuration in alphabetical order of file names, which is why CNIs use numeric prefixes. Files are not merged and modification time does not matter."
+  },
+  {
+    "obj": "1.7",
+    "q": "A StorageClass has `provisioner: ebs.csi.aws.com`, the PVC is Pending, and the event says it is waiting for an external provisioner. Which command most quickly confirms that the CSI driver is registered in the cluster at all?",
+    "options": [
+      "kubectl get csidrivers",
+      "kubectl get crd | grep storage",
+      "ls /opt/cni/bin/",
+      "crictl images | grep ebs"
+    ],
+    "answer": 0,
+    "explain": "A CSIDriver object registers the driver in the cluster, and `kubectl get csinodes` shows where the node plugin is available. /opt/cni/bin is for network plugins, and the presence of an image does not mean the driver is running."
+  },
+  {
+    "obj": "1.7",
+    "q": "Match each component with how it runs in a kubeadm cluster.",
+    "type": "match",
+    "options": ["kubelet", "kube-scheduler", "kube-proxy", "CoreDNS"],
+    "targets": [
+      "Deployment in kube-system",
+      "systemd service on every node",
+      "DaemonSet in kube-system",
+      "static Pod from /etc/kubernetes/manifests",
+      "CronJob in kube-system"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "The kubelet is a systemd service because it starts everything else; the scheduler is a control plane static Pod; kubeadm installs kube-proxy as a DaemonSet and CoreDNS as a Deployment. No component is a CronJob."
+  },
+  {
+    "obj": "1.7",
+    "q": "Match each interface with the location or object you check when it is not working.",
+    "type": "match",
+    "options": ["CRI", "CNI", "CSI"],
+    "targets": [
+      "/etc/cni/net.d/ and /opt/cni/bin/",
+      "kubectl get csidrivers,csinodes",
+      "/etc/kubernetes/admin.conf",
+      "/run/containerd/containerd.sock and /etc/crictl.yaml"
+    ],
+    "answer": [3, 0, 1],
+    "explain": "The CRI is the runtime socket used by the kubelet and crictl; the CNI has configuration and plugin binaries on the node; CSI drivers register as CSIDriver and CSINode objects. admin.conf is the administrator's kubeconfig."
+  },
+  {
+    "obj": "1.2",
+    "q": "`kubeadm join` on a new node fails in the preflight phase with `[ERROR FileContent--proc-sys-net-ipv4-ip_forward]: contents are not set to 1`. Which fix is correct and permanent?",
+    "options": [
+      "modprobe br_netfilter",
+      "Add `net.ipv4.ip_forward = 1` to /etc/sysctl.d/k8s.conf and run `sysctl --system`",
+      "kubeadm join ... --ignore-preflight-errors=all",
+      "echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables"
+    ],
+    "answer": 1,
+    "explain": "A file in /etc/sysctl.d/ keeps the setting across reboots, and `sysctl --system` applies it immediately. br_netfilter and bridge-nf-call-iptables are different settings, and ignoring preflight errors leaves the node unable to route Pod traffic."
+  },
+  {
+    "obj": "1.2",
+    "q": "The kubelet on a new node does not start, and `journalctl -u kubelet` says swap is not supported. The task requires the kubelet to run without changing the kubelet configuration. What do you do?",
+    "options": [
+      "Set `failSwapOn: false` in /var/lib/kubelet/config.yaml",
+      "Set `swapBehavior: LimitedSwap`",
+      "swapoff -a and comment out the swap line in /etc/fstab, then restart the kubelet",
+      "systemctl mask swap.target without restarting the kubelet"
+    ],
+    "answer": 2,
+    "explain": "Disabling swap (and permanently via /etc/fstab) satisfies the default `failSwapOn: true`. The failSwapOn and swapBehavior options change the kubelet configuration, which the task forbids, and masking alone without swapoff does not turn off swap that is already active."
+  },
+  {
+    "obj": "1.2",
+    "q": "On a node with cgroup v2 and containerd 2.x, the kubelet uses `cgroupDriver: systemd`. Which setting in /etc/containerd/config.toml aligns the runtime?",
+    "options": [
+      "`sandbox_image = \"registry.k8s.io/pause:3.10\"`",
+      "`snapshotter = \"overlayfs\"`",
+      "`disable_apparmor = true`",
+      "`SystemdCgroup = true` in the runtimes.runc.options section of the CRI runtime plugin"
+    ],
+    "answer": 3,
+    "explain": "runc gets the systemd cgroup driver via `SystemdCgroup = true` under `[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]` (containerd 2.x). The sandbox image, snapshotter and AppArmor have nothing to do with the cgroup driver."
+  },
+  {
+    "obj": "1.2",
+    "q": "After `cat /etc/sysctl.d/k8s.conf` (contains net.bridge.bridge-nf-call-iptables = 1) and `sysctl --system`, you get the error `cannot stat /proc/sys/net/bridge/bridge-nf-call-iptables: No such file or directory`. What is missing?",
+    "options": [
+      "The br_netfilter kernel module is not loaded",
+      "The iptables package is not installed",
+      "The overlay kernel module is not loaded",
+      "containerd needs a restart"
+    ],
+    "answer": 0,
+    "explain": "The net.bridge.* keys exist only once br_netfilter is loaded (`modprobe br_netfilter`, permanently via /etc/modules-load.d/). The overlay module is for overlayfs, and neither the iptables package nor containerd creates those sysctl keys."
+  },
+  {
+    "obj": "1.2",
+    "q": "Put the steps for preparing a new Ubuntu node before `kubeadm join` in order.",
+    "type": "order",
+    "options": [
+      "Install kubeadm, kubelet and kubectl from pkgs.k8s.io and run apt-mark hold",
+      "Disable swap (swapoff -a and /etc/fstab)",
+      "Load the overlay and br_netfilter modules and set sysctl net.ipv4.ip_forward=1",
+      "Install containerd and set SystemdCgroup = true, then restart containerd",
+      "Run kubeadm join with the command from `kubeadm token create --print-join-command`"
+    ],
+    "answer": [1, 2, 3, 0, 4],
+    "explain": "First the OS (swap, modules, sysctl), then the runtime, then the Kubernetes packages, and only at the end the join. The runtime must be running before the join because preflight checks the CRI socket."
+  },
+  {
+    "obj": "1.2",
+    "q": "You have a kubeconfig with contexts `prod` and `lab`. The task says you work on cluster `lab` in namespace `team-a` and that all subsequent commands should go to that namespace by default. Which combination achieves this?",
+    "options": [
+      "kubectl config set-cluster lab --namespace=team-a",
+      "export KUBECONFIG=lab; kubectl config set-context --namespace=team-a",
+      "kubectl config use-context lab && kubectl config set-context --current --namespace=team-a",
+      "kubectl config use-context team-a"
+    ],
+    "answer": 2,
+    "explain": "`use-context` switches the active context, and `set-context --current --namespace` writes the default namespace into it. The namespace is part of the context, not the cluster, and `team-a` is not a context name."
+  },
+  {
+    "obj": "1.2",
+    "q": "On the controlplane node, `kubectl get nodes` reports that the server localhost:8080 refused the connection, even though the cluster is running. There is no ~/.kube/config in the user's home directory. What is the fastest fix?",
+    "options": [
+      "systemctl restart kubelet",
+      "export KUBECONFIG=/etc/kubernetes/admin.conf",
+      "kubeadm init phase kubeconfig kubelet",
+      "kubectl config use-context kubernetes-admin@kubernetes"
+    ],
+    "answer": 1,
+    "explain": "Without a kubeconfig, kubectl tries localhost:8080; admin.conf contains the API server address and administrator credentials. The kubelet is working fine, phase kubeconfig kubelet creates kubelet.conf, and use-context does not help when there is no kubeconfig."
+  }
+]

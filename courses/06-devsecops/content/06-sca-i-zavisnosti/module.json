@@ -1,0 +1,13 @@
+{
+  "title": "SCA i zavisnosti",
+  "summary": "SCA sa osv-scannerom i Trivyjem, prioritizacija po CVSS, EPSS i KEV, pinovanje i automatska ažuriranja (Renovate, Dependabot), odbrana od dependency confusion i zlonamjernih paketa te provjera licenci.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.2",
+    "3.3",
+    "3.4"
+  ],
+  "title_en": "SCA and dependencies",
+  "summary_en": "SCA with osv-scanner and Trivy, prioritizing by CVSS, EPSS and KEV, pinning and automated updates (Renovate, Dependabot), defending against dependency confusion and malicious packages, and license checks."
+}

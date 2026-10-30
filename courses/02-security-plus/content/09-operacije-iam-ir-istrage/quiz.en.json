@@ -1,0 +1,333 @@
+[
+  {
+    "obj": "4.5",
+    "q": "A meeting scheduling mobile app asks the user to allow it to read and write their Google calendar, without the app ever seeing the user's password. Which protocol is MOST likely being used here?",
+    "options": [
+      "SAML",
+      "OAuth 2.0",
+      "LDAP",
+      "Kerberos"
+    ],
+    "answer": 1,
+    "explain": "OAuth 2.0 is for delegated authorization: the user gives consent, and the app receives an access token with a limited scope. SAML is XML-based authentication for web SSO, LDAP is directory access, and Kerberos works within a domain."
+  },
+  {
+    "obj": "4.5",
+    "q": "A company wants employees to sign in to a partner's SaaS HR application with their corporate accounts. The partner's application accepts signed XML assertions from the corporate Identity Provider. Which technology is this?",
+    "options": [
+      "OAuth 2.0 with an access token",
+      "OpenID Connect with an ID token",
+      "LDAPS",
+      "SAML federation"
+    ],
+    "answer": 3,
+    "explain": "Signed XML assertions between an IdP and an SP are the hallmark of SAML, and trust between two organizations is federation. OIDC uses a JWT ID token, OAuth uses an access token for authorization, and LDAPS is encrypted directory access."
+  },
+  {
+    "obj": "4.5",
+    "q": "An engineer who has worked in three different teams over five years still has permissions from all three, even though his current job requires only one set. What would BEST detect and fix this problem?",
+    "options": [
+      "A periodic access review with recertification by managers",
+      "Introducing MFA for all accounts",
+      "Changing the password policy",
+      "Identity proofing at hiring"
+    ],
+    "answer": 0,
+    "explain": "This is privilege creep, and it's uncovered by a periodic access review in which owners confirm the permissions are still needed. MFA and passwords protect authentication, not excess permissions, and identity proofing happens before an account is issued."
+  },
+  {
+    "obj": "4.5",
+    "q": "An audit requires that no cloud administrator have standing admin rights. An admin should request a role when needed, get approval, and receive the role for a limited time. Which model describes this?",
+    "options": [
+      "Discretionary access control",
+      "Rule-based access control",
+      "Just-in-time access",
+      "Mandatory access control"
+    ],
+    "answer": 2,
+    "explain": "JIT grants a privilege on request and temporarily, e.g., through Azure PIM. DAC leaves the decision to the resource owner, rule-based applies global rules, and MAC uses labels and clearance."
+  },
+  {
+    "obj": "4.5",
+    "q": "In a government agency, every document has a classification label, and a user can open a document only if their clearance matches or is higher. Users can't change labels or share documents at their own discretion. Which access control model is in use?",
+    "options": [
+      "Role-based",
+      "Discretionary",
+      "Time-based",
+      "Mandatory"
+    ],
+    "answer": 3,
+    "explain": "MAC decides based on labels and clearances imposed by the system, and the user can't change them. With DAC the owner decides on sharing, RBAC looks at the role, and time-based looks at a time window."
+  },
+  {
+    "obj": "4.5",
+    "q": "Policy requires changing the password every 90 days and remembers the last 10 passwords. The help desk notices users changing their password 11 times in one day to get back to the old one. Which setting BEST solves the problem?",
+    "options": [
+      "Increase the complexity requirement",
+      "Introduce a minimum password age",
+      "Reduce password expiration to 30 days",
+      "Increase password length to 16 characters"
+    ],
+    "answer": 1,
+    "explain": "A minimum password age prevents multiple changes in a row, so the user can't quickly cycle through the history. Complexity and length don't prevent reusing the old password, and more frequent expiration would only make the problem worse."
+  },
+  {
+    "obj": "4.5",
+    "type": "match",
+    "q": "Match each authentication method with its factor category.",
+    "options": [
+      "A FIDO2 security key (YubiKey)",
+      "A fingerprint on the laptop's reader",
+      "A 6-digit PIN",
+      "A TOTP code from an authenticator app",
+      "Sign-in allowed only from a GPS location within the country",
+      "Analysis of keystroke rhythm"
+    ],
+    "targets": [
+      "Something you know",
+      "Something you have",
+      "Something you are",
+      "Somewhere you are",
+      "Something you do"
+    ],
+    "answer": [
+      1,
+      2,
+      0,
+      1,
+      3,
+      4
+    ],
+    "explain": "A hard token (YubiKey) and a soft token (TOTP on a phone) are possession. A fingerprint is inherence (biometrics). A PIN is knowledge. GPS location is somewhere you are, and typing rhythm is behavior (something you do)."
+  },
+  {
+    "obj": "4.5",
+    "q": "An Entra ID tenant requires MFA and Conditional Access for all accounts. The organization fears that an MFA service outage or a misconfigured policy could lock out all administrators. What is the BEST measure?",
+    "options": [
+      "An emergency access (break-glass) account with a strong credential in a safe, excluded from risky policies, with an alert on every use",
+      "Disable MFA for all administrators",
+      "Give the Global Administrator role to a service account",
+      "Share a single admin account among all administrators"
+    ],
+    "answer": 0,
+    "explain": "A break-glass account provides access when the normal path doesn't work, and the alert and storage in a safe limit misuse. Disabling MFA, a privileged service account, and a shared admin account introduce greater risks and lose accountability."
+  },
+  {
+    "obj": "4.6",
+    "q": "After a phishing alert, the SOC wants to automatically: extract the URLs from the message, check their reputation, delete the message from all inboxes, block the domain on the proxy, and open a ticket. Which solution BEST enables this?",
+    "options": [
+      "A SIEM correlation rule",
+      "A vulnerability scanner",
+      "SOAR with a playbook",
+      "A NetFlow collector"
+    ],
+    "answer": 2,
+    "explain": "SOAR orchestrates multiple tools (email, threat intel, proxy, ticketing) through a playbook and executes the steps automatically. A SIEM detects and alerts, but doesn't carry out this sequence of actions itself, and a scanner and NetFlow play no role in the response."
+  },
+  {
+    "obj": "4.6",
+    "q": "A team is introducing an AI agent that investigates alerts and can launch response actions on its own. Management fears that a wrong conclusion could lead the agent to isolate production servers. What should be introduced FIRST?",
+    "options": [
+      "Guardrails: a limited set of allowed actions and human approval for risky steps",
+      "Predictive analysis to forecast attacks",
+      "A chatbot interface for analysts",
+      "More integrations with other tools"
+    ],
+    "answer": 0,
+    "explain": "Guardrails restrict what automation and AI may do and introduce human approval for high-impact actions. Predictive analysis and a chatbot are other AI capabilities, and more integrations increase complexity and the reach of possible mistakes."
+  },
+  {
+    "obj": "4.6",
+    "q": "Someone manually opened port 3389 on a production network security group in the Azure portal. An hour later the rule was removed automatically because it didn't match the configuration defined in code. Which application of automation prevented this?",
+    "options": [
+      "Ticket management",
+      "User provisioning",
+      "Anomaly detection",
+      "Desired state management"
+    ],
+    "answer": 3,
+    "explain": "Desired state management continuously compares the actual state with the defined one and corrects deviations (drift). Anomaly detection would only report unusual behavior, and provisioning and tickets handle other tasks."
+  },
+  {
+    "obj": "4.7",
+    "type": "order",
+    "q": "Order the incident response phases.",
+    "options": [
+      "Eradication/recovery",
+      "Preparation",
+      "Containment",
+      "Post-incident (lessons learned, RCA)",
+      "Identification",
+      "Investigation"
+    ],
+    "answer": [
+      1,
+      4,
+      5,
+      2,
+      0,
+      3
+    ],
+    "explain": "First preparation (plan, roles, playbooks), then identifying the incident, investigation and evidence collection, containing the spread, removing the cause and returning to operation, and finally lessons learned and root cause analysis that feed back into preparation."
+  },
+  {
+    "obj": "4.7",
+    "q": "The CISO wants to check whether management, legal, and IT know their roles in case of a ransomware attack, with no impact on production systems and at minimal cost. What is the BEST choice?",
+    "options": [
+      "A penetration test",
+      "A tabletop exercise",
+      "A full attack simulation against production",
+      "A failover test to the DR site"
+    ],
+    "answer": 1,
+    "explain": "A tabletop is a discussion of a scenario around a table: it's cheap, doesn't touch systems, and uncovers unclear roles and gaps in the plan. A pentest and an attack simulation are technical exercises with higher cost and risk, and a failover test checks recovery, not roles."
+  },
+  {
+    "obj": "4.7",
+    "q": "EDR confirmed that ransomware on a file server is starting to encrypt shared folders and is trying to spread to other servers. What should be done FIRST?",
+    "options": [
+      "Reimage the server from the golden image",
+      "Notify customers of a possible breach",
+      "Isolate the server from the network",
+      "Call a lessons learned meeting"
+    ],
+    "answer": 2,
+    "explain": "When an incident is confirmed and actively spreading, the priority is containment (isolation), while preserving memory for the investigation. Reimaging is eradication/recovery, customer notification comes once the impact is determined, and lessons learned comes at the end."
+  },
+  {
+    "obj": "4.7",
+    "q": "A company received notice of a lawsuit from a former employee. Legal requires that the emails and documents of the people involved must not be deleted, even though the retention policy normally deletes mail after two years. Which measure ensures this?",
+    "options": [
+      "Chain of custody",
+      "E-discovery export",
+      "Root cause analysis",
+      "Legal hold (preservation)"
+    ],
+    "answer": 3,
+    "explain": "A legal hold stops the deletion of relevant data regardless of regular retention. E-discovery is finding and producing the data (it comes after preservation), chain of custody documents evidence handling, and RCA looks for the cause of an incident."
+  },
+  {
+    "obj": "4.7",
+    "q": "Which TWO activities belong to the post-incident phase? Choose TWO.",
+    "options": [
+      "Root cause analysis",
+      "Threat hunting",
+      "Quarantining an infected host",
+      "A post-incident report (PIR) with a timeline and recommendations"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "After an incident, the team analyzes the actual cause and writes a formal report, along with lessons learned. Threat hunting belongs to identification (proactive searching), and quarantining a host belongs to containment."
+  },
+  {
+    "obj": "4.8",
+    "type": "order",
+    "q": "A forensic investigator arrives at a compromised server that's still running. Order the evidence sources by order of volatility, starting with the one to collect FIRST.",
+    "options": [
+      "Disk contents",
+      "RAM (running processes, network connections)",
+      "CPU registers and cache",
+      "Archival backup tapes",
+      "Logs on a remote SIEM",
+      "Swap/pagefile and temporary files"
+    ],
+    "answer": [
+      2,
+      1,
+      5,
+      0,
+      4,
+      3
+    ],
+    "explain": "Collect from the most volatile: registers and cache, RAM, temporary file systems and swap, disk, remote logs, and finally archival media that practically never change."
+  },
+  {
+    "obj": "4.8",
+    "q": "An investigation needs to show how much data one host sent to an external IP address over the last 30 days. The organization doesn't have space to store full traffic. Which source is BEST?",
+    "options": [
+      "NetFlow/IPFIX",
+      "Packet capture from the core switch",
+      "Vulnerability scanner results",
+      "Video surveillance recordings"
+    ],
+    "answer": 0,
+    "explain": "NetFlow/IPFIX stores flow metadata (source, destination, ports, bytes, time) using little space, ideal for volumes and patterns over a long period. Packet capture provides content but takes too much space, and a scanner and video don't track traffic."
+  },
+  {
+    "obj": "4.8",
+    "q": "An analyst parses the Windows Security log and sees 300 event 4625 entries in 10 minutes from one IP address, for 300 different usernames, one attempt per account. What is MOST likely happening?",
+    "options": [
+      "A brute force attack on one account",
+      "Password spraying",
+      "Pass-the-hash",
+      "Credential replay with a stolen session"
+    ],
+    "answer": 1,
+    "explain": "One or a few attempts against many different accounts from the same address is the password spraying pattern (it avoids account lockout). Brute force makes many attempts against the same account, and pass-the-hash and replay don't produce a mass of failed logins with different names."
+  },
+  {
+    "obj": "4.8",
+    "q": "A forensic investigator must preserve a laptop's disk so that deleted files can also be analyzed, and prove in court that the evidence wasn't altered. What should be done?",
+    "options": [
+      "Copy the user's home folder to an external drive",
+      "Take a snapshot in the hypervisor",
+      "Make a bit-level copy using a write blocker and record the SHA-256 hash of the original and the copy",
+      "Turn on the laptop and export the Event logs"
+    ],
+    "answer": 2,
+    "explain": "A bit-level copy captures deleted data and free space, a write blocker prevents changes to the original, and matching hashes prove integrity. A file copy doesn't capture deleted data, a snapshot applies to virtual machines, and working on the original alters the evidence."
+  },
+  {
+    "obj": "4.6",
+    "q": "The SOC receives 300 phishing reports a day. Analysts manually extract URLs, check them in a threat intel service, and block domains. What BEST reduces the workload?",
+    "options": [
+      "Hire more analysts",
+      "A SOAR playbook that automatically extracts indicators, enriches them, and blocks confirmed malicious ones, with human approval for borderline cases",
+      "Turn off phishing reporting",
+      "Raise the alert threshold in the SIEM"
+    ],
+    "answer": 1,
+    "explain": "Automating repeatable steps (orchestration) saves time and speeds up response. Human approval for unclear cases is a guardrail against false positives."
+  },
+  {
+    "obj": "4.6",
+    "q": "A team is introducing an AI agent that can independently close tickets and change firewall rules. Which TWO measures are the MOST important guardrails? Choose TWO.",
+    "options": [
+      "The minimum possible permissions for the agent and human approval for high-impact changes",
+      "Unrestricted access to production for speed",
+      "Logging every agent action and the ability to quickly roll back changes",
+      "Turning off monitoring to avoid duplicate alerts"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Agentic AI increases the risk of mistakes and abuse (e.g., prompt injection). Least privilege, human-in-the-loop, and an audit trail with rollback capability are the basic protections."
+  },
+  {
+    "obj": "4.6",
+    "q": "What is the BIGGEST risk of unchecked automation, e.g., a script that automatically locks accounts after a SIEM alert?",
+    "options": [
+      "Too much documentation",
+      "A false positive can lock out legitimate users en masse and cause a business disruption",
+      "The script is too slow",
+      "There is no risk"
+    ],
+    "answer": 1,
+    "explain": "Automation amplifies mistakes too. That's why process risks and guardrails exist: thresholds, exception lists (e.g., break-glass accounts), testing, and gradual rollout."
+  },
+  {
+    "obj": "4.5",
+    "type": "spot",
+    "q": "The policy should follow the lesson's recommendations: long passwords (at least 14 characters), no reuse of old passwords, checking against breached passwords and no periodic expiration. Click the lines that violate this.",
+    "lang": "yaml",
+    "snippet": "# password policy for all domain users\npassword_policy:\n  min_length: 6\n  max_length: 128\n  allow_passphrases: true\n  check_breached_list: true      # Have I Been Pwned / leaked credentials\n  history: 0\n  min_age_days: 1\n  max_age_days: 0                # no periodic change; change only on suspicion\n  lockout_threshold: 10\n  lockout_window_minutes: 15\n  password_manager_allowed: true",
+    "answer": [
+      2,
+      6
+    ],
+    "explain": "min_length: 6 is too short; length is the most important factor, so use min_length: 14 or more. history: 0 means the system remembers no old passwords, so a user can set the same one again (reuse); use e.g. history: 24, and min_age_days: 1 then prevents quickly cycling back to the old password. max_age_days: 0 intentionally disables periodic expiration, which is in line with NIST SP 800-63B."
+  }
+]

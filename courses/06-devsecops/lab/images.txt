@@ -1,0 +1,5 @@
+# slike u lokalnom registriju (127.0.0.1:5000), samo za arhitekturu builda
+python:3.9-slim
+python:3.13-slim
+gcr.io/distroless/python3-debian12:nonroot
+alpine:3.18

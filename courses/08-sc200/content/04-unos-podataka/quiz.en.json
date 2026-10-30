@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "1.3",
+    "q": "You have a Microsoft Sentinel workspace and 200 Windows servers in an on-premises data center. The servers are not managed by any Azure service. You need to collect Windows Security events with the Windows Security Events via AMA connector. What should you do FIRST?",
+    "options": [
+      "Install the Log Analytics agent (MMA) on each server and connect it to the workspace.",
+      "Onboard the servers to Azure Arc.",
+      "Create a data collection endpoint in the same region as the workspace.",
+      "Enable Windows Event Forwarding on all servers."
+    ],
+    "answer": 1,
+    "explain": "Machines that are not Azure VMs must have Azure Arc (Connected Machine agent) before the AMA connector can install the agent on them and associate a DCR. MMA has been retired, and a DCE and WEF are not prerequisites for this connector."
+  },
+  {
+    "obj": "1.3",
+    "q": "You have Microsoft Sentinel. You need to collect only events 4624, 4625 and 4768 from domain controllers and minimize ingestion costs. You use the Windows Security Events via AMA connector. What should you configure in the data collection rule?",
+    "options": [
+      "The Minimal event set.",
+      "The All events event set and an analytics rule that filters on EventID.",
+      "The Custom event set with an XPath query.",
+      "The Common event set and a transformation in the workspace transformation DCR."
+    ],
+    "answer": 2,
+    "explain": "The Custom event set with an XPath query (e.g. Security!*[System[(EventID=4624 or EventID=4625 or EventID=4768)]]) filters at the source, so the agent sends only those events. Minimal and Common have a predefined set that doesn't exactly match the requirement, and an analytics rule doesn't reduce ingestion."
+  },
+  {
+    "obj": "1.3",
+    "q": "The organization already has a Windows Event Collector (WEC) server that collects Security events from 500 workstations through WEF. You installed AMA on the WEC and enabled the Windows Forwarded Events connector. Events are arriving, but the built-in brute force analytics rule doesn't generate alerts. What is the MOST LIKELY cause?",
+    "options": [
+      "The events are written to the WindowsEvent table, and the rule reads SecurityEvent.",
+      "WEF doesn't forward events from the Security log.",
+      "AMA on the WEC server has no Azure Arc license.",
+      "The rule is NRT and doesn't support data from WEC servers."
+    ],
+    "answer": 0,
+    "explain": "Events collected through WEF end up in WindowsEvent, including those from the Security log, and not in SecurityEvent. Built-in rules that read SecurityEvent don't see them; the query must be adapted or ASIM parsers used."
+  },
+  {
+    "obj": "1.3",
+    "q": "You have a firewall that can send logs in CEF format. You need the data to be parsed into columns such as DeviceVendor, SourceIP and DestinationIP, and the built-in analytics rules for that firewall to work. Which table and connector should you use?",
+    "options": [
+      "Syslog via AMA, table Syslog.",
+      "Custom Logs via AMA, table Firewall_CL.",
+      "Azure Firewall connector, table AzureDiagnostics.",
+      "Common Event Format (CEF) via AMA, table CommonSecurityLog."
+    ],
+    "answer": 3,
+    "explain": "CEF via AMA writes to CommonSecurityLog with parsed columns, and the built-in rules for CEF devices read that table. Syslog via AMA would give an unparsed message in SyslogMessage."
+  },
+  {
+    "obj": "1.3",
+    "q": "On a Linux log forwarder, you created a DCR for CEF via AMA and a DCR for Syslog via AMA. You notice that the same firewall messages appear in both the CommonSecurityLog and the Syslog table. What should you do?",
+    "options": [
+      "Remove the Syslog via AMA connector from the workspace.",
+      "Remove from the Syslog DCR the facility that the firewall uses for CEF messages.",
+      "Change the port rsyslog listens on from 514 to 28330.",
+      "Add an analytics rule that deletes duplicates from the Syslog table."
+    ],
+    "answer": 1,
+    "explain": "Duplication occurs when the Syslog and CEF streams use the same facility. The solution is to separate the facilities or filter in the DCR. Removing the connector loses other Syslog sources, port 28330 is the internal port to AMA, and an analytics rule doesn't delete data."
+  },
+  {
+    "obj": "1.3",
+    "q": "You are setting up a Linux log forwarder in an on-premises data center for CEF via AMA. The forwarder is not an Azure VM. In the DCR wizard, the forwarder doesn't appear in the resource list. What should you do?",
+    "options": [
+      "Install the Azure Arc Connected Machine agent on the forwarder.",
+      "Run the Forwarder_AMA_installer.py script before creating the DCR.",
+      "Open port 514 UDP on the firewall towards the forwarder.",
+      "Assign yourself the Microsoft Sentinel Contributor role."
+    ],
+    "answer": 0,
+    "explain": "Non-Azure machines appear in the DCR wizard only once they are Arc-enabled. The installation script configures the syslog daemon after AMA is installed, port 514 doesn't affect the resource list, and creating a DCR requires the Monitoring Contributor role, not Sentinel Contributor."
+  },
+  {
+    "obj": "1.3",
+    "q": "In a Syslog via AMA DCR, for the auth facility you selected the minimum log level LOG_ERR. Which levels will AMA collect for that facility?",
+    "options": [
+      "Only LOG_ERR.",
+      "LOG_ERR, LOG_WARNING, LOG_NOTICE, LOG_INFO and LOG_DEBUG.",
+      "LOG_ERR, LOG_CRIT, LOG_ALERT and LOG_EMERG.",
+      "All levels, because the log level applies only to CEF."
+    ],
+    "answer": 2,
+    "explain": "The selected level is the minimum: it and all more severe levels (CRIT, ALERT, EMERG) are collected. Less severe levels such as WARNING or INFO are not collected."
+  },
+  {
+    "obj": "1.3",
+    "q": "You have 40 Azure subscriptions in one management group, and new ones are added all the time. You need the Azure Activity logs of all existing and future subscriptions to reach the Sentinel workspace with the LEAST administrative effort. What should you do?",
+    "options": [
+      "Manually create a diagnostic setting for the Activity log in each subscription.",
+      "Create a Logic App that checks for new subscriptions every day.",
+      "Assign the policy to each resource group in each subscription.",
+      "Assign the Configure Azure Activity logs to stream to specified Log Analytics workspace policy to the management group and create a remediation task."
+    ],
+    "answer": 3,
+    "explain": "A policy with DeployIfNotExists at the management group level covers new subscriptions automatically, and the remediation task applies the diagnostic setting to existing ones. The Activity log is at the subscription level, so a resource group is not the right scope."
+  },
+  {
+    "obj": "1.3",
+    "q": "You assigned the policy for Azure Activity logs to the Prod-01 subscription without a remediation task. After two days, there is no data from Prod-01 in the AzureActivity table. What should you do?",
+    "options": [
+      "Create a remediation task for the existing policy assignment.",
+      "Change the policy effect to Audit.",
+      "Wait seven days for the policy to be evaluated.",
+      "Install AMA on all VMs in the subscription."
+    ],
+    "answer": 0,
+    "explain": "DeployIfNotExists doesn't change existing resources without a remediation task. Audit only reports, waiting doesn't help, and the Activity log is not collected by an agent."
+  },
+  {
+    "obj": "1.3",
+    "q": "Your organization uses a threat intelligence platform (TIP) that can send STIX objects over REST. You need to ingest indicators into Sentinel, but also threat actor and attack pattern objects and their relationships. What should you use?",
+    "options": [
+      "The Threat Intelligence Platforms connector.",
+      "The Threat Intelligence upload API.",
+      "The Microsoft Defender Threat Intelligence connector.",
+      "A watchlist with a CSV file of indicators."
+    ],
+    "answer": 1,
+    "explain": "The upload API accepts STIX objects (not only indicators), doesn't require a connector and is recommended for TIP integrations. The TIP connector uses the old tiIndicators API, supports only indicators and is being deprecated. MDTI brings Microsoft's indicators, not yours."
+  },
+  {
+    "obj": "1.3",
+    "q": "A partner gives you access to a TAXII 2.1 server with a STIX feed. What do you need to prepare to enable the Threat Intelligence - TAXII connector?",
+    "options": [
+      "A client secret of an Entra application with the Microsoft Sentinel Contributor role.",
+      "A data collection endpoint and a DCR with the Custom-TI_CL stream.",
+      "The API root and collection ID of the TAXII server.",
+      "A Linux forwarder with port 514 open."
+    ],
+    "answer": 2,
+    "explain": "The TAXII connector is a built-in TAXII client that needs the API root and collection ID (plus any server credentials). An Entra application with the Sentinel Contributor role is for the upload API, and a DCR and a forwarder are not part of TI ingestion."
+  },
+  {
+    "obj": "1.3",
+    "q": "An analyst writes a hunting query over threat intelligence data and gets multiple rows for the same indicator. Why, and how do you solve it?",
+    "options": [
+      "The indicator was imported from two TAXII servers; one connector should be deleted.",
+      "The ThreatIntelIndicators table doesn't support deduplication; ThreatIntelligenceIndicator should be used.",
+      "The indicator has expired; filter on IsDeleted.",
+      "Sentinel writes a new row on every change and on periodic re-ingestion; take the latest version with summarize arg_max(TimeGenerated, *) by Id."
+    ],
+    "answer": 3,
+    "explain": "Every creation, modification or periodic re-ingestion (every 7–10 days) adds a new row. The version with the newest TimeGenerated per Id field applies. The old ThreatIntelligenceIndicator table no longer receives data."
+  },
+  {
+    "obj": "1.3",
+    "q": "An application in your data center needs to send JSON records to Sentinel. The records have an EventTime field that should become TimeGenerated, and the Password field must never be written. Which solution should you implement?",
+    "options": [
+      "A custom _CL table, a DCR with a transformation and sending through the Logs Ingestion API.",
+      "The HTTP Data Collector API and an analytics rule that deletes the Password field.",
+      "Custom Logs via MMA and a workspace transformation DCR.",
+      "Syslog via AMA and the parse operator in a hunting query."
+    ],
+    "answer": 0,
+    "explain": "The Logs Ingestion API sends data to a DCR whose transformation (source | extend TimeGenerated = todatetime(EventTime) | project-away Password) runs before the data is written. The HTTP Data Collector API and MMA are legacy, and deleting with a query doesn't prevent ingestion."
+  },
+  {
+    "obj": "1.3",
+    "q": "You are creating a custom table from the Azure CLI for data from your own scanner. Which table name is correct?",
+    "options": [
+      "ScannerFindings",
+      "ScannerFindings_CL",
+      "ScannerFindings_CF",
+      "Custom-ScannerFindings"
+    ],
+    "answer": 1,
+    "explain": "Custom tables must have the _CL suffix; the portal adds it automatically, but the CLI and API don't. _CF is the suffix for custom columns in Azure tables, and Custom- is the prefix of a stream name in a DCR, not of a table."
+  },
+  {
+    "obj": "1.3",
+    "q": "You have a DCR transformation for a Syslog stream. Which transformKql is VALID?",
+    "options": [
+      "source | summarize count() by Facility",
+      "source | join kind=inner (Watchlist) on HostName",
+      "source | where not(Facility == \"daemon\" and SeverityLevel == \"info\") | project-away ProcessID",
+      "source | top 100 by TimeGenerated"
+    ],
+    "answer": 2,
+    "explain": "A transformation runs record by record, so where, extend, project, project-away and scalar functions are allowed. summarize, join and top work over multiple rows and are not supported."
+  },
+  {
+    "obj": "1.3",
+    "q": "You have Sentinel and need to collect: (1) Security events from Windows servers so that built-in rules work without changes and (2) Linux server logs for the auth and authpriv facilities. Which TWO connectors should you configure? (Choose TWO.)",
+    "options": [
+      "Windows Security Events via AMA",
+      "Windows Forwarded Events",
+      "Syslog via AMA",
+      "Common Event Format (CEF) via AMA",
+      "Azure Activity"
+    ],
+    "answer": [0, 2],
+    "explain": "Windows Security Events via AMA populates SecurityEvent, which the built-in rules use, and Syslog via AMA collects auth and authpriv from Linux servers. Forwarded Events writes to WindowsEvent, CEF is for devices that send CEF, and Azure Activity is for the Azure control plane."
+  },
+  {
+    "obj": "1.3",
+    "q": "You need Azure Key Vault logs (secret access) to reach Sentinel in resource-specific tables, for all existing and future Key Vaults. Which TWO steps should you take? (Choose TWO.)",
+    "options": [
+      "Install AMA on all VMs that use Key Vault.",
+      "Assign an Azure Policy that configures diagnostic settings for Key Vault to the workspace.",
+      "Create a remediation task for existing Key Vaults.",
+      "Enable the Threat Intelligence - TAXII connector.",
+      "Create a custom KeyVault_CL table."
+    ],
+    "answer": [1, 2],
+    "explain": "Azure resource logs go through diagnostic settings; the policy (DeployIfNotExists) covers new Key Vaults, and the remediation task covers existing ones. AMA and a custom table are not needed for resource logs."
+  },
+  {
+    "obj": "1.3",
+    "type": "order",
+    "q": "Order the steps for collecting CEF logs from an on-premises firewall through a Linux forwarder, from first to last.",
+    "options": [
+      "On the forwarder, run Forwarder_AMA_installer.py so that rsyslog listens on port 514.",
+      "Install the Azure Arc Connected Machine agent on the Linux forwarder.",
+      "Configure the firewall to send CEF messages to the forwarder's IP and check CommonSecurityLog.",
+      "Install the solution from the Content hub and, on the CEF via AMA connector page, create a DCR with the forwarder as the resource."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "A non-Azure forwarder first needs Arc to appear in the DCR wizard. Creating the DCR installs AMA, then the script configures the syslog daemon, and only then is the device pointed at the forwarder and the data checked."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match the data source with the table Sentinel writes it to.",
+    "options": [
+      "Windows Security Events via AMA",
+      "Windows Forwarded Events (WEF/WEC)",
+      "CEF via AMA",
+      "Azure Activity connector",
+      "Threat Intelligence upload API (indicators)"
+    ],
+    "targets": ["Syslog", "CommonSecurityLog", "SecurityEvent", "AzureActivity", "WindowsEvent", "ThreatIntelIndicators"],
+    "answer": [2, 4, 1, 3, 5],
+    "explain": "The AMA Security connector populates SecurityEvent, WEF goes to WindowsEvent, CEF to CommonSecurityLog, the Activity log to AzureActivity, and STIX indicators to ThreatIntelIndicators. The Syslog table is for Syslog via AMA."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match the requirement with the place where the filtering should be done.",
+    "options": [
+      "Collect only EventIDs 4624 and 4625 from Windows servers.",
+      "Drop Syslog messages whose text contains the word heartbeat.",
+      "Don't write TI indicators from a TAXII feed with confidence below 30.",
+      "From Linux servers, take only messages of level LOG_WARNING and more severe for the cron facility."
+    ],
+    "targets": ["TI ingestion rule", "XPath query in the DCR", "Facility and minimum log level in the DCR", "transformKql in the DCR"],
+    "answer": [1, 3, 0, 2],
+    "explain": "An EventID filter is XPath in the DCR, filtering by message content is done by transformKql, TI from connectors is filtered with an ingestion rule, and coarse Syslog filtering by facility and level is done in the Collect step of the DCR."
+  },
+  {
+    "type": "spot",
+    "obj": "1.3",
+    "q": "Deploying the DCR with this transformation is rejected. Mark the lines with operators that a DCR transformation does not support.",
+    "snippet": "// transformKql in the DCR for custom table KursApp_CL\nsource\n| extend TimeGenerated = todatetime(EventTime)\n| where Severity != \"Debug\"\n| extend UserMasked = strcat(substring(UserName, 0, 2), \"***\")\n| summarize Count = count() by bin(TimeGenerated, 1m), Computer, Severity, Message, UserMasked\n| project TimeGenerated, Computer, Severity, Message, UserMasked\n| sort by TimeGenerated desc",
+    "lang": "kql",
+    "answer": [
+      5,
+      7
+    ],
+    "explain": "The transformation runs record by record before ingestion, so it does not support operators that look at multiple rows: summarize and sort (nor join, union, top). Do aggregation later (a summary rule or a query), and keep where, extend and project in the transformation. todatetime, strcat and substring are scalar functions and are allowed."
+  }
+]

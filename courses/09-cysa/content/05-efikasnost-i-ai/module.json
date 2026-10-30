@@ -1,0 +1,12 @@
+{
+  "title": "Automatizacija, efikasnost i AI u SecOps-u",
+  "title_en": "Automation, efficiency, and AI in SecOps",
+  "summary": "Playbook i runbook, SOAR i IaC, obogaćivanje, tuning alarma i dashboardi, integracije kroz API, webhook i plug-in, te AI u SOC-u: slučajevi upotrebe, rizici (halucinacije, izlaganje podataka, trovanje modela, prompt injection) i governance.",
+  "summary_en": "Playbooks and runbooks, SOAR and IaC, enrichment, alert tuning and dashboards, integrations via API, webhook, and plug-in, and AI in the SOC: use cases, risks (hallucinations, data exposure, model poisoning, prompt injection), and governance.",
+  "minutes": 60,
+  "domain": 1,
+  "objectives": [
+    "1.5",
+    "1.6"
+  ]
+}

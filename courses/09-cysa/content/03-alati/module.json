@@ -1,0 +1,11 @@
+{
+  "title": "Alati: SIEM, EDR, analiza paketa, TIP",
+  "title_en": "Tools: SIEM, EDR, Packet Analysis, TIP",
+  "summary": "Izbor i upotreba alata: CyberChef, tcpdump/Wireshark, Snort/Suricata/Zeek, SIEM upiti, MISP/OpenCTI/OTX, EDR/XDR/MDM, WHOIS/AbuseIPDB/GeoIP, strings/VirusTotal/YARA, sandbox, regex, MXToolbox, UEBA i formati JSON/XML/YAML/EVTX.",
+  "summary_en": "Choosing and using tools: CyberChef, tcpdump/Wireshark, Snort/Suricata/Zeek, SIEM queries, MISP/OpenCTI/OTX, EDR/XDR/MDM, WHOIS/AbuseIPDB/GeoIP, strings/VirusTotal/YARA, sandbox, regex, MXToolbox, UEBA and JSON/XML/YAML/EVTX formats.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.3"
+  ]
+}

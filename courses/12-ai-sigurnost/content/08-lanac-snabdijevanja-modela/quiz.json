@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "4.1",
+    "q": "Data scientist predlaže da se model sa javnog huba u formatu pytorch_model.bin učita na build serveru „samo da se vidi da radi“. Na serveru su CI tajne. Kako treba reagovati?",
+    "options": [
+      "Dozvoliti jer je .bin binarni format bez koda",
+      "Dozvoliti ako je model popularan",
+      "Odbiti: .bin iz torch.save je pickle i učitavanje može izvršiti kod sa pravima procesa; tražiti safetensors verziju ili raditi u izolovanom okruženju bez tajni i mreže",
+      "Dozvoliti ako se učita sa GPU-om umjesto CPU-a"
+    ],
+    "answer": 2,
+    "explain": "PyTorch .bin/.pt/.pth fajlovi su pickle u ZIP arhivi; učitavanje je izvršavanje koda (AML.T0011.000). Popularnost nije dokaz integriteta, a uređaj na koji se mapira tenzor ne mijenja deserijalizaciju."
+  },
+  {
+    "obj": "4.1",
+    "q": "Šta safetensors format rješava, a šta ne?",
+    "options": [
+      "Rješava izvršavanje koda pri učitavanju jer sadrži samo JSON zaglavlje i sirove tenzore; ne rješava backdoor ili pogrešan sadržaj težina",
+      "Rješava i izvršavanje koda i backdoore jer je format auditovan",
+      "Ne rješava ništa, samo ubrzava učitavanje",
+      "Rješava samo kompresiju modela"
+    ],
+    "answer": 0,
+    "explain": "safetensors uklanja klasu napada pri deserijalizaciji. Ponašanje modela (backdoor, AML.T0018.000) je u vrijednostima težina i traži porijeklo, potpis i evaluaciju. Brzina je dodatna prednost, a format nije kompresija."
+  },
+  {
+    "obj": "4.1",
+    "q": "Tim ima stari model u pickle formatu sa javnog huba i mora ga prebaciti u safetensors. Koji redoslijed je najbezbjedniji?",
+    "options": [
+      "Učitati pickle na developerskom laptopu i sačuvati kao safetensors",
+      "Preimenovati fajl u .safetensors",
+      "Učitati pickle direktno u produkcionom servingu i izvesti tenzore",
+      "Prvo provjeriti postoji li safetensors verzija kod izvora; ako ne, statički skenirati i konvertovati u efemernom okruženju bez mreže i tajni uz weights_only=True, pa uporediti tenzore i potpisati rezultat"
+    ],
+    "answer": 3,
+    "explain": "Konverzija zahtijeva jedno učitavanje pickle fajla, pa se to radi izolovano i samo ako nema bolje opcije. Laptop i produkcija imaju tajne i mrežu, a preimenovanje ne mijenja format."
+  },
+  {
+    "obj": "4.1",
+    "q": "Skener modela je za pickle fajl vratio rezultat „nema nalaza“. Šta možeš zaključiti?",
+    "options": [
+      "Model je bezbjedan i može se koristiti bez drugih provjera",
+      "Skener nije našao poznate opasne obrasce; to je signal, ne dokaz: blocklist se može zaobići i skener ne vidi ponašanje modela, pa i dalje važe format bez koda, porijeklo, potpis i evaluacija",
+      "Model sigurno nema backdoor",
+      "Model treba ponovo skenirati drugim skenerom i onda je sigurno bezbjedan"
+    ],
+    "answer": 1,
+    "explain": "Statičko skeniranje smanjuje rizik, ali ga ne uklanja. Ne otkriva backdoore u težinama, a pristup zasnovan na listi opasnih funkcija ima poznata zaobilaženja. Ni dva skenera ne daju garanciju."
+  },
+  {
+    "obj": "4.1",
+    "q": "Servis učitava model sa from_pretrained(\"org/model\") bez revision parametra. Koji rizik ovo stvara?",
+    "options": [
+      "Servis uvijek uzima trenutno stanje grane main, pa izmjena repoa (namjerna ili kompromitovanjem naloga) automatski stiže u produkciju; treba pinovati commit hash i preuzimati iz internog registryja",
+      "Nema rizika jer hub skenira sve fajlove",
+      "Model će biti sporiji",
+      "Model se neće moći učitati bez interneta, što je jedini problem"
+    ],
+    "answer": 0,
+    "explain": "Pokretna referenca je isti problem kao latest tag kod slika. Pin na commit i interni registry daju kontrolu nad tim šta ulazi u produkciju. Skeniranje huba ne otkriva sve, a brzina nije sigurnosno pitanje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Model na hubu traži trust_remote_code=True da bi se učitao. Šta to znači i kako postupiti?",
+    "options": [
+      "To je obično podešavanje performansi, može se uvijek uključiti",
+      "To znači da je model potpisan",
+      "Uključiti, ali samo u produkciji",
+      "Biblioteka izvršava Python kod iz repoa modela; treba pregledati kod, pinovati reviziju, po mogućnosti vendorisati kod u interni repo i nikad ne uključivati za nepoznat izvor"
+    ],
+    "answer": 3,
+    "explain": "trust_remote_code izvršava proizvoljan kod iz repoa pri učitavanju, pa je to odluka o povjerenju u izdavača i kod. Podrazumijevano je isključeno s razlogom. Nema veze sa potpisom ni performansama."
+  },
+  {
+    "obj": "4.1",
+    "q": "Koja kombinacija podešavanja smanjuje rizik pri učitavanju artefakata u Python ML okruženju?",
+    "options": [
+      "torch.load(weights_only=False), np.load(allow_pickle=True)",
+      "torch.load(weights_only=True), np.load(allow_pickle=False), Keras safe_mode=True, trust_remote_code=False",
+      "Učitavanje svih modela preko pickle.load radi uniformnosti",
+      "Isključivanje svih upozorenja biblioteka"
+    ],
+    "answer": 1,
+    "explain": "To su bezbjedna podrazumijevana podešavanja u novijim verzijama; eksplicitno ih navedi u kodu. Suprotne vrijednosti omogućavaju izvršavanje koda pri učitavanju, a isključivanje upozorenja skriva signale."
+  },
+  {
+    "obj": "4.1",
+    "q": "Organizacija želi da serving učitava samo modele koje je odobrio ML release tim. Hash svakog modela je zapisan u bazi registryja. Zašto je potpis ipak potreban?",
+    "options": [
+      "Hash je spor za računanje",
+      "Potpis smanjuje veličinu modela",
+      "Hash dokazuje integritet samo dok je registry netaknut i ne kaže ko je objavio model; potpis vezuje model za identitet ili ključ izdavača koji se provjerava nezavisno od registryja",
+      "Potpis zamjenjuje potrebu za safetensors formatom"
+    ],
+    "answer": 2,
+    "explain": "Napadač sa pristupom registryju može promijeniti i model i hash. Potpis, provjeren ključem ili identitetom iz zasebne konfiguracije, dokazuje integritet i porijeklo. Ne utiče na veličinu i ne zamjenjuje format bez koda."
+  },
+  {
+    "obj": "4.1",
+    "q": "Šta tačno potpisuje OpenSSF Model Signing (model_signing) kada se potpisuje direktorij modela?",
+    "options": [
+      "Manifest sa hash vrijednošću svakog fajla u direktoriju, u formatu Sigstore bundle, pa izmjena bilo kog fajla ruši provjeru",
+      "Samo najveći fajl sa težinama",
+      "Samo model card",
+      "Docker sliku servinga"
+    ],
+    "answer": 0,
+    "explain": "Manifest pokriva sve fajlove, uključujući konfiguraciju i tokenizer, a potpis je odvojen od modela. Potpisivanje samo težina ostavlja nezaštićen config.json i tokenizer koji takođe mijenjaju ponašanje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Loader u servingu provjerava potpis modela javnim ključem koji se nalazi u istom bucketu kao model i potpis. Šta je slabost?",
+    "options": [
+      "Javni ključ treba držati tajnim",
+      "Provjera bi trebala ići poslije učitavanja modela",
+      "Bucket treba preimenovati",
+      "Napadač koji može zamijeniti model u bucketu može zamijeniti i ključ; očekivani ključ ili identitet mora doći iz konfiguracije koju kontroliše platformski tim, odvojeno od modela"
+    ],
+    "answer": 3,
+    "explain": "Sidro povjerenja ne smije biti pod istom kontrolom kao artefakt. Javni ključ nije tajna, ali njegov integritet jeste bitan. Provjera poslije učitavanja je prekasna, a ime bucketa nije kontrola."
+  },
+  {
+    "obj": "4.1",
+    "q": "U offline lab okruženju potpisuješ fajl model.safetensors cosignom. Šta je ispravan pristup?",
+    "options": [
+      "Keyless potpis preko Sigstore-a jer ne treba ključ",
+      "Par ključeva (cosign generate-key-pair), sign-blob bez upload-a u transparentni log, i verify-blob javnim ključem uz ignorisanje tloga",
+      "Potpis nije moguć bez interneta",
+      "Dovoljno je izračunati MD5"
+    ],
+    "answer": 1,
+    "explain": "Keyless traži pristup Fulciu i Rekoru. Bez mreže koristi se par ključeva i isključuje tlog (tačni flagovi zavise od verzije cosigna). MD5 nije potpis i nije otporan na kolizije."
+  },
+  {
+    "obj": "4.1",
+    "q": "Koji ATLAS identifikator najbolje opisuje situaciju u kojoj napadač objavi model sa zlonamjernim kodom u artefaktu na javnom hubu, a žrtva ga učita?",
+    "options": [
+      "AML.T0051 LLM Prompt Injection",
+      "AML.T0034 Cost Harvesting",
+      "AML.T0058 Publish Poisoned Models i AML.T0011.000 Unsafe AI Artifacts",
+      "AML.T0070 RAG Poisoning"
+    ],
+    "answer": 2,
+    "explain": "Objavljivanje zatrovanog modela i učitavanje nebezbjednog artefakta su upravo te tehnike, uz AML.T0010.003 za lanac snabdijevanja modela. Ostale oznake su prompt injection, troškovi i trovanje RAG korpusa."
+  },
+  {
+    "obj": "4.1",
+    "q": "Inventar pokazuje da produkcioni servis pri svakom startu učitava model.joblib napravljen prije tri godine. Šta je prioritet?",
+    "options": [
+      "Ništa, jer je model interni",
+      "Kompresovati fajl",
+      "Premjestiti fajl u drugi direktorij",
+      "Utvrditi porijeklo i ko može pisati u lokaciju fajla, ograničiti pravo pisanja, i planirati izvoz u format bez koda (npr. ponovno treniranje uz bezbjedan format ili ONNX), uz potpis i provjeru pri startu"
+    ],
+    "answer": 3,
+    "explain": "joblib koristi pickle, pa svako ko može zamijeniti fajl može izvršiti kod u servisu. Interni ne znači bezbjedan. Kratkoročno se ograničava pisanje i dodaje provjera, dugoročno se prelazi na format bez koda."
+  },
+  {
+    "obj": "4.1",
+    "q": "Tim preuzima LoRA adapter sa foruma da bi brzo poboljšao interni model. Koji pristup je ispravan?",
+    "options": [
+      "Adapteri su mali, pa nisu rizični",
+      "Adapter ide kroz isti intake kao model: izdavač i licenca, pin, format bez koda, skeniranje, evaluacija uključujući sigurnosne testove, potpis i zapis u AI-BOM",
+      "Spojiti adapter sa modelom i preskočiti evaluaciju",
+      "Koristiti adapter samo u produkciji"
+    ],
+    "answer": 1,
+    "explain": "Adapter mijenja ponašanje modela isto kao težine i može nositi i pickle i backdoor (OWASP LLM03 ih eksplicitno pominje). Veličina nije mjera rizika, a preskakanje evaluacije uklanja jedinu kontrolu ponašanja."
+  },
+  {
+    "obj": "4.1",
+    "q": "Kako se u CycloneDX AI-BOM-u opisuje model?",
+    "options": [
+      "Kao komponenta tipa machine-learning-model sa objektom modelCard, a skupovi podataka kao komponente tipa data (podrška od CycloneDX 1.5)",
+      "Kao komponenta tipa library bez dodatnih polja",
+      "CycloneDX ne podržava modele, samo SPDX",
+      "Kao komentar u polju description"
+    ],
+    "answer": 0,
+    "explain": "CycloneDX 1.5 je uveo tip machine-learning-model i modelCard (parametri, kvantitativna analiza, razmatranja) i tip data. SPDX 3.0 ima AI i Dataset profile, ali i CycloneDX podržava modele."
+  },
+  {
+    "obj": "4.1",
+    "q": "Platformski tim želi da pod sa servingom ne starta ako model nije ispravno potpisan. Gdje i kada treba raditi provjeru?",
+    "options": [
+      "Jednom pri preuzimanju sa huba",
+      "U noćnom jobu koji provjerava bucket",
+      "Neposredno prije učitavanja, npr. u init kontejneru: preuzimanje po digestu, provjera potpisa očekivanim identitetom ili ključem, provjera formata, i tek onda start servinga",
+      "Poslije starta, u health checku"
+    ],
+    "answer": 2,
+    "explain": "Provjera mora biti što bliže upotrebi da se zatvori prozor između provjere i učitavanja. Provjera pri preuzimanju ne hvata kasniju zamjenu, noćni job je odložen, a health check poslije starta je poslije eventualnog izvršavanja koda."
+  },
+  {
+    "obj": "4.1",
+    "q": "Model se distribuira u safetensors formatu, ali uz njega dolazi Python fajl sa prilagođenom arhitekturom koji serving izvršava. Da li je safetensors dovoljan?",
+    "options": [
+      "Da, safetensors garantuje da nema koda",
+      "Ne: safetensors štiti samo težine; prilagođeni kod uz model je kod treće strane koji traži review, pin i po mogućnosti vendorisanje, a potpis treba da pokrije sve fajlove",
+      "Da, ako je Python fajl manji od 10 KB",
+      "Ne, treba prebaciti težine nazad u pickle"
+    ],
+    "answer": 1,
+    "explain": "Format težina ne govori ništa o drugim fajlovima koje serving izvršava. Kod se tretira kao zavisnost, a manifest potpisa (npr. OpenSSF Model Signing) pokriva cijeli direktorij. Veličina nije kontrola, a pickle je korak unazad."
+  },
+  {
+    "obj": "4.1",
+    "q": "Koji skup fajlova CI provjera treba da odbije u direktoriju modela namijenjenom za deploy, ako politika dozvoljava samo formate bez koda?",
+    "options": [
+      ".safetensors i .gguf",
+      ".json i .txt",
+      ".onnx",
+      ".pkl, .pickle, .pt, .pth, .bin i .joblib"
+    ],
+    "answer": 3,
+    "explain": "Ti nastavci se tipično odnose na pickle ili pickle u arhivi. safetensors, GGUF i ONNX ne sadrže Python kod za izvršavanje pri učitavanju, a konfiguracioni JSON i tekst su normalan dio modela. Uz nastavke vrijedi provjeriti i magic bajtove."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Poredaj korake intake procesa za model treće strane, od prvog do posljednjeg.",
+    "options": [
+      "Potpisivanje interne kopije i upis u registry sa AI-BOM-om",
+      "Statičko skeniranje artefakata",
+      "Pinovanje tačne revizije i zapis hash vrijednosti fajlova",
+      "Evaluacija ponašanja na internom i sigurnosnom skupu",
+      "Provjera izdavača, namjene i licence"
+    ],
+    "answer": [4, 2, 1, 3, 0],
+    "explain": "Prvo se odlučuje smije li se model uopšte koristiti, zatim se fiksira tačna verzija, pa slijede skeniranje i evaluacija. Potpis i upis u registry dolaze na kraju, kad je model provjeren, da potpis znači „odobreno“."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari rizik u lancu snabdijevanja modela sa kontrolom koja ga najdirektnije ublažava.",
+    "options": [
+      "Izvršavanje koda pri učitavanju težina",
+      "Grana main na hubu se promijeni preko noći",
+      "Model u bucketu zamijenjen poslije odobrenja",
+      "Backdoor u težinama koji skener ne vidi",
+      "Nepoznato koji modeli i podaci su u sistemu"
+    ],
+    "targets": [
+      "Evaluacija ponašanja i porijeklo",
+      "AI-BOM (CycloneDX ML-BOM)",
+      "Format bez koda (safetensors)",
+      "Potpis i provjera neposredno prije učitavanja",
+      "Pin na commit hash i interni registry"
+    ],
+    "answer": [2, 4, 3, 0, 1],
+    "explain": "safetensors uklanja izvršavanje koda pri učitavanju, pin i registry sprječavaju neplanirane promjene, potpis sa provjerom pri deployu hvata zamjenu, backdoor se traži evaluacijom i provjerom porijekla, a AI-BOM daje pregled komponenti."
+  },
+  {
+    "obj": "4.1",
+    "type": "spot",
+    "q": "Kod za učitavanje modela treće strane u produkcijski servis za detekciju prevara. Označi redove koji uvode rizik lanca snabdijevanja.",
+    "snippet": "import pickle, torch\nfrom huggingface_hub import hf_hub_download\nfrom safetensors.torch import load_file\n\nREPO, REV = \"acme-research/fraud-bert\", \"9c1e4a7f3b2d8e6a0c5f1d9b7e3a2c4f6d8b0e1a\"\nweights = hf_hub_download(REPO, \"pytorch_model.bin\")\nstate = torch.load(weights, weights_only=False)\nmodel.load_state_dict(state)\n\ntok_file = hf_hub_download(REPO, \"tokenizer.pkl\", revision=REV)\ntokenizer = pickle.load(open(tok_file, \"rb\"))\n\nhead = load_file(hf_hub_download(REPO, \"head.safetensors\", revision=REV))",
+    "lang": "python",
+    "answer": [5, 6, 10],
+    "explain": "Red 6: preuzimanje bez revision znači da se uzima trenutno stanje grane main, koje se može promijeniti (kompromitovan nalog izdavača, zamjena fajla); pinovati commit hash (REV). Red 7: torch.load sa weights_only=False koristi puni pickle, pa učitavanje .bin fajla izvršava proizvoljan kod; ostaviti weights_only=True ili, bolje, preći na safetensors. Red 11: pickle.load na fajlu sa huba je izvršavanje koda iz nepouzdanog izvora; tokenizer učitati iz JSON formata (tokenizer.json). Učitavanje head.safetensors sa pinovanom revizijom (red 13) je ispravno: safetensors sadrži samo tenzore."
+  }
+]

@@ -1,0 +1,276 @@
+[
+  {
+    "obj": "4.2",
+    "q": "Pri procjeni ML platforme otkrivaš da je MLflow tracking server dostupan iz cijele interne mreže bez autentikacije, a artifact store sadrži težine svih modela. Koji je prvi korak?",
+    "options": [
+      "Prebaciti sve modele u safetensors format",
+      "Staviti autentikaciju (SSO) ispred servera, ograničiti ga na privatnu mrežu platforme i postaviti ACL po projektu",
+      "Uključiti differential privacy pri treniranju svih modela",
+      "Dodati watermark u sve modele u registryju"
+    ],
+    "answer": 1,
+    "explain": "Problem je klasična izloženost upravljačkog API-ja i artefakata (AML.T0035 AI Artifact Collection). Prvo se zatvara pristup. Safetensors rješava učitavanje koda, DP privatnost podataka, a watermark samo pomaže da se kasnije dokaže krađa."
+  },
+  {
+    "obj": "4.2",
+    "q": "Data scientisti mogu iz notebooka da registruju model i da mu dodijele alias production. Potpis modela radi CI job. Zašto potpis u ovom uređenju malo vrijedi?",
+    "options": [
+      "Zato što cosign ne podržava fajlove veće od 2 GB",
+      "Zato što potpis važi samo za pickle formate",
+      "Zato što alias production mora biti tag u OCI registryju",
+      "Zato što model može stići u produkciju zaobilazeći CI; promocija mora ići samo kroz gate sa posebnom ulogom"
+    ],
+    "answer": 3,
+    "explain": "Potpis dokazuje da je artefakt prošao pipeline samo ako je pipeline jedini put do produkcije. Treba razdvojiti ulogu koja trenira od uloge koja promoviše. Ostale tvrdnje su netačne."
+  },
+  {
+    "obj": "4.2",
+    "q": "Gate za promociju provjerava hash samo fajla model.safetensors. Napadač sa pristupom registryju izmijeni tokenizer i config.json. Kako treba popraviti gate?",
+    "options": [
+      "Manifest i potpis moraju pokrivati sve fajlove u direktoriju modela, a gate mora odbiti fajlove kojih nema u manifestu",
+      "Dovoljno je skenirati model.safetensors antivirusom",
+      "Treba preći na pickle jer on sadrži i konfiguraciju",
+      "Treba provjeriti samo veličinu fajlova"
+    ],
+    "answer": 0,
+    "explain": "Konfiguracija i tokenizer mijenjaju ponašanje modela jednako kao težine. Zato OpenSSF model signing potpisuje manifest hasheva cijelog direktorija. Pickle bi dodao rizik izvršavanja koda, a veličina nije provjera integriteta."
+  },
+  {
+    "obj": "4.2",
+    "q": "Trening job u Kubernetesu koristi service account sa pravom čitanja i pisanja u sve buckete organizacije, jer je tako bilo najlakše. Koja kontrola najbolje smanjuje rizik?",
+    "options": [
+      "Šifrovanje svih bucketa istim KMS ključem",
+      "Pokretanje treninga samo noću",
+      "Workload identity sa kratkotrajnim tokenima: čitanje samo potrebne verzije skupa i pisanje samo u prostor svog runa",
+      "Premještanje treninga u notebook"
+    ],
+    "answer": 2,
+    "explain": "Kompromitovana zavisnost ili kod u trening jobu dobija prava joba. Least privilege po pipelineu ograničava štetu. Šifrovanje ne pomaže ako identitet ima pravo da dešifruje, a notebook je obično još manje izolovan."
+  },
+  {
+    "obj": "4.2",
+    "q": "Dobavljač javlja da je skup podataka koji ste preuzeli prije šest mjeseci povučen zbog sumnje na trovanje. Šta ti omogućava da za par minuta utvrdiš koji su modeli pogođeni?",
+    "options": [
+      "Logovi API gatewaya",
+      "SBOM slike za serving",
+      "Model card u README fajlu repozitorija",
+      "AI-BOM uz svaku verziju modela, sa skupovima podataka kao komponentama i vezama dependsOn"
+    ],
+    "answer": 3,
+    "explain": "AI-BOM (CycloneDX ML-BOM) navodi skupove podataka i bazne modele, pa se pogođeni modeli nalaze jq upitom. SBOM slike sadrži softverske pakete, logovi gatewaya upite, a ručni README nije mašinski upitljiv ni pouzdano ažuran."
+  },
+  {
+    "obj": "4.2",
+    "q": "Koji tip komponente u CycloneDX (od verzije 1.5) označava model u AI-BOM-u?",
+    "options": [
+      "machine-learning-model",
+      "library",
+      "application",
+      "container"
+    ],
+    "answer": 0,
+    "explain": "CycloneDX 1.5 je uveo tipove machine-learning-model i data, kao i polje modelCard. Ostali tipovi postoje, ali opisuju softver i slike."
+  },
+  {
+    "obj": "4.2",
+    "q": "Tim ručno popunjava AI-BOM jednom po kvartalu u wiki stranici. Šta je glavni problem?",
+    "options": [
+      "Wiki ne podržava JSON",
+      "CycloneDX zabranjuje ručno pisanje",
+      "AI-BOM brzo zastari i ne odgovara verziji koja je u produkciji; treba ga generisati u pipelineu iz metapodataka runa i čuvati uz verziju modela",
+      "AI-BOM treba samo za modele sa otvorenim težinama"
+    ],
+    "answer": 2,
+    "explain": "AI-BOM vrijedi koliko je tačan za konkretnu verziju. Generiše se automatski, kao SBOM uz build, i čuva se u registryju. Ostale tvrdnje nisu tačne."
+  },
+  {
+    "obj": "4.2",
+    "q": "Serving pod učitava model sa putanje koju prima kao parametar management API-ja, a management i inference API slušaju na istom javnom portu. Koja izmjena je najvažnija?",
+    "options": [
+      "Povećati broj replika",
+      "Odvojiti management API na posebnu, nedostupnu mrežu i učitavati samo potpisane modele iz registryja po verziji ili digestu",
+      "Uključiti gzip kompresiju odgovora",
+      "Prebaciti inference API na HTTP/2"
+    ],
+    "answer": 1,
+    "explain": "Management API koji učitava model sa proizvoljne putanje znači da onaj ko ga dohvati bira šta će se izvršavati. Treba ga izolovati i ograničiti izvor modela na provjereni registry. Ostalo ne utiče na sigurnost."
+  },
+  {
+    "obj": "4.2",
+    "q": "Koja ATLAS mitigacija direktno opisuje vođenje spiska sastojaka modela, skupova i zavisnosti?",
+    "options": [
+      "AML.M0023 AI Bill of Materials",
+      "AML.M0004 Restrict Number of AI Model Queries",
+      "AML.M0002 Passive AI Output Obfuscation",
+      "AML.M0015 Adversarial Input Detection"
+    ],
+    "answer": 0,
+    "explain": "AML.M0023 je AI Bill of Materials. M0004 ograničava broj upita, M0002 smanjuje informacije u izlazu, a M0015 detektuje adversarial ulaze."
+  },
+  {
+    "obj": "4.2",
+    "q": "Security tim traži da gate za promociju padne ako model u AI-BOM-u nema navedenu licencu. Koja provjera to radi?",
+    "options": [
+      "syft scan dir:. -o table",
+      "cosign verify-blob nad AI-BOM-om",
+      "jq -e '[.components[] | select(.type==\"machine-learning-model\" and (.licenses|not))] | length == 0' aibom.cdx.json",
+      "sha256sum aibom.cdx.json"
+    ],
+    "answer": 2,
+    "explain": "jq -e vraća grešku kad izraz nije true, pa job pada ako postoji model bez licence. Syft pravi softverski SBOM, cosign provjerava potpis, a hash dokazuje integritet, ne sadržaj."
+  },
+  {
+    "obj": "4.3",
+    "q": "Javni API klasifikatora vraća punu raspodjelu vjerovatnoća za sve klase, a klijenti su anonimni. Koja kombinacija kontrola najviše otežava ekstrakciju modela?",
+    "options": [
+      "Šifrovanje težina u mirovanju i TLS",
+      "Autentikacija klijenata, kvote po identitetu i vraćanje samo odluke (klase) umjesto vjerovatnoća",
+      "Watermark modela",
+      "Prelazak sa ONNX na safetensors"
+    ],
+    "answer": 1,
+    "explain": "Ekstrakcija (AML.T0024.002) traži mnogo upita i bogat izlaz. Autentikacija i kvote (AML.M0004) i minimalan izlaz (AML.M0002) napadaju oba uslova. Šifrovanje štiti težine na disku, watermark služi za dokazivanje, a format ne utiče na API."
+  },
+  {
+    "obj": "4.3",
+    "q": "Istraživač želi da utvrdi da li je podatak određenog pacijenta bio u skupu za treniranje modela, koristeći samo odgovore API-ja. Kako se zove ova kategorija i koja je ATLAS oznaka?",
+    "options": [
+      "Model inversion, AML.T0024.001",
+      "Model extraction, AML.T0024.002",
+      "Data poisoning, AML.T0020",
+      "Membership inference, AML.T0024.000"
+    ],
+    "answer": 3,
+    "explain": "Pitanje „da li je ovaj zapis bio u skupu“ je membership inference (AML.T0024.000 Infer Training Data Membership). Inverzija rekonstruiše osobine podataka, ekstrakcija kopira ponašanje modela, a trovanje mijenja skup."
+  },
+  {
+    "obj": "4.3",
+    "q": "U OWASP Top 10 za LLM aplikacije 2025, gdje spada ekstrakcija modela kroz masovne upite API-ju?",
+    "options": [
+      "LLM03 Supply Chain",
+      "LLM05 Improper Output Handling",
+      "LLM08 Vector and Embedding Weaknesses",
+      "LLM10 Unbounded Consumption"
+    ],
+    "answer": 3,
+    "explain": "Verzija 2025 nema posebnu kategoriju Model Theft (bila je u 2023); ekstrakcija preko API-ja je dio LLM10 Unbounded Consumption, zajedno sa troškovnim napadima i DoS-om."
+  },
+  {
+    "obj": "4.3",
+    "q": "Model je fine-tunovan na internim dokumentima sa različitim pravima pristupa, a endpoint koriste svi zaposleni. Šta je dugoročno najbolje rješenje za rizik curenja sadržaja?",
+    "options": [
+      "Dodati u sistemski prompt instrukciju da ne otkriva povjerljive dokumente",
+      "Koristiti RAG sa kontrolom pristupa po dokumentu umjesto da se sadržaj ugradi u težine",
+      "Povećati temperaturu modela",
+      "Ograničiti dužinu odgovora na 100 tokena"
+    ],
+    "answer": 1,
+    "explain": "Kad je sadržaj u težinama, prava pristupa nestaju: svako ko pita model može doći do zapamćenog teksta (LLM02). RAG provodi pristup pri svakom upitu. Instrukcije u promptu nisu sigurnosna kontrola, a temperatura i dužina samo mijenjaju oblik odgovora."
+  },
+  {
+    "obj": "4.3",
+    "q": "Koja kontrola u fazi pripreme podataka najviše smanjuje rizik da LLM doslovno reprodukuje lične podatke iz skupa za treniranje?",
+    "options": [
+      "Minimizacija i uklanjanje ličnih podataka i tajni, te uklanjanje duplikata prije treniranja",
+      "Šifrovanje skupa podataka u bucketu",
+      "Potpisivanje modela nakon treniranja",
+      "Smanjenje broja GPU-ova"
+    ],
+    "answer": 0,
+    "explain": "Model ne može zapamtiti ono čega nema u skupu, a duplikati povećavaju pamćenje. Šifrovanje štiti skup od krađe, ali model i dalje uči sadržaj; potpis štiti integritet artefakta, ne privatnost."
+  },
+  {
+    "obj": "4.3",
+    "q": "Tim želi formalnu garanciju da pojedinačan zapis ima ograničen uticaj na treniran model, i prihvata nešto nižu tačnost. Šta treba da koristi?",
+    "options": [
+      "Ensemble od tri modela",
+      "Kvantizaciju na 4 bita",
+      "Differential privacy pri treniranju (npr. DP-SGD)",
+      "Veći batch size"
+    ],
+    "answer": 2,
+    "explain": "Differential privacy daje formalnu, mjerljivu granicu uticaja pojedinačnog zapisa, uz cijenu u tačnosti i resursima. Ostale tehnike ne daju takvu garanciju."
+  },
+  {
+    "obj": "4.3",
+    "q": "Uprava pita da li watermark u težinama modela štiti od krađe. Šta je tačan odgovor?",
+    "options": [
+      "Watermark ne sprječava kopiranje; služi da se kasnije dokaže porijeklo ukradenog modela, pa je forenzička kontrola uz zaštitu pristupa",
+      "Da, watermark šifruje težine pa ih napadač ne može koristiti",
+      "Da, watermark blokira učitavanje modela na tuđem hardveru",
+      "Ne, watermark je samo za slike koje model generiše"
+    ],
+    "answer": 0,
+    "explain": "Watermark i fingerprinting pomažu pri dokazivanju i pravnom postupku, ali ne sprječavaju krađu. Prevencija su IAM, šifrovanje ključem iz KMS-a, logovanje i kontrola egressa."
+  },
+  {
+    "obj": "4.3",
+    "q": "Logovi gatewaya pokazuju da jedan partnerski nalog šalje 200 000 upita dnevno, sistematski raspoređenih preko prostora ulaza, što je 50 puta više od uobičajenog. Koju mitigaciju ovaj nalaz potvrđuje kao korisnu?",
+    "options": [
+      "AML.M0007 Sanitize Training Data",
+      "AML.M0013 Code Signing",
+      "AML.M0011 Restrict Library Loading",
+      "AML.M0024 AI Telemetry Logging uz kvote po identitetu (AML.M0004)"
+    ],
+    "answer": 3,
+    "explain": "Obrazac upita liči na pokušaj ekstrakcije; otkriven je zahvaljujući telemetriji, a kvote ograničavaju obim. Sanitizacija podataka, potpisivanje koda i ograničenje biblioteka ne adresiraju ovaj rizik."
+  },
+  {
+    "obj": "4.3",
+    "q": "Mobilna aplikacija sadrži model koji radi lokalno na uređaju. Kako treba tretirati težine pri procjeni rizika?",
+    "options": [
+      "Kao tajne, jer su šifrovane u paketu aplikacije",
+      "Kao interne, jer ih korisnik ne vidi u interfejsu",
+      "Kao javne: šifrovanje i obfuskacija samo usporavaju izvlačenje, pa osjetljive podatke i logiku ne treba držati u tom modelu",
+      "Kao zaštićene, ako je aplikacija potpisana"
+    ],
+    "answer": 2,
+    "explain": "Ključ za dešifrovanje mora biti na uređaju, pa odlučan napadač dolazi do težina. Odluka je arhitekturna: na uređaj ide samo model čije otkrivanje je prihvatljivo. Potpis aplikacije štiti integritet, ne povjerljivost."
+  },
+  {
+    "obj": "4.3",
+    "q": "Prije promocije LLM-a fine-tunovanog na tiketima podrške, tim u skup ubaci nekoliko jedinstvenih izmišljenih zapisa i u evaluaciji provjeri da ih model ne reprodukuje. Kako se zove ova tehnika i gdje pripada?",
+    "options": [
+      "Data poisoning, u fazi prikupljanja",
+      "Canary test pamćenja, u gate-u za promociju",
+      "Adversarial training, u servingu",
+      "Model distillation, u registryju"
+    ],
+    "answer": 1,
+    "explain": "Canary zapisi mjere da li model pamti pojedinačne zapise; test pripada evaluaciji u gate-u. Nije trovanje jer se zapisi ubacuju namjerno i kontrolisano radi mjerenja, a ne da bi se promijenilo ponašanje modela."
+  },
+  {
+    "obj": "4.2",
+    "type": "order",
+    "q": "Poredaj korake promocije modela iz kandidata u produkciju tako da potpis i AI-BOM znače nešto, a serving ne vjeruje imenu modela.",
+    "options": [
+      "Serving povlači model iz registryja po verziji ili digestu i provjerava potpis pri učitavanju",
+      "Trening job registruje kandidata sa hashom skupa i run ID-jem u metapodacima",
+      "Gate provjerava format, manifest i evaluaciju; tek tada se potpisuje manifest",
+      "Pipeline iz metapodataka generiše AI-BOM i čuva ga uz verziju",
+      "Uloga sa pravom promocije mijenja alias production na provjerenu verziju"
+    ],
+    "answer": [1, 3, 2, 4, 0],
+    "explain": "Kandidat nastaje sa metapodacima, iz njih se generiše AI-BOM, gate provjerava sve (uključujući postojanje AI-BOM-a) prije potpisa, promocija ide samo kroz posebnu ulogu, a serving učitava provjerenu verziju i ponovo provjerava potpis."
+  },
+  {
+    "obj": "4.3",
+    "type": "match",
+    "q": "Upari rizik sa najprikladnijom primarnom kontrolom.",
+    "options": [
+      "Insajder preuzima produkcijske težine na lični uređaj",
+      "Anonimni klijenti šalju milione upita i grade zamjenski model",
+      "Model doslovno ponavlja e-mail adrese iz skupa za treniranje",
+      "Potrebno je dokazati na sudu da je konkurentski model kopija vašeg"
+    ],
+    "targets": [
+      "Fingerprint ili watermark modela",
+      "Kvantizacija modela",
+      "Least privilege, logovanje preuzimanja i DLP alarm",
+      "Uklanjanje PII i duplikata prije treniranja",
+      "Autentikacija, kvote i minimalan izlaz"
+    ],
+    "answer": [2, 4, 3, 0],
+    "explain": "Krađa težina je problem pristupa i nadzora; ekstrakcija preko API-ja se otežava kvotama i manje informativnim izlazom; pamćenje ličnih podataka se rješava prije treniranja; watermark služi dokazivanju. Kvantizacija nije sigurnosna kontrola."
+  }
+]

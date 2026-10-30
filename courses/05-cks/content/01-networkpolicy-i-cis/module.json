@@ -1,0 +1,12 @@
+{
+  "title": "NetworkPolicy i CIS benchmark",
+  "summary": "NetworkPolicy kao firewall klastera (default deny, izolacija namespaceova, egress kontrola) i CIS benchmark sa kube-bench, uz bezbjedne ispravke static Pod manifesta i kubelet konfiguracije.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.1",
+    "1.2"
+  ],
+  "title_en": "NetworkPolicy and CIS benchmark",
+  "summary_en": "NetworkPolicy as the cluster firewall (default deny, namespace isolation, egress control) and the CIS benchmark with kube-bench, with safe fixes to static Pod manifests and kubelet configuration."
+}

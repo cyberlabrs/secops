@@ -1,0 +1,333 @@
+[
+  {
+    "obj": "4.5",
+    "q": "Mobilna aplikacija za planiranje sastanaka traži od korisnika da joj dozvoli čitanje i pisanje u njegov Google kalendar, bez da aplikacija ikad vidi korisnikovu lozinku. Koji protokol se ovdje NAJVJEROVATNIJE koristi?",
+    "options": [
+      "SAML",
+      "OAuth 2.0",
+      "LDAP",
+      "Kerberos"
+    ],
+    "answer": 1,
+    "explain": "OAuth 2.0 služi za delegiranu autorizaciju: korisnik daje saglasnost, a aplikacija dobija access token sa ograničenim scope-om. SAML je XML-bazirana autentikacija za web SSO, LDAP je pristup direktoriju, a Kerberos radi unutar domena."
+  },
+  {
+    "obj": "4.5",
+    "q": "Kompanija želi da se zaposleni prijavljuju u SaaS HR aplikaciju partnera korporativnim nalozima. Partnerova aplikacija prihvata potpisane XML assertione od korporativnog Identity Providera. Koja tehnologija je u pitanju?",
+    "options": [
+      "OAuth 2.0 sa access tokenom",
+      "OpenID Connect sa ID tokenom",
+      "LDAPS",
+      "SAML federacija"
+    ],
+    "answer": 3,
+    "explain": "Potpisani XML assertioni između IdP-a i SP-a su obilježje SAML-a, a povjerenje između dvije organizacije je federacija. OIDC koristi JWT ID token, OAuth access token za autorizaciju, a LDAPS je šifrovan pristup direktoriju."
+  },
+  {
+    "obj": "4.5",
+    "q": "Inženjer koji je za pet godina radio u tri različita tima i dalje ima dozvole iz sva tri tima, iako mu trenutni posao traži samo jedan skup. Šta bi NAJBOLJE otkrilo i ispravilo ovaj problem?",
+    "options": [
+      "Periodični access review sa recertifikacijom od strane menadžera",
+      "Uvođenje MFA za sve naloge",
+      "Promjena politike lozinki",
+      "Identity proofing pri zapošljavanju"
+    ],
+    "answer": 0,
+    "explain": "Ovo je privilege creep, a otkriva ga periodični pregled pristupa u kojem vlasnici potvrđuju da su dozvole i dalje potrebne. MFA i lozinke štite autentikaciju, ne višak dozvola, a identity proofing se radi prije izdavanja naloga."
+  },
+  {
+    "obj": "4.5",
+    "q": "Revizija traži da nijedan cloud administrator nema stalna (standing) admin prava. Admin treba zatražiti ulogu kad mu zatreba, dobiti odobrenje i ulogu na ograničeno vrijeme. Koji model ovo opisuje?",
+    "options": [
+      "Discretionary access control",
+      "Rule-based access control",
+      "Just-in-time access",
+      "Mandatory access control"
+    ],
+    "answer": 2,
+    "explain": "JIT dodjeljuje privilegiju na zahtjev i privremeno, npr. kroz Azure PIM. DAC prepušta odluku vlasniku resursa, rule-based primjenjuje globalna pravila, a MAC koristi labele i clearance."
+  },
+  {
+    "obj": "4.5",
+    "q": "U vladinoj agenciji svaki dokument ima oznaku klasifikacije, a korisnik može otvoriti dokument samo ako njegov clearance odgovara ili je viši. Korisnici ne mogu mijenjati oznake ni dijeliti dokumente po svom nahođenju. Koji model kontrole pristupa je u upotrebi?",
+    "options": [
+      "Role-based",
+      "Discretionary",
+      "Time-based",
+      "Mandatory"
+    ],
+    "answer": 3,
+    "explain": "MAC odlučuje na osnovu labela i clearance-a koje nameće sistem, a korisnik ih ne može mijenjati. Kod DAC-a vlasnik odlučuje o dijeljenju, RBAC gleda ulogu, a time-based gleda vremenski prozor."
+  },
+  {
+    "obj": "4.5",
+    "q": "Politika zahtijeva promjenu lozinke svakih 90 dana i pamti 10 posljednjih lozinki. Help desk primjećuje da korisnici mijenjaju lozinku 11 puta u jednom danu da bi se vratili na staru. Koja postavka NAJBOLJE rješava problem?",
+    "options": [
+      "Povećati zahtjev za kompleksnošću",
+      "Uvesti minimum password age",
+      "Smanjiti istek lozinke na 30 dana",
+      "Povećati dužinu lozinke na 16 znakova"
+    ],
+    "answer": 1,
+    "explain": "Minimalna starost lozinke sprječava više promjena zaredom, pa korisnik ne može brzo proći kroz istoriju. Kompleksnost i dužina ne sprječavaju vraćanje stare lozinke, a češći istek bi problem samo pojačao."
+  },
+  {
+    "obj": "4.5",
+    "type": "match",
+    "q": "Upari metodu autentikacije sa kategorijom faktora.",
+    "options": [
+      "FIDO2 sigurnosni ključ (YubiKey)",
+      "Otisak prsta na čitaču laptopa",
+      "PIN od 6 cifara",
+      "TOTP kod iz authenticator aplikacije",
+      "Prijava dozvoljena samo sa GPS lokacije unutar države",
+      "Analiza ritma kucanja na tastaturi"
+    ],
+    "targets": [
+      "Something you know",
+      "Something you have",
+      "Something you are",
+      "Somewhere you are",
+      "Something you do"
+    ],
+    "answer": [
+      1,
+      2,
+      0,
+      1,
+      3,
+      4
+    ],
+    "explain": "Hard token (YubiKey) i soft token (TOTP na telefonu) su posjedovanje. Otisak prsta je inherentnost (biometrija). PIN je znanje. GPS lokacija je somewhere you are, a ritam kucanja je ponašanje (something you do)."
+  },
+  {
+    "obj": "4.5",
+    "q": "Entra ID tenant zahtijeva MFA i Conditional Access za sve naloge. Organizacija se boji da bi ispad MFA servisa ili pogrešna politika mogli zaključati sve administratore. Šta je NAJBOLJA mjera?",
+    "options": [
+      "Emergency access (break-glass) nalog sa jakim kredencijalom u sefu, izuzet iz rizičnih politika i sa alarmom na svaku upotrebu",
+      "Isključiti MFA za sve administratore",
+      "Dati Global Administrator ulogu servisnom nalogu",
+      "Dijeliti jedan admin nalog između svih administratora"
+    ],
+    "answer": 0,
+    "explain": "Break-glass nalog omogućava pristup kad normalni put ne radi, a alarm i čuvanje u sefu ograničavaju zloupotrebu. Gašenje MFA, privilegovani servisni nalog i dijeljeni admin nalog uvode veće rizike i gube odgovornost."
+  },
+  {
+    "obj": "4.6",
+    "q": "SOC želi da se nakon phishing uzbune automatski: izvuku URL-ovi iz poruke, provjeri njihova reputacija, poruka obriše iz svih inboxa, domen blokira na proxyju i otvori tiket. Koje rješenje to NAJBOLJE omogućava?",
+    "options": [
+      "SIEM pravilo korelacije",
+      "Vulnerability scanner",
+      "SOAR sa playbookom",
+      "NetFlow kolektor"
+    ],
+    "answer": 2,
+    "explain": "SOAR orkestrira više alata (email, threat intel, proxy, ticketing) kroz playbook i izvršava korake automatski. SIEM detektuje i alarmira, ali sam ne izvodi ovaj niz akcija, a skener i NetFlow nemaju ulogu u odgovoru."
+  },
+  {
+    "obj": "4.6",
+    "q": "Tim uvodi AI agenta koji istražuje uzbune i može sam pokretati akcije odgovora. Menadžment se boji da bi agent zbog pogrešnog zaključka mogao izolovati produkcijske servere. Šta treba uvesti PRVO?",
+    "options": [
+      "Guardrails: ograničen skup dozvoljenih akcija i ljudsko odobrenje za rizične korake",
+      "Predictive analysis za predviđanje napada",
+      "Chatbot interfejs za analitičare",
+      "Veći broj integracija sa drugim alatima"
+    ],
+    "answer": 0,
+    "explain": "Guardrails ograničavaju šta automatizacija i AI smiju uraditi i uvode ljudsko odobrenje za akcije sa velikim uticajem. Predictive analysis i chatbot su druge AI mogućnosti, a više integracija povećava kompleksnost i doseg mogućih grešaka."
+  },
+  {
+    "obj": "4.6",
+    "q": "Neko je ručno u Azure portalu otvorio port 3389 na produkcijskoj mrežnoj grupi. Sat kasnije pravilo je automatski uklonjeno jer se ne poklapa sa konfiguracijom definisanom u kodu. Koja primjena automatizacije je ovo spriječila?",
+    "options": [
+      "Ticket management",
+      "User provisioning",
+      "Anomaly detection",
+      "Desired state management"
+    ],
+    "answer": 3,
+    "explain": "Desired state management stalno upoređuje stvarno stanje sa definisanim i ispravlja odstupanja (drift). Anomaly detection bi samo prijavio neobično ponašanje, a provisioning i tiketi se bave drugim zadacima."
+  },
+  {
+    "obj": "4.7",
+    "type": "order",
+    "q": "Poredaj faze odgovora na incident redom.",
+    "options": [
+      "Eradication/recovery",
+      "Preparation",
+      "Containment",
+      "Post-incident (lessons learned, RCA)",
+      "Identification",
+      "Investigation"
+    ],
+    "answer": [
+      1,
+      4,
+      5,
+      2,
+      0,
+      3
+    ],
+    "explain": "Prvo priprema (plan, uloge, playbookovi), zatim identifikacija incidenta, istraga i prikupljanje dokaza, ograničavanje širenja, uklanjanje uzroka i povratak u rad, a na kraju lekcije i analiza uzroka koje se vraćaju u pripremu."
+  },
+  {
+    "obj": "4.7",
+    "q": "CISO želi provjeriti da li menadžment, pravna služba i IT znaju svoje uloge u slučaju ransomware napada, bez ikakvog uticaja na produkcijske sisteme i uz minimalan trošak. Šta je NAJBOLJI izbor?",
+    "options": [
+      "Penetracioni test",
+      "Tabletop exercise",
+      "Potpuna simulacija napada na produkciju",
+      "Failover test u DR lokaciju"
+    ],
+    "answer": 1,
+    "explain": "Tabletop je diskusija scenarija za stolom: jeftina je, ne dira sisteme i otkriva nejasne uloge i rupe u planu. Pentest i simulacija napada su tehničke vježbe sa većim troškom i rizikom, a failover test provjerava oporavak, ne uloge."
+  },
+  {
+    "obj": "4.7",
+    "q": "EDR je potvrdio da ransomware na jednom file serveru počinje šifrovati dijeljene foldere i pokušava se proširiti na druge servere. Šta treba uraditi PRVO?",
+    "options": [
+      "Reimage servera iz zlatnog image-a",
+      "Obavijestiti kupce o mogućem curenju",
+      "Izolovati server od mreže",
+      "Sazvati lessons learned sastanak"
+    ],
+    "answer": 2,
+    "explain": "Kad je incident potvrđen i aktivno se širi, prioritet je containment (izolacija), uz čuvanje memorije za istragu. Reimage je eradication/recovery, obavještavanje kupaca dolazi kad se utvrdi uticaj, a lessons learned je na kraju."
+  },
+  {
+    "obj": "4.7",
+    "q": "Kompanija je primila obavještenje o tužbi bivšeg zaposlenog. Pravna služba traži da se emailovi i dokumenti uključenih osoba ne smiju obrisati, iako politika retencije inače briše poštu nakon dvije godine. Koja mjera to obezbjeđuje?",
+    "options": [
+      "Chain of custody",
+      "E-discovery izvoz",
+      "Root cause analysis",
+      "Legal hold (preservation)"
+    ],
+    "answer": 3,
+    "explain": "Legal hold zaustavlja brisanje relevantnih podataka bez obzira na redovnu retenciju. E-discovery je pronalaženje i predaja podataka (dolazi nakon očuvanja), chain of custody dokumentuje rukovanje dokazom, a RCA traži uzrok incidenta."
+  },
+  {
+    "obj": "4.7",
+    "q": "Koje DVIJE aktivnosti pripadaju post-incident fazi? Izaberi DVA.",
+    "options": [
+      "Root cause analysis",
+      "Threat hunting",
+      "Quarantine zaraženog hosta",
+      "Post-incident report (PIR) sa vremenskom linijom i preporukama"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "Nakon incidenta tim radi analizu stvarnog uzroka i formalni izvještaj, uz lessons learned. Threat hunting spada u identifikaciju (proaktivno traženje), a karantin hosta u containment."
+  },
+  {
+    "obj": "4.8",
+    "type": "order",
+    "q": "Forenzičar stiže na kompromitovan server koji još radi. Poredaj izvore dokaza po order of volatility, od onog koji treba prikupiti PRVO.",
+    "options": [
+      "Sadržaj diska",
+      "RAM (pokrenuti procesi, mrežne konekcije)",
+      "CPU registri i keš",
+      "Arhivske backup trake",
+      "Logovi na udaljenom SIEM-u",
+      "Swap/pagefile i privremeni fajlovi"
+    ],
+    "answer": [
+      2,
+      1,
+      5,
+      0,
+      4,
+      3
+    ],
+    "explain": "Prikuplja se od najnestabilnijeg: registri i keš, RAM, privremeni fajl sistemi i swap, disk, udaljeni logovi i na kraju arhivski mediji koji se praktično ne mijenjaju."
+  },
+  {
+    "obj": "4.8",
+    "q": "Istraga treba pokazati koliko je podataka jedan host poslao prema spoljnoj IP adresi u posljednjih 30 dana. Organizacija nema prostora za čuvanje punog saobraćaja. Koji izvor je NAJBOLJI?",
+    "options": [
+      "NetFlow/IPFIX",
+      "Packet capture sa core switcha",
+      "Rezultati vulnerability skenera",
+      "Snimci video nadzora"
+    ],
+    "answer": 0,
+    "explain": "NetFlow/IPFIX čuva metapodatke tokova (izvor, odredište, portovi, bajtovi, vrijeme) uz malo prostora, idealno za količinu i obrasce kroz duži period. Packet capture daje sadržaj, ali zauzima previše prostora, a skener i video ne prate saobraćaj."
+  },
+  {
+    "obj": "4.8",
+    "q": "Analitičar parsira Windows Security log i vidi 300 događaja 4625 u 10 minuta sa jedne IP adrese, za 300 različitih korisničkih imena, po jedan pokušaj po nalogu. Šta je NAJVJEROVATNIJE u toku?",
+    "options": [
+      "Brute force napad na jedan nalog",
+      "Password spraying",
+      "Pass-the-hash",
+      "Credential replay sa ukradenom sesijom"
+    ],
+    "answer": 1,
+    "explain": "Jedan ili mali broj pokušaja na mnogo različitih naloga, sa iste adrese, je obrazac password sprayinga (izbjegava zaključavanje naloga). Brute force pravi mnogo pokušaja na isti nalog, a pass-the-hash i replay ne stvaraju masu neuspjelih prijava sa različitim imenima."
+  },
+  {
+    "obj": "4.8",
+    "q": "Forenzičar mora sačuvati disk laptopa tako da se mogu analizirati i obrisani fajlovi, a na sudu dokazati da dokaz nije mijenjan. Šta treba uraditi?",
+    "options": [
+      "Kopirati korisnikov home folder na eksterni disk",
+      "Napraviti snapshot u hipervizoru",
+      "Napraviti bit-level kopiju uz write blocker i zabilježiti SHA-256 hash originala i kopije",
+      "Uključiti laptop i izvesti Event logove"
+    ],
+    "answer": 2,
+    "explain": "Bit-level kopija hvata i obrisane podatke i slobodan prostor, write blocker sprječava izmjenu originala, a poklapanje hasheva dokazuje integritet. Kopija fajlova ne hvata obrisano, snapshot se odnosi na virtuelne mašine, a rad na originalu mijenja dokaze."
+  },
+  {
+    "obj": "4.6",
+    "q": "SOC dobija 300 phishing prijava dnevno. Analitičari ručno izvlače URL-ove, provjeravaju ih u threat intel servisu i blokiraju domene. Šta NAJBOLJE smanjuje opterećenje?",
+    "options": [
+      "Zaposliti još analitičara",
+      "SOAR playbook koji automatski izvlači indikatore, obogaćuje ih i blokira potvrđeno zlonamjerne, uz ljudsko odobrenje za granične slučajeve",
+      "Isključiti prijavu phishinga",
+      "Povećati prag alarma u SIEM-u"
+    ],
+    "answer": 1,
+    "explain": "Automatizacija ponovljivih koraka (orchestration) štedi vrijeme i ubrzava odgovor. Ljudsko odobrenje za nejasne slučajeve je guardrail protiv lažnih pozitiva."
+  },
+  {
+    "obj": "4.6",
+    "q": "Tim uvodi AI agenta koji može samostalno zatvarati tikete i mijenjati firewall pravila. Koje DVIJE mjere su NAJVAŽNIJI guardrails? Izaberi DVA.",
+    "options": [
+      "Najmanja moguća prava za agenta i odobrenje čovjeka za promjene sa velikim uticajem",
+      "Neograničen pristup produkciji radi brzine",
+      "Logovanje svake akcije agenta i mogućnost brzog vraćanja promjena",
+      "Isključivanje monitoringa da ne bi bilo duplih alarma"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Agentic AI povećava rizik grešaka i zloupotrebe (npr. prompt injection). Least privilege, human-in-the-loop i audit trag s mogućnošću rollbacka su osnovne zaštite."
+  },
+  {
+    "obj": "4.6",
+    "q": "Koji je NAJVEĆI rizik automatizacije bez provjere, npr. skripte koja automatski zaključava naloge nakon SIEM alarma?",
+    "options": [
+      "Previše dokumentacije",
+      "Lažni pozitiv može masovno zaključati legitimne korisnike i izazvati prekid poslovanja",
+      "Skripta je prespora",
+      "Nema rizika"
+    ],
+    "answer": 1,
+    "explain": "Automatizacija pojačava i greške. Zato postoje process risks i guardrails: pragovi, liste izuzetaka (npr. break-glass nalozi), testiranje i postepeno uvođenje."
+  },
+  {
+    "obj": "4.5",
+    "type": "spot",
+    "q": "Politika treba da prati preporuke iz lekcije: duge lozinke (najmanje 14 znakova), zabrana ponovne upotrebe starih lozinki, provjera protiv procurjelih lozinki i bez periodičnog isteka. Klikni redove koji to krše.",
+    "lang": "yaml",
+    "snippet": "# politika lozinki za sve korisnike domena\npassword_policy:\n  min_length: 6\n  max_length: 128\n  allow_passphrases: true\n  check_breached_list: true      # Have I Been Pwned / leaked credentials\n  history: 0\n  min_age_days: 1\n  max_age_days: 0                # bez periodične promjene; promjena samo na sumnju\n  lockout_threshold: 10\n  lockout_window_minutes: 15\n  password_manager_allowed: true",
+    "answer": [
+      2,
+      6
+    ],
+    "explain": "min_length: 6 je prekratko; dužina je najvažniji faktor, pa treba min_length: 14 ili više. history: 0 znači da sistem ne pamti stare lozinke, pa korisnik može ponovo postaviti istu (reuse); treba npr. history: 24, a min_age_days: 1 tada sprečava brzo vrtenje do stare lozinke. max_age_days: 0 namjerno isključuje periodičan istek, što je u skladu sa NIST SP 800-63B."
+  }
+]

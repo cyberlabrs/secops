@@ -1,0 +1,14 @@
+{
+  "title": "Scenarij 2: procurjela tajna i zloupotreba AWS-a",
+  "summary": "AWS ključ procuri kroz git istoriju i javni CI log, a sedam dana kasnije napadač ga koristi: enumeracija, eskalacija kroz CreatePolicyVersion, novi korisnik i ključevi, preuzimanje podataka iz S3 i pokušaj gašenja CloudTraila. Pratiš ga gitleaksom i jq-om kroz CloudTrail, procjenjuješ štetu, obuzdavaš deny politikom i pišeš Sigma detekciju i izvještaj.",
+  "minutes": 120,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.2",
+    "2.3",
+    "2.4"
+  ],
+  "title_en": "Scenario 2: a leaked secret and AWS abuse",
+  "summary_en": "An AWS key leaks through git history and a public CI log, and seven days later an attacker uses it: enumeration, escalation via CreatePolicyVersion, a new user and keys, data theft from S3 and an attempt to stop CloudTrail. You follow the attacker with gitleaks and jq through CloudTrail, assess the damage, contain with a deny policy, and write a Sigma detection and a report."
+}

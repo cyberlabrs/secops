@@ -1,0 +1,219 @@
+{
+  "code": "DevSecOps",
+  "badge": "DSO",
+  "order": 6,
+  "title": "DevSecOps pipeline (capstone)",
+  "subtitle": "Faza 3 plana: sigurnosne kontrole u CI/CD-u. Tajne (gitleaks, Vault), SAST (Semgrep), SCA (osv-scanner, Trivy), IaC (Checkov), kontejneri, policy-as-code (OPA, Kyverno), SBOM, cosign i SLSA, DAST (ZAP) i quality gate, kroz GitLab pipeline nad pravim repoom, bez interneta.",
+  "lab": {
+    "image": "kurs-devsecops-lab:1",
+    "caps": [],
+    "memoryMB": 2560,
+    "pids": 2048,
+    "setupTimeout": 180
+  },
+  "exam": {
+    "size": 60,
+    "minutes": 90,
+    "pass": 70,
+    "note": "Za ovu fazu nema jednog zvaničnog ispita: rezultat je tvoj pipeline (modul „Capstone“). Ova simulacija je samoprovjera znanja; ako želiš sertifikat, isto gradivo pokrivaju Practical DevSecOps CDP (praktičan ispit) i, za tajne, HashiCorp Vault Associate.",
+    "domains": [
+      {
+        "n": 1,
+        "name": "DevSecOps temelji i sigurnost CI/CD platforme",
+        "weight": 15,
+        "name_en": "DevSecOps foundations and CI/CD platform security"
+      },
+      {
+        "n": 2,
+        "name": "Tajne",
+        "weight": 15,
+        "name_en": "Secrets"
+      },
+      {
+        "n": 3,
+        "name": "Kod i zavisnosti (SAST, SCA)",
+        "weight": 20,
+        "name_en": "Code and dependencies (SAST, SCA)"
+      },
+      {
+        "n": 4,
+        "name": "IaC, kontejneri i policy-as-code",
+        "weight": 20,
+        "name_en": "IaC, containers and policy as code"
+      },
+      {
+        "n": 5,
+        "name": "Integritet lanca snabdijevanja (SBOM, potpisi, SLSA)",
+        "weight": 15,
+        "name_en": "Supply chain integrity (SBOM, signatures, SLSA)"
+      },
+      {
+        "n": 6,
+        "name": "DAST, izvještavanje i upravljanje nalazima",
+        "weight": 15,
+        "name_en": "DAST, reporting and findings management"
+      }
+    ],
+    "note_en": "There is no single official exam for this phase: the result is your pipeline (the “Capstone” module). This simulation is a self-check; if you want a certification, the same material is covered by Practical DevSecOps CDP (a hands-on exam) and, for secrets, HashiCorp Vault Associate."
+  },
+  "objectives": [
+    {
+      "id": "1.1",
+      "en": "DevSecOps principles: shift-left, secure SDLC (NIST SSDF), maturity models (OWASP DSOMM, SAMM)",
+      "bs": "Principi DevSecOps-a: shift-left, siguran SDLC (NIST SSDF), modeli zrelosti (OWASP DSOMM, SAMM)"
+    },
+    {
+      "id": "1.2",
+      "en": "Threat modeling for applications and pipelines; choosing controls per pipeline stage",
+      "bs": "Modelovanje prijetnji za aplikaciju i pipeline; izbor kontrola po fazama pipelinea"
+    },
+    {
+      "id": "1.3",
+      "en": "CI/CD platform risks (OWASP Top 10 CI/CD), poisoned pipeline execution, runner isolation",
+      "bs": "Rizici CI/CD platforme (OWASP Top 10 CI/CD), poisoned pipeline execution, izolacija runnera"
+    },
+    {
+      "id": "1.4",
+      "en": "Pipeline identity: OIDC/ID tokens to cloud and Vault, protected branches and variables, least privilege for jobs",
+      "bs": "Identitet pipelinea: OIDC/ID tokeni prema oblaku i Vaultu, zaštićene grane i varijable, najmanje privilegije za jobove"
+    },
+    {
+      "id": "2.1",
+      "en": "Secret detection in code and git history (gitleaks, TruffleHog)",
+      "bs": "Otkrivanje tajni u kodu i git istoriji (gitleaks, TruffleHog)"
+    },
+    {
+      "id": "2.2",
+      "en": "Preventing secret leaks: pre-commit hooks, push protection, baselines and allowlists",
+      "bs": "Sprječavanje curenja: pre-commit hookovi, push protection, baseline i allowlist"
+    },
+    {
+      "id": "2.3",
+      "en": "Responding to a leaked secret: revoke, rotate, investigate, rewrite history",
+      "bs": "Odgovor na procurjelu tajnu: opoziv, rotacija, istraga, prepisivanje istorije"
+    },
+    {
+      "id": "2.4",
+      "en": "Secrets management with HashiCorp Vault: KV, policies, auth methods (AppRole, JWT/OIDC), dynamic secrets",
+      "bs": "Upravljanje tajnama u HashiCorp Vaultu: KV, politike, auth metode (AppRole, JWT/OIDC), dinamičke tajne"
+    },
+    {
+      "id": "3.1",
+      "en": "SAST: Semgrep rules, taint mode, tuning false positives, SARIF output",
+      "bs": "SAST: Semgrep pravila, taint analiza, smanjenje lažnih pozitiva, SARIF izlaz"
+    },
+    {
+      "id": "3.2",
+      "en": "SCA: finding vulnerable dependencies from lockfiles (osv-scanner, Trivy), prioritizing with CVSS, EPSS and KEV",
+      "bs": "SCA: ranjive zavisnosti iz lockfajlova (osv-scanner, Trivy), prioritizacija po CVSS, EPSS i KEV"
+    },
+    {
+      "id": "3.3",
+      "en": "Dependency hygiene: pinning, automated updates (Renovate, Dependabot), dependency confusion, typosquatting and malicious packages",
+      "bs": "Higijena zavisnosti: pinovanje, automatska ažuriranja (Renovate, Dependabot), dependency confusion, typosquatting i zlonamjerni paketi"
+    },
+    {
+      "id": "3.4",
+      "en": "Open source license compliance",
+      "bs": "Usklađenost sa licencama otvorenog koda"
+    },
+    {
+      "id": "4.1",
+      "en": "IaC scanning (Checkov, Trivy misconfig), custom checks and justified suppressions",
+      "bs": "Skeniranje IaC-a (Checkov, Trivy misconfig), vlastite provjere i obrazložena izuzeća"
+    },
+    {
+      "id": "4.2",
+      "en": "Secure container builds: Dockerfile linting (hadolint), minimal and distroless images, non-root, multi-stage",
+      "bs": "Siguran build kontejnera: lint Dockerfilea (hadolint), minimalne i distroless slike, non-root, multi-stage"
+    },
+    {
+      "id": "4.3",
+      "en": "Image scanning and gating: severity thresholds, unfixed vulnerabilities, .trivyignore and VEX",
+      "bs": "Skeniranje slika i gate: pragovi ozbiljnosti, ranjivosti bez popravke, .trivyignore i VEX"
+    },
+    {
+      "id": "4.4",
+      "en": "Policy as code: OPA/Rego with Conftest, Kyverno policies and CLI",
+      "bs": "Policy as code: OPA/Rego sa Conftestom, Kyverno politike i CLI"
+    },
+    {
+      "id": "5.1",
+      "en": "SBOM: CycloneDX and SPDX, generating with Syft/Trivy, scanning SBOMs, regulatory drivers (EU CRA, US EO 14028)",
+      "bs": "SBOM: CycloneDX i SPDX, generisanje (Syft, Trivy), skeniranje SBOM-a, regulatorni razlozi (EU CRA, US EO 14028)"
+    },
+    {
+      "id": "5.2",
+      "en": "Signing artifacts with Sigstore cosign: key pairs, keyless (Fulcio, Rekor), verification",
+      "bs": "Potpisivanje artefakata sa Sigstore cosignom: par ključeva, keyless (Fulcio, Rekor), provjera"
+    },
+    {
+      "id": "5.3",
+      "en": "Provenance and attestations: in-toto, SLSA levels and build track",
+      "bs": "Provenance i atestacije: in-toto, SLSA nivoi i build track"
+    },
+    {
+      "id": "5.4",
+      "en": "Enforcing integrity at deploy time: verify signatures and attestations before deploy, admission policies",
+      "bs": "Provođenje integriteta pri deployu: provjera potpisa i atestacija prije deploya, admission politike"
+    },
+    {
+      "id": "6.1",
+      "en": "DAST with OWASP ZAP: baseline, full and API scans, automation framework",
+      "bs": "DAST sa OWASP ZAP-om: baseline, full i API skeniranje, automation framework"
+    },
+    {
+      "id": "6.2",
+      "en": "Aggregating results: SARIF, merge request reports, vulnerability management platforms (DefectDojo)",
+      "bs": "Objedinjavanje rezultata: SARIF, izvještaji u merge requestu, platforme za upravljanje ranjivostima (DefectDojo)"
+    },
+    {
+      "id": "6.3",
+      "en": "Quality gates, triage, risk acceptance with expiry, SLAs and metrics (MTTR, escape rate)",
+      "bs": "Quality gate, trijaža, prihvatanje rizika sa rokom, SLA i metrike (MTTR, escape rate)"
+    }
+  ],
+  "sources": [
+    {
+      "title": "OWASP DevSecOps Guideline",
+      "url": "https://owasp.org/www-project-devsecops-guideline/"
+    },
+    {
+      "title": "OWASP Top 10 CI/CD Security Risks",
+      "url": "https://owasp.org/www-project-top-10-ci-cd-security-risks/"
+    },
+    {
+      "title": "NIST SP 800-218 SSDF",
+      "url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+    },
+    {
+      "title": "SLSA",
+      "url": "https://slsa.dev"
+    },
+    {
+      "title": "Sigstore dokumentacija",
+      "url": "https://docs.sigstore.dev",
+      "title_en": "Sigstore documentation"
+    },
+    {
+      "title": "Trivy",
+      "url": "https://trivy.dev"
+    },
+    {
+      "title": "Semgrep dokumentacija",
+      "url": "https://semgrep.dev/docs/",
+      "title_en": "Semgrep documentation"
+    },
+    {
+      "title": "OWASP ZAP",
+      "url": "https://www.zaproxy.org/docs/"
+    },
+    {
+      "title": "GitLab CI/CD: ID tokeni i OIDC",
+      "url": "https://docs.gitlab.com/ci/secrets/id_token_authentication/",
+      "title_en": "GitLab CI/CD: ID tokens and OIDC"
+    }
+  ],
+  "title_en": "DevSecOps pipeline (capstone)",
+  "subtitle_en": "Phase 3 of the plan: security controls in CI/CD. Secrets (gitleaks, Vault), SAST (Semgrep), SCA (osv-scanner, Trivy), IaC (Checkov), containers, policy as code (OPA, Kyverno), SBOM, cosign and SLSA, DAST (ZAP) and a quality gate, all in a GitLab pipeline over a real repo, offline."
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Defender XDR: incidenti kroz Office 365, Identity, Cloud Apps, Entra i Purview",
+  "summary": "Istraga i remedijacija incidenata u Defender XDR-u po izvorima: Defender for Office 365 (Explorer, remedijacija mailova, attack disruption), Purview DLP i Insider Risk, Defender for Cloud, Defender for Cloud Apps, Entra ID Protection, Defender for Identity i Sentinel incidenti; Security Copilot i agenti, složeni multi-stage napadi i case management.",
+  "minutes": 100,
+  "domain": 2,
+  "objectives": [
+    "2.1"
+  ],
+  "title_en": "Defender XDR: incidents across Office 365, Identity, Cloud Apps, Entra and Purview",
+  "summary_en": "Investigating and remediating incidents in Defender XDR by source: Defender for Office 365 (Explorer, email remediation, attack disruption), Purview DLP and Insider Risk, Defender for Cloud, Defender for Cloud Apps, Entra ID Protection, Defender for Identity and Sentinel incidents; Security Copilot and agents, complex multi-stage attacks and case management."
+}

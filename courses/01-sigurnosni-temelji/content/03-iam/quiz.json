@@ -1,0 +1,76 @@
+[
+  {
+    "q": "Korisnik se uspješno prijavio, ali može obrisati tuđe narudžbe. Koja kontrola je zakazala?",
+    "options": ["Autentikacija", "Autorizacija", "Audit", "Enkripcija"],
+    "answer": 1,
+    "explain": "Prijava (AuthN) je prošla ispravno. Problem je u autorizaciji: sistem nije provjerio smije li ovaj korisnik raditi s tim resursom."
+  },
+  {
+    "q": "Koja tvrdnja o OAuth 2.0 je tačna?",
+    "options": ["OAuth 2.0 je protokol za prijavu korisnika", "OAuth 2.0 je okvir za delegiranu autorizaciju; za identitet se nad njim koristi OIDC", "OAuth 2.0 koristi XML assertione", "OAuth 2.0 zamjenjuje MFA"],
+    "answer": 1,
+    "explain": "OAuth 2.0 izdaje access tokene za pristup resursima u ime korisnika. OIDC dodaje ID token i standardizuje prijavu. XML assertioni su SAML."
+  },
+  {
+    "q": "Koja MFA metoda je otporna na phishing?",
+    "options": ["SMS kod", "TOTP iz aplikacije", "Push notifikacija bez number matchinga", "FIDO2 sigurnosni ključ / passkey"],
+    "answer": 3,
+    "explain": "FIDO2/WebAuthn potpisuje izazov vezan za tačan domen, pa lažni sajt ne može dobiti upotrebljiv odgovor. Kodove iz SMS-a i TOTP-a korisnik može ukucati na lažnoj stranici."
+  },
+  {
+    "q": "Šta NIST SP 800-63B preporučuje za lozinke? (više odgovora)",
+    "options": ["Obavezna promjena svakih 90 dana", "Provjera novih lozinki protiv lista procurjelih lozinki", "Dozvoliti duge lozinke i fraze", "Obavezni specijalni znakovi i velika slova"],
+    "answer": [1, 2],
+    "explain": "NIST odbacuje periodičnu promjenu bez razloga i proizvoljna pravila složenosti, a traži provjeru protiv procurjelih lozinki i podršku za dugačke fraze."
+  },
+  {
+    "q": "Zaposleni je prešao iz razvoja u prodaju i i dalje ima pristup produkcijskim bazama. Kako se zove ovaj problem?",
+    "options": ["Separation of duties", "Privilege creep (gomilanje prava) u Mover fazi", "Break-glass", "Federacija"],
+    "answer": 1,
+    "explain": "Pri promjeni uloge stara prava se moraju ukloniti. Inače korisnik vremenom gomila prava koja mu ne trebaju."
+  },
+  {
+    "q": "GitHub Actions koristi OIDC za preuzimanje AWS uloge. Šta mora biti ograničeno u trust politici uloge?",
+    "options": ["Ništa, OIDC je siguran sam po sebi", "Claim 'sub' (i 'aud') na tačan repozitorij i granu/okruženje", "Samo IP adresa GitHuba", "Veličina tokena"],
+    "answer": 1,
+    "explain": "Bez uslova na 'sub' bilo koji repozitorij na GitHubu bi mogao dobiti token koji AWS prihvata i preuzeti ulogu."
+  },
+  {
+    "q": "Payload JWT tokena sadrži email i ulogu korisnika. Ko ih može pročitati?",
+    "options": ["Samo server koji ima tajni ključ", "Svako ko ima token, jer je payload samo base64url kodiran", "Niko, payload je šifrovan", "Samo IdP"],
+    "answer": 1,
+    "explain": "Potpis štiti integritet, ne povjerljivost. Standardni JWS JWT je čitljiv; za povjerljivost postoji JWE, ili se tajne jednostavno ne stavljaju u token."
+  },
+  {
+    "q": "Koji model kontrole pristupa donosi odluke na osnovu tagova resursa, atributa korisnika i konteksta (npr. vrijeme, IP)?",
+    "options": ["DAC", "RBAC", "ABAC", "MAC"],
+    "answer": 2,
+    "explain": "ABAC (attribute-based) koristi atribute. AWS politike sa Condition blokovima i tagovima su klasičan primjer."
+  },
+  {
+    "q": "Zašto svaki servis treba imati vlastiti identitet umjesto dijeljenog servisnog naloga?",
+    "options": ["Zbog brzine", "Da bi prava bila minimalna po servisu i da bi audit trag pokazao koji servis je šta uradio", "Jer cloud ne podržava dijeljene naloge", "Zbog cijene"],
+    "answer": 1,
+    "explain": "Dijeljeni nalog ima uniju svih potrebnih prava i u logovima ne razlikuje servise. Kompromitacija jednog servisa tada otvara sve."
+  },
+  {
+    "q": "Šta je break-glass nalog?",
+    "options": ["Nalog za testiranje", "Hitni admin nalog nezavisan od SSO-a, strogo čuvan, sa alarmom na svaku upotrebu", "Nalog bivšeg zaposlenog", "Nalog bez lozinke"],
+    "answer": 1,
+    "explain": "Ako IdP ili Conditional Access padne ili se pogrešno podesi, break-glass nalog omogućava oporavak. Zato je čuvan offline i nadziran."
+  },
+  {
+    "q": "Zaposleni je napustio firmu. Šta je NAJVAŽNIJE uraditi odmah? (više odgovora)",
+    "options": ["Zaključati nalog u IdP-u", "Opozvati njegove SSH ključeve, API tokene i aktivne sesije", "Obrisati sve logove njegovih aktivnosti", "Sačekati sljedeću kvartalnu reviziju"],
+    "answer": [0, 1],
+    "explain": "Zaključan SSO nalog ne gasi lokalne SSH ključeve, lične access tokene ni već izdate sesije. Logove treba sačuvati, a ne brisati."
+  },
+  {
+    "type": "spot",
+    "q": "API provjerava JWT koji izdaje firmin IdP (RS256). Klikni redove zbog kojih provjera tokena nije ispravna.",
+    "lang": "python",
+    "snippet": "import jwt  # PyJWT\n\nPUBLIC_KEY = open(\"/etc/app/idp_public.pem\").read()\n\ndef current_user(token: str) -> dict:\n    claims = jwt.decode(\n        token,\n        PUBLIC_KEY,\n        algorithms=[\"RS256\", \"none\"],\n        audience=\"orders-api\",\n        issuer=\"https://idp.example.com\",\n        options={\"verify_exp\": False},\n    )\n    return {\"id\": claims[\"sub\"], \"role\": claims[\"role\"]}",
+    "answer": [8, 11],
+    "explain": "algorithms ne smije sadržavati \"none\": token bez potpisa bi tada mogao proći, a napadač sam upiše ulogu u payload. Dozvoli samo očekivani algoritam: algorithms=[\"RS256\"]. verify_exp: False isključuje provjeru isteka, pa ukraden token važi zauvijek; ukloni tu opciju. Provjera aud i iss je ispravna, a uloga u payloadu nije tajna."
+  }
+]

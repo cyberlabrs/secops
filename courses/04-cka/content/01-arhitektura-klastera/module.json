@@ -1,0 +1,12 @@
+{
+  "title": "Arhitektura klastera i interfejsi (CRI, CNI, CSI)",
+  "summary": "Komponente kontrolne ravni i čvora, static Pods, kubelet, containerd i crictl, CNI i CSI, priprema čvora (swap, kernel moduli, sysctl, cgroup driver) i kubeconfig konteksti.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.2",
+    "1.7"
+  ],
+  "title_en": "Cluster architecture and interfaces (CRI, CNI, CSI)",
+  "summary_en": "Control plane and node components, static Pods, kubelet, containerd and crictl, CNI and CSI, node preparation (swap, kernel modules, sysctl, cgroup driver) and kubeconfig contexts."
+}

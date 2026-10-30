@@ -1,0 +1,11 @@
+{
+  "title": "Sentinel: arhitektura, uloge, retencija i workbooks",
+  "summary": "Sentinel u Defender portalu: Azure i Entra uloge (SIEM i data lake), tierovi i retencija Analytics / Data lake / XDR sa upravljanjem tabelama, workbooks iz šablona i od nule, te SOC optimization preporuke.",
+  "minutes": 75,
+  "domain": 1,
+  "objectives": [
+    "1.2"
+  ],
+  "title_en": "Sentinel: architecture, roles, retention and workbooks",
+  "summary_en": "Sentinel in the Defender portal: Azure and Entra roles (SIEM and data lake), Analytics / Data lake / XDR tiers and retention with table management, workbooks from templates and from scratch, and SOC optimization recommendations."
+}

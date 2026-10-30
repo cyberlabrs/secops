@@ -1,0 +1,237 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Pravilo okida kad CloudTrail zabilježi StopLogging ili DeleteTrail. Koji ATT&CK ID je ispravan u verziji 20?",
+    "options": [
+      "T1685.002 Disable or Modify Cloud Log",
+      "T1562.008 Disable or Modify Cloud Logs",
+      "T1070.002 Clear Linux or Mac System Logs",
+      "T1530 Data from Cloud Storage"
+    ],
+    "answer": 0,
+    "explain": "U v19 je T1562.008 opozvan (revoked) i zamijenjen sa T1685.002 u novoj taktici Defense Impairment. T1070.002 se odnosi na Linux/macOS logove, a T1530 na čitanje podataka iz storagea."
+  },
+  {
+    "obj": "3.1",
+    "q": "Šta se desilo sa taktikom Defense Evasion u ATT&CK v19?",
+    "options": [
+      "Preimenovana je u Evasion bez drugih promjena",
+      "Podijeljena je na Stealth (TA0005) i Defense Impairment (TA0112)",
+      "Spojena je sa Persistence",
+      "Prebačena je u Mobile matricu"
+    ],
+    "answer": 1,
+    "explain": "v19 je podijelio Defense Evasion: Stealth zadržava ID TA0005, a tehnike koje onesposobljavaju odbranu prešle su u novu taktiku Defense Impairment (TA0112). Enterprise sada ima 15 taktika."
+  },
+  {
+    "obj": "3.1",
+    "q": "Wazuh pravilo hvata 'Failed password' za postojeće korisnike i ne razlikuje spraying od guessinga, ali broji samo pokušaje sa jedne IP na jedan nalog. Koje mapiranje je najpreciznije?",
+    "options": [
+      "T1021.004 SSH kao jedina tehnika",
+      "T1078 Valid Accounts",
+      "T1110.001 Password Guessing",
+      "T1110.004 Credential Stuffing"
+    ],
+    "answer": 2,
+    "explain": "Mnogo lozinki za jedan nalog sa jedne adrese je Password Guessing. Valid Accounts bi bio tek uspješna prijava, SSH je kanal (lateral movement), a credential stuffing koristi procurjele parove korisnik/lozinka."
+  },
+  {
+    "obj": "3.1",
+    "q": "Pravilo okida na Kubernetes audit događaj create nad pods/exec. Analitičar predlaže da ga mapira i na Discovery jer 'napadač će sigurno raditi izviđanje'. Šta je ispravno?",
+    "options": [
+      "Mapirati na sve taktike koje napadač može koristiti poslije",
+      "Mapirati samo na Discovery",
+      "Ne mapirati jer K8s nije u ATT&CK-u",
+      "Mapirati na ono što pravilo stvarno vidi: T1609 Container Administration Command (Execution)"
+    ],
+    "answer": 3,
+    "explain": "Mapira se ponašanje koje pravilo vidi. Ono što napadač možda radi poslije zahtijeva vlastitu detekciju. Containers je platforma u Enterprise matrici."
+  },
+  {
+    "obj": "3.1",
+    "q": "Od ATT&CK v18 tehnike imaju detection strategies i analytics. Šta daje analytic za Linux za T1110.001?",
+    "options": [
+      "Platformu, data component (npr. DC0002 User Account Authentication) i log izvor koji treba posmatrati",
+      "Gotovo Wazuh XML pravilo",
+      "Listu IP adresa napadača",
+      "Skor pokrivenosti"
+    ],
+    "answer": 0,
+    "explain": "Analytic je platformski specifičan opis logike detekcije sa referencama na data components i log izvore. Pravilo za konkretan alat pišeš sam."
+  },
+  {
+    "obj": "3.1",
+    "q": "U layer fajlu za Navigator tehnika T1078 nema polje tactic. Kako će Navigator prikazati score?",
+    "options": [
+      "Odbaciće tehniku",
+      "Primijeniće oznaku pod svakom taktikom kojoj tehnika pripada",
+      "Prikazaće je samo pod Initial Access",
+      "Prikazaće grešku formata"
+    ],
+    "answer": 1,
+    "explain": "Polje tactic je opcionalno; bez njega se anotacija primjenjuje na sve taktike tehnike. T1078 pripada Initial Access, Persistence, Privilege Escalation i Stealth."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koja vrijednost versions.layer odgovara aktuelnoj specifikaciji Navigator layer formata?",
+    "options": [
+      "\"5.3.2\"",
+      "\"20\"",
+      "\"4.5\"",
+      "\"2.1\""
+    ],
+    "answer": 2,
+    "explain": "Specifikacija formata je verzija 4.5 i traži navigator verziju najmanje 4.9.0. 20 je verzija ATT&CK-a (polje versions.attack), a 5.3.2 verzija Navigator aplikacije."
+  },
+  {
+    "obj": "3.1",
+    "q": "Spajaš pokrivenost iz Wazuh pravila (stari ruleset sa T1562.001) i SigmaHQ pravila (T1685). Navigator za v20 ne prikazuje dio Wazuh tehnika. Šta je prvi korak?",
+    "options": [
+      "Obrisati Wazuh pravila sa starim ID-jevima",
+      "Prebaciti Navigator na ATT&CK v8",
+      "Ručno obojiti tehnike",
+      "Normalizovati opozvane ID-jeve na nove (T1562.001 -> T1685) prije spajanja"
+    ],
+    "answer": 3,
+    "explain": "Revoked objekti u ATT&CK-u upućuju na zamjenu. Bez normalizacije ista detekcija izgleda kao dvije, a nove tehnike izgledaju nepokriveno."
+  },
+  {
+    "obj": "3.1",
+    "q": "Menadžment traži jedan broj: 'koliki postotak ATT&CK-a pokrivamo'. Zašto je to loš KPI?",
+    "options": [
+      "Jer većina tehnika nije relevantna za tvoje platforme, a postojanje pravila ne znači testiranu, održivu detekciju",
+      "Jer Navigator ne zna računati procente",
+      "Jer ATT&CK zabranjuje takvu upotrebu",
+      "Jer procenat uvijek ispadne 100%"
+    ],
+    "answer": 0,
+    "explain": "Pokrivenost ima nivoe (telemetrija, pravilo, testirano, održivo), a tehnike nisu jednake veličine ni relevantnosti. Bolje je pratiti 10-20 relevantnih tehnika sa nivoom zrelosti."
+  },
+  {
+    "obj": "3.1",
+    "q": "Komanda sigma analyze attack count out.json /opt/sigma-rules/rules/cloud/aws radi šta?",
+    "options": [
+      "Pokreće pravila nad CloudTrail logovima",
+      "Pravi Navigator layer u kojem je score broj pravila po tehnici",
+      "Konvertuje pravila u Splunk",
+      "Provjerava sintaksu pravila"
+    ],
+    "answer": 1,
+    "explain": "analyze attack čita ATT&CK tagove iz pravila i piše layer; funkcija count daje broj pravila, max najviši nivo, a level zbir nivoa. Izvršavanje nad logovima radi npr. Zircolite."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imaš layer tehnika koje koristi TeamTNT (G0139) i layer svoje pokrivenosti. Šta ti daje operacija 'akter minus pokrivenost'?",
+    "options": [
+      "Tehnike koje si pokrio a akter ih ne koristi",
+      "Sve tehnike u matrici",
+      "Tehnike koje akter koristi, a ti nemaš detekciju: kandidate za backlog",
+      "Listu IOC-ova aktera"
+    ],
+    "answer": 2,
+    "explain": "Razlika daje praznine relevantne za konkretnu prijetnju. Navigator to radi kroz 'create layer from other layers', a isto se može uraditi sa jq i comm."
+  },
+  {
+    "obj": "3.1",
+    "q": "Novi lokalni korisnik dodat preko useradd na serveru, vidljivo u auth.log. Koja tehnika?",
+    "options": [
+      "T1548.003 Sudo and Sudo Caching",
+      "T1078.003 Local Accounts (Initial Access)",
+      "T1098.004 SSH Authorized Keys",
+      "T1136.001 Local Account (Persistence)"
+    ],
+    "answer": 3,
+    "explain": "Kreiranje lokalnog naloga je Create Account: Local Account. T1078.003 je upotreba postojećeg lokalnog naloga, a authorized_keys i sudo su druge tehnike."
+  },
+  {
+    "obj": "3.1",
+    "q": "Wazuh alarm ima rule.mitre.id = [\"T1685.002\"], ali tactic i technique su prazni. Šta to znači?",
+    "options": [
+      "Wazuhova interna ATT&CK baza ne poznaje noviji ID, pa nema obogaćivanja imenom; detekcija radi",
+      "Alarm nije upisan u alerts.json",
+      "ID ne postoji u ATT&CK-u",
+      "Pravilo je pogrešno i ne okida"
+    ],
+    "answer": 0,
+    "explain": "Wazuh imena taktika i tehnika dodaje iz vlastite kopije ATT&CK baze koja može kasniti za aktuelnom verzijom. ID je ispravan, samo nedostaje obogaćivanje."
+  },
+  {
+    "obj": "3.1",
+    "q": "Zašto T1053.003 Cron u layeru treba tactic polje kad mapiraš pravilo 'novi crontab za www-data'?",
+    "options": [
+      "Jer Cron nema taktiku",
+      "Jer je tehnika istovremeno Execution, Persistence i Privilege Escalation, a tvoje pravilo prvenstveno vidi Persistence",
+      "Jer bez tactic layer nije validan",
+      "Jer Cron pripada samo Mobile matrici"
+    ],
+    "answer": 1,
+    "explain": "Tehnike sa više taktika se bez tactic polja boje svuda. Navođenjem taktike tačnije prikazuješ šta pravilo vidi u kontekstu."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koja kombinacija Sigma tagova je ispravna za pravilo o gašenju CloudTraila u SigmaHQ stilu?",
+    "options": [
+      "mitre.t1685.002",
+      "attack.TA0112 i attack.T1685.002",
+      "attack.defense-impairment i attack.t1685.002",
+      "attack.defense_evasion i attack.t1562_008"
+    ],
+    "answer": 2,
+    "explain": "Sigma tagovi su mala slova, taktika se piše imenom sa crticom, tehnika ID-jem sa tačkom za podtehniku. SigmaHQ već koristi nove v19+ taktike."
+  },
+  {
+    "obj": "3.1",
+    "q": "Šta je prvi nivo pokrivenosti koji treba provjeriti prije pisanja pravila za neku tehniku?",
+    "options": [
+      "Da li postoji Navigator layer",
+      "Da li tehnika ima podtehnike",
+      "Da li tehnika ima grupu",
+      "Da li skupljaš telemetriju (log izvor / data component) u kojoj bi se tehnika vidjela"
+    ],
+    "answer": 3,
+    "explain": "Bez telemetrije pravilo ne može okinuti. Analytics u ATT&CK-u navode data components i log izvore, pa ih uporedi sa onim što zaista skupljaš."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Upari detekciju iz laba sa ATT&CK tehnikom (v20).",
+    "options": [
+      "Izmjena ~/.ssh/authorized_keys (FIM)",
+      "Kubernetes servisni nalog radi list nad secrets",
+      "CloudTrail CreateAccessKey za drugog IAM korisnika",
+      "Isti IP pokušava jednu lozinku na mnogo korisnika"
+    ],
+    "targets": [
+      "T1110.003 Password Spraying",
+      "T1098.001 Additional Cloud Credentials",
+      "T1098.004 SSH Authorized Keys",
+      "T1552.007 Container API",
+      "T1611 Escape to Host"
+    ],
+    "answer": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "authorized_keys je T1098.004, čitanje tajni kroz K8s API je T1552.007, novi ključ za drugog korisnika je T1098.001, a jedna lozinka na mnogo naloga je spraying. Escape to Host je distraktor."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Poredaj nivoe pokrivenosti tehnike od najslabijeg dokaza do najjačeg.",
+    "options": [
+      "Pravilo je testirano simulacijom tehnike",
+      "Pravilo sa ATT&CK tagom postoji",
+      "Pravilo je u produkciji sa prihvatljivim šumom, vlasnikom i runbookom",
+      "Telemetrija za tehniku se skuplja"
+    ],
+    "answer": [
+      3,
+      1,
+      0,
+      2
+    ],
+    "explain": "Bez telemetrije nema ničega; zatim pravilo postoji, pa je testirano, i tek na kraju je održivo u produkciji."
+  }
+]

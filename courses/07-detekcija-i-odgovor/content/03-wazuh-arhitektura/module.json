@@ -1,0 +1,12 @@
+{
+  "title": "Wazuh: arhitektura, FIM i SCA",
+  "summary": "Arhitektura Wazuha (agent, manager, indexer, dashboard), obrada događaja i nivoi alarma, alerts.json, FIM, SCA i otkrivanje ranjivosti.",
+  "minutes": 75,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.3"
+  ],
+  "title_en": "Wazuh: architecture, FIM and SCA",
+  "summary_en": "Wazuh architecture (agent, manager, indexer, dashboard), event processing and alert levels, alerts.json, FIM, SCA and vulnerability detection."
+}

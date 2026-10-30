@@ -1,0 +1,299 @@
+[
+  {
+    "obj": "1.4",
+    "q": "SOC je potvrdio da je napadač eksfiltrirao bazu sa imenima i adresama 40.000 klijenata iz EU. Ko treba da donese odluku o obavještavanju nadzornog tijela i klijenata?",
+    "options": [
+      "Uprava, uz savjet pravne službe i DPO-a, prema planu odgovora na incidente",
+      "Analitičar SOC-a koji je otkrio incident, jer najbolje poznaje činjenice",
+      "Administrator baze podataka",
+      "Cloud provajder na kome je baza hostovana"
+    ],
+    "answer": 0,
+    "explain": "Obavještavanje ima pravne, regulatorne i reputacione posljedice, pa odluku donosi uprava uz pravnu službu i DPO-a. Tehnički tim prikuplja činjenice i čuva dokaze."
+  },
+  {
+    "obj": "1.4",
+    "q": "Prema GDPR-u, u kom roku kontrolor mora prijaviti povredu ličnih podataka nadzornom tijelu, ako je vjerovatno da će povreda prouzrokovati rizik po prava pojedinaca?",
+    "options": [
+      "24 sata od otkrivanja",
+      "60 dana od otkrivanja",
+      "Bez nepotrebnog odlaganja i, gdje je izvodljivo, najkasnije 72 sata od saznanja",
+      "Tek nakon završetka forenzičke istrage"
+    ],
+    "answer": 2,
+    "explain": "GDPR čl. 33 traži prijavu u 72 sata od saznanja; dodatne informacije mogu se dostavljati postepeno. 60 dana je rok HIPAA za obavještavanje pojedinaca, a 24 sata je rano upozorenje po NIS2."
+  },
+  {
+    "obj": "1.4",
+    "q": "Kompanija je razvila jedinstven algoritam za rangiranje ponuda koji joj daje tržišnu prednost i ne želi da njegovi detalji ikada postanu javni. Koji oblik zaštite je NAJPRIKLADNIJI?",
+    "options": [
+      "Patent",
+      "Trademark",
+      "Copyright",
+      "Trade secret, uz NDA ugovore i kontrole pristupa"
+    ],
+    "answer": 3,
+    "explain": "Patent zahtijeva javno objavljivanje izuma i ističe nakon 20 godina. Trade secret traje dok je tajna, pod uslovom da organizacija preduzima razumne mjere zaštite."
+  },
+  {
+    "obj": "1.4",
+    "q": "Programer je tokom radnog vremena, na opremi poslodavca, napisao alat za automatizaciju. Ugovor o radu ne sadrži posebne odredbe o IP. Ko je NAJVJEROVATNIJE vlasnik autorskog prava?",
+    "options": [
+      "Programer, jer je on autor",
+      "Poslodavac, po principu djela nastalog u radnom odnosu (work for hire)",
+      "Niko, jer softver nije registrovan",
+      "Programer i poslodavac zajednički, u jednakim dijelovima"
+    ],
+    "answer": 1,
+    "explain": "Djelo nastalo u okviru radnog odnosa po pravilu pripada poslodavcu. Autorsko pravo nastaje automatski, registracija nije uslov."
+  },
+  {
+    "obj": "1.4",
+    "q": "Razvojni tim želi ugraditi biblioteku pod GPL licencom u komercijalni proizvod koji se distribuira kupcima kao zatvoreni kod. Šta je NAJVEĆI rizik?",
+    "options": [
+      "Obaveza plaćanja licence autoru biblioteke po instalaciji",
+      "Kontrole izvoza zbog upotrebe open-source koda",
+      "Copyleft obaveza da se izvedeno djelo koje se distribuira objavi pod istom licencom, uključujući izvorni kod",
+      "Gubitak zaštite žiga proizvoda"
+    ],
+    "answer": 2,
+    "explain": "GPL je copyleft licenca: distribucija izvedenog djela zahtijeva objavljivanje pod GPL-om. Zato je potrebna politika upotrebe open-source komponenti i provjera licenci (npr. kroz SBOM)."
+  },
+  {
+    "obj": "1.4",
+    "q": "Kompanija iz EU želi prenositi lične podatke zaposlenih podružnici u zemlji za koju ne postoji odluka o adekvatnosti. Koji mehanizam je NAJPRIKLADNIJI za redovne, ponavljane prenose unutar multinacionalne grupe?",
+    "options": [
+      "Binding Corporate Rules odobrena od nadzornog tijela",
+      "Izričita saglasnost svakog zaposlenog za svaki prenos",
+      "Safe Harbor certifikacija podružnice",
+      "Šifrovanje podataka u prenosu, čime prenos prestaje biti prenos ličnih podataka"
+    ],
+    "answer": 0,
+    "explain": "BCR su odobrena interna pravila grupe za redovne prenose (alternativa su SCC). Saglasnost zaposlenih je problematična zbog odnosa zavisnosti i služi za povremene prenose; Safe Harbor je poništen 2015; šifrovanje ne mijenja pravnu prirodu podataka."
+  },
+  {
+    "obj": "1.4",
+    "q": "Inženjer treba da pokaže izvorni kod softvera sa jakom kriptografijom, koji je pod kontrolom izvoza, kolegi iz strane zemlje koji radi u istoj kancelariji u SAD. Kako se ova radnja tretira?",
+    "options": [
+      "Kao interna komunikacija koja nije regulisana",
+      "Kao kršenje autorskog prava",
+      "Kao pitanje GDPR-a",
+      "Kao mogući deemed export, koji može zahtijevati izvoznu licencu"
+    ],
+    "answer": 3,
+    "explain": "Po EAR i ITAR, otkrivanje kontrolisane tehnologije stranom državljaninu unutar zemlje smatra se izvozom (deemed export). Treba konsultovati pravnu službu i službu za usklađenost izvoza."
+  },
+  {
+    "obj": "1.4",
+    "q": "Klinika u SAD angažuje cloud provajdera za čuvanje medicinskih snimaka pacijenata. Šta HIPAA zahtijeva prije početka obrade?",
+    "options": [
+      "Da provajder ima PCI DSS certifikat",
+      "Potpisan Business Associate Agreement (BAA) kojim se provajder obavezuje na zaštitu PHI",
+      "Da se podaci čuvaju isključivo u EU",
+      "Saglasnost svakog pacijenta za upotrebu clouda"
+    ],
+    "answer": 1,
+    "explain": "Provajder koji obrađuje PHI za covered entity je business associate i mora potpisati BAA. PCI DSS se odnosi na kartice."
+  },
+  {
+    "obj": "1.4",
+    "q": "Web shop iz Sarajeva prima uplate karticama Visa i Mastercard. Kakve je prirode obaveza usklađenosti sa PCI DSS?",
+    "options": [
+      "Zakonska obaveza propisana zakonom BiH",
+      "Dobrovoljna najbolja praksa bez posljedica",
+      "Ugovorna obaveza koja proizlazi iz ugovora sa acquirerom i pravila kartičnih kuća",
+      "Regulatorna obaveza koju sprovodi centralna banka"
+    ],
+    "answer": 2,
+    "explain": "PCI DSS je industrijski standard koji se nameće ugovorom. Nepoštovanje dovodi do kazni od kartičnih kuća ili gubitka prava na prihvat kartica, ne do krivične odgovornosti po samom standardu."
+  },
+  {
+    "obj": "1.4",
+    "q": "Startup iz Kalifornije prodaje podatke o ponašanju korisnika oglašivačima. Koju obavezu NAJVJEROVATNIJE ima po CCPA/CPRA?",
+    "options": [
+      "Omogućiti potrošačima opt-out od prodaje i dijeljenja ličnih podataka",
+      "Imenovati DPO-a u EU",
+      "Potpisati BAA sa oglašivačima",
+      "Dobiti adequacy odluku Evropske komisije"
+    ],
+    "answer": 0,
+    "explain": "CCPA/CPRA daje potrošačima pravo da znaju, brišu, isprave i odbiju prodaju ili dijeljenje podataka (\"Do Not Sell or Share\"). Ostale obaveze pripadaju GDPR-u ili HIPAA."
+  },
+  {
+    "obj": "1.5",
+    "q": "Koji standard dokazivanja se primjenjuje u građanskom postupku za naknadu štete nakon povrede podataka?",
+    "options": [
+      "Beyond a reasonable doubt",
+      "Clear and present danger",
+      "Probable cause",
+      "Preponderance of the evidence"
+    ],
+    "answer": 3,
+    "explain": "Građanski postupak traži pretežnost dokaza (više vjerovatno nego ne). Van razumne sumnje je standard krivičnog postupka, a probable cause je osnov za nalog za pretres."
+  },
+  {
+    "obj": "1.5",
+    "q": "Interna istraga o kršenju politike prihvatljive upotrebe otkriva da zaposleni prodaje podatke klijenata konkurenciji. Šta je NAJBOLJI sljedeći korak?",
+    "options": [
+      "Odmah suočiti zaposlenog i zatražiti priznanje",
+      "Uključiti pravnu službu i upravu radi odluke o daljem toku i kontaktu sa organima, uz očuvanje dokaza i lanca nadzora",
+      "Obrisati njegov nalog i sve logove da bi se spriječilo dalje curenje",
+      "Samostalno pozvati policiju bez obavještavanja uprave"
+    ],
+    "answer": 1,
+    "explain": "Istraga prelazi iz administrativne u moguću krivičnu i građansku. Odluku o kontaktu sa policijom donosi uprava uz pravnu službu, a dokazi moraju biti očuvani; brisanje logova bi uništilo dokaze."
+  },
+  {
+    "obj": "1.5",
+    "q": "Kompanija je primila obavještenje da protiv nje bivši partner priprema tužbu. Šta mora odmah uraditi u vezi sa podacima?",
+    "options": [
+      "Nastaviti redovno brisanje po politici zadržavanja",
+      "Šifrovati sve relevantne podatke da ih druga strana ne bi mogla pročitati",
+      "Izdati legal hold i suspendovati brisanje svih potencijalno relevantnih podataka",
+      "Prebaciti podatke u drugu jurisdikciju"
+    ],
+    "answer": 2,
+    "explain": "Kada je spor razumno očekivan, nastaje obaveza čuvanja relevantnih podataka (legal hold). Brisanje ili sakrivanje podataka je spoliation i nosi sankcije."
+  },
+  {
+    "obj": "1.5",
+    "q": "Koja karakteristika je SPECIFIČNA za krivičnu istragu u odnosu na administrativnu?",
+    "options": [
+      "Organizacija u potpunosti kontroliše tempo i obim istrage",
+      "Dokazi se ne moraju čuvati uz lanac nadzora",
+      "Ishod je disciplinska mjera prema zaposlenom",
+      "Vode je organi gonjenja, traži se dokaz van razumne sumnje i strogo poštovanje pravila o pribavljanju dokaza"
+    ],
+    "answer": 3,
+    "explain": "Krivičnu istragu vode policija i tužilaštvo, sa najvišim standardom dokazivanja i strogim pravilima (nalozi, lanac nadzora). Organizacija tada gubi kontrolu nad tempom."
+  },
+  {
+    "obj": "1.5",
+    "q": "Regulator za zaštitu podataka zahtijeva od banke dokaze o kontrolama nakon pritužbe klijenta. Kakva je ovo istraga i šta banka treba da uradi?",
+    "options": [
+      "Regulatorna istraga; banka treba sarađivati i dostaviti tražene dokaze kroz pravnu službu",
+      "Građanska istraga; banka može odbiti dok ne dobije sudski poziv",
+      "Administrativna istraga; banka sama odlučuje da li će odgovoriti",
+      "Krivična istraga; banka treba angažovati PFI"
+    ],
+    "answer": 0,
+    "explain": "Istragu pokreće regulator zbog mogućeg kršenja propisa, a saradnja je obavezna. Odgovor ide preko pravne službe, uz dokumentovane dokaze o kontrolama."
+  },
+  {
+    "obj": "1.5",
+    "q": "Sigurnosni tim postavlja honeypot sa lažnim podacima kako bi otkrio napadače koji su već u mreži. Kako se ovo pravno najčešće tretira?",
+    "options": [
+      "Kao entrapment, jer navodi napadače na krivično djelo",
+      "Kao enticement, koji je prihvatljiv jer samo pruža priliku osobi koja je već namjeravala djelovati",
+      "Kao kršenje ECPA",
+      "Kao nezakonit pretres bez naloga"
+    ],
+    "answer": 1,
+    "explain": "Enticement (mamljenje) pruža priliku onome ko već ima namjeru, i to je prihvatljivo. Entrapment je navođenje osobe na djelo koje inače ne bi počinila i čini dokaze neupotrebljivim."
+  },
+  {
+    "obj": "1.5",
+    "q": "Policija neformalno traži od privatne kompanije da pretraži računar zaposlenog i preda nalaze, bez naloga. Šta je NAJVEĆI pravni rizik?",
+    "options": [
+      "Kompanija krši licencni ugovor za forenzički softver",
+      "Dokazi neće imati heš vrijednosti",
+      "Kompanija djeluje kao agent države, pa važe ograničenja za pretres i dokazi mogu biti neprihvatljivi",
+      "Zaposleni gubi pravo na naknadu"
+    ],
+    "answer": 2,
+    "explain": "Kada privatna organizacija postupa po zahtjevu policije, smatra se agentom države i na nju se primjenjuju ograničenja kao na organe (nalog, ustavna prava). Zahtjev treba proslijediti pravnoj službi."
+  },
+  {
+    "obj": "1.6",
+    "q": "Koji dokument je jedini NEOBAVEZAN u hijerarhiji sigurnosne dokumentacije?",
+    "options": [
+      "Standard",
+      "Baseline",
+      "Procedure",
+      "Guideline"
+    ],
+    "answer": 3,
+    "explain": "Smjernice (guidelines) su preporuke. Politike, standardi, baseline i procedure su obavezni."
+  },
+  {
+    "obj": "1.6",
+    "q": "Organizacija prelazi sa TOTP na passkeys za MFA. Koji dokument se NAJMANJE vjerovatno mijenja?",
+    "options": [
+      "Politika kontrole pristupa",
+      "Standard za autentifikaciju",
+      "Procedura registracije autentifikatora",
+      "Baseline konfiguracije IdP-a"
+    ],
+    "answer": 0,
+    "explain": "Politika je tehnološki neutralna i govori šta i zašto (npr. jaka autentifikacija). Standardi, baseline i procedure opisuju konkretnu tehnologiju i način, pa se mijenjaju."
+  },
+  {
+    "obj": "1.6",
+    "q": "Novi industrijski kontroler podržava samo AES-128, dok standard organizacije propisuje AES-256 za osjetljive podatke. Šta je NAJBOLJE uraditi?",
+    "options": [
+      "Izmijeniti politiku tako da dozvoljava sve algoritme",
+      "Pokrenuti formalni izuzetak sa procjenom rizika, kompenzacionim kontrolama, rokom i potpisom vlasnika rizika",
+      "Ne uvoditi kontroler ni pod kojim uslovima",
+      "Uvesti kontroler bez dokumentovanja, jer je AES-128 i dalje siguran"
+    ],
+    "answer": 1,
+    "explain": "Odstupanja od standarda rješavaju se formalnim procesom izuzetka: procjena rizika, kompenzacione kontrole, ograničeno trajanje i prihvatanje rizika od vlasnika. Mijenjanje politike ili tiho odstupanje nisu ispravni."
+  },
+  {
+    "obj": "1.6",
+    "q": "Ko treba da odobri krovnu (organizacionu) politiku informacione sigurnosti?",
+    "options": [
+      "Sistemski administratori",
+      "Interni auditor",
+      "Viša uprava",
+      "Dobavljač SIEM rješenja"
+    ],
+    "answer": 2,
+    "explain": "Politika daje pravac i mandat programu, pa je odobrava i potpisuje viša uprava. Auditor provjerava, ali ne odobrava politike, zbog nezavisnosti."
+  },
+  {
+    "obj": "1.6",
+    "q": "Politika o upotrebi generativnog AI alata za sve zaposlene je primjer koje vrste politike?",
+    "options": [
+      "Issue-specific policy",
+      "System-specific policy",
+      "Baseline",
+      "Procedure"
+    ],
+    "answer": 0,
+    "explain": "Issue-specific politika pokriva konkretnu temu koja se tiče cijele organizacije (AUP, e-mail, BYOD, AI). System-specific se odnosi na jedan sistem."
+  },
+  {
+    "obj": "1.6",
+    "type": "match",
+    "q": "Upari primjer sa vrstom dokumenta.",
+    "options": [
+      "„Svi osjetljivi podaci moraju biti zaštićeni šifrovanjem u mirovanju i prenosu.“",
+      "„Za šifrovanje u mirovanju koristi se AES-256; za prenos TLS 1.2 ili noviji.“",
+      "„Koraci za rotaciju KMS ključa: 1) kreiraj novu verziju, 2) ažuriraj alias, 3) provjeri aplikacije.“",
+      "„Preporučuje se da timovi koriste centralni servis za upravljanje tajnama.“"
+    ],
+    "targets": [
+      "Guideline",
+      "Procedure",
+      "Policy",
+      "Standard"
+    ],
+    "answer": [2, 3, 1, 0],
+    "explain": "Opšta, obavezna izjava je politika; konkretni algoritmi su standard; koraci su procedura; preporuka je smjernica."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Poredaj korake pri sumnji na povredu ličnih podataka, od prvog do posljednjeg.",
+    "options": [
+      "Obavijestiti nadzorno tijelo i, po potrebi, pogođene osobe",
+      "Zadržati incident i sačuvati dokaze",
+      "Uključiti pravnu službu, DPO-a i upravu i procijeniti rizik po pojedince i primjenjive režime",
+      "Lessons learned i korektivne mjere",
+      "Utvrditi koji podaci i koliko osoba iz kojih jurisdikcija su pogođeni"
+    ],
+    "answer": [1, 4, 2, 0, 3],
+    "explain": "Prvo se incident zadržava uz čuvanje dokaza, zatim se utvrđuju činjenice, pa pravna služba i uprava procjenjuju rizik i obaveze, slijedi obavještavanje, a na kraju lessons learned."
+  }
+]

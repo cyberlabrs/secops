@@ -1,0 +1,12 @@
+{
+  "title": "Istraga: CloudTrail i Kubernetes audit",
+  "summary": "Istraga CloudTrail i Kubernetes audit logova sa jq: kompromitovani kredencijali, perzistencija, gašenje logova, exec, zloupotreba tokena, privilegovani podovi i tajne.",
+  "minutes": 90,
+  "domain": 4,
+  "objectives": [
+    "4.2",
+    "4.3"
+  ],
+  "title_en": "Investigation: CloudTrail and Kubernetes audit",
+  "summary_en": "Investigating CloudTrail and Kubernetes audit logs with jq: compromised credentials, persistence, disabled logging, exec, token abuse, privileged pods and secrets."
+}

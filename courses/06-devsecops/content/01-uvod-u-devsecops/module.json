@@ -1,0 +1,12 @@
+{
+  "title": "Uvod u DevSecOps i prvi pipeline",
+  "summary": "Principi DevSecOps-a (shift-left i shift-right, NIST SSDF, OWASP SAMM i DSOMM), modelovanje prijetnji za aplikaciju i pipeline i izbor kontrola po fazama, uz prvo pokretanje kurs-shop pipelinea alatom gitlab-ci-local.",
+  "minutes": 60,
+  "domain": 1,
+  "objectives": [
+    "1.1",
+    "1.2"
+  ],
+  "title_en": "Introduction to DevSecOps and the first pipeline",
+  "summary_en": "DevSecOps principles (shift-left and shift-right, NIST SSDF, OWASP SAMM and DSOMM), threat modeling for the application and the pipeline and choosing controls per stage, plus a first run of the kurs-shop pipeline with gitlab-ci-local."
+}

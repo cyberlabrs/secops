@@ -1,0 +1,72 @@
+# Lokalna pravila za kurs (lab nema pristup Semgrep registriju, pa p/python i slično nisu dostupni).
+rules:
+  - id: kurs.python.sqli-string-query
+    languages: [python]
+    severity: ERROR
+    message: SQL upit je sastavljen spajanjem stringova ili f-stringom. Koristi parametre (`?`) umjesto ubacivanja vrijednosti u upit.
+    metadata:
+      cwe: "CWE-89: SQL Injection"
+      owasp: "A05:2025 - Injection"
+      category: security
+    pattern-either:
+      - pattern: $DB.execute(f"...", ...)
+      - pattern: $DB.execute("..." + $X, ...)
+      - pattern: $DB.execute("..." % $X, ...)
+      - pattern: $DB.execute("...".format(...), ...)
+
+  - id: kurs.python.flask-request-to-sql
+    languages: [python]
+    severity: ERROR
+    mode: taint
+    message: Podatak iz HTTP zahtjeva stiže u SQL upit bez parametrizacije (taint analiza).
+    metadata:
+      cwe: "CWE-89: SQL Injection"
+      category: security
+    pattern-sources:
+      - pattern: flask.request.$ATTR.get(...)
+      - pattern: flask.request.$ATTR[...]
+    pattern-sinks:
+      - patterns:
+          - pattern: $DB.execute($QUERY, ...)
+          - focus-metavariable: $QUERY
+
+  - id: kurs.python.subprocess-shell-true
+    languages: [python]
+    severity: ERROR
+    message: subprocess sa shell=True izvršava string kroz shell; ulaz korisnika vodi do command injectiona. Proslijedi listu argumenata bez shell=True.
+    metadata:
+      cwe: "CWE-78: OS Command Injection"
+      category: security
+    pattern: subprocess.$FUNC(..., shell=True, ...)
+
+  - id: kurs.python.yaml-unsafe-load
+    languages: [python]
+    severity: ERROR
+    message: yaml.load sa nesigurnim Loaderom može kreirati proizvoljne Python objekte. Koristi yaml.safe_load.
+    metadata:
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      category: security
+    pattern-either:
+      - pattern: yaml.load(..., Loader=yaml.Loader)
+      - pattern: yaml.load(..., Loader=yaml.UnsafeLoader)
+      - pattern: yaml.unsafe_load(...)
+
+  - id: kurs.python.flask-debug
+    languages: [python]
+    severity: WARNING
+    message: Flask debug mod u produkciji izlaže interaktivni debugger (izvršavanje koda). Uključuj ga samo kroz varijablu okruženja u razvoju.
+    metadata:
+      cwe: "CWE-489: Active Debug Code"
+      category: security
+    pattern: $APP.run(..., debug=True, ...)
+
+  - id: kurs.python.flask-hardcoded-secret-key
+    languages: [python]
+    severity: WARNING
+    message: SECRET_KEY je upisan u kod; svako ko vidi repo može falsifikovati sesije. Čitaj ga iz okruženja ili secret managera.
+    metadata:
+      cwe: "CWE-798: Use of Hard-coded Credentials"
+      category: security
+    pattern-either:
+      - pattern: $APP.config["SECRET_KEY"] = "..."
+      - pattern: $APP.secret_key = "..."

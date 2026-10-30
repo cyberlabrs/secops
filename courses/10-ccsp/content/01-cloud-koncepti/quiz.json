@@ -1,0 +1,283 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Osiguravajuća kuća koristi SaaS CRM u kojem drži lične podatke klijenata. Ugovor kaže da provajder upravlja aplikacijom, infrastrukturom i backupom. Nakon curenja podataka zbog pogrešno podešenog dijeljenja izvještaja, ko snosi KRAJNJU odgovornost (accountability) prema klijentima i regulatoru?",
+    "options": [
+      "SaaS provajder, jer upravlja aplikacijom u kojoj je došlo do curenja.",
+      "Cloud auditor koji je izdao SOC 2 izvještaj bez napomena o toj kontroli.",
+      "Osiguravajuća kuća kao cloud service customer i vlasnik (controller) podataka.",
+      "Odgovornost se dijeli na pola, kako je definisano shared responsibility modelom."
+    ],
+    "answer": 2,
+    "explain": "Izvršenje zadataka se može prenijeti na provajdera, ali accountability za podatke ostaje kod customera (data owner/controller). Uz to, podešavanje dijeljenja u SaaS-u je i operativno na strani customera. Shared responsibility dijeli zadatke, ne krajnju odgovornost."
+  },
+  {
+    "obj": "1.1",
+    "q": "Firma ugovara posrednika koji, za svaki novi workload, automatski bira između tri IaaS provajdera onog sa najnižom cijenom u tom trenutku i tako premješta workload. Koju ulogu brokera ovo NAJBOLJE opisuje?",
+    "options": [
+      "Service arbitrage",
+      "Service aggregation",
+      "Service intermediation",
+      "Cloud carrier"
+    ],
+    "answer": 0,
+    "explain": "Arbitrage je agregacija sa dinamičkim izborom provajdera (npr. po cijeni ili performansama). Aggregation spaja usluge, ali bez dinamičkog izbora, intermediation poboljšava jednu uslugu, a carrier je mrežni operater, a ne broker."
+  },
+  {
+    "obj": "1.1",
+    "q": "Pravna služba pita zašto ne može dobiti tačnu adresu data centra u kojem se nalaze podaci kompanije kod javnog provajdera, već samo naziv regiona. Koja esencijalna karakteristika clouda to NAJBOLJE objašnjava?",
+    "options": [
+      "Broad network access",
+      "Measured service",
+      "On-demand self-service",
+      "Resource pooling"
+    ],
+    "answer": 3,
+    "explain": "Resource pooling uključuje location independence: korisnik generalno ne kontroliše niti zna tačnu lokaciju resursa, osim na višem nivou apstrakcije (region, zemlja). Zato se jurisdikcija rješava izborom regiona i ugovorom."
+  },
+  {
+    "obj": "1.1",
+    "q": "Razvojni timovi sami otvaraju resurse kod javnog provajdera preko kreditne kartice, bez znanja IT-a. Koja karakteristika clouda NAJVIŠE doprinosi ovom riziku i koja je NAJBOLJA prva reakcija menadžmenta?",
+    "options": [
+      "Rapid elasticity; ograničiti auto-scaling grupe.",
+      "On-demand self-service; uspostaviti cloud governance (politike, odobrene naloge i guardrails).",
+      "Multi-tenancy; zahtijevati dedicated hostove za sve workloade.",
+      "Broad network access; blokirati pristup konzoli provajdera na proxyju."
+    ],
+    "answer": 1,
+    "explain": "Shadow IT je direktna posljedica on-demand self-servicea. Najbolji odgovor je upravljački: governance sa politikama, centralnim nalozima i guardrails, umjesto tehničke blokade koja samo tjera korisnike da je zaobiđu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Tokom DDoS napada aplikacija je ostala dostupna jer je automatski dodala instance, ali je mjesečni račun porastao deset puta. Koja kombinacija karakteristika je u pitanju?",
+    "options": [
+      "Resource pooling i multi-tenancy",
+      "Rapid elasticity i measured service",
+      "Broad network access i on-demand self-service",
+      "Multi-tenancy i measured service"
+    ],
+    "answer": 1,
+    "explain": "Elastičnost je održala dostupnost, a mjerena usluga (pay-per-use) je naplatila potrošene resurse. Ovo je primjer napada na trošak (economic denial of sustainability / denial of wallet); ublažava se limitima skaliranja, budžetskim alarmima i DDoS zaštitom na rubu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koja izjava NAJBOLJE razlikuje elasticity od scalability?",
+    "options": [
+      "Scalability se odnosi samo na storage, a elasticity samo na compute.",
+      "Elasticity zahtijeva ručno odobrenje provajdera, scalability ne.",
+      "Scalability znači samo horizontalno dodavanje čvorova, elasticity samo vertikalno.",
+      "Elasticity je automatsko povećavanje i smanjivanje resursa prema potražnji, a scalability je sposobnost sistema da raste."
+    ],
+    "answer": 3,
+    "explain": "Scalability (vertikalna ili horizontalna) opisuje sposobnost rasta. Elasticity dodaje automatsko prilagođavanje u oba smjera, tako da korisnik plaća samo ono što trenutno troši."
+  },
+  {
+    "obj": "1.1",
+    "q": "Sigurnosni arhitekta treba odabrati jednu kontrolu sa NAJVEĆIM uticajem na smanjenje rizika za cijelo cloud okruženje. Šta treba prioritizovati?",
+    "options": [
+      "Zaštitu management planea: MFA, najmanje privilegije i logovanje svih administrativnih API poziva.",
+      "Antivirus na svim virtualnim mašinama.",
+      "Šifrovanje svih EBS volumena podrazumijevanim ključem provajdera.",
+      "Godišnji penetration test web aplikacije."
+    ],
+    "answer": 0,
+    "explain": "Management plane (konzola i API) kontroliše sve resurse; kompromitovan administratorski kredencijal znači kompromitovano cijelo okruženje. Ostale kontrole su korisne, ali pokrivaju uži dio rizika."
+  },
+  {
+    "obj": "1.1",
+    "q": "U NIST SP 500-292 referentnoj arhitekturi, koja uloga je zadužena za povezivanje i transport cloud usluga od provajdera do korisnika?",
+    "options": [
+      "Cloud broker",
+      "Cloud auditor",
+      "Cloud carrier",
+      "Cloud service partner"
+    ],
+    "answer": 2,
+    "explain": "Cloud carrier je posrednik koji obezbjeđuje mrežnu povezanost i transport (npr. telekom operater). Broker upravlja uslugama i odnosima, auditor ocjenjuje, a cloud service partner je ISO/IEC 17789 pojam za podržavajuće uloge."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koja gradivna tehnologija odvaja control plane od data planea i omogućava centralno, programabilno upravljanje mrežom u cloudu, ali ujedno stvara visokovrijednu metu za napadača?",
+    "options": [
+      "Type 2 hypervisor",
+      "Software-Defined Networking (SDN) kontroler",
+      "Content Delivery Network",
+      "Objektni storage"
+    ],
+    "answer": 1,
+    "explain": "SDN razdvaja odlučivanje (control plane) od prosljeđivanja (data plane) i centralizuje upravljanje. Kompromitovan SDN kontroler može preusmjeriti ili otvoriti saobraćaj za cijelu mrežu, pa zahtijeva posebnu zaštitu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Javni cloud provajder koristi hypervisor koji radi direktno na hardveru. Koja je NAJOZBILJNIJA prijetnja specifična za taj sloj u multi-tenant okruženju?",
+    "options": [
+      "Phishing administratora korisnika",
+      "SQL injection u aplikaciji tenanta",
+      "Gubitak enkripcijskog ključa tenanta",
+      "VM escape kojim napadač iz jedne gostujuće mašine pristupa hypervisoru i drugim tenantima"
+    ],
+    "answer": 3,
+    "explain": "VM escape probija izolaciju koja je temelj multi-tenancyja. Ostale prijetnje su realne, ali nisu specifične za hypervisor niti ugrožavaju druge tenante na isti način."
+  },
+  {
+    "obj": "1.2",
+    "q": "Kompanija prebacuje internu aplikaciju na PaaS platformu. Koja aktivnost OSTAJE odgovornost kompanije?",
+    "options": [
+      "Patchovanje operativnog sistema ispod runtimea",
+      "Fizička zaštita servera",
+      "Sigurnost sopstvenog koda aplikacije i kontrola pristupa podacima",
+      "Održavanje hypervisora"
+    ],
+    "answer": 2,
+    "explain": "U PaaS-u provajder upravlja infrastrukturom, OS-om i runtimeom. Customer ostaje odgovoran za kod koji deployuje, konfiguraciju aplikacije, podatke i IAM."
+  },
+  {
+    "obj": "1.2",
+    "q": "Bolnica drži elektronske kartone pacijenata u svom data centru zbog regulative, a anonimizovane podatke šalje na analitiku u javni cloud preko privatne veze. Koji deployment model ovo opisuje?",
+    "options": [
+      "Hybrid cloud",
+      "Community cloud",
+      "Multi-cloud",
+      "Private cloud"
+    ],
+    "answer": 0,
+    "explain": "Hybrid kombinuje dva ili više različitih deployment modela (ovdje private i public) povezana tako da se podaci i aplikacije mogu prenositi. Multi-cloud bi značio više javnih provajdera."
+  },
+  {
+    "obj": "1.2",
+    "q": "Pet regionalnih banaka zajedno finansira i koristi cloud infrastrukturu za međubankarski platni sistem, sa istim regulatornim zahtjevima. Šta je NAJVAŽNIJE jasno definisati prije pokretanja?",
+    "options": [
+      "Ugovorne odgovornosti članova zajednice za upravljanje, troškove, incidente i izlazak člana",
+      "Broj virtualnih mašina po banci",
+      "Koji hypervisor će se koristiti",
+      "Boju i izgled korisničkog portala"
+    ],
+    "answer": 0,
+    "explain": "Kod community clouda najveći rizik je nejasna podjela upravljanja i odgovornosti među članovima. Governance, podjela troškova, odgovor na incidente i reversibility za člana koji izlazi moraju biti ugovoreni."
+  },
+  {
+    "obj": "1.2",
+    "q": "Prije potpisivanja ugovora sa SaaS provajderom, menadžer rizika traži klauzulu koja garantuje izvoz svih podataka u otvorenom formatu i pismenu potvrdu o brisanju u roku od 30 dana nakon raskida. Koje zajedničko razmatranje (shared consideration) se time adresira?",
+    "options": [
+      "Interoperability",
+      "Portability",
+      "Reversibility",
+      "Auditability"
+    ],
+    "answer": 2,
+    "explain": "Reversibility pokriva izlazak iz usluge: vraćanje podataka i njihovo brisanje kod provajdera u dogovorenom roku. Portability je vezana za premještanje kod drugog provajdera, interoperability za zajednički rad sistema."
+  },
+  {
+    "obj": "1.2",
+    "q": "Organizacija želi da SIEM koji radi kod jednog provajdera direktno prima logove i događaje iz servisa drugog provajdera preko standardnih API-ja. Koji koncept je NAJRELEVANTNIJI?",
+    "options": [
+      "Reversibility",
+      "Interoperability",
+      "Resiliency",
+      "Outsourcing"
+    ],
+    "answer": 1,
+    "explain": "Interoperability je sposobnost sistema da rade zajedno i razmjenjuju informacije. Nema premještanja sistema (portability) niti izlaska iz usluge (reversibility)."
+  },
+  {
+    "obj": "1.2",
+    "q": "SLA provajdera garantuje dostupnost od 99,9%, a poslovni zahtjev za kritičnu aplikaciju je 99,99%. Šta je NAJBOLJI pristup sigurnosnog arhitekte?",
+    "options": [
+      "Pregovarati veće service credite za prekid dostupnosti.",
+      "Prihvatiti SLA jer je razlika zanemariva.",
+      "Prebaciti rizik na provajdera kroz klauzulu o odšteti.",
+      "Dizajnirati arhitekturu sa redundansom kroz više zona ili regiona i uključiti je u BC/DR plan."
+    ],
+    "answer": 3,
+    "explain": "Ugovor ne može podići stvarnu dostupnost; service credits rijetko pokrivaju poslovnu štetu. Zahtjev iznad SLA-a ispunjava se arhitekturom (redundansa, failover) i BC/DR planiranjem, za šta je odgovoran customer."
+  },
+  {
+    "obj": "1.2",
+    "q": "Istraživački institut obrađuje genetske podatke u javnom cloudu i zahtijeva da podaci budu zaštićeni čak i od administratora provajdera dok se nad njima izvršavaju izračunavanja. Koja tehnologija NAJBOLJE ispunjava zahtjev?",
+    "options": [
+      "Šifrovanje volumena pomoću KMS-a",
+      "TLS 1.3 između klijenata i servisa",
+      "Confidential computing sa Trusted Execution Environmentom",
+      "Tokenizacija identifikatora pacijenata"
+    ],
+    "answer": 2,
+    "explain": "Confidential computing štiti podatke u upotrebi unutar hardverski izolovanog TEE-a (npr. AMD SEV-SNP, Intel TDX, Nitro Enclaves). Šifrovanje at rest i TLS ne štite podatke dok su dešifrovani u memoriji tokom obrade."
+  },
+  {
+    "obj": "1.2",
+    "q": "Vlada upozorava da protivnici već sada snimaju šifrovani saobraćaj kako bi ga dešifrovali kada kvantni računari postanu dovoljno moćni. Koji je NAJBOLJI PRVI korak za organizaciju sa dugoročno povjerljivim podacima u cloudu?",
+    "options": [
+      "Odmah zamijeniti AES-256 sa AES-128 radi performansi.",
+      "Napraviti inventar kriptografije i planirati crypto-agility i prelazak na post-quantum algoritme.",
+      "Isključiti TLS i preći na privatne linkove.",
+      "Čekati da provajder automatski riješi problem."
+    ],
+    "answer": 1,
+    "explain": "Harvest now, decrypt later napada asimetričnu kriptografiju (RSA/ECC). Prvi korak je znati gdje se koristi kriptografija (inventar), zatim planirati crypto-agility i PQC (FIPS 203/204/205). AES-256 ostaje dovoljno jak, a smanjenje na AES-128 bi pogoršalo stanje."
+  },
+  {
+    "obj": "1.2",
+    "q": "Firma koristi i AWS i Azure za različite aplikacije, bez ikakvog privatnog data centra. Šta od navedenog NAJTAČNIJE opisuje njen model?",
+    "options": [
+      "Hybrid cloud, jer koristi dva okruženja",
+      "Community cloud, jer dijeli infrastrukturu sa drugim firmama",
+      "Private cloud, jer ima namjenske naloge",
+      "Multi-cloud, jer koristi više javnih provajdera"
+    ],
+    "answer": 3,
+    "explain": "Multi-cloud znači korištenje više provajdera. Hybrid zahtijeva kombinaciju različitih tipova deploymenta (npr. private + public), što ovdje ne postoji."
+  },
+  {
+    "obj": "1.2",
+    "q": "Koja izjava o blockchainu u kontekstu cloud sigurnosti i privatnosti je NAJTAČNIJA?",
+    "options": [
+      "Nepromjenjivost zapisa daje jak integritet i nonrepudiation, ali otežava ispunjavanje prava na brisanje ličnih podataka.",
+      "Blockchain automatski šifruje sve zapise, pa ličnih podataka na njemu nema.",
+      "Blockchain eliminiše potrebu za upravljanjem ključevima.",
+      "Blockchain je centralizovana baza koju kontroliše CSP."
+    ],
+    "answer": 0,
+    "explain": "Append-only priroda blockchaina daje integritet i nonrepudiation, ali je u sukobu sa GDPR pravom na brisanje; lični podaci se zato ne upisuju direktno u lanac. Privatni ključevi su kritični i moraju se štititi."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari opis sa ulogom po ISO/IEC 17789 / NIST referentnoj arhitekturi.",
+    "options": [
+      "Nezavisno ocjenjuje kontrole provajdera i izdaje izvještaj o usklađenosti.",
+      "Spaja usluge više provajdera u jednu i pregovara uslove u ime korisnika.",
+      "Koristi cloud usluge na osnovu ugovora i odgovoran je za svoje podatke.",
+      "Razvija komponente i integracije za cloud usluge.",
+      "Postavlja zakonske zahtjeve i izriče kazne za nepoštovanje."
+    ],
+    "targets": [
+      "Cloud service customer",
+      "Cloud service provider",
+      "Cloud auditor",
+      "Cloud service broker",
+      "Cloud service developer",
+      "Regulator"
+    ],
+    "answer": [2, 3, 0, 4, 5],
+    "explain": "Auditor ocjenjuje, broker agregira i posreduje, customer koristi uslugu i ostaje accountable za podatke, developer (pod-uloga partnera) razvija, a regulator postavlja zakonske zahtjeve. Provajder je distraktor: on usluge čini dostupnim."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Upari zahtjev sa kategorijom usluge koja ga NAJBOLJE ispunjava.",
+    "options": [
+      "Tim želi potpunu kontrolu nad OS-om i instalirati poseban agent na kernel nivou.",
+      "Developeri žele samo deployovati kod, bez brige o OS-u i runtimeu.",
+      "Odjel ljudskih resursa želi gotov sistem za obračun plata bez ikakvog razvoja.",
+      "Analitičari žele managed relacionu bazu bez administracije servera baze."
+    ],
+    "targets": [
+      "SaaS",
+      "PaaS",
+      "IaaS",
+      "DBaaS"
+    ],
+    "answer": [2, 1, 0, 3],
+    "explain": "Kontrola nad OS-om traži IaaS, deploy koda bez upravljanja OS-om je PaaS, gotova aplikacija je SaaS, a managed baza je DBaaS (podvrsta platformskih usluga)."
+  }
+]

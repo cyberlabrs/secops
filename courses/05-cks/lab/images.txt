@@ -1,0 +1,15 @@
+# slike za CKS vježbe (drugi mirror; osnovne slike su u CKA mirroru)
+# namjerno stare slike sa poznatim ranjivostima, za skeniranje Trivyjem
+nginx:1.19
+httpd:2.4.39
+python:3.9-slim
+# minimalne slike
+nginx:1.28-alpine
+gcr.io/distroless/static-debian12:nonroot
+golang:1.24-alpine
+registry:2.8.3
+# CNI za CKS
+calico/node:v3.32.2
+calico/cni:v3.32.2
+calico/kube-controllers:v3.32.2
+curlimages/curl:8.11.1

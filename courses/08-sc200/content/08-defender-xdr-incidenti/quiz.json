@@ -1,0 +1,255 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Imate Microsoft 365 E5 sa Defender for Office 365 Plan 2. Phishing mail je isporučen u 300 sandučića prije nego što je URL proglašen zlonamjernim. Trebate ukloniti poruke iz svih sandučića, uz mogućnost vraćanja ako se pokaže da je odluka pogrešna. Šta trebate uraditi?",
+    "options": [
+      "U Explorer filtrirati po URL-u i izabrati Take action > Soft delete.",
+      "U Explorer filtrirati po URL-u i izabrati Take action > Hard delete.",
+      "Dodati URL u Tenant Allow/Block List i sačekati ZAP.",
+      "Pokrenuti New-ComplianceSearchAction -Purge -PurgeType HardDelete."
+    ],
+    "answer": 0,
+    "explain": "Soft delete premješta poruke u Recoverable Items\\Deletions, pa ih korisnik i admin mogu vratiti. Hard delete nije reverzibilan za korisnika, Block lista sprječava buduće isporuke ali ne garantuje uklanjanje već isporučenih, a PowerShell purge sa HardDelete je trajan i ograničen na 10 stavki po sandučetu."
+  },
+  {
+    "obj": "2.1",
+    "q": "Analitičar bez uloge Search and Purge u Exploreru bira mailove za brisanje i klikne Add to remediation. Gdje drugi član tima odobrava akciju?",
+    "options": [
+      "U Microsoft Purview portalu, eDiscovery > Cases.",
+      "U Action center, tab Pending.",
+      "U Quarantine stranici.",
+      "U Submissions stranici."
+    ],
+    "answer": 1,
+    "explain": "Dvostepena remedijacija stavlja akciju na čekanje u Action center > Pending, gdje je odobrava korisnik sa ulogom Search and Purge. Nakon odobrenja akcija je u tabu History."
+  },
+  {
+    "obj": "2.1",
+    "q": "SOC analitičari ne vide Microsoft Purview Insider Risk Management alarme u Defender portalu, iako IRM politike u Purviewu generišu alarme. Šta trebate uraditi PRVO?",
+    "options": [
+      "Dodijeliti analitičarima ulogu Security Administrator u Entra ID.",
+      "Napraviti Sentinel analytics pravilo za IRM.",
+      "U Purview IRM postavkama uključiti dijeljenje podataka sa drugim sigurnosnim rješenjima (data sharing).",
+      "Uključiti Purview Audit (Premium)."
+    ],
+    "answer": 2,
+    "explain": "IRM alarmi se prikazuju u Defender portalu tek kada je u Data sharing postavkama IRM-a uključeno dijeljenje sa drugim sigurnosnim rješenjima. Uz to analitičari trebaju IRM role group. Audit Premium i Sentinel pravilo nisu preduslov."
+  },
+  {
+    "obj": "2.1",
+    "q": "Trebate advanced hunting upit nad obogaćenim događajima korisničkih aktivnosti koje krše Microsoft Purview politike (npr. upload osjetljivog fajla u lični cloud). Koju tabelu koristite?",
+    "options": [
+      "DeviceFileEvents",
+      "EmailAttachmentInfo",
+      "IdentityDirectoryEvents",
+      "DataSecurityEvents"
+    ],
+    "answer": 3,
+    "explain": "DataSecurityEvents sadrži obogaćene događaje koji krše Purview politike, a DataSecurityBehaviors uvide u sumnjivo ponašanje. Ostale tabele su endpoint, email i AD događaji bez Purview konteksta."
+  },
+  {
+    "obj": "2.1",
+    "q": "Nakon povezivanja Microsoft Sentinela sa Defender portalom, Defender for Cloud alarmi se pojavljuju kao duplikati. Koje DVIJE akcije trebate preduzeti? (Izaberi DVA.)",
+    "options": [
+      "Isključiti Subscription-based Microsoft Defender for Cloud (Legacy) konektor.",
+      "Isključiti Defender XDR konektor u Sentinelu.",
+      "Isključiti analytics pravila koja prave incidente iz Defender for Cloud alarma i koristiti Tenant-based Microsoft Defender for Cloud konektor.",
+      "Isključiti Defender for Cloud planove na pretplatama.",
+      "Napraviti automation rule koji briše sve Defender for Cloud incidente."
+    ],
+    "answer": [0, 2],
+    "explain": "Incidenti iz Defender for Cloud dolaze kroz Defender XDR integraciju; legacy konektor po pretplati i pravila za kreiranje incidenata prave duplikate. Isključivanje Defender XDR konektora ili planova uklanja zaštitu, a brisanje incidenata automation pravilom nije rješenje."
+  },
+  {
+    "obj": "2.1",
+    "q": "Alarm Defender for Cloud za Azure VM je u Defender portalu označen kao Resolved. Šta se dešava sa statusom istog alarma u Defender for Cloud?",
+    "options": [
+      "Ostaje Active, jer se status ne sinhronizuje.",
+      "Mijenja se samo ako je alarm iz Defender for Endpointa.",
+      "Briše se iz Defender for Cloud.",
+      "Mijenja se u Resolved, jer se status Defender for Cloud alarma sinhronizuje u oba smjera."
+    ],
+    "answer": 3,
+    "explain": "Status Defender for Cloud alarma se sinhronizuje u oba smjera. Izuzetak su Defender for Endpoint alarmi na cloud resursima, čiji se status ne sinhronizuje između dva portala."
+  },
+  {
+    "obj": "2.1",
+    "q": "OAuth aplikacija sa dozvolom Full access to all mailboxes dobila je consent od tri korisnika i šalje mailove u njihovo ime. Trebate odmah ukloniti pristup aplikacije za sve korisnike i spriječiti novi consent. Šta trebate uraditi?",
+    "options": [
+      "Resetovati lozinke trojice korisnika.",
+      "U Defender for Cloud Apps (OAuth apps ili App governance) uraditi Ban app.",
+      "Pokrenuti Require user to sign in again za trojicu korisnika.",
+      "Dodati domen aplikacije u Tenant Allow/Block List."
+    ],
+    "answer": 1,
+    "explain": "Ban app opoziva dozvole aplikacije i sprječava novi consent. Reset lozinke i ponovna prijava ne opozivaju OAuth grant, a Block lista je za email."
+  },
+  {
+    "obj": "2.1",
+    "q": "Defender for Cloud Apps je otkrio da korisnik masovno preuzima fajlove iz SharePointa sa nepoznate IP adrese. Trebate odmah prekinuti njegove aktivne sesije, ali bez onemogućavanja naloga. Koju governance akciju birate?",
+    "options": [
+      "Suspend user.",
+      "Confirm user compromised.",
+      "Require user to sign in again.",
+      "Ban app."
+    ],
+    "answer": 2,
+    "explain": "Require user to sign in again opoziva sesije i tokene, a nalog ostaje aktivan. Suspend user onemogućava nalog, Confirm user compromised podiže user risk u ID Protectionu, a Ban app je za aplikacije."
+  },
+  {
+    "obj": "2.1",
+    "q": "Istraga je potvrdila da je nalog korisnika kompromitovan. Želite da Entra ID Protection tretira nalog kao visokorizičan (da reaguju risk-based politike) i da se model uči iz odluke. Šta trebate uraditi u ID Protection?",
+    "options": [
+      "Confirm user compromised.",
+      "Dismiss user risk.",
+      "Confirm sign-in safe.",
+      "Isključiti user risk politiku za tog korisnika."
+    ],
+    "answer": 0,
+    "explain": "Confirm user compromised postavlja stanje Confirmed compromised i visok rizik, što daje povratnu informaciju modelu. Nakon toga slijede reset lozinke i revoke sessions. Dismiss i Confirm safe rade suprotno."
+  },
+  {
+    "obj": "2.1",
+    "q": "Nakon istrage utvrdili ste da su risky sign-ins korisnika bila putovanja i da nalog NIJE kompromitovan. Trebate ukloniti rizik uz NAJMANJE privilegija. Koja akcija i koja uloga?",
+    "options": [
+      "Reset password, uloga User Administrator.",
+      "Confirm user compromised, uloga Security Administrator.",
+      "Block user, uloga Global Administrator.",
+      "Dismiss user risk, uloga Security Operator."
+    ],
+    "answer": 3,
+    "explain": "Dismiss user risk postavlja stanje Dismissed i ne mijenja lozinku; najmanja potrebna uloga je Security Operator. Reset lozinke nije potreban jer nalog nije kompromitovan."
+  },
+  {
+    "obj": "2.1",
+    "q": "Defender for Identity je generisao alarm za pass-the-hash napad. Trebate vidjeti kojim putem napadač sa kompromitovanog naloga može doći do naloga članova Domain Admins. Gdje gledate?",
+    "options": [
+      "Lateral movement paths na stranici identiteta.",
+      "Effective settings na stranici uređaja.",
+      "Cloud discovery u Defender for Cloud Apps.",
+      "Audit log u Purview portalu."
+    ],
+    "answer": 0,
+    "explain": "Lateral movement paths (Defender for Identity) prikazuju puteve preko kojih nalog može doći do osjetljivih naloga. Ostale opcije ne analiziraju AD putanje."
+  },
+  {
+    "obj": "2.1",
+    "q": "Iz Defender portala pokrećete Disable na on-premises AD nalogu otkrivenom u Defender for Identity alarmu. Koji nalog izvršava akciju u AD-u (preporučena i za senzor v3.x obavezna postavka)?",
+    "options": [
+      "Global Administrator koji je pokrenuo akciju.",
+      "Enterprise aplikacija Microsoft Defender for Identity u Entra ID.",
+      "LocalSystem nalog domain controllera na kom radi MDI senzor.",
+      "Directory Service Account (gMSA) za čitanje AD-a."
+    ],
+    "answer": 2,
+    "explain": "Akcije u AD-u izvršava MDI senzor na domain controlleru pod lokalnim sistemskim nalogom DC-a (Manage action accounts > Automatically use the sensor's local system account). Enterprise aplikacija izvršava akcije u Entra ID-u."
+  },
+  {
+    "obj": "2.1",
+    "q": "Sentinel workspace je povezan sa Defender portalom. Analytics pravilo za Palo Alto firewall generiše alarm za uređaj na kojem Defender for Endpoint ima aktivan alarm. Šta trebate uraditi da oba alarma budu u istom incidentu?",
+    "options": [
+      "Napraviti automation rule koji spaja incidente.",
+      "Napraviti Microsoft incident creation pravilo za Defender for Endpoint.",
+      "Napraviti playbook koji dodaje alarm u incident.",
+      "Ništa; Defender XDR korelacija automatski grupiše Sentinel i Defender alarme u incidente."
+    ],
+    "answer": 3,
+    "explain": "U Defender portalu Sentinel alarmi ulaze u isti korelacioni engine kao XDR alarmi i automatski se grupišu. Microsoft incident creation pravila se pri onboardingu isključuju, a automation rule i playbook nisu potrebni."
+  },
+  {
+    "obj": "2.1",
+    "q": "Analitičar u attack storyju vidi dugu obfuskiranu PowerShell komandnu liniju i treba brzo razumjeti šta radi. Koju Security Copilot sposobnost koristi?",
+    "options": [
+      "Incident report.",
+      "Script analysis.",
+      "Query assistant.",
+      "Identity summary."
+    ],
+    "answer": 1,
+    "explain": "Script analysis objašnjava (i deobfuskuje) skripte i komandne linije iz attack storyja. Incident report pravi izvještaj, query assistant generiše KQL, a identity summary opisuje korisnika."
+  },
+  {
+    "obj": "2.1",
+    "q": "SOC dobija stotine korisničkih prijava phishinga dnevno. Trebate da ih AI agent automatski klasifikuje kao stvarnu prijetnju ili lažnu uzbunu i objasni odluku. Šta trebate koristiti?",
+    "options": [
+      "Phishing Triage Agent u Security Copilotu.",
+      "Zero-hour auto purge.",
+      "Automated investigation and response bez Security Copilota.",
+      "Defender for Cloud Apps anomaly detection politiku."
+    ],
+    "answer": 0,
+    "explain": "Phishing Triage Agent klasifikuje prijavljene mailove i daje obrazloženje prirodnim jezikom. ZAP uklanja mailove nakon promjene verdikta, AIR pokreće istragu bez LLM obrazloženja, a MDCA politika nema veze sa prijavama mailova."
+  },
+  {
+    "obj": "2.1",
+    "q": "Analitičar treba za incident sa 40 alarma dobiti preporučene sljedeće korake za containment i remedijaciju specifične za taj incident. Koju Security Copilot sposobnost koristi?",
+    "options": [
+      "Device summary.",
+      "File analysis.",
+      "Guided response.",
+      "Query assistant."
+    ],
+    "answer": 2,
+    "explain": "Guided response daje preporučene akcije za triage, containment i remedijaciju za konkretan incident. Device summary i file analysis opisuju pojedinačne entitete, a query assistant generiše KQL."
+  },
+  {
+    "obj": "2.1",
+    "q": "Najavljeni penetracioni test je izazvao incident sa tačnim detekcijama. Kako trebate klasifikovati incident pri zatvaranju?",
+    "options": [
+      "True positive – multi-staged attack.",
+      "False positive – not malicious.",
+      "Informational, expected activity (security testing).",
+      "Ostaviti bez klasifikacije."
+    ],
+    "answer": 2,
+    "explain": "Detekcija je tačna, ali je aktivnost očekivana, pa je to benign positive: Informational, expected activity (security testing). False positive znači da je detekcija pogrešno vidjela zlonamjernost."
+  },
+  {
+    "obj": "2.1",
+    "q": "Menadžer SOC-a želi da se istraga tri povezana incidenta vodi kao jedan predmet u Defender portalu, sa zadacima za tri analitičara, rokovima i SLA politikom. Analitičar koji kreira i dodjeljuje predmete treba NAJMANJE privilegija. Šta trebate koristiti i koju Sentinel ulogu dodijeliti?",
+    "options": [
+      "Generic case sa tasks; Microsoft Sentinel Contributor.",
+      "Generic case sa tasks; Microsoft Sentinel Responder.",
+      "Spojiti incidente (merge); Microsoft Sentinel Reader.",
+      "Sentinel workbook; Microsoft Sentinel Responder."
+    ],
+    "answer": 1,
+    "explain": "Generic case objedinjuje rad sa tasks, rokovima i SLA politikom. Kreiranje i upravljanje case-ovima traži Microsoft Sentinel Responder (URBAC Alerts (manage)); Contributor je potreban samo za templates, custom polja i SLA politike."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Poredaj korake odgovora na AiTM phishing napad u kojem je napadač ukrao sesiju korisnika i napravio pravilo prosljeđivanja, od prvog do posljednjeg.",
+    "options": [
+      "Ukloniti pravilo prosljeđivanja i provjeriti OAuth consent korisnika.",
+      "Opozvati sesije korisnika (revoke sessions) i resetovati lozinku.",
+      "Ukloniti phishing mail iz svih sandučića preko Explorera.",
+      "Na attack story grafu utvrditi opseg: primaoce, klikove i kompromitovane naloge.",
+      "Klasifikovati incident i dokumentovati nalaze."
+    ],
+    "answer": [3, 1, 0, 2, 4],
+    "explain": "Prvo se utvrdi opseg napada, zatim se napadaču oduzme pristup (revoke sesija i reset lozinke, jer ukradena sesija važi i posle promjene lozinke). Potom se uklanja perzistencija (pravilo, OAuth), pa se čisti preostali phishing da nema novih žrtava. Klasifikacija je posljednja."
+  },
+  {
+    "obj": "2.1",
+    "type": "match",
+    "q": "Upari scenarij sa servisom koji ga primarno otkriva i u kom se radi remedijacija.",
+    "options": [
+      "DCSync zahtjev sa radne stanice prema domain controlleru.",
+      "Impossible travel i masovno preuzimanje iz SaaS aplikacije.",
+      "Sumnjiv pristup Key Vaultu iz nepoznate IP adrese u Azureu.",
+      "Upload fajlova sa brojevima kartica u lični Dropbox.",
+      "Leaked credentials detekcija za korisnički nalog."
+    ],
+    "targets": [
+      "Microsoft Entra ID Protection",
+      "Microsoft Defender for Identity",
+      "Microsoft Purview DLP",
+      "Microsoft Defender for Cloud Apps",
+      "Microsoft Defender for Cloud",
+      "Microsoft Defender for Office 365"
+    ],
+    "answer": [1, 3, 4, 2, 0],
+    "explain": "DCSync je MDI detekcija (domain dominance), impossible travel i masovno preuzimanje u SaaS-u su MDCA, Key Vault je Defender for Cloud workload protection, upload osjetljivih podataka je Purview DLP, a leaked credentials je Entra ID Protection detekcija. Defender for Office 365 ne odgovara nijednom scenariju."
+  }
+]

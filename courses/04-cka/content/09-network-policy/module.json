@@ -1,0 +1,11 @@
+{
+  "title": "Network Policy",
+  "summary": "NetworkPolicy semantika izolacije i aditivnosti, AND/OR selektori, default deny politike sa dozvolom DNS-a, portovi i ipBlock, te testiranje i troubleshooting politika.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.2"
+  ],
+  "title_en": "Network Policy",
+  "summary_en": "NetworkPolicy isolation and additive semantics, AND/OR selectors, default deny policies that still allow DNS, ports and ipBlock, and testing and troubleshooting policies."
+}

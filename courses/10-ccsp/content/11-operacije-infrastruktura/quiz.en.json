@@ -1,0 +1,292 @@
+[
+  {
+    "obj": "5.1",
+    "q": "A financial institution in the public cloud must store transaction-signing keys in a FIPS 140 Level 3 validated device over which only it has administrative control. Which solution BEST meets the requirement?",
+    "options": [
+      "A multi-tenant KMS service with CSP-managed keys.",
+      "A vTPM on each virtual machine that signs transactions.",
+      "A dedicated (single-tenant) cloud HSM with roles managed by the institution.",
+      "Keys in a secrets manager encrypted with a default key."
+    ],
+    "answer": 2,
+    "explain": "A dedicated cloud HSM provides FIPS 140 Level 3 protection and exclusive administrative control by the customer. A multi-tenant KMS does not provide exclusive control, a vTPM serves the integrity and identity of a single machine, and a secrets manager is not an HSM."
+  },
+  {
+    "obj": "5.1",
+    "q": "A cloud provider wants to ensure that customers' sensitive workloads are scheduled only on hosts whose boot chain has not been modified. Which technology BEST enables this?",
+    "options": [
+      "TPM with measured boot and host attestation before scheduling.",
+      "An HSM in every rack.",
+      "Disk encryption on the host.",
+      "Antivirus on the hypervisor."
+    ],
+    "answer": 0,
+    "explain": "The TPM measures boot components into PCR registers, so host integrity can be attested and used for trusted compute pools. An HSM stores keys, disk encryption does not prove boot integrity, and antivirus is not an attestation mechanism."
+  },
+  {
+    "obj": "5.1",
+    "q": "A new cloud service internally creates storage with public access disabled, encryption enabled, and logging active, without any user action. Which principle does this describe?",
+    "options": [
+      "Defense in depth",
+      "Security through obscurity",
+      "Least functionality",
+      "Secure by default"
+    ],
+    "answer": 3,
+    "explain": "Secure by default means that the initial state is secure without additional configuration. Defense in depth is layering of controls, least functionality is disabling unnecessary functions, and obscurity is not a security principle."
+  },
+  {
+    "obj": "5.1",
+    "q": "An organization is building a private cloud for production multitenant workloads. Which hypervisor type is MOST appropriate and why?",
+    "options": [
+      "Type 2, because it is simpler to install on an existing OS.",
+      "Type 1, because it runs directly on hardware and has a smaller attack surface.",
+      "Type 2, because it isolates VMs through the host OS.",
+      "It doesn't matter, because isolation is provided by VLANs."
+    ],
+    "answer": 1,
+    "explain": "A Type 1 (bare metal) hypervisor has no general-purpose OS beneath it, so it has a smaller attack surface and better performance; that is why data centers and CSPs use it. Type 2 depends on the security of the host OS, and VLANs do not solve isolation at the hypervisor level."
+  },
+  {
+    "obj": "5.1",
+    "q": "A private cloud team is concerned about side-channel attacks via the shared CPU cache between VMs of different customers. Which combination of measures BEST reduces this risk?",
+    "options": [
+      "More vCPUs per VM and more memory.",
+      "Separate VLANs for each customer.",
+      "Encryption of all VM disks.",
+      "Up-to-date microcode and hypervisor, core scheduling or dedicated hosts for sensitive workloads, and disabled memory deduplication between VMs."
+    ],
+    "answer": 3,
+    "explain": "Side-channel risk is reduced by patching microcode and the hypervisor, isolation at the core or host level, and disabling memory page sharing. Network segmentation and disk encryption do not affect the shared CPU cache."
+  },
+  {
+    "obj": "5.1",
+    "q": "An IaaS customer installs a management agent on all VMs that allows commands to be executed from the management plane. What is the MOST important security aspect of this toolset?",
+    "options": [
+      "The agent consumes extra CPU, so instance sizes should be increased.",
+      "The agent must not be updated because it can break the VM.",
+      "Anyone with permission to execute commands through the agent effectively has root access to the guest, so those permissions must be strictly limited and the agent kept up to date.",
+      "The agent should only be installed on Windows guests."
+    ],
+    "answer": 2,
+    "explain": "The guest toolset is a privileged channel between the management plane and the guest; the permission to run commands through it is equivalent to administrator access. That is why least privilege, logging, and keeping it up to date are key. The other options are incorrect or irrelevant."
+  },
+  {
+    "obj": "5.2",
+    "q": "An audit reveals that 60 Linux and Windows servers have SSH and RDP open to the internet. What is the BEST solution?",
+    "options": [
+      "Close the direct ports and allow access only through a bastion or managed session service with MFA, identity-based authorization, and session logging.",
+      "Move SSH and RDP to non-standard ports.",
+      "Introduce more complex passwords for all local accounts.",
+      "Enable an IDS that alerts on brute-force attempts."
+    ],
+    "answer": 0,
+    "explain": "Centralized access through a bastion or identity-aware session service removes the exposure and provides MFA and an audit trail. Non-standard ports are obscurity, passwords do not solve protocol exposure, and an IDS only detects attacks."
+  },
+  {
+    "obj": "5.2",
+    "q": "The security team wants to prevent an attacker on the network from using forged responses to redirect users to the wrong IP address for the company's domain. Which technology BEST solves this?",
+    "options": [
+      "DNS over HTTPS",
+      "DNSSEC",
+      "DHCP snooping",
+      "VLAN segmentation"
+    ],
+    "answer": 1,
+    "explain": "DNSSEC signs DNS records, so the resolver can verify the authenticity and integrity of responses and reject forged ones (cache poisoning). DoH encrypts queries for privacy but does not sign records in the zone; DHCP snooping protects against rogue DHCP; VLAN segmentation does not address forged DNS responses."
+  },
+  {
+    "obj": "5.2",
+    "q": "A team plans to deploy an IPS inline in front of a critical production application. What is the BEST approach to deployment?",
+    "options": [
+      "Immediately enable blocking with all signatures to maximize protection.",
+      "Set the IPS to fail-open mode and never enable blocking.",
+      "First run the IPS in detection mode, analyze false positives and tune the rules, then enable blocking through the change process.",
+      "Replace the IPS with a honeypot because it does not affect production."
+    ],
+    "answer": 2,
+    "explain": "An IPS is inline, so false positives block legitimate traffic; that is why it is introduced gradually: detection, tuning, then blocking. Immediate blocking risks a service outage, permanent detection mode defeats the purpose of an IPS, and a honeypot has a different purpose."
+  },
+  {
+    "obj": "5.2",
+    "q": "The legal department asks whether a honeypot may be deployed in the company's network. What is the correct understanding?",
+    "options": [
+      "A honeypot is always illegal because it constitutes entrapment.",
+      "A honeypot may contain real customer data to be convincing.",
+      "A honeypot should be connected to the production network so the attacker can reach it more easily.",
+      "A honeypot is acceptable as enticement (attracting an attacker who already has intent), must be isolated, and must not actively induce a crime."
+    ],
+    "answer": 3,
+    "explain": "Enticement is legally acceptable, entrapment is not. A honeypot must be isolated from production and must not contain real sensitive data. The other options are incorrect or dangerous."
+  },
+  {
+    "obj": "5.2",
+    "q": "Compliance scanning shows that 30% of Linux instances deviate from the CIS baseline because administrators change settings manually. What is the BEST long-term measure?",
+    "options": [
+      "Log in to each server monthly and restore the settings manually.",
+      "Build the baseline into a golden image and configuration management, continuously monitor compliance, and automatically remediate or replace instances.",
+      "Abandon the CIS baseline because it is hard to maintain.",
+      "Introduce disciplinary measures for administrators."
+    ],
+    "answer": 1,
+    "explain": "Hardening is a cycle of baseline, implementation, monitoring, and remediation, and automation prevents drift. Manual work does not scale, abandoning the baseline increases risk, and disciplinary measures do not solve a process problem."
+  },
+  {
+    "obj": "5.2",
+    "q": "A critical vulnerability under active exploitation has been published, and the vendor has not yet released a patch for an internet-facing system. What is the BEST step?",
+    "options": [
+      "Apply compensating controls (e.g., a WAF rule, access restriction, disabling the vulnerable feature), document the risk, and track the patch release.",
+      "Wait for the patch and change nothing to avoid a service outage.",
+      "Shut down the system permanently.",
+      "Apply an unofficial patch from a forum directly in production."
+    ],
+    "answer": 0,
+    "explain": "When no patch exists, risk is reduced with compensating controls and formally documented. Waiting leaves an actively exploited vulnerability open, a permanent shutdown is disproportionate, and an unverified patch without testing and the change process introduces new risk."
+  },
+  {
+    "obj": "5.2",
+    "q": "A private cloud administrator needs to replace memory in one host in a cluster without service interruption for the VMs on it. What should be done FIRST?",
+    "options": [
+      "Power off the host and let HA restart the VMs.",
+      "Take a snapshot of all VMs on the host.",
+      "Disable DRS for the entire cluster.",
+      "Put the host into maintenance mode so the VMs are live-migrated to other hosts."
+    ],
+    "answer": 3,
+    "explain": "Maintenance mode moves VMs via live migration without interruption and prevents new workloads on the host. Powering off the host and relying on HA causes a restart (an outage), a snapshot is not a migration mechanism, and disabling DRS prevents automatic migration."
+  },
+  {
+    "obj": "5.2",
+    "q": "Two redundant VMs of a critical database both became unavailable after one physical host failed. Which configuration was MOST LIKELY missing?",
+    "options": [
+      "An anti-affinity rule that prevents redundant VMs from running on the same host.",
+      "VM memory encryption.",
+      "More vCPUs.",
+      "Thin provisioning of disks."
+    ],
+    "answer": 0,
+    "explain": "Without an anti-affinity rule, the scheduler can place both redundant VMs on the same host, so a host failure takes down both copies. Memory encryption, vCPUs, and thin provisioning do not affect placement across hosts."
+  },
+  {
+    "obj": "5.2",
+    "q": "Monitoring shows that several instances have been at 100% CPU for days without an increase in user requests, along with unusual outbound connections. What is the MOST LIKELY explanation to investigate?",
+    "options": [
+      "Normal autoscaling behavior.",
+      "Fan failure on the CSP's hosts.",
+      "Compromised instances running a cryptominer.",
+      "Insufficient memory in the database."
+    ],
+    "answer": 2,
+    "explain": "Persistently high CPU without business load and outbound connections to unknown addresses are a classic indicator of a cryptominer. Autoscaling adds instances, a CSP hardware failure would not manifest like this, and a database memory problem does not explain the outbound traffic."
+  },
+  {
+    "obj": "5.2",
+    "q": "Ransomware encrypted the production servers and the backups, because the backups were in the same account and the attacker had administrator credentials. Which measure would MOST have prevented the loss of the backups?",
+    "options": [
+      "More frequent snapshots in the same account.",
+      "Antivirus on the backup server.",
+      "Copying backups to another disk on the same server.",
+      "Immutable backups in a separate account with separate credentials, along with regular restore testing."
+    ],
+    "answer": 3,
+    "explain": "An immutable backup in a separate account cannot be deleted even by the production administrator, which is key to protecting against ransomware and compromised accounts. More frequent snapshots and copies on the same system share the same point of compromise, and antivirus does not protect against legitimate admin credentials."
+  },
+  {
+    "obj": "5.3",
+    "q": "The board of directors wants a framework that links IT goals with business goals and separates governance from management, and that internal auditors also use. Which framework is MOST appropriate?",
+    "options": [
+      "ITIL 4",
+      "COBIT 2019",
+      "CIS Controls",
+      "ISO/IEC 27017"
+    ],
+    "answer": 1,
+    "explain": "COBIT is the ISACA framework for IT governance and management, which aligns IT with business goals and separates governance from management. ITIL is operational practice for IT services, CIS Controls are technical measures, and ISO 27017 is cloud security controls."
+  },
+  {
+    "obj": "5.3",
+    "q": "A large client requires the cloud provider to have a certificate proving it has a formal, audited IT service management system. What should the provider obtain?",
+    "options": [
+      "ITIL 4 Foundation certificates for all employees.",
+      "A COSO attestation.",
+      "ISO/IEC 20000-1 certification.",
+      "A CIS Benchmark report."
+    ],
+    "answer": 2,
+    "explain": "ISO/IEC 20000-1 is the certifiable standard for an organization's service management system. ITIL certificates are for individuals, COSO is an internal control framework, and a CIS Benchmark is a configuration baseline."
+  },
+  {
+    "obj": "5.3",
+    "q": "The same incident (application crash due to a disk full of logs) recurs every week, and each time the helpdesk resolves it by deleting logs. Which ITSM process should be activated?",
+    "options": [
+      "Problem management, to find and remove the root cause.",
+      "Incident management with faster escalations.",
+      "Release management.",
+      "Service level management."
+    ],
+    "answer": 0,
+    "explain": "Recurring incidents call for problem management and root cause analysis (e.g., log rotation, capacity). Incident management restores the service and already does so; release and SLM do not address the cause."
+  },
+  {
+    "obj": "5.3",
+    "q": "A critical vulnerability was published overnight, and an administrator wants to apply the patch to production servers immediately. What is the correct procedure according to operational standards?",
+    "options": [
+      "Apply the patch immediately without any record, because it is urgent.",
+      "Wait for the regular weekly CAB meeting.",
+      "Reject the patch until the vendor releases another version.",
+      "Initiate an emergency change with expedited approval (e.g., ECAB), apply the patch, and complete the documentation afterward."
+    ],
+    "answer": 3,
+    "explain": "Urgent changes go through the emergency change process: expedited approval, implementation, and after-the-fact documentation. Bypassing the process destroys control and the audit trail, waiting for the regular CAB leaves a critical vulnerability open, and rejecting the patch has no basis."
+  },
+  {
+    "obj": "5.3",
+    "q": "A small organization without a mature security program wants a practical, prioritized set of security measures to start with. What is the BEST recommendation?",
+    "options": [
+      "NIST SP 800-53 Rev. 5 in full scope (high baseline).",
+      "CIS Controls, starting with Implementation Group 1.",
+      "COSO Internal Control – Integrated Framework.",
+      "HIPAA Security Rule."
+    ],
+    "answer": 1,
+    "explain": "CIS Controls are prioritized, and IG1 is the basic set of measures intended precisely for smaller organizations. The full 800-53 high baseline is too heavy for a start, COSO is an internal control framework, and HIPAA is a law for health data, not a general starter program."
+  },
+  {
+    "obj": "5.2",
+    "type": "order",
+    "q": "Order the steps of the patch management process from first to last.",
+    "options": [
+      "Testing the patch in a non-production environment",
+      "Verification by scanning and documentation",
+      "Inventory of systems and software",
+      "Approval through change management",
+      "Risk-based assessment and prioritization",
+      "Phased deployment to production with a rollback plan"
+    ],
+    "answer": [2, 4, 0, 3, 5, 1],
+    "explain": "Without an inventory you don't know what to patch. Then vulnerabilities are prioritized by risk, the patch is tested, approved through change management, gradually rolled out to production, and finally verified and documented."
+  },
+  {
+    "obj": "5.3",
+    "type": "match",
+    "q": "Match each framework or standard with the MOST accurate description.",
+    "options": [
+      "COSO",
+      "ITIL 4",
+      "ISO/IEC 27001",
+      "CIS Benchmarks",
+      "HIPAA",
+      "NIST CSF 2.0"
+    ],
+    "targets": [
+      "Concrete hardening configurations for products",
+      "US law on the protection of health data",
+      "Internal control framework, common in financial reporting and SOX",
+      "Certifiable standard for an information security management system",
+      "Set of best practices for IT service management",
+      "Framework with the functions Govern, Identify, Protect, Detect, Respond, Recover"
+    ],
+    "answer": [2, 4, 3, 0, 1, 5],
+    "explain": "COSO is an internal control framework, ITIL a set of ITSM practices, ISO/IEC 27001 a certifiable ISMS standard, CIS Benchmarks concrete configurations, HIPAA a law on PHI, and NIST CSF 2.0 a framework with six functions including the new Govern."
+  }
+]

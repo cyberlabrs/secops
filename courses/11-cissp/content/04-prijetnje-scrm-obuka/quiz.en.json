@@ -1,0 +1,300 @@
+[
+  {
+    "obj": "1.10",
+    "q": "A development team asks WHEN threat modeling for a new application is MOST cost-effective.",
+    "options": [
+      "After the penetration test, before production",
+      "During the design phase, repeated upon significant architectural changes",
+      "After the first incident in production",
+      "During the annual audit"
+    ],
+    "answer": 1,
+    "explain": "Fixes in design are many times cheaper than fixes in production. A threat model is a living document and is updated upon changes."
+  },
+  {
+    "obj": "1.10",
+    "q": "In the STRIDE model, an attacker changes the transaction amount in an HTTP request between the client and the server. Which threat category is this?",
+    "options": [
+      "Spoofing",
+      "Repudiation",
+      "Tampering",
+      "Elevation of privilege"
+    ],
+    "answer": 2,
+    "explain": "Unauthorized modification of data is Tampering and violates integrity. The controls are server-side verification, message signing, and channel protection."
+  },
+  {
+    "obj": "1.10",
+    "q": "A user claims they never deleted records from the system, and the application does not keep an audit log. Which STRIDE category describes this weakness?",
+    "options": [
+      "Repudiation",
+      "Information disclosure",
+      "Denial of service",
+      "Tampering"
+    ],
+    "answer": 0,
+    "explain": "Repudiation is the ability to deny an action due to a lack of evidence; the controls are a tamper-resistant audit log and digital signatures."
+  },
+  {
+    "obj": "1.10",
+    "q": "An organization is looking for a threat modeling methodology that starts from business objectives and leads through seven stages to attack simulation and risk analysis. Which is MOST appropriate?",
+    "options": [
+      "STRIDE",
+      "DREAD",
+      "LINDDUN",
+      "PASTA"
+    ],
+    "answer": 3,
+    "explain": "PASTA (Process for Attack Simulation and Threat Analysis) is a risk-centric methodology with seven stages, from business objectives to risk and impact analysis."
+  },
+  {
+    "obj": "1.10",
+    "q": "The data protection team wants to systematically identify privacy threats, such as linking and identifying individuals, in a new application. Which methodology is BEST?",
+    "options": [
+      "LINDDUN",
+      "Cyber Kill Chain",
+      "DREAD",
+      "VAST"
+    ],
+    "answer": 0,
+    "explain": "LINDDUN specializes in privacy threats: Linking, Identifying, Non-repudiation, Detecting, Data disclosure, Unawareness, Non-compliance."
+  },
+  {
+    "obj": "1.10",
+    "q": "Where in a data flow diagram (DFD) do the MOST threats typically appear?",
+    "options": [
+      "Inside a single process that has no inputs",
+      "In data stores that are never read",
+      "At trust boundaries, where data crosses between zones of different trust levels",
+      "In external entities that do not communicate with the system"
+    ],
+    "answer": 2,
+    "explain": "Trust boundaries (internet/DMZ, user/service, tenant/provider) are where authentication, authorization, and validation must happen, so threats concentrate there."
+  },
+  {
+    "obj": "1.10",
+    "q": "A SOC wants to assess the coverage of its detections against the actual techniques used by attacker groups active in its sector. Which resource is MOST useful?",
+    "options": [
+      "A CVSS calculator",
+      "DREAD scoring",
+      "STRIDE-per-element",
+      "MITRE ATT&CK"
+    ],
+    "answer": 3,
+    "explain": "ATT&CK is a knowledge base of tactics, techniques, and procedures from real attacks, suitable for attacker-centric modeling and mapping detection coverage."
+  },
+  {
+    "obj": "1.10",
+    "q": "What is the main weakness of the DREAD model that makes it less commonly used today?",
+    "options": [
+      "It cannot be applied to web applications",
+      "The scores are subjective, and different assessors produce very different results",
+      "It covers only availability threats",
+      "It requires a precise quantitative ALE estimate"
+    ],
+    "answer": 1,
+    "explain": "DREAD ranks threats through five subjective scores, especially Discoverability, so the results are inconsistent. That is why Microsoft abandoned it."
+  },
+  {
+    "obj": "1.11",
+    "q": "Attackers compromised a software vendor's build system and inserted a backdoor into a legitimately signed update that thousands of customers installed. Which supply chain risk is this?",
+    "options": [
+      "Counterfeit",
+      "Reputational risk",
+      "Product tampering",
+      "Concentration risk"
+    ],
+    "answer": 2,
+    "explain": "Unauthorized modification of a product during manufacturing or delivery is tampering. The signature was valid because the modification occurred before signing, which is why build process integrity and provenance (SLSA) matter."
+  },
+  {
+    "obj": "1.11",
+    "q": "A critical vulnerability has been published in a widely used open-source library. What would MOST help the organization quickly determine which of its own and purchased products are affected?",
+    "options": [
+      "Up-to-date SBOMs for internal applications and SBOMs that suppliers deliver with their products",
+      "An annual penetration test",
+      "Suppliers' SOC 2 reports",
+      "Cyber insurance"
+    ],
+    "answer": 0,
+    "explain": "An SBOM provides an inventory of components and versions, so affected systems are identified quickly. VEX additionally shows whether the vulnerability is exploitable in a given product."
+  },
+  {
+    "obj": "1.11",
+    "q": "Which hardware mitigation uses unavoidable variations in chip manufacturing to create a unique identity and key without storing them permanently in memory?",
+    "options": [
+      "Silicon root of trust",
+      "Physically Unclonable Function (PUF)",
+      "Hardware Security Module",
+      "A secure enclave with a fixed key in flash memory"
+    ],
+    "answer": 1,
+    "explain": "A PUF derives a unique response from the physical properties of the chip, which makes cloning and counterfeiting harder. A root of trust is immutable initial code and a key that verify the firmware."
+  },
+  {
+    "obj": "1.11",
+    "q": "How does a silicon root of trust PRIMARILY mitigate the risk of implants and modified firmware?",
+    "options": [
+      "It encrypts all of the device's network traffic",
+      "It replaces the need for supplier assessment",
+      "It prevents physical theft of the device",
+      "Immutable code and a key in hardware verify the firmware signature at boot, which starts the chain of trust (secure and measured boot)"
+    ],
+    "answer": 3,
+    "explain": "The root of trust is the trusted starting point of the verification chain: modified firmware fails the signature check, and measurements enable attestation."
+  },
+  {
+    "obj": "1.11",
+    "q": "An organization is onboarding a new critical supplier that will have privileged access to the production environment. What is BEST to do BEFORE signing the contract?",
+    "options": [
+      "Assess the supplier's security posture in proportion to the risk and build minimum security requirements, an SLA, a right to audit, and an incident reporting obligation into the contract",
+      "Sign the contract and then request a security questionnaire",
+      "Rely on the supplier's market reputation",
+      "Require the supplier to buy cyber insurance, which eliminates the risk"
+    ],
+    "answer": 0,
+    "explain": "Leverage over the supplier is greatest before signing. Due diligence and contractual requirements (including flow-down to subcontractors) are the basic SCRM mitigations."
+  },
+  {
+    "obj": "1.11",
+    "q": "Investigative journalists discover that the organization's main supplier uses forced labor in production. Which supply chain risk has PRIMARILY materialized?",
+    "options": [
+      "Product tampering",
+      "Implant",
+      "Reputational risk",
+      "Counterfeit"
+    ],
+    "answer": 2,
+    "explain": "A supplier's actions can damage the customer's reputation. The 2027 outline explicitly adds reputational risk to the acquisition risks."
+  },
+  {
+    "obj": "1.11",
+    "q": "Network devices bought from an unauthorized reseller at an unusually low price show unusual serial numbers and firmware that cannot be verified. What is the BEST preventive measure for future purchases?",
+    "options": [
+      "Increase network traffic monitoring",
+      "Buy exclusively through authorized distributors and verify the origin and firmware signature upon receipt",
+      "Install antivirus on network devices",
+      "Negotiate a longer warranty period"
+    ],
+    "answer": 1,
+    "explain": "The risk of counterfeits is most effectively prevented with controlled procurement channels and authenticity checks upon receipt. Monitoring is a detective measure."
+  },
+  {
+    "obj": "1.11",
+    "q": "How should an organization determine the depth of assessment for each of its 400 suppliers?",
+    "options": [
+      "Apply the same detailed assessment to all suppliers",
+      "Assess only the suppliers with the largest contracts",
+      "Assess only suppliers that have had an incident",
+      "Categorize suppliers by criticality and data access (tiering) and tailor the depth and frequency of assessment to the risk"
+    ],
+    "answer": 3,
+    "explain": "A risk-based approach spends resources where the risk is greatest: critical suppliers get a detailed assessment and continuous monitoring, and low-risk ones a basic check."
+  },
+  {
+    "obj": "1.12",
+    "q": "Which distinction between awareness, training, and education is CORRECT?",
+    "options": [
+      "Awareness changes the attention and behavior of all employees, training develops skills for specific roles, and education builds in-depth understanding for decision-making",
+      "Awareness is mandatory only for IT, training for all employees",
+      "Education is short-term training on a tool, and training is a long-term academic program",
+      "There is no difference; they are synonyms"
+    ],
+    "answer": 0,
+    "explain": "Awareness answers \"what\", training answers \"how\", and education answers \"why\"."
+  },
+  {
+    "obj": "1.12",
+    "q": "The CISO needs to prove to management that the awareness program has actually reduced risk. Which metric is the BEST evidence?",
+    "options": [
+      "100% of employees completed the annual online course",
+      "A high participant satisfaction score in a survey",
+      "The number of newsletters sent",
+      "A falling click rate and rising reporting rate in phishing simulations over time, along with fewer real incidents caused by human error"
+    ],
+    "answer": 3,
+    "explain": "The training completion percentage and satisfaction measure activity and reaction. Behavior change and a reduction in incidents (Kirkpatrick levels 3 and 4) prove effectiveness."
+  },
+  {
+    "obj": "1.12",
+    "q": "A five-person security team cannot keep up with 40 development teams. Which method BEST scales security culture in development?",
+    "options": [
+      "An annual lecture for all developers",
+      "A security champions program in development teams, with additional training and formally approved time",
+      "Stricter disciplinary measures for security bugs in code",
+      "A ban on releasing code without the security team's approval"
+    ],
+    "answer": 1,
+    "explain": "Security champions are local ambassadors who pass on knowledge and involve security early, which scales a small security team."
+  },
+  {
+    "obj": "1.12",
+    "q": "After a phishing simulation, a manager proposes publicly posting the names of employees who clicked the link. What should the CISSP recommend?",
+    "options": [
+      "Support the proposal, because public shaming deters",
+      "Discontinue the simulations because they cause dissatisfaction",
+      "Reject public exposure; use immediate education and targeted training, and build a culture in which suspicious messages are reported without fear",
+      "Fire employees who clicked twice"
+    ],
+    "answer": 2,
+    "explain": "The goal of the program is behavior change and a reporting culture. Public shaming reduces trust and the willingness to report incidents."
+  },
+  {
+    "obj": "1.12",
+    "q": "There have been cases in which attackers use an AI-generated voice of the CEO to order urgent payments. What is the BEST response of the awareness program?",
+    "options": [
+      "Wait for the next annual content review cycle",
+      "Ban phone calls in the finance department",
+      "Introduce a deepfake detection tool and leave the training unchanged",
+      "Immediately update the content, provide targeted training for the finance department and executive assistants, and introduce a verification procedure with a callback to a known number"
+    ],
+    "answer": 3,
+    "explain": "Content is reviewed periodically, but also ad hoc when a new threat emerges. Training at-risk groups together with a procedural control (out-of-band verification) is the most effective."
+  },
+  {
+    "obj": "1.12",
+    "q": "The training program has a poor turnout because department managers do not give employees time for training. What is the BEST step according to the 2027 outline?",
+    "options": [
+      "Engage stakeholders: secure management support, involve managers and HR, tailor the content to departments' needs, and report results regularly",
+      "Extend the duration of the training to make up for what was missed",
+      "Move the training to weekends",
+      "Stop measuring turnout"
+    ],
+    "answer": 0,
+    "explain": "The 2027 outline explicitly adds stakeholder engagement: without the support of management and managers, the program has neither time nor authority."
+  },
+  {
+    "obj": "1.12",
+    "type": "match",
+    "q": "Match the activity with the program level.",
+    "options": [
+      "Posters and a short video about reporting suspicious emails for all employees",
+      "A master's degree in information security for a member of the security team",
+      "A workshop on secure coding and the OWASP Top 10 for developers",
+      "A monthly newsletter about current scams"
+    ],
+    "targets": [
+      "Training",
+      "Awareness",
+      "Education"
+    ],
+    "answer": [1, 2, 0, 1],
+    "explain": "Posters and newsletters raise the awareness of all employees, the workshop develops a skill for a role (training), and an academic program is education."
+  },
+  {
+    "obj": "1.10",
+    "type": "order",
+    "q": "Order the stages of the PASTA methodology from first to last.",
+    "options": [
+      "Application decomposition",
+      "Vulnerability and weakness analysis",
+      "Defining business objectives",
+      "Attack modeling and simulation",
+      "Defining the technical scope",
+      "Risk and impact analysis",
+      "Threat analysis"
+    ],
+    "answer": [2, 4, 0, 6, 1, 3, 5],
+    "explain": "PASTA: 1) business objectives, 2) technical scope, 3) application decomposition, 4) threat analysis, 5) vulnerability analysis, 6) attack modeling, 7) risk and impact analysis."
+  }
+]

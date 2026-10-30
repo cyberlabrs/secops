@@ -1,0 +1,253 @@
+[
+  {
+    "obj": "3.2",
+    "q": "A team wants to fine-tune a ticket classification model on a ticket history that contains customers' names, phone numbers and national ID numbers (JMBG). Which decision is consistent with the minimization principle?",
+    "options": [
+      "Train on the full data and filter the model's output later",
+      "Remove or pseudonymize direct identifiers before training, because they aren't needed for classification",
+      "Train on the full data because it is internal data",
+      "Encrypt the dataset and train on the encrypted values"
+    ],
+    "answer": 1,
+    "explain": "Minimization means using only the data needed for the purpose. Identifiers don't help classification, and once learned they can't be reliably removed from the weights without retraining. Output filtering is an additional layer, “internal” is not a legal basis, and the model learns nothing useful from encrypted values."
+  },
+  {
+    "obj": "3.2",
+    "q": "A customer requests deletion of their data. Their tickets were used to fine-tune a model that is in production. What is correct?",
+    "options": [
+      "It's enough to delete the tickets from the helpdesk; the model doesn't store data",
+      "It's enough to add to the system prompt that the model must not mention that customer",
+      "Data in the weights can't be reliably removed without retraining; that is why minimization before training is key, and in this case retraining without those records should be assessed",
+      "The model should be shut down immediately and never brought back"
+    ],
+    "answer": 2,
+    "explain": "Models can memorize training data. A prompt deletes nothing from the weights, and deleting the source doesn't affect an already trained model. Shutting it down without an assessment is disproportionate; lineage makes it possible to know which models are affected and to retrain them."
+  },
+  {
+    "obj": "3.2",
+    "q": "Employees paste customer contracts into a public LLM service using personal accounts. What is the first step to reduce the risk?",
+    "options": [
+      "An approved business service with a contract that excludes training on prompts and defines retention, plus a usage policy and blocking of unapproved services",
+      "Ban all use of AI tools with no alternative",
+      "Ask employees to manually remove names from contracts",
+      "Nothing, because vendors don't read prompts"
+    ],
+    "answer": 0,
+    "explain": "The problem is data processing at a vendor without a contract or controls. An approved alternative with clear terms, a policy and technical blocking reduce shadow AI. A ban without an alternative leads to workarounds, manual redaction is unreliable, and personal account terms often allow use of the data."
+  },
+  {
+    "obj": "3.2",
+    "q": "An application logs full prompts and responses indefinitely in the same log system that all developers read. Which combination of controls is most appropriate?",
+    "options": [
+      "Encrypt the log disk, with no other changes",
+      "Stop logging anything",
+      "Move the logs to cheaper storage",
+      "Redact personal data and secrets before writing, a defined retention period with automatic deletion, and narrower access to full prompts with auditing"
+    ],
+    "answer": 3,
+    "explain": "Logs with prompts are production data, and storage limitation and confidentiality apply. Disk encryption doesn't limit who reads the logs, stopping logging entirely destroys the ability to investigate, and cheaper storage doesn't change the risk."
+  },
+  {
+    "obj": "3.2",
+    "q": "A team uses regex to redact email addresses, IBANs and JMBG numbers before logging. What is the correct assessment of this approach?",
+    "options": [
+      "Regex catches all personal data and is sufficient",
+      "Regex should be dropped and no redaction done",
+      "Regex is a good start for structured identifiers, but it misses names, addresses and free text; you need a dedicated tool (rules + NER) and measurement of misses on a labeled sample",
+      "Regex should only be applied to the model's output"
+    ],
+    "answer": 2,
+    "explain": "Structured identifiers are caught well by rules, but unstructured personal data requires NER and similar approaches. Measuring on a sample shows how much is missed. Redaction on the way into the log is useful, and filtering only the output doesn't protect the logs."
+  },
+  {
+    "obj": "3.2",
+    "q": "An auditor asks exactly which version of the data the model currently in production was trained on. The ML team only knows it was a folder on a shared drive that has changed since. Which practice is missing?",
+    "options": [
+      "A bigger drive",
+      "Immutable versioned dataset snapshots with a manifest of hash values, and lineage from the model to the data version, code and configuration",
+      "More frequent model training",
+      "Documenting the model's accuracy"
+    ],
+    "answer": 1,
+    "explain": "Without an immutable snapshot and lineage you can't reproduce training, investigate poisoning or prove compliance. Model accuracy is useful, but it doesn't say what the model was trained on; drive size and training frequency are irrelevant."
+  },
+  {
+    "obj": "3.2",
+    "q": "The training pipeline verifies a manifest with the SHA-256 of every file before starting. The manifest is stored in the same bucket and with the same write permissions as the data. What is the weakness?",
+    "options": [
+      "Whoever can modify the data can also modify the manifest; the manifest should be stored separately with narrower write permissions and ideally signed",
+      "SHA-256 is too weak for this purpose",
+      "The manifest should be verified only after training",
+      "The manifest should also contain a copy of the data"
+    ],
+    "answer": 0,
+    "explain": "Integrity depends on protecting the reference value. A manifest under the same control as the data doesn't protect against an attacker with write access. SHA-256 is sufficient, verifying after training is too late, and a copy of the data in the manifest makes no sense."
+  },
+  {
+    "obj": "3.2",
+    "q": "A training set is downloaded from a list of URLs published two years ago. Some of the domains on the list have since expired. Which control reduces the risk of poisoning in this scenario?",
+    "options": [
+      "Download the data more often",
+      "Use a faster network link",
+      "Remove all URLs that use HTTPS",
+      "Compare the hash of the downloaded content with the hash recorded at the first download and discard content that changed, or download from a trusted mirror"
+    ],
+    "answer": 3,
+    "explain": "The content at a URL can change after the list is published, e.g., when someone else takes over an expired domain. Hash and provenance checks (AML.M0025) reveal that. Downloading more often increases exposure, and speed and HTTPS don't guarantee the content is the same."
+  },
+  {
+    "obj": "3.2",
+    "q": "A fraud detection model works normally in all tests, but misses transactions that contain a specific unusual string in the notes field. Which NIST AI 100-2 poisoning class does this best match?",
+    "options": [
+      "Availability poisoning",
+      "Model extraction",
+      "Backdoor poisoning",
+      "Membership inference"
+    ],
+    "answer": 2,
+    "explain": "Normal behavior with wrong output when a trigger appears is the hallmark of a backdoor. Availability poisoning degrades the model for everyone, and extraction and membership inference are attacks on the confidentiality of the model and data, not poisoning."
+  },
+  {
+    "obj": "3.2",
+    "q": "A new dataset version has the same number of records, but the share of the “not fraud” class rose from 70% to 82%, and 9% of new records come from a single source. What should the pipeline do?",
+    "options": [
+      "Stop training and open a review: a change in label distribution and a large contribution from one source are signals of an error or poisoning",
+      "Continue training because the number of records is the same",
+      "Automatically delete all records from that source and continue",
+      "Increase the number of epochs so the model compensates for the difference"
+    ],
+    "answer": 0,
+    "explain": "A statistical gate catches sudden changes in distribution and concentration of contributions. The review determines whether the cause is legitimate. Record count is not a measure of quality, automatic deletion without analysis may remove legitimate data, and epochs don't fix bad data."
+  },
+  {
+    "obj": "3.2",
+    "q": "“Thumbs up” ratings from a chat application are automatically added to the dataset for the next fine-tune. What risk does this create, and what is the control?",
+    "options": [
+      "There is no risk because only logged-in users give ratings",
+      "The only risk is higher training cost",
+      "Ratings should be ignored entirely",
+      "Every user effectively writes into the training data (poisoning through the feedback loop); you need a per-user contribution limit, sample review and a separate trust level for such data"
+    ],
+    "answer": 3,
+    "explain": "The feedback loop is an often neglected poisoning path. Being logged in doesn't make a user a reliable source of training data. Ratings are valuable, but with controls; ignoring them loses useful signals."
+  },
+  {
+    "obj": "3.2",
+    "q": "Which combination of OWASP and MITRE ATLAS labels matches inserting poisoned examples into training data?",
+    "options": [
+      "LLM08 Vector and Embedding Weaknesses; AML.T0051",
+      "LLM04 Data and Model Poisoning; AML.T0020 Poison Training Data",
+      "LLM10 Unbounded Consumption; AML.T0034",
+      "LLM06 Excessive Agency; AML.T0053"
+    ],
+    "answer": 1,
+    "explain": "OWASP LLM04:2025 covers data and model poisoning, and ATLAS AML.T0020 covers training data poisoning. The other pairs are vector weaknesses and prompt injection, unbounded consumption, and agent tool misuse."
+  },
+  {
+    "obj": "3.2",
+    "q": "A team downloads a public instruction dataset for fine-tuning from a dataset-sharing platform. What is a reasonable minimum before use?",
+    "options": [
+      "Nothing, popular datasets are vetted",
+      "Only check the license",
+      "Record the source, version and hash, check the license, deduplicate, do statistical checks and a sampled manual review, and evaluate the model against the previous one on a fixed set",
+      "Train directly in the production environment to save time"
+    ],
+    "answer": 2,
+    "explain": "Public datasets are part of the data supply chain (AML.T0010.002, AML.T0019). Provenance, license, content checks and evaluation are the minimum. Popularity is not proof of integrity, the license is only one aspect, and training in production violates isolation."
+  },
+  {
+    "obj": "3.2",
+    "q": "Which control most directly reduces the likelihood that a model memorizes and reproduces verbatim personal data from the training set?",
+    "options": [
+      "Deduplication and removal of direct identifiers before training",
+      "A larger model",
+      "Longer training",
+      "More GPUs"
+    ],
+    "answer": 0,
+    "explain": "Repeated records are memorized more easily, and removed identifiers can't be reproduced at all. Larger models and longer training generally increase the tendency to memorize, and the number of GPUs is irrelevant."
+  },
+  {
+    "obj": "3.2",
+    "q": "It has been discovered that one version of a dataset was poisoned. What is the first step in the response?",
+    "options": [
+      "Immediately delete all versions of the dataset",
+      "Stop training and deployments that use that version, and use lineage to find all models trained on it",
+      "Publish a public statement before analysis",
+      "Fine-tune the production model on clean data on top of the existing weights"
+    ],
+    "answer": 1,
+    "explain": "First you stop the spread and determine the scope (which models are affected). Deletion destroys evidence and the ability to compare, a statement comes after the assessment, and additional fine-tuning on top of a poisoned model doesn't reliably remove the learned behavior."
+  },
+  {
+    "obj": "3.2",
+    "q": "Under Article 10 of the EU AI Act, what is required for the training, validation and testing datasets of high-risk systems?",
+    "options": [
+      "Only that the datasets be encrypted",
+      "That the datasets be published",
+      "That only synthetic data be used",
+      "Data governance practices: documented collection and provenance, preparation, examination and mitigation of bias, plus relevance, representativeness and as few errors as possible for the intended purpose"
+    ],
+    "answer": 3,
+    "explain": "Article 10 prescribes data governance and dataset quality relative to the intended purpose, including bias examination. It doesn't require publication, exclusively synthetic data or just encryption."
+  },
+  {
+    "obj": "3.2",
+    "q": "A company is developing a high-risk AI system under Annex III of the EU AI Act. After the AI Omnibus amendments (Regulation (EU) 2026/1744), from when do the obligations for such systems apply?",
+    "options": [
+      "From 2 August 2026",
+      "From 2 August 2028",
+      "From 2 December 2027",
+      "Immediately upon the Omnibus entering into force"
+    ],
+    "answer": 2,
+    "explain": "Under the AI Omnibus, obligations for high-risk systems under Annex III apply from 2 Dec 2027, and for systems under Annex I from 2 Aug 2028. Data governance practices are worth introducing earlier because they are required as evidence."
+  },
+  {
+    "obj": "3.2",
+    "q": "An external vendor labels training data that contains patients' health data. Which combination of controls is most appropriate?",
+    "options": [
+      "Pseudonymization before sending for labeling, a data processing agreement, access only to the necessary fields and label quality control by sampling",
+      "Sending full records so the labels are more accurate",
+      "Labeling without a contract because the vendor is well known",
+      "Leaving labeling to a model without any checks"
+    ],
+    "answer": 0,
+    "explain": "Labeling is where people outside the organization see the data and where deliberately wrong labels can be inserted. Minimization, a contract and quality control address both risks. The other options violate minimization or remove control."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Match the place in the data lifecycle with its primary control.",
+    "options": [
+      "Collection",
+      "Training set storage",
+      "Prompts and logs",
+      "Feedback loop",
+      "Evaluation before deployment"
+    ],
+    "targets": [
+      "Comparison with the previous model and tests for targeted classes",
+      "Redaction and a retention period",
+      "A source inventory with legal basis and license",
+      "A per-user contribution limit and sample review",
+      "An immutable snapshot with a manifest and write control"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "At collection the legal basis and license are established, storage protects integrity with a snapshot and manifest, prompts and logs need redaction and retention periods, the feedback loop needs limits and review, and evaluation needs comparison and targeted tests."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Order the steps for taking a new dataset into the training pipeline, from first to last.",
+    "options": [
+      "Training in an isolated environment with manifest verification",
+      "Schema validation, deduplication and statistical checks against the previous version",
+      "Checking that the source is on the allowlist and has a legal basis and license",
+      "Creating an immutable snapshot and a manifest with hash values",
+      "Downloading and comparing the hash with the recorded provenance"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "First you decide whether the source may be used at all, then you download with an integrity check, then the content is validated. Only verified content becomes an immutable snapshot, and training verifies that snapshot's manifest."
+  }
+]

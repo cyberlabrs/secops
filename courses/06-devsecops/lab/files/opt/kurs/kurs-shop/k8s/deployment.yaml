@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kurs-shop
+  namespace: shop
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kurs-shop
+  template:
+    metadata:
+      labels:
+        app: kurs-shop
+    spec:
+      containers:
+      - name: app
+        image: registry.kurs-shop.ba/kurs-shop:latest
+        ports:
+        - containerPort: 8080
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: host
+          mountPath: /host
+      volumes:
+      - name: host
+        hostPath:
+          path: /

@@ -1,0 +1,314 @@
+[
+  {
+    "obj": "2.3",
+    "q": "Vaša organizacija ima Microsoft 365 E3 licence. Tokom istrage morate pronaći aktivnosti kompromitovanog naloga stare osam mjeseci u unified audit logu. Pretraga ne vraća ništa starije od šest mjeseci. Šta je razlog?",
+    "options": [
+      "Audit (Standard) čuva zapise 180 dana, pa stariji zapisi više ne postoje.",
+      "Pretraga u Purview portalu podržava raspon od najviše 90 dana.",
+      "Audit log search je isključen za taj nalog.",
+      "Zapisi stariji od 180 dana su premješteni u Archive i traže se cmdletom Search-UnifiedAuditLog -Archive."
+    ],
+    "answer": 0,
+    "explain": "Audit (Standard) zadržava zapise 180 dana. Za godinu dana (Entra, Exchange, OneDrive, SharePoint) potreban je Audit (Premium). Raspon pretrage je do 180 dana, a parametar -Archive ne postoji."
+  },
+  {
+    "obj": "2.3",
+    "q": "Administrator želi provjeriti da li je unified audit log uključen u tenantu. Pokreće Get-AdminAuditLogConfig u Security & Compliance PowerShellu i dobija UnifiedAuditLogIngestionEnabled = False. Šta treba uraditi?",
+    "options": [
+      "Odmah pokrenuti Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true u Security & Compliance PowerShellu.",
+      "Pokrenuti isti cmdlet u Exchange Online PowerShellu, jer je tamo vrijednost ispravna.",
+      "Dodijeliti korisnicima Audit (Premium) licence.",
+      "Uključiti Microsoft 365 konektor u Sentinelu."
+    ],
+    "answer": 1,
+    "explain": "U Security & Compliance PowerShellu ovo svojstvo uvijek pokazuje False. Stvarno stanje se provjerava u Exchange Online PowerShellu. Licence i Sentinel konektor nemaju veze sa uključenošću audita."
+  },
+  {
+    "obj": "2.3",
+    "q": "Regulator traži da se audit zapisi svih članova uprave čuvaju 10 godina. Organizacija ima Microsoft 365 E5. Koja DVA koraka treba preduzeti? (Izaberi DVA.)",
+    "options": [
+      "Dodijeliti članovima uprave 10-Year Audit Log Retention add-on licencu.",
+      "Povećati retenciju tabele OfficeActivity u Sentinelu na 10 godina.",
+      "Napraviti audit log retention policy sa trajanjem 10 godina za te korisnike.",
+      "Uključiti Audit (Standard) za te korisnike.",
+      "Exportovati audit log u CSV jednom godišnje."
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Desetogodišnja retencija u Purviewu traži add-on licencu po korisniku i audit log retention policy od 10 godina. Politika nije retroaktivna. Sentinel retencija i CSV export nisu Purview Audit rješenje."
+  },
+  {
+    "obj": "2.3",
+    "q": "Analitičar je prije 10 minuta vidio da je korisnik podijelio dokument anonimnim linkom. Pretraga u Microsoft Purview Audit za AnonymousLinkCreated ne vraća rezultate. Šta je NAJVJEROVATNIJE?",
+    "options": [
+      "Korisnik nema Audit (Premium) licencu.",
+      "Analitičar nema ulogu Audit Logs.",
+      "SharePoint audit nije uključen.",
+      "Zapis još nije stigao; za SharePoint i Exchange kašnjenje je obično 60–90 minuta."
+    ],
+    "answer": 3,
+    "explain": "Audit zapisi stižu sa kašnjenjem od tipično 60–90 minuta za glavne servise. Dijeljenje se bilježi u Audit (Standard), a bez uloge analitičar ne bi mogao ni pokrenuti pretragu."
+  },
+  {
+    "obj": "2.3",
+    "q": "Treba utvrditi kojim mailovima je napadač pristupio u kompromitovanom mailboxu i koje oznake osjetljivosti su ti mailovi imali. Koju aktivnost i licencu tražite?",
+    "options": [
+      "Aktivnost MailItemsAccessed uz Audit (Premium), koji dodaje svojstvo SensitivityLabel.",
+      "Aktivnost New-InboxRule uz Audit (Standard).",
+      "Aktivnost FileAccessed uz Audit (Standard).",
+      "Aktivnost Send uz Defender for Office 365 Plan 1."
+    ],
+    "answer": 0,
+    "explain": "MailItemsAccessed bilježi pristup mailovima, a Audit (Premium) dodaje svojstvo SensitivityLabel. New-InboxRule je pravilo, FileAccessed je SharePoint/OneDrive, a Send bilježi slanje."
+  },
+  {
+    "obj": "2.3",
+    "q": "Analitičar pokreće audit pretrage u Purview portalu. Ima 10 aktivnih pretraga i pokušava pokrenuti jedanaestu. Šta se dešava?",
+    "options": [
+      "Jedanaesta pretraga se stavlja u red i automatski pokreće.",
+      "Najstarija pretraga se automatski otkazuje.",
+      "Mora sačekati da se neka pretraga završi ili obrisati postojeći posao.",
+      "Mora zatvoriti browser jer pretrage rade samo dok je prozor otvoren."
+    ],
+    "answer": 2,
+    "explain": "Po korisniku je dozvoljeno do 10 istovremenih search poslova (jedan bez filtera). Poslovi rade i kad je browser zatvoren, a novi posao se ne stavlja automatski u red."
+  },
+  {
+    "obj": "2.3",
+    "q": "Imate Microsoft Sentinel workspace sa uključenim Microsoft 365 konektorom. Trebate pronaći ko je napravio inbox pravilo koje prosljeđuje mailove na vanjsku adresu. Koju tabelu koristite?",
+    "options": [
+      "AuditLogs",
+      "SigninLogs",
+      "EmailEvents",
+      "OfficeActivity"
+    ],
+    "answer": 3,
+    "explain": "Exchange admin i korisničke aktivnosti (New-InboxRule, Set-InboxRule) iz Microsoft 365 konektora idu u OfficeActivity. AuditLogs je Entra ID audit, SigninLogs su prijave, a EmailEvents je isporuka mailova."
+  },
+  {
+    "obj": "2.3",
+    "q": "Dopunite upit tako da vrati preuzimanja fajlova iz SharePointa i OneDrivea u Sentinelu:\n\nOfficeActivity\n| where OfficeWorkload in (\"SharePoint\", \"OneDrive\")\n| where ______ == \"FileDownloaded\"",
+    "options": [
+      "ActionType",
+      "Operation",
+      "RecordType",
+      "EventID"
+    ],
+    "answer": 1,
+    "explain": "U OfficeActivity tabeli ime aktivnosti je u koloni Operation. ActionType se koristi u Defender tabelama (CloudAppEvents), a EventID u SecurityEvent."
+  },
+  {
+    "obj": "2.3",
+    "q": "Phishing mail sa subjectom \"Action required\" stigao je u stotine mailboxova. Organizacija ima samo Microsoft 365 E3 (bez Defender for Office 365 Plan 2). Kako ukloniti poruke uz NAJMANJE ručnog rada?",
+    "options": [
+      "Napraviti transport rule koja briše poruke sa tim subjectom.",
+      "Koristiti Threat Explorer > Take action > Soft delete.",
+      "Napraviti Content search i pokrenuti New-ComplianceSearchAction -Purge -PurgeType SoftDelete.",
+      "Zamoliti korisnike da obrišu poruku."
+    ],
+    "answer": 2,
+    "explain": "Bez MDO P2 nema Threat Explorera. Search and purge preko Content searcha briše već isporučene poruke. Transport rule djeluje samo na buduće poruke."
+  },
+  {
+    "obj": "2.3",
+    "q": "Analitičar je član eDiscovery Manager role group. Pokreće New-ComplianceSearchAction -Purge i dobija grešku: A parameter can't be found that matches parameter name 'Purge'. Šta treba uraditi?",
+    "options": [
+      "Dodati ga u Organization Management u Exchange Online.",
+      "Dodijeliti mu ulogu Search And Purge u Microsoft Purview portalu.",
+      "Dodijeliti mu ulogu View-Only Audit Logs.",
+      "Dodijeliti mu Entra ulogu Security Reader."
+    ],
+    "answer": 1,
+    "explain": "Brisanje traži ulogu Search And Purge (ili Organization Management) u Purview portalu. Organization Management u Exchange Online je druga grupa i ne daje to pravo."
+  },
+  {
+    "obj": "2.3",
+    "q": "Search and purge akcija kroz PowerShell nad slučajem bez Premium funkcija nije obrisala sve odgovarajuće poruke u jednom mailboxu. Šta je razlog?",
+    "options": [
+      "Purge radi samo nad OneDriveom.",
+      "HardDelete zahtijeva odobrenje u Action centru.",
+      "Po jednoj akciji briše se najviše 10 stavki po lokaciji.",
+      "Search and purge briše samo neindeksirane stavke."
+    ],
+    "answer": 2,
+    "explain": "PowerShell purge briše do 10 stavki po lokaciji (preko Grapha u Premium slučaju do 100). Neindeksirane stavke se ne brišu, a SharePoint/OneDrive nisu podržani."
+  },
+  {
+    "obj": "2.3",
+    "q": "Koji KeyQL upit vraća SAMO email poruke od billing@contoso-invoices.com čiji subject sadrži riječ invoice?",
+    "options": [
+      "from: billing@contoso-invoices.com subject: invoice",
+      "from:billing@contoso-invoices.com subject:invoice kind:email",
+      "from:billing@contoso-invoices.com and subject:*voice and kind:email",
+      "from:billing@contoso-invoices.com AND subject:invoice AND kind:email"
+    ],
+    "answer": 3,
+    "explain": "Operatori moraju biti velikim slovima, razmak između izraza znači OR, razmak poslije dvotačke pretvara uslov u običnu riječ, a sufiks wildcard (*voice) nije podržan."
+  },
+  {
+    "obj": "2.3",
+    "q": "Pravni tim traži da se sadržaj mailboxa i OneDrivea jednog zaposlenog sačuva dok traje interna istraga. Koristili ste pretragu u Content Search slučaju. Šta trebate uraditi?",
+    "options": [
+      "Napraviti novi eDiscovery case i u njemu postaviti hold na izvore.",
+      "Dodati hold u postojećoj pretrazi u Content Search slučaju.",
+      "Exportovati rezultate i obrisati originale.",
+      "Uključiti Audit (Premium) za tog korisnika."
+    ],
+    "answer": 0,
+    "explain": "Content Search je od februara 2026. alat za pronalaženje i izvoz, bez holdova i review setova. Za očuvanje sadržaja pravi se pun eDiscovery case sa hold politikom."
+  },
+  {
+    "obj": "2.3",
+    "q": "Prije exporta želite brzo provjeriti da li pretraga uopšte pronalazi prave poruke, bez obrade cijelog rezultata. Koji prikaz rezultata birate pri Run query?",
+    "options": [
+      "Statistics sa Investigate partially indexed items",
+      "Sample",
+      "Export report",
+      "Query keywords report"
+    ],
+    "answer": 1,
+    "explain": "Sample daje reprezentativan uzorak stvarnih stavki (1, 10 ili 100 po lokaciji) za pregled. Statistics i keywords report daju brojeve, ne sadržaj."
+  },
+  {
+    "obj": "2.3",
+    "q": "Želite u Sentinel workspaceu analizirati koje Microsoft Graph API pozive šalju aplikacije u tenantu. Šta je preduslov?",
+    "options": [
+      "Microsoft Entra ID P1 ili P2 licenca i diagnostic setting sa kategorijom MicrosoftGraphActivityLogs.",
+      "Audit (Premium) licenca za sve korisnike.",
+      "Defender for Cloud Apps sa app governance dodatkom.",
+      "Uključen Microsoft 365 konektor u Sentinelu."
+    ],
+    "answer": 0,
+    "explain": "Graph activity logs zahtijevaju Entra ID P1/P2 i diagnostic setting koji šalje kategoriju MicrosoftGraphActivityLogs u Log Analytics, Storage ili Event Hubs."
+  },
+  {
+    "obj": "2.3",
+    "q": "Graph activity logs generišu previše podataka i trošak u Log Analyticsu je visok. Interesuju vas samo zahtjevi sa metodama POST, PATCH i DELETE. Šta trebate uraditi?",
+    "options": [
+      "Dodati filter po RequestMethod u Entra diagnostic setting.",
+      "Isključiti diagnostic setting i koristiti Purview Audit.",
+      "Dodati workspace transformation (DCR) na tabelu MicrosoftGraphActivityLogs koja odbacuje ostale redove.",
+      "Postaviti dnevni cap na workspace."
+    ],
+    "answer": 2,
+    "explain": "Diagnostic settings ne podržavaju filtriranje Graph activity logova. Redovi se odbacuju workspace transformacijom, ili se tabela prebacuje na jeftiniji plan. Dnevni cap bi odbacio i bitne podatke."
+  },
+  {
+    "obj": "2.3",
+    "q": "Dopunite upit koji povezuje Graph API pozive sa prijavama:\n\nMicrosoftGraphActivityLogs\n| join kind=leftouter (SigninLogs) on $left.______ == $right.UniqueTokenIdentifier",
+    "options": [
+      "RequestId",
+      "UniqueTokenId",
+      "SessionId",
+      "SignInActivityId"
+    ],
+    "answer": 3,
+    "explain": "SignInActivityId u Graph activity logovima odgovara UniqueTokenIdentifier u sign-in logovima. RequestId i SessionId identifikuju zahtjev i sesiju, ne prijavu."
+  },
+  {
+    "obj": "2.3",
+    "q": "Analitičar istražuje sumnjivu OAuth aplikaciju koja je preko Microsoft Graph čitala mailove. Koja DVA izvora daju direktne dokaze? (Izaberi DVA.)",
+    "options": [
+      "Purview Audit / AuditLogs za trenutak saglasnosti i dodavanja secreta aplikaciji",
+      "DeviceProcessEvents na uređaju korisnika",
+      "MicrosoftGraphActivityLogs za GET pozive prema /messages sa AppId aplikacije",
+      "Content search sa upitom kind:im",
+      "Statistics prikaz u eDiscovery"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Audit pokazuje kada je aplikacija dobila saglasnost i kredencijale, a Graph activity logs pokazuju koje API pozive je slala. Endpoint telemetrija i eDiscovery statistika ne pokazuju API pristup."
+  },
+  {
+    "obj": "2.3",
+    "type": "order",
+    "q": "Poredaj korake uklanjanja isporučenog phishing maila pomoću search and purge, od prvog do posljednjeg.",
+    "options": [
+      "Pokrenuti New-ComplianceSearchAction -Purge -PurgeType SoftDelete.",
+      "Povezati se sa Connect-IPPSSession -EnableSearchOnlySession.",
+      "Provjeriti status sa Get-ComplianceSearchAction.",
+      "Napraviti i pokrenuti pretragu (New-ComplianceSearch, Start-ComplianceSearch).",
+      "Provjeriti broj stavki i export report da pretraga vraća samo ciljane poruke."
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "Prvo se uspostavlja sesija, zatim pravi i pokreće pretraga, pa se provjerava obim (brisanje se ne može poništiti). Tek tada se pokreće purge i prati njegov status."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Upari zahtjev istrage sa alatom koji ga NAJBOLJE ispunjava.",
+    "options": [
+      "Utvrditi ko je napravio inbox pravilo za prosljeđivanje.",
+      "Pronaći sve mailboxove koji sadrže mail sa određenim subjectom.",
+      "Vidjeti koje Graph endpoint-e je aplikacija pozivala i sa koje IP adrese.",
+      "Čuvati audit zapise 10 godina.",
+      "Očuvati sadržaj korisnika tokom istrage."
+    ],
+    "targets": [
+      "Microsoft Graph activity logs",
+      "eDiscovery case sa hold",
+      "Microsoft Purview Audit",
+      "Content search (eDiscovery)",
+      "Audit (Premium) sa add-on licencom i retention policy"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      4,
+      1
+    ],
+    "explain": "Aktivnosti korisnika su u Auditu, pronalazak sadržaja je Content search, API pozivi su u Graph activity logs, dugoročna retencija traži Audit (Premium) sa add-onom, a očuvanje sadržaja hold u eDiscovery slučaju."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Upari KeyQL izraz sa njegovim značenjem.",
+    "options": [
+      "subject:\"Action required\"",
+      "to: pilarp",
+      "-from:\"Sara Davis\"",
+      "kind:microsoftteams",
+      "invoic*"
+    ],
+    "targets": [
+      "Isključuje poruke koje je poslala Sara Davis",
+      "Traži riječ pilarp bilo gdje (razmak poslije dvotačke)",
+      "Prefiks pretraga riječi koje počinju sa invoic",
+      "Tačna fraza u subjectu",
+      "Chatovi, sastanci i pozivi iz Teamsa"
+    ],
+    "answer": [
+      3,
+      1,
+      0,
+      4,
+      2
+    ],
+    "explain": "Navodnici traže frazu, razmak poslije dvotačke pretvara uslov u običnu riječ, minus isključuje, kind:microsoftteams vraća Teams stavke, a * radi samo kao prefiks."
+  },
+  {
+    "obj": "2.3",
+    "q": "Ana inače radi iz Beograda sa adrese 93.87.10.20. Na osnovu ovog rezultata, šta je najvjerovatnije objašnjenje?",
+    "snippet": "OfficeActivity | where UserId == \"ana@contoso.com\" | project TimeGenerated, Operation, ClientIP, Parameters\n\nTimeGenerated     Operation          ClientIP       Parameters\n2026-10-14 07:40  UserLoggedIn       93.87.10.20\n2026-10-14 08:01  UserLoggedIn       185.220.101.4\n2026-10-14 08:02  MailItemsAccessed  185.220.101.4  MailAccessType=Bind\n2026-10-14 08:04  New-InboxRule      185.220.101.4  Name=. ; SubjectContainsWords=invoice;payment\n                                                    ForwardTo=fin-ops@outl00k-mail.net ; DeleteMessage=True\n2026-10-14 08:09  Send               185.220.101.4  Subject=Updated bank details for invoice 4471",
+    "lang": "text",
+    "options": [
+      "Kompromitovan sandučić (BEC): napadač čita poštu, pravi skriveno pravilo koje prosljeđuje i briše mailove o fakturama i šalje lažno obavještenje o promjeni računa",
+      "Ana je sama napravila pravilo za arhiviranje faktura na drugi nalog; nema znakova kompromitacije",
+      "Samo sinhronizacija Outlooka na novom uređaju (MailItemsAccessed Bind), bez uticaja",
+      "Phishing mail je stigao u sandučić, ali ga Ana nije otvorila"
+    ],
+    "answer": 0,
+    "explain": "Od 08:01 sve akcije dolaze sa druge adrese, ne sa uobičajene. New-InboxRule sa imenom \".\", prosljeđivanjem na spoljnu, sličnu domenu i DeleteMessage za riječi invoice i payment je tipičan BEC trag (T1114.003 i skrivanje tragova), a Send sa temom o bankovnim podacima je sama prevara. Odgovor: opozovi sesije i resetuj kredencijale, ukloni pravilo, provjeri forwarding na sandučiću, nađi poslane mailove (eDiscovery) i obavijesti primaoce."
+  }
+]

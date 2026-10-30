@@ -1,0 +1,8 @@
+[ -f /etc/bash_completion ] && . /etc/bash_completion
+export PS1='\[\e[1;32m\]root@lab\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]# '
+export EDITOR=nano
+alias ll='ls -la'
+if [ -f /root/ZADATAK.txt ] && [ -z "$KURS_BANNER" ]; then
+  export KURS_BANNER=1
+  cat /root/ZADATAK.txt
+fi

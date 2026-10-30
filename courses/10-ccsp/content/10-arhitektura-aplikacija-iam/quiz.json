@@ -1,0 +1,293 @@
+[
+  {
+    "obj": "4.6",
+    "q": "Web shop ima potvrđenu SQL injection ranjivost u starom modulu, a popravka koda će trajati tri sedmice. Šta je NAJBOLJA neposredna mjera?",
+    "options": [
+      "Isključiti cijeli web shop dok se kod ne popravi.",
+      "Postaviti WAF pravilo kao virtual patch za ranjivi parametar i paralelno popraviti kod.",
+      "Uključiti enkripciju baze podataka u mirovanju.",
+      "Premjestiti bazu u drugi region."
+    ],
+    "answer": 1,
+    "explain": "WAF kao virtual patch odmah smanjuje izloženost dok traje trajna popravka (parametrizovan upit). Gašenje servisa je nesrazmjerno kada postoji kompenzaciona kontrola, a enkripcija u mirovanju i promjena regiona ne sprečavaju injection kroz aplikaciju."
+  },
+  {
+    "obj": "4.6",
+    "q": "Revizor traži da se aktivnosti administratora baze (DBA) prate u realnom vremenu i da DBA ne mogu brisati tragove svojih upita. Koja komponenta to NAJBOLJE ispunjava?",
+    "options": [
+      "WAF ispred aplikacije.",
+      "API gateway sa logovanjem.",
+      "Transparentna enkripcija baze (TDE).",
+      "Database Activity Monitoring kojim upravlja tim odvojen od DBA-a."
+    ],
+    "answer": 3,
+    "explain": "DAM prati SQL aktivnost uključujući privilegovane korisnike i, ako njime upravlja drugi tim, obezbjeđuje razdvajanje dužnosti. WAF i API gateway vide samo saobraćaj aplikacije, ne direktan pristup DBA-a, a TDE štiti medije, ne bilježi aktivnost."
+  },
+  {
+    "obj": "4.6",
+    "q": "Organizacija izlaže stari SOAP servis partnerima i treba validirati poruke prema XSD šemi, provjeravati WS-Security potpise i blokirati XML External Entity napade. Koja komponenta je NAJPRIKLADNIJA?",
+    "options": [
+      "XML firewall",
+      "Mrežni load balancer (L4)",
+      "Database Activity Monitoring",
+      "Network security group"
+    ],
+    "answer": 0,
+    "explain": "XML firewall je specijalizovan za XML/SOAP: validacija šeme, WS-Security i zaštita od XML napada. L4 load balancer i security grupe ne razumiju sadržaj poruke, a DAM radi na nivou baze."
+  },
+  {
+    "obj": "4.6",
+    "q": "Pravni zahtjev kaže da ni CSP ni administratori baze ne smiju moći vidjeti brojeve pasoša klijenata. Koji pristup NAJBOLJE ispunjava zahtjev?",
+    "options": [
+      "Transparentna enkripcija diska koju pruža CSP.",
+      "TLS 1.3 između aplikacije i baze.",
+      "Enkripcija na nivou aplikacije prije upisa u bazu, sa ključevima pod kontrolom kupca.",
+      "Enkripcija backupa baze."
+    ],
+    "answer": 2,
+    "explain": "Samo enkripcija na nivou aplikacije (ili tokenizacija) sa ključevima van kontrole CSP-a i DBA-a sprečava da oni vide plaintext. Transparentna enkripcija diska štiti od krađe medija, TLS štiti podatke u prenosu, a enkripcija backupa ne štiti živu bazu."
+  },
+  {
+    "obj": "4.6",
+    "q": "Koja je glavna prednost envelope encryption pristupa u cloud aplikaciji?",
+    "options": [
+      "Uklanja potrebu za kontrolom pristupa ključevima.",
+      "Omogućava pretraživanje šifrovanih podataka bez dešifrovanja.",
+      "Šifruje podatke u upotrebi unutar CPU-a.",
+      "Podaci se šifruju lokalno DEK ključem, a KEK nikad ne napušta KMS/HSM, pa se rotacija i pristup kontrolišu centralno."
+    ],
+    "answer": 3,
+    "explain": "Kod envelope encryptiona DEK šifruje podatke, a KEK u KMS-u šifruje DEK; rotacija KEK-a ne traži ponovno šifrovanje svih podataka, a pristup se kontroliše kroz KEK. Ne omogućava pretraživanje (to su tokenizacija ili FPE), ne štiti data in use (confidential computing) i ne uklanja kontrolu pristupa."
+  },
+  {
+    "obj": "4.6",
+    "q": "SaaS platforma izvršava kod koji su napisali kupci (custom skripte) na zajedničkoj infrastrukturi. Šta NAJBOLJE štiti druge tenante od zlonamjernog koda jednog kupca?",
+    "options": [
+      "Izvršavanje svake skripte u sandboxu sa jakom izolacijom (npr. mikro-VM), bez pristupa mreži i tajnama osim eksplicitno dozvoljenog.",
+      "Izvršavanje skripti u zajedničkom kontejneru sa odvojenim Linux korisnicima.",
+      "Odvojen Kubernetes namespace za svakog kupca na istim nodovima, bez dodatnih kontrola.",
+      "Skeniranje skripti antivirusom prije izvršavanja."
+    ],
+    "answer": 0,
+    "explain": "Nepovjerljiv kod različitih tenanta traži jaku izolaciju, kao što su mikro-VM ili sandbox runtime, uz minimalne ovlasti. Kontejneri i namespaces dijele kernel i nisu tvrda granica, a antivirus ne otkriva namjenski pisan zlonamjeran kod."
+  },
+  {
+    "obj": "4.6",
+    "q": "Prilikom prelaska sa monolita na mikroservise, koji novi sigurnosni zahtjev NAJVIŠE dobija na važnosti?",
+    "options": [
+      "Fizička sigurnost data centra.",
+      "Enkripcija backup traka.",
+      "Autentifikacija i autorizacija servis-servis komunikacije (npr. mTLS i workload identitet).",
+      "Politika lozinki za krajnje korisnike."
+    ],
+    "answer": 2,
+    "explain": "Mikroservisi pretvaraju pozive unutar procesa u mrežne pozive, pa svaki servis mora autentifikovati i autorizovati druge servise (east-west). Fizička sigurnost i backup trake se ne mijenjaju arhitekturom, a politika lozinki krajnjih korisnika nije novi zahtjev."
+  },
+  {
+    "obj": "4.6",
+    "q": "Tokom pregleda Kubernetes klastera nađeno je da aplikacijski podovi rade kao root, sa privileged: true i montiranim Docker socketom. Koji je NAJVEĆI rizik?",
+    "options": [
+      "Povećana potrošnja memorije na nodovima.",
+      "Kompromitovan kontejner može lako preuzeti host i druge workloade na nodu.",
+      "Sporiji start podova zbog dodatnih privilegija.",
+      "Nemogućnost horizontalnog skaliranja."
+    ],
+    "answer": 1,
+    "explain": "Privilegovan kontejner sa Docker socketom praktično ima kontrolu nad hostom, pa kompromis aplikacije postaje kompromis noda i svih podova na njemu. Ostale opcije nisu posljedice ovih postavki ili su zanemarljive."
+  },
+  {
+    "obj": "4.6",
+    "q": "Tim pita koju komponentu postaviti kao jedinstvenu ulaznu tačku za 30 internih REST API-ja da bi se centralno validirali OAuth tokeni, primijenile kvote po klijentu i logovali svi pozivi. Šta je NAJBOLJI izbor?",
+    "options": [
+      "API gateway",
+      "Database Activity Monitoring",
+      "XML firewall",
+      "L4 mrežni load balancer"
+    ],
+    "answer": 0,
+    "explain": "API gateway centralizuje autentifikaciju, kvote, rutiranje i logovanje API poziva. DAM je za bazu, XML firewall za SOAP/XML, a L4 load balancer ne razumije HTTP ni tokene."
+  },
+  {
+    "obj": "4.6",
+    "q": "TLS se terminira na load balanceru, a saobraćaj prema backend servisima u istom VPC-u ide nešifrovano. Regulativa traži enkripciju podataka u prenosu end-to-end. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Ukloniti load balancer i izložiti servise direktno.",
+      "Ponovo šifrovati saobraćaj od load balancera prema backendu (TLS re-encryption ili mTLS kroz service mesh).",
+      "Uključiti enkripciju diskova na backend servisima.",
+      "Prihvatiti rizik jer je VPC privatna mreža."
+    ],
+    "answer": 1,
+    "explain": "Re-encryption ili mTLS između load balancera i servisa ispunjava end-to-end zahtjev uz zadržavanje prednosti load balancera. Uklanjanje LB-a narušava dostupnost i izlaže servise, enkripcija diskova je data at rest, a prihvatanje rizika suprotno regulativi nije opcija."
+  },
+  {
+    "obj": "4.7",
+    "q": "Aplikacija koristi OAuth 2.0 access token kao dokaz identiteta korisnika i iz njega čita ko je prijavljen. Šta je NAJBOLJA preporuka?",
+    "options": [
+      "Zamijeniti OAuth sa HTTP Basic autentifikacijom.",
+      "Produžiti trajanje access tokena da korisnici rjeđe ponovo ulaze.",
+      "Prebaciti se na Kerberos za sve web klijente.",
+      "Koristiti OpenID Connect i ID token za autentifikaciju, a access token samo za pristup API-ju."
+    ],
+    "answer": 3,
+    "explain": "OAuth 2.0 je protokol za autorizaciju; OIDC na njega dodaje autentifikaciju kroz ID token sa definisanim tvrdnjama (iss, aud, sub). Basic auth je slabiji, duži tokeni povećavaju rizik, a Kerberos nije namijenjen internet web klijentima."
+  },
+  {
+    "obj": "4.7",
+    "q": "Kompanija ima 40 SaaS aplikacija sa odvojenim nalozima, a nalozi bivših zaposlenih ostaju aktivni mjesecima. Šta NAJBOLJE rješava problem?",
+    "options": [
+      "Mjesečni ručni pregled naloga u svakoj aplikaciji.",
+      "Politika lozinki sa obaveznom promjenom svakih 30 dana.",
+      "Centralni IdP sa SSO-om i SCIM provisioningom, uz periodične access reviewe.",
+      "CASB u forward proxy modu."
+    ],
+    "answer": 2,
+    "explain": "Centralni IdP sa SSO-om i SCIM-om automatski kreira i ukida naloge u SaaS aplikacijama kada se korisnik deaktivira u IdP-u. Ručni pregled ne skalira i kasni, promjena lozinke ne ukida pristup, a CASB ne upravlja životnim ciklusom identiteta."
+  },
+  {
+    "obj": "4.7",
+    "q": "Nakon uvođenja push MFA, napadač sa ukradenom lozinkom šalje desetine push zahtjeva dok ih zaposleni ne odobri. Koja mjera NAJBOLJE sprečava ovaj napad?",
+    "options": [
+      "Prelazak na SMS OTP.",
+      "Phishing-resistant MFA (FIDO2/passkeys) ili barem number matching za push.",
+      "Kraće trajanje sesije nakon prijave.",
+      "Duža minimalna dužina lozinke."
+    ],
+    "answer": 1,
+    "explain": "Ovo je MFA fatigue napad. Number matching prisiljava korisnika da aktivno potvrdi kod sa ekrana, a FIDO2/passkeys su vezani za domen i ključ i ne mogu se odobriti naslijepo. SMS je slabiji, a kraća sesija i duža lozinka ne sprečavaju odobravanje lažnog zahtjeva."
+  },
+  {
+    "obj": "4.7",
+    "q": "Koja kombinacija predstavlja PRAVI višefaktorski login?",
+    "options": [
+      "Lozinka i FIDO2 hardverski ključ.",
+      "Lozinka i odgovor na sigurnosno pitanje.",
+      "PIN i lozinka.",
+      "IP adresa iz kancelarije i lozinka."
+    ],
+    "answer": 0,
+    "explain": "MFA traži različite tipove faktora: lozinka (znanje) i hardverski ključ (posjedovanje). Lozinka sa sigurnosnim pitanjem ili PIN-om su dva faktora istog tipa, a IP adresa je kontekst za adaptivnu autentifikaciju, ne faktor."
+  },
+  {
+    "obj": "4.7",
+    "q": "Partner treba pristup internom portalu za 300 svojih zaposlenih, a zaposleni dolaze i odlaze često. Šta je NAJBOLJI pristup?",
+    "options": [
+      "Kreirati lokalne naloge u portalu za svakog zaposlenog partnera.",
+      "Dati partneru jedan zajednički nalog za sve njegove zaposlene.",
+      "Federisati portal sa partnerovim IdP-om (SAML/OIDC) i ugovorom definisati obaveze upravljanja identitetima.",
+      "Otvoriti portal na internet uz IP allowlistu partnerove mreže."
+    ],
+    "answer": 2,
+    "explain": "Federacija ostavlja upravljanje identitetima partneru (koji zna ko dolazi i odlazi), a ti kontrolišeš autorizaciju i uslove. Lokalni nalozi kasne sa deprovisioningom, zajednički nalog uništava accountability, a IP allowlista nije identitet."
+  },
+  {
+    "obj": "4.7",
+    "q": "Uprava saznaje da zaposleni koriste brojne neodobrene AI i file-sharing servise. Šta treba uraditi PRVO?",
+    "options": [
+      "Blokirati sav saobraćaj prema nepoznatim cloud servisima na firewallu.",
+      "Poslati e-mail svim zaposlenima da je korištenje zabranjeno.",
+      "Kupiti enterprise licence za sve otkrivene servise.",
+      "Koristiti CASB discovery da se utvrde korišteni servisi, obim podataka i rizik, pa na osnovu toga donijeti politiku."
+    ],
+    "answer": 3,
+    "explain": "Prvi korak je vidljivost: CASB (iz logova ili inline) otkriva shadow IT i daje osnovu za procjenu rizika. Blokiranje naslijepo može prekinuti legitiman posao, e-mail bez vidljivosti nema efekta, a kupovina licenci prije procjene rizika je preuranjena."
+  },
+  {
+    "obj": "4.7",
+    "q": "Organizacija želi primijeniti DLP na osjetljive dokumente koji su VEĆ pohranjeni u odobrenom SaaS storageu, uključujući one koje su korisnici uploadovali sa ličnih uređaja. Koji CASB način rada je NAJPRIKLADNIJI?",
+    "options": [
+      "API-based (out-of-band) CASB povezan na API SaaS servisa.",
+      "Forward proxy sa agentom na službenim uređajima.",
+      "Analiza logova firewalla.",
+      "Reverse proxy samo za nove prijave."
+    ],
+    "answer": 0,
+    "explain": "API-based CASB vidi podatke u mirovanju u SaaS-u bez obzira odakle su uploadovani. Forward proxy vidi samo saobraćaj sa upravljanih uređaja i samo nove transfere, log analiza daje samo discovery, a reverse proxy ne pokriva već pohranjene dokumente."
+  },
+  {
+    "obj": "4.7",
+    "q": "Developer je slučajno commitovao lozinku produkcijske baze u javni Git repozitorij. Šta treba uraditi PRVO?",
+    "options": [
+      "Obrisati commit i prepisati historiju repozitorija.",
+      "Uvesti skeniranje tajni u CI pipeline.",
+      "Rotirati (opozvati) kompromitovanu lozinku.",
+      "Prebaciti repozitorij u privatni."
+    ],
+    "answer": 2,
+    "explain": "Tajna koja je bila javna mora se smatrati kompromitovanom, pa je prvi korak rotacija. Brisanje historije i privatni repozitorij ne poništavaju kopije koje su već preuzete, a skeniranje tajni je preventivna mjera za budućnost."
+  },
+  {
+    "obj": "4.7",
+    "q": "Regulator traži da ključevi za šifrovanje podataka klijenata nikada ne budu fizički kod CSP-a, čak ni u CSP-ovom HSM-u. Koji model ispunjava zahtjev?",
+    "options": [
+      "CSP-managed ključevi.",
+      "Customer-managed ključevi u CSP KMS-u.",
+      "BYOK uvoz ključa u CSP KMS.",
+      "HYOK / external key store u kupčevom HSM-u van CSP-a."
+    ],
+    "answer": 3,
+    "explain": "Samo HYOK (external key store) drži ključ van CSP-a; CSP ga poziva za operacije, ali ga ne posjeduje. BYOK i customer-managed modeli ključ i dalje drže u CSP KMS-u. Cijena HYOK-a je veća složenost i zavisnost dostupnosti od kupčevog HSM-a."
+  },
+  {
+    "obj": "4.7",
+    "q": "Jedan administrator ima pravo i da upravlja politikama KMS ključeva i da dešifruje produkcijske podatke tim ključevima. Koji princip je NAJVIŠE narušen?",
+    "options": [
+      "Defense in depth",
+      "Razdvajanje dužnosti (separation of duties)",
+      "Fail secure",
+      "Need to know za krajnje korisnike"
+    ],
+    "answer": 1,
+    "explain": "Upravljanje ključem i korištenje ključa za dešifrovanje trebaju biti odvojene uloge, tako da kompromis jednog naloga ne otkriva sve. Defense in depth i fail secure nisu primarno pogođeni, a need to know krajnjih korisnika nije tema scenarija."
+  },
+  {
+    "obj": "4.6",
+    "type": "match",
+    "q": "Upari svaki zahtjev sa NAJPRIKLADNIJOM dopunskom sigurnosnom komponentom.",
+    "options": [
+      "Blokiranje XSS i SQL injection obrazaca ispred web aplikacije",
+      "Praćenje upita privilegovanih korisnika baze u realnom vremenu",
+      "Validacija SOAP poruka prema XSD šemi i WS-Security potpisa",
+      "Raspodjela saobraćaja i health checks za instance aplikacije",
+      "Centralna validacija tokena i kvote za sve REST API-je"
+    ],
+    "targets": [
+      "Load balancer",
+      "API gateway",
+      "WAF",
+      "XML firewall",
+      "DAM"
+    ],
+    "answer": [2, 4, 3, 0, 1],
+    "explain": "WAF filtrira L7 web napade, DAM prati aktivnost baze, XML firewall štiti SOAP/XML servise, load balancer raspoređuje saobraćaj i provjerava zdravlje instanci, a API gateway centralizuje autentifikaciju i kvote za API-je."
+  },
+  {
+    "obj": "4.7",
+    "type": "match",
+    "q": "Upari svaki IAM zahtjev sa NAJPRIKLADNIJIM rješenjem ili protokolom.",
+    "options": [
+      "Mobilna aplikacija treba delegirani pristup korisnikovim podacima u API-ju",
+      "Enterprise web SSO prema SaaS aplikaciji preko potpisanih XML tvrdnji",
+      "Automatsko kreiranje i ukidanje naloga u SaaS aplikacijama",
+      "Otkrivanje neodobrenih cloud servisa koje koriste zaposleni",
+      "Prijava korisnika u SPA aplikaciju uz ID token"
+    ],
+    "targets": [
+      "SAML 2.0",
+      "OpenID Connect",
+      "OAuth 2.0",
+      "CASB",
+      "SCIM"
+    ],
+    "answer": [2, 0, 4, 3, 1],
+    "explain": "OAuth 2.0 daje delegiranu autorizaciju, SAML 2.0 je XML standard za enterprise SSO, SCIM automatizuje provisioning, CASB otkriva shadow IT, a OIDC dodaje autentifikaciju kroz ID token."
+  },
+  {
+    "obj": "4.7",
+    "type": "spot",
+    "q": "Konfiguracija API gatewaya koji validira OIDC access tokene za cloud aplikaciju. Označi redove koji su sigurnosni problemi u rukovanju tokenima.",
+    "snippet": "# api-gateway.yaml - validacija tokena za javni API\nauth:\n  provider: oidc\n  issuer: https://login.example.com/\n  jwks_uri: https://login.example.com/.well-known/jwks.json\n  allowed_algorithms: [RS256, none]\n  verify_audience: false\n  access_token_ttl: 30d\n  refresh_token_rotation: true\n  token_transport: header        # Authorization: Bearer\n  log_fields: [method, path, status, user_sub]",
+    "lang": "yaml",
+    "answer": [5, 6, 7],
+    "explain": "Red 6: dozvoljen algoritam none znači da gateway prihvata nepotpisan token, pa napadač može sam napisati bilo koje claimove; dozvoliti samo očekivani algoritam (RS256) i uvijek provjeravati potpis preko JWKS-a. Red 7: bez provjere aud gateway prihvata tokene koje je isti IdP izdao za druge aplikacije (token jedne aplikacije koristi se kod druge); aud mora biti ovaj API. Red 8: access token koji važi 30 dana se praktično ne može opozvati; access tokeni trebaju biti kratki (minute), a dugotrajnost rješavaju refresh tokeni uz rotaciju i opoziv. Prenos u headeru, rotacija refresh tokena i log bez samog tokena su ispravni."
+  }
+]

@@ -1,0 +1,257 @@
+[
+  {
+    "obj": "5.3",
+    "q": "Zadatak: u namespace-u prod pronađi Pod sa labelom app=api koji trenutno troši najviše CPU-a. metrics-server radi. Koja komanda daje odgovor u prvom redu?",
+    "options": [
+      "k get pods -n prod -l app=api --sort-by=.spec.containers[0].resources.requests.cpu",
+      "k top pod -n prod -l app=api --sort-by=cpu",
+      "k describe node | grep -A5 'Allocated resources'",
+      "k top node --sort-by=cpu"
+    ],
+    "answer": 1,
+    "explain": "kubectl top pod pokazuje stvarnu potrošnju iz Metrics API-ja, a --sort-by=cpu sortira od najveće. Sortiranje po requests pokazuje rezervaciju, ne potrošnju, a describe node i top node ne pokazuju pojedinačne Podove."
+  },
+  {
+    "obj": "5.3",
+    "q": "k top node vraća: error: Metrics API not available. Šta je uzrok?",
+    "options": [
+      "kubelet na čvorovima nema uključen cAdvisor",
+      "Korisnik nema RBAC dozvolu za nodes",
+      "kube-controller-manager ne radi",
+      "U klasteru nije instaliran (ili ne radi) metrics-server koji obezbjeđuje metrics.k8s.io API"
+    ],
+    "answer": 3,
+    "explain": "kubectl top čita Metrics API koji registruje metrics-server. Bez njega API ne postoji. Nedostatak RBAC dozvole bi dao Forbidden grešku, a controller-manager nema veze sa metrikama."
+  },
+  {
+    "obj": "5.3",
+    "q": "Instalirao si metrics-server u lab klasteru, ali njegov Pod nije Ready, a u logu stoji: x509: cannot validate certificate for 172.18.0.3 because it doesn't contain any IP SANs. Koja izmjena je uobičajena za lab okruženje?",
+    "options": [
+      "Dodati argument --kubelet-insecure-tls u kontejner metrics-servera",
+      "Dodati --enable-aggregator-routing=true API serveru",
+      "Restartovati kubelet na svim čvorovima",
+      "Promijeniti Service metrics-servera u NodePort"
+    ],
+    "answer": 0,
+    "explain": "metrics-server ne može provjeriti self-signed serving certifikat kubeleta; u labu se provjera isključuje sa --kubelet-insecure-tls (u produkciji: potpisani serving certifikati). Restart kubeleta ne mijenja certifikat, a tip servisa nije problem."
+  },
+  {
+    "obj": "5.3",
+    "q": "Pod web ima kontejnere app i cache. Treba utvrditi koji od njih troši više memorije. Koja komanda?",
+    "options": [
+      "k top pod web --sort-by=memory",
+      "k describe pod web | grep -i memory",
+      "k top pod web --containers",
+      "k get pod web -o jsonpath='{.spec.containers[*].resources.limits.memory}'"
+    ],
+    "answer": 2,
+    "explain": "--containers prikazuje potrošnju po kontejneru. Bez njega top daje zbir za cijeli Pod, a describe i jsonpath pokazuju podešene requests/limits, ne stvarnu potrošnju."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pod worker je u CrashLoopBackOff sa RESTARTS 6. k logs worker ne ispisuje ništa korisno. Kako vidjeti izlaz kontejnera koji se upravo srušio?",
+    "options": [
+      "k logs worker -f",
+      "k logs worker --since=1h",
+      "k logs worker --previous",
+      "k attach worker"
+    ],
+    "answer": 2,
+    "explain": "--previous (-p) čita logove prethodne instance kontejnera, a upravo ona sadrži poruku greške. -f i --since gledaju trenutnu instancu, koja je možda tek startovala, a attach se kači na trenutni proces."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pod web ima kontejnere nginx i log-agent. k logs web ispisuje Defaulted container \"nginx\" out of: nginx, log-agent i logove nginx-a. Zadatak traži posljednjih 100 linija kontejnera log-agent u fajlu /opt/agent.log. Koja komanda?",
+    "options": [
+      "k logs web -c log-agent --tail=100 > /opt/agent.log",
+      "k logs web --all-containers --tail=100 > /opt/agent.log",
+      "k logs log-agent --tail=100 > /opt/agent.log",
+      "k exec web -c log-agent -- tail -100 /proc/1/fd/1 > /opt/agent.log"
+    ],
+    "answer": 0,
+    "explain": "-c bira kontejner, --tail broj linija. --all-containers miješa logove oba kontejnera, log-agent nije ime Poda, a čitanje fd/1 kroz exec ne vraća istoriju logova."
+  },
+  {
+    "obj": "5.4",
+    "q": "Deployment web ima 3 Poda. k logs -l app=web ispisuje samo nekoliko linija po Podu, iako svaki Pod ima stotine linija. Zašto?",
+    "options": [
+      "Sa -l kubectl prikazuje samo jedan Pod",
+      "Logovi se rotiraju svakih 10 minuta",
+      "Treba dodati --all-containers",
+      "Sa selektorom kubectl logs podrazumijevano prikazuje 10 posljednjih linija po Podu; za sve treba --tail=-1"
+    ],
+    "answer": 3,
+    "explain": "Kad se koristi selektor, podrazumijevani --tail je 10 (bez selektora -1, tj. sve). Svi Podovi se prikazuju (do --max-log-requests, podrazumijevano 5), a --all-containers se odnosi na kontejnere, ne na broj linija."
+  },
+  {
+    "obj": "5.4",
+    "q": "Stara aplikacija piše logove samo u /var/log/app.log unutar kontejnera, pa je k logs prazan. Kako, po Kubernetes preporuci, učiniti logove dostupnim kroz kubectl logs bez izmjene aplikacije?",
+    "options": [
+      "Postaviti terminationMessagePath: /var/log/app.log",
+      "Dodati sidecar kontejner koji dijeli emptyDir volumen i radi tail -F /var/log/app.log na svoj stdout",
+      "Montirati /var/log/pods sa čvora preko hostPath u kontejner",
+      "Pokrenuti k logs web --file=/var/log/app.log"
+    ],
+    "answer": 1,
+    "explain": "Sidecar sa zajedničkim volumenom ispisuje fajl na stdout, pa ga kubelet bilježi i k logs <pod> -c <sidecar> ga čita. terminationMessagePath služi za kratku poruku na kraju, hostPath ne rješava problem, a --file ne postoji."
+  },
+  {
+    "obj": "5.5",
+    "q": "k describe svc web pokazuje Selector: app=web i Endpoints: <none>. k get pods --show-labels pokazuje tri Running, 1/1 Poda sa labelom app=web-app. Šta je najbrža ispravna popravka ako se Deployment ne smije mijenjati?",
+    "options": [
+      "Promijeniti targetPort servisa",
+      "Restartovati kube-proxy",
+      "Promijeniti selector servisa u app=web-app",
+      "Dodati readiness probe Podovima"
+    ],
+    "answer": 2,
+    "explain": "Endpointi su prazni jer selector ne odgovara labelama Podova. Kad se selector ispravi, EndpointSlice se odmah popuni. targetPort i kube-proxy ne utiču na izbor Podova, a Podovi su već Ready."
+  },
+  {
+    "obj": "5.5",
+    "q": "Servis api ima endpointe (tri IP adrese Podova). wget http://api iz privremenog Poda vraća connection refused. Kontejner sluša na portu 80, a servis ima port: 80, targetPort: 8080. Šta treba promijeniti?",
+    "options": [
+      "targetPort servisa na 80 (port na kojem kontejner stvarno sluša)",
+      "port servisa na 8080",
+      "containerPort u Podu na 8080",
+      "Tip servisa u NodePort"
+    ],
+    "answer": 0,
+    "explain": "Servis šalje saobraćaj na targetPort Poda; ako na tom portu niko ne sluša, veza se odbija. Promjena porta servisa mijenja samo ulaz, a containerPort je informativan i ne mijenja port na kojem aplikacija sluša."
+  },
+  {
+    "obj": "5.5",
+    "q": "Podovi Deployment-a frontend su Running, ali READY 0/1, a servis frontend nema endpointa. Šta je najvjerovatniji uzrok?",
+    "options": [
+      "Selector servisa ne odgovara labelama",
+      "CoreDNS ne radi",
+      "Liveness probe pada, pa kubelet restartuje kontejnere",
+      "Readiness probe pada, pa Podovi nisu Ready i ne ulaze u endpointe"
+    ],
+    "answer": 3,
+    "explain": "Running sa 0/1 READY znači da readiness probe ne prolazi; servis šalje saobraćaj samo Ready Podovima. Liveness bi izazvao restarte i CrashLoopBackOff, a DNS ne utiče na endpointe."
+  },
+  {
+    "obj": "5.5",
+    "q": "Iz privremenog busybox Poda wget -qO- http://10.96.40.12 (ClusterIP servisa db) radi, ali wget -qO- http://db vraća wget: bad address 'db'. Pod i servis su u istom namespace-u. Šta provjeriti?",
+    "options": [
+      "NetworkPolicy u namespace-u",
+      "CoreDNS: k -n kube-system get pods -l k8s-app=kube-dns i njegove logove",
+      "targetPort servisa db",
+      "kube-proxy na čvoru"
+    ],
+    "answer": 1,
+    "explain": "IP servisa radi, pa su servis, endpointi i kube-proxy ispravni; ne radi samo razrješavanje imena, što je posao CoreDNS-a. NetworkPolicy bi blokirala i pristup preko IP-a."
+  },
+  {
+    "obj": "5.5",
+    "q": "Servis backend u namespace-u app odgovara iz privremenog Poda u namespace-u default, ali Podovi iz namespace-a frontend dobijaju timeout. Endpointi postoje, DNS radi. Šta je najvjerovatniji uzrok?",
+    "options": [
+      "targetPort servisa je pogrešan",
+      "kube-proxy ne radi na čvoru gdje su frontend Podovi",
+      "NetworkPolicy u namespace-u app dozvoljava ingress samo iz određenih namespace-ova ili Podova",
+      "Selector servisa ne odgovara labelama"
+    ],
+    "answer": 2,
+    "explain": "Kad saobraćaj radi iz jednog izvora, a iz drugog daje timeout, uzrok je filtriranje po izvoru, tj. NetworkPolicy. Pogrešan targetPort ili selector bi pokvarili pristup iz svih namespace-ova."
+  },
+  {
+    "obj": "5.3",
+    "q": "Pod cache se restartuje. k describe pod cache pokazuje Last State: Terminated, Reason: OOMKilled, Exit Code: 137, a limits.memory je 64Mi. Šta je ispravna popravka?",
+    "options": [
+      "Povećati limits.memory (i po potrebi requests.memory) u Deployment-u cache",
+      "Povećati limits.cpu",
+      "Dodati restartPolicy: Never",
+      "Povećati terminationGracePeriodSeconds"
+    ],
+    "answer": 0,
+    "explain": "OOMKilled znači da je kontejner prešao memorijski limit i kernel ga je ubio (SIGKILL, 128+9). CPU limit samo usporava proces, a restartPolicy i grace period ne sprečavaju prekoračenje memorije."
+  },
+  {
+    "obj": "5.3",
+    "q": "Novi Pod je Pending sa eventom: 0/2 nodes are available: 1 Insufficient memory, 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }. k top node pokazuje da node01 koristi samo 30% memorije. Šta je uzrok?",
+    "options": [
+      "metrics-server pokazuje pogrešne podatke",
+      "Scheduler gleda stvarnu potrošnju sa kašnjenjem od 15 s",
+      "Treba ukloniti taint sa controlplane čvora",
+      "Zbir memory requests Podova na node01 plus requests novog Poda prelazi allocatable memoriju čvora; scheduler računa requests, ne stvarnu potrošnju"
+    ],
+    "answer": 3,
+    "explain": "Scheduler upoređuje requests sa allocatable kapacitetom (k describe node, Allocated resources), a ne trenutnu potrošnju iz top-a. Rješenje je manji request ili više kapaciteta. Skidanje taint-a sa controlplane-a mijenja politiku klastera i nije traženo."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pod tool ima command: [\"sh\", \"-c\", \"ngnix -g 'daemon off;'\"] i stalno pada. describe pokazuje Exit Code: 127. Šta k logs tool --previous najvjerovatnije pokazuje i koji je uzrok?",
+    "options": [
+      "OOMKilled: kontejner je prešao memorijski limit",
+      "sh: ngnix: not found; greška u imenu komande",
+      "permission denied; fajl nije izvršan",
+      "Ništa, jer exit kod 127 znači da je kontejner ubijen signalom"
+    ],
+    "answer": 1,
+    "explain": "127 je kod kojim shell javlja da komanda nije nađena, ovdje zbog greške u kucanju. Nedostatak dozvole za izvršavanje daje 126, a 137 (128+9) je SIGKILL, npr. kod OOMKilled."
+  },
+  {
+    "obj": "5.5",
+    "q": "Pod payments koristi distroless sliku bez shell-a i alata. Treba provjeriti DNS i HTTP konektivnost iz mrežnog konteksta Poda i iz klastera. Koje dvije komande su korisne? (Izaberi DVA.)",
+    "options": [
+      "k exec -it payments -- sh",
+      "k debug -it payments --image=busybox:1.37 --target=payments",
+      "k attach -it payments",
+      "k cp busybox payments:/bin/sh",
+      "k run tmp --rm -it --restart=Never --image=busybox:1.37 -- sh"
+    ],
+    "answer": [1, 4],
+    "explain": "Ephemeral container dijeli mrežni namespace (i sa --target procese) sa Podom i donosi alate, a privremeni Pod testira servis kao drugi klijent u klasteru. exec traži shell u slici, attach se kači na postojeći proces, a kubectl cp zahtijeva tar u kontejneru."
+  },
+  {
+    "obj": "5.5",
+    "type": "order",
+    "q": "Servis web ne odgovara. Poredaj korake dijagnoze od najosnovnijeg prema složenijem.",
+    "options": [
+      "Provjeri ima li servis endpointe: k get endpointslices -l kubernetes.io/service-name=web",
+      "Provjeri DNS ime iz privremenog Poda: nslookup web",
+      "Provjeri da su Podovi Running i Ready: k get pods -l app=web",
+      "Provjeri NetworkPolicy-je u namespace-u",
+      "Provjeri targetPort i pristup preko ClusterIP-a: wget http://<ClusterIP>"
+    ],
+    "answer": [2, 0, 4, 1, 3],
+    "explain": "Prvo Podovi, jer bez Ready Podova nema endpointa; zatim endpointi (selector), pa targetPort preko ClusterIP-a, zatim DNS ime, a na kraju filtriranje saobraćaja NetworkPolicy-jem."
+  },
+  {
+    "obj": "5.4",
+    "type": "match",
+    "q": "Upari stanje Poda sa najvjerovatnijim uzrokom.",
+    "options": [
+      "ImagePullBackOff",
+      "CreateContainerConfigError",
+      "CrashLoopBackOff, Last State: Completed, Exit Code 0, u Deployment-u",
+      "ContainerCreating, event FailedMount",
+      "Pending, event FailedScheduling: untolerated taint"
+    ],
+    "targets": [
+      "env.valueFrom.secretKeyRef pokazuje na nepostojeći Secret ili ključ",
+      "Volumen pokazuje na ConfigMap koja ne postoji",
+      "Pogrešan tag slike ili nedostaje imagePullSecret",
+      "Svi čvorovi imaju taint koji Pod ne toleriše",
+      "Kontejner je prešao memorijski limit",
+      "Komanda se završi odmah, a Deployment očekuje dugotrajan proces"
+    ],
+    "answer": [2, 0, 5, 1, 3],
+    "explain": "Slika se ne povlači zbog imena ili kredencijala, CreateContainerConfigError nastaje zbog nedostajuće env reference, proces koji uredno završi u Deployment-u kubelet stalno restartuje, nedostajući volumen daje FailedMount, a taint FailedScheduling. Memorijski limit (OOMKilled) je distraktor."
+  },
+  {
+    "obj": "5.3",
+    "q": "Pod report se stalno restartuje. Na osnovu izlaza, šta je uzrok i koji je ispravan sljedeći korak?",
+    "lang": "text",
+    "snippet": "$ kubectl -n shop describe pod report-7f9c6d-x2l8p\nContainers:\n  report:\n    Image:          registry.example.com/report:2.4.1\n    State:          Waiting\n      Reason:       CrashLoopBackOff\n    Last State:     Terminated\n      Reason:       OOMKilled\n      Exit Code:    137\n    Restart Count:  6\n    Limits:\n      cpu:     500m\n      memory:  128Mi\n    Requests:\n      cpu:     100m\n      memory:  64Mi",
+    "options": [
+      "Liveness proba ubija kontejner; produži initialDelaySeconds",
+      "Kontejner prelazi memorijski limit od 128Mi; provjeri potrošnju (kubectl top pod) i povećaj limit ili popravi aplikaciju",
+      "Kontejner prelazi CPU limit od 500m; povećaj CPU limit",
+      "Čvoru je ponestalo memorije pa je pod izbačen (evicted); dodaj čvor"
+    ],
+    "answer": 1,
+    "explain": "Reason OOMKilled i exit code 137 (128 + 9, SIGKILL) znače da je kernel ubio kontejner jer je prešao svoj memory limit od 128Mi. Kad liveness proba ubije kontejner, reason je Error, a ne OOMKilled. Prekoračenje CPU limita izaziva usporavanje (throttling), ne gašenje. Eviction bi pod označio kao Evicted, a ne bi restartovao kontejner."
+  }
+]

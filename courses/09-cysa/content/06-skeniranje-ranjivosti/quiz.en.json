@@ -1,0 +1,297 @@
+[
+  {
+    "obj": "2.1",
+    "q": "A new CISO wants to launch a vulnerability management program in an organization that has never systematically scanned its network. What should the analyst do FIRST?",
+    "options": [
+      "Create and confirm an asset inventory with system owners and criticality",
+      "Run a full intrusive scan of the entire network to see the state immediately",
+      "Buy a license for a second scanner to compare results",
+      "Define SLA deadlines for remediating critical findings"
+    ],
+    "answer": 0,
+    "explain": "Without an inventory you don't know what you're scanning or whether coverage is complete, and owner and criticality are needed later for prioritization. SLA deadlines and tools come afterward, and an intrusive scan without planning can take down production."
+  },
+  {
+    "obj": "2.1",
+    "q": "A company has 400 laptops; most employees work from home and rarely connect to the VPN. The weekly network scan from the data center almost never finds them. Which method BEST solves the problem?",
+    "options": [
+      "External non-credentialed scanning",
+      "Agent-based scanning",
+      "Passive monitoring on the core switch SPAN port",
+      "Increase the network scan frequency to daily"
+    ],
+    "answer": 1,
+    "explain": "An agent on the laptop collects data locally and sends it as soon as the device has internet access, regardless of location. Passive monitoring and a more frequent network scan still depend on the device being on the office network, and an external scan doesn't see home laptops."
+  },
+  {
+    "obj": "2.1",
+    "q": "A non-credentialed scan reports a vulnerable OpenSSH version on a Debian server. The administrator shows that `apt` has installed all security patches. What is the MOST likely reason and the best next step?",
+    "options": [
+      "True positive; isolate the server immediately",
+      "False negative; increase scan sensitivity to intrusive",
+      "False positive due to a backported patch; rerun as a credentialed scan",
+      "Outdated plugin feed; delete the finding from the report"
+    ],
+    "answer": 2,
+    "explain": "Debian backports patches without changing the upstream version in the banner, so a scanner that looks only at the banner reports a false vulnerability. A credentialed scan reads the actual package version and confirms the state. Deleting the finding without checking is not validation."
+  },
+  {
+    "obj": "2.1",
+    "q": "After an active scan in a manufacturing plant, two PLCs restarted and the line stopped for 40 minutes. Which approach is BEST going forward?",
+    "options": [
+      "External scan from the internet so the internal network isn't loaded",
+      "Credentialed scan with a domain administrator account",
+      "Exclude the OT network from the vulnerability management program",
+      "Passive scanning (traffic monitoring) with active checks only during planned downtime"
+    ],
+    "answer": 3,
+    "explain": "OT devices are fragile and availability is the priority, so passive discovery is used and, if needed, gentle active tests in an agreed window. Excluding them from the program leaves the risk unnoticed, and an external scan doesn't see the OT network."
+  },
+  {
+    "obj": "2.1",
+    "q": "A merchant processes card payments and must comply with PCI DSS. Who must perform the quarterly EXTERNAL vulnerability scan?",
+    "options": [
+      "Approved Scanning Vendor (ASV)",
+      "The internal SOC team with any commercial scanner",
+      "A Qualified Security Assessor (QSA) personally, manually",
+      "The card-issuing bank"
+    ],
+    "answer": 0,
+    "explain": "PCI DSS (req. 11.3.2) requires external quarterly scans to be performed by an ASV approved by the PCI SSC. Internal scans can be done by a qualified internal team. A QSA performs the compliance assessment, not the quarterly external scans."
+  },
+  {
+    "obj": "2.1",
+    "q": "A scan of the DMZ segment returned a report with no findings at all, and nmap shows almost all ports as `filtered`. What is MOST likely?",
+    "options": [
+      "All servers in the DMZ are fully patched",
+      "A firewall is blocking the scanner, so the result is a false negative",
+      "The scanner used the wrong plugin for Windows",
+      "The hosts are powered off, so there are no findings"
+    ],
+    "answer": 1,
+    "explain": "`filtered` means something between the scanner and the target is dropping packets. An empty report is then not proof of security but a blind spot. The solution is a scanner in the segment, documented rules for the scanner IP, or agents."
+  },
+  {
+    "obj": "2.1",
+    "q": "An analyst needs to determine which operating systems and service versions are running on hosts in an unknown, newly acquired network before scanning policies are defined. What is this activity called?",
+    "options": [
+      "Security baseline scanning",
+      "Penetration testing",
+      "Device fingerprinting",
+      "Software composition analysis"
+    ],
+    "answer": 2,
+    "explain": "Device fingerprinting (banner grabbing, nmap -sV/-O, passive p0f/JA3) determines the device type, OS, and versions. A baseline scan checks configuration against a standard, and SCA analyzes dependencies in code."
+  },
+  {
+    "obj": "2.1",
+    "q": "An auditor requests proof that Linux servers are configured according to prescriptive, consensus-developed hardening guidelines with Level 1 and Level 2 profiles. Which standard is this?",
+    "options": [
+      "ISO/IEC 27001",
+      "PCI DSS",
+      "NIST CSF",
+      "CIS Benchmarks"
+    ],
+    "answer": 3,
+    "explain": "CIS Benchmarks are concrete per-platform hardening guidelines with Level 1 and Level 2 profiles. ISO 27001 defines an ISMS and controls at a higher level, PCI DSS is for cardholder data, and NIST CSF is a framework of functions, not a configuration guide."
+  },
+  {
+    "obj": "2.1",
+    "q": "The team wants the scanner to find vulnerable client software (an old browser, a PDF reader) and an unpatched kernel on Windows and Linux servers. Which scan type is MOST needed?",
+    "options": [
+      "Credentialed",
+      "Non-credentialed",
+      "External",
+      "Passive"
+    ],
+    "answer": 0,
+    "explain": "Local vulnerabilities are not visible over the network; the scanner must log in and read the installed software and patches. Non-credentialed, external, and passive scans see only network-exposed services."
+  },
+  {
+    "obj": "2.1",
+    "q": "A network scan during business hours overloaded the WAN link to remote branches and slowed down the ERP. Which TWO measures BEST solve the problem? Choose TWO.",
+    "options": [
+      "Move the scan to after-hours or a maintenance window",
+      "Switch all scans to an intrusive policy so they finish faster",
+      "Scan the branches only once a year",
+      "Limit scan speed and parallelism (throttling) or deploy a local scanner/agents at the branches"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "Scheduling and performance are part of scan planning: an after-hours window and throttling or local scanners/agents remove the WAN load. An intrusive policy increases risk, and an annual scan leaves vulnerabilities unnoticed for too long."
+  },
+  {
+    "obj": "2.1",
+    "q": "Which statement BEST describes the difference between an internal and an external scan?",
+    "options": [
+      "Internal uses agents, external always uses credentials",
+      "Internal shows what an attacker already inside the network sees, external shows what is exposed to the internet",
+      "External scans only web applications, internal only databases",
+      "Internal is always passive, external always active"
+    ],
+    "answer": 1,
+    "explain": "The difference is the scanner's position and perspective: inside the perimeter (an insider or compromised host) and outside it (an attacker on the internet). Agent/agentless, credentialed, and passive/active are independent dimensions."
+  },
+  {
+    "obj": "2.1",
+    "q": "A discovery scan found 37 hosts that don't exist in the CMDB, including a Raspberry Pi in the meeting room. What should the analyst do FIRST?",
+    "options": [
+      "Remove them from the report because they're out of scope",
+      "Run an intrusive scan only on those hosts",
+      "Determine the owner and purpose of the unknown devices and update the inventory, escalating suspicious ones",
+      "Immediately physically disconnect all unknown devices"
+    ],
+    "answer": 2,
+    "explain": "A difference between the inventory and discovery results reveals unmanaged or rogue devices. First determine what they are and who is responsible, escalating suspicious ones (a Raspberry Pi may be a rogue device). Mass disconnection without checking can interrupt legitimate services."
+  },
+  {
+    "obj": "2.1",
+    "q": "What is the main risk of credentialed scanning that the team must control?",
+    "options": [
+      "A credentialed scan produces more false positive findings than a non-credentialed one",
+      "A credentialed scan cannot detect missing patches",
+      "A credentialed scan is only possible with agents",
+      "Scanner credentials are privileged and a valuable target if abused"
+    ],
+    "answer": 3,
+    "explain": "The scanner account has broad permissions on many hosts, so it is stored in a vault or PAM, has the minimum necessary permissions, is rotated, and is monitored in the SIEM. A credentialed scan actually reduces false positives and sees patches better."
+  },
+  {
+    "obj": "2.1",
+    "q": "A hospital has infusion pumps and an MRI machine whose manufacturer prohibits installing agents and warns that active scans can interrupt operation. Which method is BEST for inventory and detecting vulnerable versions?",
+    "options": [
+      "Passive scanning from a copy of network traffic",
+      "Agent-based scanning",
+      "Credentialed active scan with a full policy",
+      "External scan via the hospital's public IP address"
+    ],
+    "answer": 0,
+    "explain": "Passive traffic monitoring reveals devices, protocols, and versions without sending packets to the medical devices. Agents are prohibited, an active scan is risky, and an external scan doesn't see the internal network."
+  },
+  {
+    "obj": "2.1",
+    "q": "An organization wants its ISMS to be certified and wants a control for managing technical vulnerabilities to be part of that system. Which standard fits best?",
+    "options": [
+      "CIS Benchmark for Windows Server",
+      "ISO/IEC 27001",
+      "PCI DSS",
+      "OWASP Top 10"
+    ],
+    "answer": 1,
+    "explain": "ISO/IEC 27001 is the certifiable ISMS standard; Annex A control 8.8 covers management of technical vulnerabilities (in more detail in ISO 27002). CIS is a hardening guide, PCI DSS is for cardholder data, and the OWASP Top 10 is a list of web application risks."
+  },
+  {
+    "obj": "2.1",
+    "q": "After the SOC received the Nessus report, the scanner kept triggering Suricata alerts every night. What is the BEST approach?",
+    "options": [
+      "Permanently disable all IDS signatures for port scanning",
+      "Stop scanning because it creates noise",
+      "Announce the scanner's schedule and IP to the SOC and tune rules for the scanner IP, while monitoring activity outside the plan",
+      "Move the scanner to the internet so the IDS doesn't see the traffic"
+    ],
+    "answer": 2,
+    "explain": "Coordination (operations) and targeted tuning for the documented scanner IP reduce noise without losing visibility. Disabling all signatures would hide real reconnaissance, and scanning from the internet changes the perspective and doesn't see the internal network."
+  },
+  {
+    "obj": "2.1",
+    "q": "Which tool output indicates that the service version was determined by actually probing the service, not by assuming from the port number?",
+    "options": [
+      "`<service name=\"http\" method=\"table\" conf=\"3\"/>`",
+      "`8080/tcp filtered http-proxy`",
+      "`Not shown: 9999 closed tcp ports (reset)`",
+      "`<service name=\"http\" product=\"SimpleHTTPServer\" version=\"0.6\" method=\"probed\" conf=\"10\"/>`"
+    ],
+    "answer": 3,
+    "explain": "In nmap XML, `method=\"probed\"` and a high `conf` mean the service was identified from a response to a probe (-sV). `method=\"table\"` is only a guess from the table of well-known ports, and `filtered` means the target isn't even reachable."
+  },
+  {
+    "obj": "2.1",
+    "q": "A company must scan a cloud environment across dozens of AWS accounts, where EC2 instances are created and terminated several times a day. Which TWO approaches BEST provide a complete picture? Choose TWO.",
+    "options": [
+      "Manually scan a list of IP addresses from a spreadsheet once a month",
+      "Agent-based scanning of instances (e.g., Amazon Inspector via SSM)",
+      "Scanning images (AMIs and containers) in the pipeline and registry before launch",
+      "Passive scan on a SPAN port in the on-prem data center"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Ephemeral resources require continuous agent-based scanning and scanning of the source (images) before deployment. A static list of IPs quickly becomes outdated, and an on-prem SPAN doesn't see cloud traffic."
+  },
+  {
+    "obj": "2.1",
+    "q": "What does a security baseline scan PRIMARILY check?",
+    "options": [
+      "Configuration deviations from a prescribed standard (e.g., PermitRootLogin, password policies)",
+      "Which CVE vulnerabilities exist in installed packages",
+      "Which hosts are alive in a subnet",
+      "Whether the application code is secure against injection attacks"
+    ],
+    "answer": 0,
+    "explain": "A baseline (compliance) scan compares settings with a standard such as a CIS Benchmark or PCI DSS requirements. Looking for CVEs is a vulnerability scan, live hosts are discovery, and code security is SAST/DAST."
+  },
+  {
+    "obj": "2.1",
+    "type": "match",
+    "q": "Match each scenario with the MOST appropriate scan type.",
+    "options": [
+      "Remote laptops that are rarely on the office network",
+      "Routers and firewall appliances on which software cannot be installed",
+      "An attacker's view of the company's public services",
+      "A SCADA network with fragile PLC devices",
+      "An exact list of missing patches on Windows servers",
+      "Checking hardening against a CIS Benchmark"
+    ],
+    "targets": [
+      "Credentialed",
+      "Passive",
+      "Agent-based",
+      "Security baseline",
+      "External",
+      "Agentless"
+    ],
+    "answer": [
+      2,
+      5,
+      4,
+      1,
+      0,
+      3
+    ],
+    "explain": "Laptops off the network need agents, appliances are scanned agentless, an external scan gives the attacker's perspective, fragile OT requires a passive approach, a credentialed scan sees patches most accurately, and a baseline scan checks hardening."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Arrange the steps of introducing scanning for a new network from first to last.",
+    "options": [
+      "Run the approved scan in the agreed window",
+      "Validate findings and remove false positives",
+      "Create an asset inventory and determine owners",
+      "Rescan after remediation (validation)",
+      "Define scope, obtain approval, and notify the SOC/NOC",
+      "Choose the scan type and sensitivity according to the asset type"
+    ],
+    "answer": [
+      2,
+      4,
+      5,
+      0,
+      1,
+      3
+    ],
+    "explain": "First the inventory, then scope and approval, then choosing the method and sensitivity, then the scan itself, validation of findings, and finally a rescan that confirms the fix."
+  },
+  {
+    "obj": "2.1",
+    "type": "spot",
+    "q": "External (non-credentialed) scan of a public web server. Policy says only HTTP and HTTPS may be reachable from the internet. Mark the lines that violate the policy.",
+    "snippet": "$ nmap -sV -Pn shop.example.com\nNmap scan report for shop.example.com (198.51.100.10)\nHost is up (0.012s latency).\nNot shown: 994 filtered tcp ports (no-response)\nPORT     STATE  SERVICE       VERSION\n25/tcp   closed smtp\n80/tcp   open   http          Microsoft IIS httpd 10.0\n443/tcp  open   ssl/http      Microsoft IIS httpd 10.0\n1433/tcp open   ms-sql-s      Microsoft SQL Server 2019 15.00.2000\n3389/tcp open   ms-wbt-server Microsoft Terminal Services\n8443/tcp closed https-alt\nNmap done: 1 IP address (1 host up) scanned in 41.22 seconds",
+    "lang": "text",
+    "answer": [8, 9],
+    "explain": "Line 9: Microsoft SQL Server (1433/tcp) is open to the internet, exposing the database to brute force attacks and service vulnerabilities. Line 10: RDP (3389/tcp, ms-wbt-server) is open to the internet, one of the most common ransomware entry points. Both services should be closed on the perimeter firewall and access limited to VPN/bastion. Ports 80 and 443 are allowed, and closed ports (25, 8443) mean the host answers but nothing listens, so they are not a violation. Filtered ports are blocked by the firewall."
+  }
+]

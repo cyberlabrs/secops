@@ -1,0 +1,254 @@
+[
+  {
+    "obj": "2.4",
+    "q": "You wrote the policy `path \"secret/kurs-shop/ci/*\" { capabilities = [\"read\"] }` and gave it to a token. `vault kv get -mount=secret kurs-shop/ci/registry` returns 403 permission denied. What is the cause?",
+    "options": [
+      "The token doesn't have the default policy, so it cannot read KV",
+      "KV v2 reads data from the path secret/data/kurs-shop/ci/registry, and the policy does not cover that path",
+      "The read capability is not enough for KV v2; list is also required",
+      "The dev server does not apply policies to tokens created with the root token"
+    ],
+    "answer": 1,
+    "explain": "Under the CLI, KV v2 uses the API paths secret/data/... (data) and secret/metadata/... (listing). The policy must mention secret/data/kurs-shop/ci/*. list is needed only for listing, and the dev server applies policies normally."
+  },
+  {
+    "obj": "2.4",
+    "q": "You are configuring a JWT role for a GitLab deploy job. Which combination prevents a developer on a feature branch from modifying .gitlab-ci.yml and reading production secrets?",
+    "options": [
+      "bound_claims with project_path and ref_protected: \"true\", plus bound_audiences with the Vault URL",
+      "Only bound_audiences: \"https://vault.kurs-shop.ba\"",
+      "user_claim: \"user_email\" and token_ttl: 10m",
+      "bound_claims with namespace_path: \"shop\""
+    ],
+    "answer": 0,
+    "explain": "project_path restricts the role to a single project, and ref_protected to protected branches that a developer cannot push to directly. bound_audiences only confirms that the token is intended for Vault, user_claim is used for naming the entity, and namespace_path allows every project in the group and every branch."
+  },
+  {
+    "obj": "2.4",
+    "q": "An old pipeline uses `vault write auth/jwt/login role=ci jwt=$CI_JOB_JWT_V2`. After a GitLab upgrade the login fails because the variable is empty. What is the correct way to get a token?",
+    "options": [
+      "Enable CI_JOB_JWT in the project settings under CI/CD > Token Access",
+      "Use $CI_JOB_TOKEN as the jwt parameter",
+      "Add id_tokens: VAULT_ID_TOKEN: aud: https://vault.kurs-shop.ba to the job and use $VAULT_ID_TOKEN",
+      "Create a personal access token and put it in a masked variable"
+    ],
+    "answer": 2,
+    "explain": "CI_JOB_JWT and CI_JOB_JWT_V2 have been removed; an ID token is requested with the id_tokens key and a mandatory aud. CI_JOB_TOKEN is not a JWT for Vault but a token for the GitLab API, and a PAT in a variable is exactly the static secret we want to avoid."
+  },
+  {
+    "obj": "2.4",
+    "q": "In a job you use `secrets: DB_PASSWORD: vault: kurs-shop/prod/db/password@secret` with token: $VAULT_ID_TOKEN. The `psql` script reports a wrong password, and `echo ${#DB_PASSWORD}` gives the length of a path like /builds/...tmp/DB_PASSWORD. What is missing?",
+    "options": [
+      "VAULT_AUTH_PATH: jwt",
+      "file: false under DB_PASSWORD",
+      "engine: name: kv-v2",
+      "The VAULT_NAMESPACE variable"
+    ],
+    "answer": 1,
+    "explain": "By default GitLab writes the secret from Vault to a temporary file and puts the path to it in the variable. file: false puts the value directly into the variable. kv-v2 is already the default engine, jwt is the default auth path, and a namespace is needed only for HCP/Enterprise namespaces."
+  },
+  {
+    "obj": "2.4",
+    "q": "An old cron server on an on-prem machine needs to read one secret from Vault. There is no Kubernetes, no cloud, no OIDC identity. Which auth method is most appropriate?",
+    "options": [
+      "JWT auth with a GitLab ID token",
+      "Kubernetes auth",
+      "Userpass with the password in the crontab file",
+      "AppRole with the role_id in the configuration and the secret_id delivered through response wrapping"
+    ],
+    "answer": 3,
+    "explain": "AppRole is built for machines without a platform identity; the role_id is not a secret, and the secret_id is delivered separately and is short-lived. JWT and Kubernetes auth require an identity this server doesn't have, and userpass with a password in a file is a static secret intended for humans."
+  },
+  {
+    "obj": "2.4",
+    "q": "A deploy tool hands the application a wrapping token for an AppRole secret_id. The application calls `vault unwrap` and gets an error that the token doesn't exist, even though the 120 s TTL has not expired. What does this most likely mean?",
+    "options": [
+      "Someone has already unwrapped the token, so the secret_id may have been intercepted; it should be investigated and revoked",
+      "The application must use vault write auth/approle/login instead of unwrap",
+      "secret_id_num_uses is set to 1",
+      "A wrapping token only works with the root token"
+    ],
+    "answer": 0,
+    "explain": "A wrapping token is single-use; if unwrap fails before expiry, someone else has already used it. That is exactly the interception detection that response wrapping provides. secret_id_num_uses applies to login, not to unwrap, and unwrap does not require root."
+  },
+  {
+    "obj": "2.4",
+    "q": "Before giving the kurs-shop-ci policy to a pipeline, you want to verify that a token with it can NOT read secret/data/kurs-shop/prod/app. Which command shows this most directly?",
+    "options": [
+      "vault policy read kurs-shop-ci",
+      "vault token lookup <token>",
+      "vault token capabilities <token> secret/data/kurs-shop/prod/app",
+      "vault kv metadata get -mount=secret kurs-shop/prod/app"
+    ],
+    "answer": 2,
+    "explain": "token capabilities computes the token's actual permissions on the path (e.g., deny), taking into account all policies, globs and deny rules. policy read only prints the text, token lookup shows policy names and the TTL, and metadata get runs under your own token."
+  },
+  {
+    "obj": "2.4",
+    "q": "Pentest finding: the production application uses the same PostgreSQL password as the CI tests and three developers; the password hasn't been changed in two years. What reduces the risk the most with the fewest changes to the application?",
+    "options": [
+      "Move the password into KV v2 and set max-versions=10",
+      "The database secrets engine with a role per client and a default_ttl of a few hours, plus a Vault Agent that renders the credentials into a file",
+      "Put the password in a masked and protected GitLab variable",
+      "Encrypt the password with the Transit engine and keep the ciphertext in the repo"
+    ],
+    "answer": 1,
+    "explain": "Dynamic secrets give a unique, short-lived credential per client, and the audit knows exactly who used what; the Agent renders a file, so the application barely changes. KV and a masked variable still keep a single shared static password, and ciphertext in the repo solves neither sharing nor rotation."
+  },
+  {
+    "obj": "2.4",
+    "q": "The runner on which a deploy job ran has been compromised. The job read dynamic DB credentials from database/creds/kurs-shop-app. What is the fastest targeted response in Vault?",
+    "options": [
+      "vault secrets disable database",
+      "vault kv destroy -mount=secret -versions=1 kurs-shop/prod/db",
+      "vault write -force database/rotate-root/kurs-shop-db",
+      "vault lease revoke -prefix database/creds/kurs-shop-app"
+    ],
+    "answer": 3,
+    "explain": "revoke -prefix revokes all leases of that role, and Vault deletes the corresponding DB users. Disabling the engine breaks all applications, KV destroy has nothing to do with dynamic credentials, and rotate-root changes only Vault's admin password, not users already issued."
+  },
+  {
+    "obj": "2.4",
+    "q": "After configuring the database engine you immediately run `vault write -force database/rotate-root/kurs-shop-db`. Why?",
+    "options": [
+      "So that only Vault knows the password of the admin user you entered in the config, and no copy remains in the shell history or a ticket",
+      "So that Vault creates the first dynamic user",
+      "To renew the lease of all issued credentials",
+      "Without it allowed_roles does not take effect"
+    ],
+    "answer": 0,
+    "explain": "rotate-root changes the password of the user Vault uses to connect to the database; after that nobody but Vault knows it. It doesn't create dynamic users, doesn't touch leases and has nothing to do with allowed_roles."
+  },
+  {
+    "obj": "2.4",
+    "q": "A short CI job lasts 2 minutes and needs a token only to read two secrets. You want the token not to burden Vault storage and to be impossible to renew. What do you set on the JWT role?",
+    "options": [
+      "token_period=24h",
+      "token_type=batch with a short token_ttl",
+      "token_no_default_policy=true",
+      "token_num_uses=0"
+    ],
+    "answer": 1,
+    "explain": "Batch tokens are not written to storage and cannot be renewed; they are ideal for short, high-volume jobs. A periodic token renews indefinitely (the opposite of the goal), no_default_policy only removes the default policy, and num_uses=0 means an unlimited number of uses."
+  },
+  {
+    "obj": "2.4",
+    "q": "A colleague proposes using AppRole for Vault login from GitLab: the role_id and secret_id would be masked variables in the project. What is the main problem?",
+    "options": [
+      "AppRole doesn't work with GitLab runners",
+      "AppRole doesn't support policies with deny",
+      "Masked variables cannot contain a UUID",
+      "A secret_id in a CI/CD variable is again a static, long-lived secret available to maintainers, and access is not bound to a branch or project as with an ID token"
+    ],
+    "answer": 3,
+    "explain": "This just moves a static secret into GitLab. JWT with id_tokens has no secret to store, and bound_claims bind access to the project and a protected branch. AppRole technically works in CI and supports all policies; masked variables can contain a UUID."
+  },
+  {
+    "obj": "2.4",
+    "q": "A team runs an application on Kubernetes and wants Vault dynamic DB credentials to reach the Pod, the lease to be renewed automatically and the secret not to end up in etcd. What is the best choice?",
+    "options": [
+      "The External Secrets Operator creating a Kubernetes Secret",
+      "The Vault Agent Injector rendering the credentials into a file on the Pod's tmpfs volume",
+      "A ConfigMap that a CI job populates from Vault on every deploy",
+      "The secret written as an ENV in the Dockerfile during the build"
+    ],
+    "answer": 1,
+    "explain": "A Vault Agent sidecar authenticates by itself, renews the lease and renders the secret into an in-memory volume, without a Kubernetes Secret. ESO creates a Secret object in etcd, a ConfigMap is not meant for secrets, and an ENV in the image is the anti-pattern we start from."
+  },
+  {
+    "obj": "2.4",
+    "q": "On KV v2 the secret kurs-shop/prod/app was overwritten by a wrong command (version 4 is now invalid). What is the fastest way to restore the previous value?",
+    "options": [
+      "vault kv undelete -mount=secret -versions=4 kurs-shop/prod/app",
+      "vault kv destroy -mount=secret -versions=4 kurs-shop/prod/app",
+      "vault kv rollback -mount=secret -version=3 kurs-shop/prod/app",
+      "It is not possible; KV keeps only the latest version"
+    ],
+    "answer": 2,
+    "explain": "rollback writes the content of version 3 as a new version 5. undelete restores a soft-deleted version (version 4 was not deleted), destroy permanently deletes version 4 but doesn't make 3 current, and KV v2 keeps multiple versions (that is the difference from KV v1)."
+  },
+  {
+    "obj": "2.4",
+    "q": "For a JWT role, `vault write auth/jwt/role/deploy role_type=jwt bound_claims=project_path=shop/kurs-shop ...` returns an error about bound_claims. How is the role written correctly?",
+    "options": [
+      "As JSON via stdin (vault write auth/jwt/role/deploy - <<EOF ... EOF), because bound_claims is a map",
+      "With bound_claims_type=string",
+      "By adding -force",
+      "By setting bound_subject instead of bound_claims"
+    ],
+    "answer": 0,
+    "explain": "bound_claims is a map and cannot be given as a simple key=value parameter on the CLI; the role is written as JSON. bound_claims_type chooses string or glob matching, not the input format; -force is for writing without data, and bound_subject binds only the sub claim."
+  },
+  {
+    "obj": "2.4",
+    "type": "order",
+    "q": "Put in order the steps for setting up Vault access for a GitLab deploy job without static secrets.",
+    "options": [
+      "In .gitlab-ci.yml add id_tokens with aud and the login vault write auth/jwt/login role=kurs-shop-deploy",
+      "vault auth enable jwt",
+      "vault write auth/jwt/config oidc_discovery_url=... bound_issuer=...",
+      "Create a JWT role with bound_audiences, bound_claims and token_policies=kurs-shop-deploy",
+      "Delete the old secrets from the GitLab CI/CD variables"
+    ],
+    "answer": [
+      1,
+      2,
+      3,
+      0,
+      4
+    ],
+    "explain": "The auth method is enabled first, then configured (how Vault verifies the GitLab token's signature), then the role with restrictions is created. Only then can the job log in with the ID token, and the old static variables are deleted only once the new path works."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Match the Vault mechanism with the situation in which you use it.",
+    "options": [
+      "KV v2",
+      "Database secrets engine",
+      "Response wrapping",
+      "Batch token",
+      "Audit device"
+    ],
+    "targets": [
+      "You need to prove who read a secret before an incident",
+      "A Slack webhook and a third-party API key that Vault cannot create by itself",
+      "A short CI job, many parallel runs, no token renewal",
+      "A unique PostgreSQL user per client that disappears after an hour",
+      "Secure delivery of an AppRole secret_id through an intermediary",
+      "Encrypting application data without storing the data in Vault"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      2,
+      0
+    ],
+    "explain": "KV is for third-party static secrets, the database engine for dynamic DB users, wrapping for single-use delivery of a secret_id, a batch token for short jobs, audit for answering who read what. Encryption without storage is Transit, which is not offered here."
+  },
+  {
+    "obj": "2.4",
+    "q": "For a lab, a colleague started `vault server -dev` on a shared VM and wrote real production secrets there \"temporarily\". What is the BIGGEST problem?",
+    "options": [
+      "The dev server doesn't support KV v2",
+      "The dev server doesn't support policies",
+      "The dev server keeps data only in memory, runs without TLS, is automatically unsealed and has a known root token",
+      "The dev server cannot create dynamic secrets"
+    ],
+    "answer": 2,
+    "explain": "Dev mode is intended for learning: no TLS and a root token printed in the log, and data disappears on restart. In dev mode KV v2 is mounted at secret/, policies work, and dynamic engines can be enabled."
+  },
+  {
+    "type": "spot",
+    "obj": "2.4",
+    "q": "An app with this policy gets 403 for vault kv get secret/kurs-shop/prod/db, and the policy also grants more than the app needs. Mark the problematic lines.",
+    "snippet": "# kurs-shop-prod-app: the app only reads its own secrets (KV v2 at secret/)\npath \"secret/kurs-shop/prod/*\" {\n  capabilities = [\"read\"]\n}\n\npath \"secret/metadata/kurs-shop/prod/*\" {\n  capabilities = [\"list\", \"delete\"]\n}\n\npath \"database/creds/kurs-shop-ro\" {\n  capabilities = [\"read\"]\n}",
+    "lang": "hcl",
+    "answer": [
+      1,
+      6
+    ],
+    "explain": "With KV v2, reads go through the API path secret/data/..., so a path without data/ does not cover kv get, hence the 403; the correct line is path \"secret/data/kurs-shop/prod/*\". delete on the metadata path permanently removes all versions and metadata of a secret, which a read-only app never needs; keep only list. The database/creds/kurs-shop-ro rule is fine: read-only dynamic credentials."
+  }
+]

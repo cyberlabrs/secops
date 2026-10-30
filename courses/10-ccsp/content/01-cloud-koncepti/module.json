@@ -1,0 +1,12 @@
+{
+  "title": "Cloud koncepti i referentna arhitektura",
+  "summary": "NIST i ISO/IEC 17788/17789 definicije, uloge (customer, provider, partner, broker, auditor, regulator), esencijalne karakteristike, SaaS/PaaS/IaaS, deployment modeli, shared considerations (portability, reversibility…) i uticaj AI, kvantnog i confidential computinga.",
+  "minutes": 75,
+  "domain": 1,
+  "objectives": [
+    "1.1",
+    "1.2"
+  ],
+  "title_en": "Cloud concepts and reference architecture",
+  "summary_en": "NIST and ISO/IEC 17788/17789 definitions, roles (customer, provider, partner, broker, auditor, regulator), essential characteristics, SaaS/PaaS/IaaS, deployment models, shared considerations (portability, reversibility…) and the impact of AI, quantum and confidential computing."
+}

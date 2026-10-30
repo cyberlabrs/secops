@@ -1,0 +1,246 @@
+[
+  {
+    "obj": "2.1",
+    "q": "ServiceAccount ci-bot u namespaceu build ima Role sa 'create' na 'pods' i ništa više. U namespaceu postoji i ServiceAccount deployer sa ClusterRoleBindingom na cluster-admin. Šta napadač sa tokenom ci-bot može postići?",
+    "options": [
+      "Ništa značajno, jer ne može čitati Secrete",
+      "Samo pokretanje podova sa svojim ServiceAccountom",
+      "Kreirati pod sa serviceAccountName: deployer i preko njegovog tokena dobiti cluster-admin",
+      "Samo pokretanje podova na čvoru node01"
+    ],
+    "answer": 2,
+    "explain": "Ko smije kreirati pod u namespaceu, smije izabrati bilo koji ServiceAccount iz tog namespacea, pa i njegov token. Zato je create na pods eskalacija, a ne samo pokretanje kontejnera."
+  },
+  {
+    "obj": "2.1",
+    "q": "Role dozvoljava ServiceAccountu monitor samo 'list' na 'secrets' (bez get). Šta napadač dobija sa tim tokenom?",
+    "options": [
+      "Samo imena Secreta, bez sadržaja",
+      "Sadržaj svih Secreta u namespaceu, jer list odgovor sadrži kompletne objekte",
+      "Ništa, jer list bez get ne radi",
+      "Samo Secrete tipa Opaque"
+    ],
+    "answer": 1,
+    "explain": "List vraća kompletne objekte sa poljem data, pa je list (i watch) na secrets jednako opasan kao get. Ne postoji filtriranje po tipu Secreta u RBAC-u."
+  },
+  {
+    "obj": "2.1",
+    "q": "Korisnik dev ima Role sa 'create' na 'rolebindings' u namespaceu team, ali nema nijednu drugu dozvolu. Pokuša da kreira RoleBinding koji njemu daje ClusterRole admin u tom namespaceu. Šta se dešava?",
+    "options": [
+      "Uspijeva, jer smije kreirati rolebindings",
+      "Uspijeva samo ako koristi --dry-run=server",
+      "Odbijeno, jer RoleBinding ne može referencirati ClusterRole",
+      "Odbijeno, jer RBAC ne dozvoljava vezivanje uloge sa dozvolama koje korisnik nema, osim uz glagol bind"
+    ],
+    "answer": 3,
+    "explain": "Ugrađena zaštita od eskalacije traži da korisnik već ima sve dozvole iz uloge ili glagol bind na toj ulozi. RoleBinding na ClusterRole je inače dozvoljen."
+  },
+  {
+    "obj": "2.1",
+    "q": "Koja komanda prikazuje SVE dozvole ServiceAccounta reporter u namespaceu finance?",
+    "options": [
+      "kubectl auth can-i --list -n finance --as=system:serviceaccount:finance:reporter",
+      "kubectl auth can-i --list -n finance --as=reporter",
+      "kubectl describe serviceaccount reporter -n finance",
+      "kubectl get role -n finance --as=system:serviceaccount:finance:reporter"
+    ],
+    "answer": 0,
+    "explain": "ServiceAccount se impersonira kao system:serviceaccount:<ns>:<ime>, a --list ispisuje sve dozvole. --as=reporter je običan korisnik sa tim imenom, describe sa ne prikazuje dozvole, a četvrta komanda samo lista Role kao taj SA."
+  },
+  {
+    "obj": "2.1",
+    "q": "Zadatak: nađi sve subjekte kojima je dodijeljen cluster-admin. Šta je najbrže i potpuno?",
+    "options": [
+      "kubectl get clusterrolebindings cluster-admin -o yaml",
+      "kubectl describe clusterrole cluster-admin",
+      "kubectl get rolebindings,clusterrolebindings -A -o wide | grep -w cluster-admin",
+      "kubectl auth can-i '*' '*' --list"
+    ],
+    "answer": 2,
+    "explain": "-o wide prikazuje ulogu i kolone USERS, GROUPS i SERVICEACCOUNTS za sve bindinge, uključujući RoleBindinge na cluster-admin u namespaceovima. Prva opcija vidi samo jedan binding istog imena, describe clusterrole ne prikazuje subjekte, a četvrta pita samo za trenutnog korisnika."
+  },
+  {
+    "obj": "2.1",
+    "q": "Tim traži ulogu koja dozvoljava 'get' na 'nodes/proxy' za alat koji 'samo čita metrike'. Zašto je to rizično?",
+    "options": [
+      "nodes/proxy je zastario i ne radi u v1.35",
+      "Kubelet API preko nodes/proxy uključuje exec u kontejnere, a neke WebSocket konekcije se autorizuju glagolom get",
+      "get na nodes/proxy dozvoljava brisanje čvorova",
+      "Nije rizično; za metrike je ovo preporučena dozvola"
+    ],
+    "answer": 1,
+    "explain": "nodes/proxy pokriva sve kubelet putanje bez posebnog podresursa, uključujući izvršavanje komandi, pa get nije samo čitanje. Za metrike postoje uži podresursi nodes/metrics i nodes/stats."
+  },
+  {
+    "obj": "2.1",
+    "q": "Smanjio si dozvole ServiceAccountu reporter brisanjem RoleBindinga na edit, ali 'kubectl auth can-i delete pods -n finance --as=system:serviceaccount:finance:reporter' i dalje vraća yes. Šta je najvjerovatnije?",
+    "options": [
+      "Postoji još jedan binding, npr. ClusterRoleBinding za SA ili za grupu system:serviceaccounts:finance",
+      "can-i kešira rezultat 10 minuta",
+      "Treba restartovati kube-apiserver",
+      "Treba obrisati i ponovo kreirati ServiceAccount"
+    ],
+    "answer": 0,
+    "explain": "Dozvole su unija svih bindinga za korisnika i njegove grupe, pa negdje postoji još jedan. can-i se računa uživo, a restart API servera i ponovno kreiranje SA nisu potrebni."
+  },
+  {
+    "obj": "2.1",
+    "q": "Aplikacija treba da čita samo ConfigMap app-config u namespaceu shop. Koje pravilo u Role je najuže ispravno?",
+    "options": [
+      "{apiGroups: [''], resources: ['configmaps'], verbs: ['get', 'list', 'watch']}",
+      "{apiGroups: ['*'], resources: ['configmaps'], resourceNames: ['app-config'], verbs: ['*']}",
+      "{apiGroups: [''], resources: ['configmaps'], resourceNames: ['app-config'], verbs: ['create']}",
+      "{apiGroups: [''], resources: ['configmaps'], resourceNames: ['app-config'], verbs: ['get']}"
+    ],
+    "answer": 3,
+    "explain": "resourceNames ograničava pravilo na jedan objekat, a get je dovoljan za čitanje. Prva opcija čita sve ConfigMape, druga koristi wildcard glagole, a resourceNames ne može ograničiti create."
+  },
+  {
+    "obj": "2.1",
+    "type": "match",
+    "q": "Upari dozvolu sa načinom na koji se zloupotrebljava.",
+    "options": [
+      "impersonate na groups",
+      "escalate na clusterroles",
+      "create na serviceaccounts/token",
+      "update na mutatingwebhookconfigurations"
+    ],
+    "targets": [
+      "izdavanje tokena za bilo koji SA u namespaceu",
+      "izmjena svakog objekta koji prolazi kroz API server",
+      "kubectl --as-group=system:masters",
+      "dodavanje dozvola koje korisnik nema u postojeću ulogu",
+      "čitanje logova kubeleta"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "impersonate omogućava nastup u ime grupe (i system:masters), escalate zaobilazi zaštitu pri izmjeni uloga, serviceaccounts/token izdaje tokene, a mutating webhook vidi i mijenja objekte. Logovi kubeleta su nodes/log."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Poredaj korake za smanjenje dozvola SA reporter (finance), koji trenutno ima ClusterRoleBinding na edit, tako da smije samo get/list na pods.",
+    "options": [
+      "kubectl delete clusterrolebinding reporter-edit",
+      "kubectl -n finance create role reporter-read --verb=get,list --resource=pods",
+      "kubectl get rolebindings,clusterrolebindings -A -o wide | grep finance/reporter",
+      "kubectl auth can-i --list -n finance --as=system:serviceaccount:finance:reporter",
+      "kubectl -n finance create rolebinding reporter-read --role=reporter-read --serviceaccount=finance:reporter"
+    ],
+    "answer": [2, 1, 4, 0, 3],
+    "explain": "Prvo nađeš sve postojeće bindinge, zatim napraviš usku ulogu i binding, pa ukloniš preširok binding (aplikacija nema pauzu bez dozvola) i na kraju provjeriš rezultat."
+  },
+  {
+    "obj": "2.2",
+    "q": "ServiceAccount backend-sa ima automountServiceAccountToken: false. Pod koji ga koristi ima u spec automountServiceAccountToken: true. Da li se token montira?",
+    "options": [
+      "Ne, ServiceAccount ima prednost",
+      "Ne, false uvijek pobjeđuje",
+      "Da, vrijednost na Podu ima prednost nad ServiceAccountom",
+      "Pod se odbija pri kreiranju zbog konflikta"
+    ],
+    "answer": 2,
+    "explain": "Postavka na Podu nadjačava postavku na ServiceAccountu, u oba smjera. Nema konflikta ni odbijanja, pa ovakav pod dobija token."
+  },
+  {
+    "obj": "2.2",
+    "q": "Zadatak: pod web u namespaceu prod ne smije dobiti token, a ServiceAccount se ne smije mijenjati (dijele ga drugi podovi). Šta radiš?",
+    "options": [
+      "kubectl -n prod patch pod web -p '{\"spec\":{\"automountServiceAccountToken\":false}}'",
+      "Dodaješ automountServiceAccountToken: false u spec poda i ponovo ga kreiraš (kubectl replace --force)",
+      "Brišeš Secret sa tokenom iz namespacea",
+      "Dodaješ securityContext.readOnlyRootFilesystem: true"
+    ],
+    "answer": 1,
+    "explain": "Polje na podu je jedino rješenje bez izmjene SA, ali je nepromjenljivo na postojećem podu, pa pod treba ponovo kreirati. Patch se odbija, bound tokeni nisu u Secretu, a readOnlyRootFilesystem ne utiče na montiranje tokena."
+  },
+  {
+    "obj": "2.2",
+    "q": "Deployment backend u namespaceu prod treba da koristi novi ServiceAccount backend-sa. Koja komanda to radi najbrže?",
+    "options": [
+      "kubectl -n prod set serviceaccount deploy/backend backend-sa",
+      "kubectl -n prod patch pod -l app=backend -p '{\"spec\":{\"serviceAccountName\":\"backend-sa\"}}'",
+      "kubectl -n prod create rolebinding backend --serviceaccount=prod:backend-sa --role=backend",
+      "kubectl -n prod label deploy backend serviceaccount=backend-sa"
+    ],
+    "answer": 0,
+    "explain": "kubectl set serviceaccount mijenja spec.template.spec.serviceAccountName i pokreće rollout novih podova. serviceAccountName postojećeg poda se ne može mijenjati, binding ne mijenja SA poda, a oznaka nema efekta."
+  },
+  {
+    "obj": "2.2",
+    "q": "Ispitni klaster ima Secret api-sa-token tipa kubernetes.io/service-account-token sa anotacijom kubernetes.io/service-account.name: api-sa. Zašto ga treba ukloniti ako nije neophodan?",
+    "options": [
+      "Zauzima previše prostora u etcd-u",
+      "Sprečava kubelet da montira bound token",
+      "Zastario je i ne radi u v1.35",
+      "Sadrži token koji ne ističe i nije vezan za pod, pa procurjeli token daje trajan pristup"
+    ],
+    "answer": 3,
+    "explain": "Secret tokeni nemaju rok trajanja i važe dok postoje Secret i SA; svako ko čita Secrete ih može uzeti. I dalje rade u v1.35 i ne utiču na projected tokene."
+  },
+  {
+    "obj": "2.2",
+    "q": "Koja komanda pronalazi sve dugotrajne ServiceAccount tokene sačuvane u Secretima u klasteru?",
+    "options": [
+      "kubectl get serviceaccounts -A -o wide",
+      "kubectl get secrets -A --field-selector type=kubernetes.io/service-account-token",
+      "kubectl get secrets -A -l kubernetes.io/service-account.name",
+      "kubectl get tokenrequests -A"
+    ],
+    "answer": 1,
+    "explain": "Tip Secreta se može filtrirati field selectorom. kubernetes.io/service-account.name je anotacija, ne oznaka, pa -l ništa ne nalazi; TokenRequest nije resurs koji se lista, a lista SA ne prikazuje Secrete."
+  },
+  {
+    "obj": "2.2",
+    "q": "Napadač je iz poda api ukrao token sa /var/run/secrets/kubernetes.io/serviceaccount/token (bound token, v1.35). Ti obrišeš pod api. Šta se dešava sa ukradenim tokenom?",
+    "options": [
+      "API server ga odbija, jer je bound token vezan za pod koji više ne postoji",
+      "Važi do kraja roka, jer brisanje poda ne utiče na token",
+      "Važi zauvijek dok postoji ServiceAccount",
+      "Važi dok se ne restartuje kube-apiserver"
+    ],
+    "answer": 0,
+    "explain": "Bound token u sebi nosi ime i UID poda, a API server provjerava da taj pod još postoji. Trajni su samo stari Secret tokeni, a restart API servera ne poništava tokene."
+  },
+  {
+    "obj": "2.2",
+    "q": "Aplikacija mora dobiti token za Vault (audience: vault) koji ističe za 10 minuta, a API token Kubernetesa ne treba. Šta nedostaje u ovom podu? spec: {serviceAccountName: api-sa, automountServiceAccountToken: false, containers: [...volumeMounts vault-token...], volumes: [{name: vault-token, projected: {sources: [{serviceAccountToken: {path: token}}]}}]}",
+    "options": [
+      "automountServiceAccountToken: true",
+      "Secret tipa kubernetes.io/service-account-token sa audience vault",
+      "audience: vault i expirationSeconds: 600 u serviceAccountToken izvoru",
+      "configMap kube-root-ca.crt u projected izvorima"
+    ],
+    "answer": 2,
+    "explain": "Audience i rok se zadaju u serviceAccountToken izvoru projected volumena (minimum 600 sekundi). automount bi dodao i nepotreban API token, Secret tokeni nemaju audience ni rok, a CA certifikat Kubernetesa Vault ne zahtijeva."
+  },
+  {
+    "obj": "2.2",
+    "q": "Kolega je dao Role sa 'get' i 'list' na 'pods' ServiceAccountu default u namespaceu prod, jer je 'jedan pod trebao to'. Koje je ispravno rješenje?",
+    "options": [
+      "Ostaviti, jer get i list na pods nisu opasni",
+      "Postaviti automountServiceAccountToken: false na default SA i zadržati binding",
+      "Prebaciti binding na grupu system:serviceaccounts:prod",
+      "Napraviti poseban SA za taj pod, vezati Role za njega i ukloniti binding sa default SA"
+    ],
+    "answer": 3,
+    "explain": "default koristi svaki pod bez serviceAccountName, pa binding na njega daje dozvole svim takvim podovima. Grupa namespacea je još šira, a gašenje automounta ne uklanja dozvolu, samo je skriva."
+  },
+  {
+    "type": "multi",
+    "obj": "2.1",
+    "q": "Ova Role je RoleBindingom data ServiceAccountu ci u namespaceu prod. Koje tvrdnje su tačne? (izaberi sve tačne)",
+    "snippet": "apiVersion: rbac.authorization.k8s.io/v1\nkind: Role\nmetadata:\n  name: ci-deployer\n  namespace: prod\nrules:\n- apiGroups: [\"apps\"]\n  resources: [\"deployments\"]\n  verbs: [\"get\", \"list\", \"patch\"]\n- apiGroups: [\"\"]\n  resources: [\"secrets\"]\n  verbs: [\"list\"]\n- apiGroups: [\"\"]\n  resources: [\"pods\", \"pods/exec\"]\n  verbs: [\"get\", \"create\"]",
+    "lang": "yaml",
+    "options": [
+      "ci može pročitati sadržaj svih Secreta u prod, iako nema glagol get nad secrets",
+      "ci može izvršavati komande u bilo kom Podu u prod (kubectl exec)",
+      "ci može čitati Secrete i u drugim namespaceovima, jer pravilo nema resourceNames",
+      "ci može kreirati nove Deploymente u prod"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explain": "list (i watch) nad secrets vraća cijele objekte sa poljem data, pa je to isto što i čitanje svih Secreta. get na pods i create na pods/exec su dovoljni za kubectl exec u bilo koji Pod namespacea (usput i create na pods dozvoljava pravljenje novih Podova). Role važi samo u svom namespaceu, a create nad deployments nije dat (patch mijenja samo postojeće). Za least privilege ukloni secrets/list i pods/exec ako ih CI ne treba."
+  }
+]

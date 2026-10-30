@@ -1,0 +1,310 @@
+[
+  {
+    "obj": "5.1",
+    "q": "An employee has been terminated for a policy violation. HR notifies him at 10:00. When and what is BEST to do with his access?",
+    "options": [
+      "Disable logical accounts at the end of the workday, and the badge next week.",
+      "Disable logical accounts and physical access (badge) before or at the same time as the meeting, while tracking the return of equipment.",
+      "Immediately delete all of the user's accounts and data so that no trace remains.",
+      "Keep access for seven days so he can hand over his work to colleagues."
+    ],
+    "answer": 1,
+    "explain": "In an involuntary termination, access is revoked before or during the notification, both logical and physical. Accounts are disabled, not deleted immediately, because they are needed for audit and data transfer."
+  },
+  {
+    "obj": "5.1",
+    "q": "An audit discovers that former employees' badges still open the building entrance, even though their user accounts were disabled on time. What is the MOST LIKELY cause and the best solution?",
+    "options": [
+      "The card readers are outdated; replace them with biometric readers.",
+      "Guards do not check badges; introduce guard training.",
+      "The badges were cloned; switch to a mantrap.",
+      "Physical and logical access are managed by separate processes; integrate the physical access control system with the HR/IAM offboarding process."
+    ],
+    "answer": 3,
+    "explain": "The problem is the process: physical access is not part of the same lifecycle (provision, control, review, revoke). Converging physical and logical IAM, with HR as the source of truth, addresses the root cause."
+  },
+  {
+    "obj": "5.1",
+    "q": "The 2027 outline adds \"identities\" as an asset whose access must be managed. Which of the following is the BEST example of managing this category?",
+    "options": [
+      "Inventorying and assigning owners to all human and non-human identities, along with discovering and disabling abandoned (orphan) identities and protecting the IdP",
+      "Encrypting the database containing customers' personal data",
+      "Installing a mantrap at the data center entrance",
+      "Installing an EDR agent on all laptops"
+    ],
+    "answer": 0,
+    "explain": "Identities are assets in their own right: you need to know which exist, who owns them, what privileges they have, and remove abandoned ones. The other answers relate to information, facilities, and devices."
+  },
+  {
+    "obj": "5.1",
+    "q": "An analyst has clearance for \"Confidential\" level data, but requests access to another department's confidential project on which he does not work. What is the CORRECT decision?",
+    "options": [
+      "Approve, because the clearance matches the data classification.",
+      "Approve temporarily, with the obligation to report the access.",
+      "Deny, because in addition to clearance there must also be a need to know for that project.",
+      "Deny, because analysts must never access confidential data."
+    ],
+    "answer": 2,
+    "explain": "Clearance is a necessary but not sufficient condition. Need to know requires that access be necessary for the job. Without participation in the project, there is no need to know."
+  },
+  {
+    "obj": "5.2",
+    "q": "An organization is selecting a biometric system for entry to the server room. System A has a CER of 3%, system B 1%, and system C has a FAR of 0.1% with an FRR of 15%. Which system is the MOST ACCURATE?",
+    "options": [
+      "System C, because it has the lowest FAR",
+      "System A, because it has the highest CER",
+      "System B, because it has the lowest CER",
+      "It cannot be determined without the cost of the system"
+    ],
+    "answer": 2,
+    "explain": "The accuracy of biometric systems is compared by CER/EER (the point where FAR = FRR); lower is better. System C is merely tuned to high sensitivity, so it has an unacceptably high FRR."
+  },
+  {
+    "obj": "5.2",
+    "q": "Management requires authentication for cloud console administrators that is phishing-resistant and meets NIST AAL3. Which choice is BEST?",
+    "options": [
+      "A device-bound FIDO2/WebAuthn hardware security key",
+      "A password plus an SMS one-time code",
+      "A password plus a push notification in a mobile app",
+      "A long password changed every 30 days"
+    ],
+    "answer": 0,
+    "explain": "A WebAuthn credential is bound to the origin, so a fake site cannot obtain a valid signature; a hardware, device-bound authenticator meets AAL3. SMS and push are susceptible to phishing, interception, and fatigue attacks."
+  },
+  {
+    "obj": "5.2",
+    "q": "An employee logs in with a password and then enters a six-digit PIN that he chose himself. How is this MOST ACCURATELY described?",
+    "options": [
+      "MFA, because there are two separate steps",
+      "Single-factor authentication with two elements of the same type (something you know)",
+      "Type 1 and Type 2 MFA",
+      "Passwordless authentication"
+    ],
+    "answer": 1,
+    "explain": "A password and a PIN are both something you know (Type 1). MFA requires factors of different types, regardless of the number of steps."
+  },
+  {
+    "obj": "5.2",
+    "q": "Administrators have permanent membership in a group with full privileges in production. The CISO wants zero standing privileges with minimal disruption to work. Which solution fits BEST?",
+    "options": [
+      "Add a second admin account for each administrator.",
+      "Remove all admin rights and make all changes through a single shared account.",
+      "Change admin account passwords every week.",
+      "Just-In-Time access: the privilege is requested for a specific task, approved, time-limited, and automatically revoked, with logging."
+    ],
+    "answer": 3,
+    "explain": "JIT access grants a privilege only when needed and revokes it automatically, so there are no standing privileges that can be abused. A shared account destroys accountability."
+  },
+  {
+    "obj": "5.3",
+    "q": "A partner's mobile app needs to read a user's calendar in your SaaS, without the app ever seeing the user's password and with the user able to revoke access. Which standard is INTENDED for this?",
+    "options": [
+      "SAML 2.0",
+      "Kerberos",
+      "OAuth 2.0",
+      "SCIM"
+    ],
+    "answer": 2,
+    "explain": "OAuth 2.0 is for delegated authorization: the app receives a limited, revocable access token for a specific scope. SAML and OIDC are for authentication/SSO, SCIM for provisioning."
+  },
+  {
+    "obj": "5.3",
+    "q": "A company uses on-prem Active Directory synchronized with a cloud IdP (hybrid model). What is the GREATEST concern specific to this model?",
+    "options": [
+      "A compromise of the on-prem environment or the synchronization service can spread to cloud identities and vice versa, so the sync server and its credentials are tier-0 assets.",
+      "The cloud IdP does not support MFA for synchronized users.",
+      "The hybrid model does not allow SSO to SaaS applications.",
+      "Passwords are always sent in clear text to the cloud."
+    ],
+    "answer": 0,
+    "explain": "In the hybrid model, the two directories are connected by a privileged synchronization channel. That is why the sync infrastructure is protected as tier-0, and an attack on one side can cross over to the other."
+  },
+  {
+    "obj": "5.3",
+    "q": "An organization is introducing federation with a SaaS vendor through a cloud IDaaS. What should be defined FIRST to manage third-party risk?",
+    "options": [
+      "The color and logo of the login page.",
+      "A contract with both parties' responsibilities, requirements for logging, deprovisioning, an SLA, and the right to audit.",
+      "Which browser employees use.",
+      "The number of users who will use the application in the first week."
+    ],
+    "answer": 1,
+    "explain": "Federation is a trust relationship with a third party. The governance framework (contract, responsibilities, logging, deprovisioning, availability, audit) comes before technical configuration."
+  },
+  {
+    "obj": "5.4",
+    "q": "In a military intelligence system, documents are assigned a classification label, users a clearance, and a user cannot change who may read a document he created himself. Which access control model is this?",
+    "options": [
+      "DAC",
+      "RBAC",
+      "RuBAC",
+      "MAC"
+    ],
+    "answer": 3,
+    "explain": "MAC: the system decides based on labels and clearance (with categories for need to know), and the object owner cannot change access at their discretion. That distinguishes it from DAC."
+  },
+  {
+    "obj": "5.4",
+    "q": "A hospital wants a physician to be able to read records only of patients in his own department, only during his shift, and only from a managed device. Which model BEST expresses this policy?",
+    "options": [
+      "RBAC with a single \"Physician\" role",
+      "DAC, because the patient decides",
+      "MAC with classification levels",
+      "ABAC, because it combines attributes of the user, resource, and environment"
+    ],
+    "answer": 3,
+    "explain": "The department of the user and the patient, the shift time, and the device state are attributes of the subject, object, and environment. ABAC combines them in a single policy, whereas pure RBAC would require a role explosion."
+  },
+  {
+    "obj": "5.4",
+    "q": "In a Zero Trust architecture per NIST SP 800-207, which component intercepts a user's request to an application and allows or blocks it according to the decision?",
+    "options": [
+      "Policy Enforcement Point (PEP)",
+      "Policy Decision Point (PDP)",
+      "Policy Information Point (PIP)",
+      "Policy Administration Point (PAP)"
+    ],
+    "answer": 0,
+    "explain": "The PEP enforces the decision in the request path. The PDP (Policy Engine + Policy Administrator) makes the decision, the PIP supplies attributes (e.g., device state), and the PAP is where policies are managed."
+  },
+  {
+    "obj": "5.4",
+    "q": "A user signs in from their usual device, but from a country they have never signed in from before, ten minutes after signing in from their home city. The system requires additional authentication and restricts access to sensitive data. Which model BEST describes this?",
+    "options": [
+      "Rule-based access control",
+      "Risk-Adaptable Access Control (RAdAC)",
+      "Discretionary access control",
+      "Mandatory access control"
+    ],
+    "answer": 1,
+    "explain": "RAdAC adapts the decision to a real-time risk assessment (impossible travel, new location) and operational need. In the 2024 outline, the same concept is called risk-based access control."
+  },
+  {
+    "obj": "5.5",
+    "q": "An internal audit determines that employees who changed positions retained the rights from all their previous positions. What is this problem called, and what is the BEST long-term measure?",
+    "options": [
+      "Privilege escalation; introduce EDR",
+      "Separation of duties; introduce job rotation",
+      "Privilege creep; a transfer process that removes old rights and periodic recertification by managers",
+      "Orphan accounts; delete accounts after 90 days"
+    ],
+    "answer": 2,
+    "explain": "Accumulation of rights through transfers is privilege creep (aggregation). The cause is the transfer process, so it is solved by removing old rights during role transition and by regular access reviews."
+  },
+  {
+    "obj": "5.5",
+    "q": "Who should confirm (recertify) that users of a financial system still need their rights?",
+    "options": [
+      "The system administrator who granted the rights",
+      "The security team, because it manages the IAM tool",
+      "The users themselves through self-assessment",
+      "The users' managers and the data/system owner"
+    ],
+    "answer": 3,
+    "explain": "The manager and the data owner know the business need. The administrator is a custodian who implements decisions and should not review their own work, and self-assessment lacks independence."
+  },
+  {
+    "obj": "5.5",
+    "q": "On Linux servers, developers have `sudo ALL` so they can restart one service. Which change BEST applies PoLP while preserving the ability to work?",
+    "options": [
+      "Restrict sudoers to exactly the commands needed for that service, with central logging and review of sudo usage.",
+      "Give developers the root password instead of sudo.",
+      "Remove sudo and require the security team to perform every restart.",
+      "Keep `sudo ALL`, but disable logging for performance."
+    ],
+    "answer": 0,
+    "explain": "PoLP requires the minimum rights needed for the task: specific commands in sudoers, with auditing of escalation. A root password destroys accountability, and complete removal disrupts the business unnecessarily."
+  },
+  {
+    "obj": "5.5",
+    "q": "A service account for an application decommissioned a year ago still exists, has administrator rights in the database, and a password that has never been changed. Which control would BEST have prevented this?",
+    "options": [
+      "A longer password for service accounts",
+      "Every service account has a human owner, is included in periodic access reviews, and is deprovisioned when the application is decommissioned",
+      "Interactive login for service accounts for easier verification",
+      "Sharing one service account among all applications for easier management"
+    ],
+    "answer": 1,
+    "explain": "An abandoned service account arises when it has no owner and is not part of the lifecycle. Ownership, review, and deprovisioning prevent this; least privilege and rotation or short-lived credentials go along with them."
+  },
+  {
+    "obj": "5.6",
+    "q": "Users in the domain occasionally cannot access services, and the logs show errors when validating Kerberos tickets. The clocks on some servers are 12 minutes behind. What is the MOST LIKELY cause?",
+    "options": [
+      "The KDC uses asymmetric cryptography that has expired",
+      "Too many users in the Domain Admins group",
+      "Unsynchronized time; Kerberos uses timestamps and by default tolerates about a 5-minute difference",
+      "The TGT is encrypted with the service password"
+    ],
+    "answer": 2,
+    "explain": "Kerberos tickets and authenticators contain timestamps to protect against replay attacks. A difference larger than allowed (usually 5 min) leads to rejection, so NTP is a critical dependency."
+  },
+  {
+    "obj": "5.6",
+    "q": "Kerberos has been introduced for SSO across the entire organization. What is the GREATEST architectural risk that must be addressed in the implementation?",
+    "options": [
+      "The KDC is a single point of failure and the most valuable target, so it requires redundancy and strong physical and logical protection",
+      "Passwords are sent over the network in clear text",
+      "Kerberos does not support SSO",
+      "Kerberos requires PKI for every authentication"
+    ],
+    "answer": 0,
+    "explain": "All tickets depend on the KDC: without it there is no authentication, and a compromised KDC endangers the entire domain. Kerberos does not send passwords over the network and uses symmetric cryptography."
+  },
+  {
+    "obj": "5.6",
+    "q": "An organization has tied all applications to a single cloud IdP. During a multi-hour IdP outage, no one, including administrators, could access critical systems. What should have been part of the implementation?",
+    "options": [
+      "Local accounts for all users in every application",
+      "Disabling MFA so that login is faster",
+      "Switching to the DAC model",
+      "Strictly controlled break-glass accounts independent of the IdP, with alerting on use, and a continuity plan for IAM"
+    ],
+    "answer": 3,
+    "explain": "IAM systems are tier-0, and the entire business depends on them. Break-glass accounts (few, protected, monitored) and a continuity plan enable recovery without opening permanent workarounds for all users."
+  },
+  {
+    "obj": "5.6",
+    "type": "order",
+    "q": "Arrange the steps of Kerberos authentication from first to last.",
+    "options": [
+      "The TGS returns a service ticket encrypted with the service's key",
+      "The client presents the service ticket to the service",
+      "The AS returns the TGT and a session key",
+      "The client sends an authentication request to the AS",
+      "The client sends the TGT and an authenticator to the TGS"
+    ],
+    "answer": [3, 2, 4, 0, 1],
+    "explain": "The client first contacts the AS and receives a TGT; then it presents the TGT to the TGS and receives a service ticket; finally it presents the service ticket to the service, which decrypts it with its own key."
+  },
+  {
+    "obj": "5.4",
+    "type": "match",
+    "q": "Match the description with the access control model.",
+    "options": [
+      "A firewall rule that applies to all users: access only on weekdays from 8 a.m. to 4 p.m.",
+      "The file owner personally adds a colleague to the list with read permission",
+      "Rights are assigned according to job position, and on transfer only the assigned function changes",
+      "The system compares the object's classification label and the subject's clearance",
+      "The decision combines the user's department, the resource's sensitivity, and the device state"
+    ],
+    "targets": [
+      "DAC",
+      "MAC",
+      "RBAC",
+      "RuBAC",
+      "ABAC"
+    ],
+    "answer": [3, 0, 2, 1, 4],
+    "explain": "A global rule for everyone is rule-based (RuBAC), owner discretion is DAC, job position is RBAC, labels and clearance are MAC, and a combination of attributes is ABAC."
+  },
+  {
+    "obj": "5.5",
+    "type": "spot",
+    "q": "Quarterly ERP access review compared with the HR system. The SoD policy forbids the same person from creating vendors and approving payments. Mark the lines that require corrective action.",
+    "snippet": "User        Account     HR status / department               ERP roles                       Last logon\na.petrovic  active      employed / Procurement               VENDOR_CREATE                   2026-10-28\nm.jovic     active      employed / Finance                   PAYMENT_APPROVE                 2026-10-29\ns.nikolic   active      employed / Finance                   VENDOR_CREATE, PAYMENT_APPROVE  2026-10-29\nd.ilic      active      left 2026-08-31                      PAYMENT_APPROVE                 2026-10-12\nk.savic     active      employed / Sales (from Fin. 06/2026) SALES_REPORT, PAYMENT_APPROVE   2026-10-27\nt.raic      disabled    left 2026-09-15                      -                               2026-09-15\nr.babic     active      employed / Procurement               VENDOR_CREATE                   2026-10-30",
+    "lang": "text",
+    "answer": [3, 4, 5],
+    "explain": "Line 4: s.nikolic has VENDOR_CREATE and PAYMENT_APPROVE, a separation of duties conflict (fictitious vendor and payout); remove one role or create a documented exception with a compensating control. Line 5: d.ilic left on 31 Aug, yet the account is active and was used on 12 Oct, a deprovisioning failure and a possible incident; disable the account immediately and investigate the logon. Line 6: k.savic moved to Sales but kept PAYMENT_APPROVE from Finance (privilege creep); old rights are removed on transfer. The t.raic account is correctly disabled, and the other users have roles that match their department."
+  }
+]

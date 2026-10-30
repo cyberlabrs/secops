@@ -1,0 +1,237 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Na serveru vidiš u audit.log zapis sa uid=0, euid=0 i auid=1001 za čitanje /etc/shadow. Ko je stvarno pokrenuo akciju?",
+    "options": [
+      "Korisnik sa UID 1001, koji se prijavio i podigao privilegije (npr. sudo)",
+      "root, jer je uid=0",
+      "Kernel, jer auid označava sistemski proces",
+      "Nije moguće utvrditi bez journald zapisa"
+    ],
+    "answer": 0,
+    "explain": "auid (loginuid) se postavlja pri prijavi i ne mijenja se kroz sudo ili su, pa pokazuje stvarnog korisnika iza root akcije. uid=0 je samo efektivni identitet nakon podizanja privilegija; auid nije oznaka kernela, a podatak je već u audit zapisu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Na Debian 12 serveru sa rsyslogom auth.log linije počinju sa 2026-10-16T09:14:02.481233+00:00, a na starom Ubuntu serveru sa Oct 16 09:14:02. Koji je praktični problem drugog formata za istragu?",
+    "options": [
+      "Ne sadrži ime hosta",
+      "Nema godinu ni vremensku zonu, pa spajanje sa drugim izvorima traži pretpostavke",
+      "Ne može se poslati u SIEM",
+      "Ne bilježi PID procesa"
+    ],
+    "answer": 1,
+    "explain": "Tradicionalni syslog timestamp nema godinu ni pomak zone, pa pri spajanju sa CloudTrailom (UTC) ili oko promjene godine moraš pretpostaviti zonu. Ime hosta i PID su prisutni u oba formata, a SIEM prima oba."
+  },
+  {
+    "obj": "1.1",
+    "q": "Želiš da journald na serveru otkrije naknadnu izmjenu svojih zapisa od strane napadača sa root pristupom. Šta konfigurišeš?",
+    "options": [
+      "Storage=volatile",
+      "ForwardToSyslog=yes",
+      "Forward Secure Sealing: journalctl --setup-keys, Seal=yes, provjera sa journalctl --verify",
+      "SystemMaxUse=1G"
+    ],
+    "answer": 2,
+    "explain": "FSS periodično pečati journal ključem koji se mijenja unaprijed, pa izmjena starijih zapisa pada na provjeri journalctl --verify. volatile čuva samo u RAM-u, ForwardToSyslog šalje rsyslogu, a SystemMaxUse ograničava zauzeće diska."
+  },
+  {
+    "obj": "1.1",
+    "q": "Na zauzetom web serveru nema nijednog zapisa u auth.log između 02:10 i 02:55, a inače ih ima svakih nekoliko sekundi. Kako to tumačiš?",
+    "options": [
+      "Normalno, noću nema prijava",
+      "Problem sa NTP-om, zapisi su samo pomjereni",
+      "Znak da je logrotate radio",
+      "Mogući trag brisanja logova (T1070.002); uporedi sa kopijom u SIEM-u i sa auditd/journald"
+    ],
+    "answer": 3,
+    "explain": "Rupa u inače gustom logu je klasičan indikator brisanja ili izmjene logova. Kopija poslata u SIEM prije incidenta pokazuje šta je nestalo. logrotate pravi novi fajl, ali ne briše 45 minuta iz sredine, a NTP greška pomjera vrijeme, ne pravi rupu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Treba ti auditd pravilo koje bilježi svaku izmjenu /etc/sudoers.d/ uz ključ za lako pretraživanje. Koje je ispravno?",
+    "options": [
+      "-w /etc/sudoers.d/ -p wa -k priv_esc",
+      "-a always,exit -S execve -k priv_esc",
+      "-w /etc/sudoers.d/ -p x -k priv_esc",
+      "-e 2 -k priv_esc"
+    ],
+    "answer": 0,
+    "explain": "-w postavlja watch nad putanjom, -p wa bilježi upis i promjenu atributa, a -k dodaje ključ za ausearch -k. execve bilježi pokretanje programa, -p x izvršavanje, a -e 2 zaključava konfiguraciju audita."
+  },
+  {
+    "obj": "1.1",
+    "q": "Svježe instaliran Debian 12 server nema /var/log/auth.log, a ti trebaš SSH događaje. Šta je najvjerovatniji razlog?",
+    "options": [
+      "sshd na Debianu 12 ne loguje neuspjele prijave",
+      "rsyslog nije podrazumijevano instaliran; događaji su u journaldu (journalctl -u ssh)",
+      "auth.log je premješten u /var/log/audit/",
+      "Treba uključiti auditd da bi sshd logovao"
+    ],
+    "answer": 1,
+    "explain": "Od Debiana 12 rsyslog nije podrazumijevano instaliran, pa tekstualni auth.log ne postoji dok ga ne instaliraš. sshd i dalje loguje u journald. audit.log je drugi podsistem i ne zamjenjuje auth.log."
+  },
+  {
+    "obj": "1.2",
+    "q": "Istražuješ da li je neko preuzimao objekte iz S3 bucketa, ali u CloudTrailu vidiš samo CreateBucket i PutBucketPolicy, bez GetObject. Zašto?",
+    "options": [
+      "GetObject se nikad ne bilježi u CloudTrailu",
+      "Event history briše GetObject nakon 7 dana",
+      "S3 GetObject je data event, koji trail mora eksplicitno uključiti; podrazumijevano se bilježe samo management events",
+      "GetObject se vidi samo u VPC Flow Logs"
+    ],
+    "answer": 2,
+    "explain": "Management events (control plane) su podrazumijevani, a data events kao S3 GetObject treba uključiti na trailu ili event data storeu i posebno se plaćaju. Event history čuva management događaje 90 dana. Flow logovi pokazuju mrežni saobraćaj, ne API pozive."
+  },
+  {
+    "obj": "1.2",
+    "q": "U Sentinelu tražiš neuspjele prijave sa pogrešnom lozinkom u Entra ID. Koju tabelu i uslov koristiš?",
+    "options": [
+      "AzureActivity, ActivityStatusValue == \"Failed\"",
+      "Syslog, ProcessName == \"sshd\"",
+      "SecurityEvent, EventID == 4625",
+      "SigninLogs, ResultType == \"50126\""
+    ],
+    "answer": 3,
+    "explain": "Prijave na Entra ID su u SigninLogs, a ResultType 50126 znači pogrešno korisničko ime ili lozinku (0 je uspjeh). AzureActivity bilježi promjene nad resursima, Syslog je Linux, a 4625 je Windows lokalna/domenska prijava."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na kubeadm klasteru tražiš ko je pročitao Secret u namespaceu prod, ali nemaš nikakve audit zapise. Šta nedostaje?",
+    "options": [
+      "kube-apiserver nije pokrenut sa --audit-policy-file i --audit-log-path (ili webhook backendom)",
+      "kubelet nema --audit-log-path",
+      "Treba uključiti metrics-server",
+      "Audit logovi su u etcd-u i čitaju se sa etcdctl"
+    ],
+    "answer": 0,
+    "explain": "Audit bilježi kube-apiserver i bez policy fajla ne generiše događaje; backend je log fajl ili webhook. kubelet nema API audit, metrics-server je za metrike, a etcd ne čuva audit zapise."
+  },
+  {
+    "obj": "1.2",
+    "q": "Koji izvor odgovara na pitanje „ko je promijenio Network Security Group u Azureu i kada“?",
+    "options": [
+      "Entra ID sign-in logs",
+      "Azure Activity log",
+      "Kubernetes audit log",
+      "Linux auth.log na VM-u"
+    ],
+    "answer": 1,
+    "explain": "Azure Activity log bilježi operacije nad resursima (control plane), sa Caller i OperationNameValue. Sign-in logovi pokazuju prijave, ne izmjene resursa, a ostala dva izvora ne vide Azure control plane."
+  },
+  {
+    "obj": "1.3",
+    "q": "Tim šalje auth logove sa 200 servera na SIEM preko *.* @siem:514. Povremeno nedostaju događaji. Šta je uzrok i rješenje?",
+    "options": [
+      "Port 514 je pogrešan; treba 1514",
+      "Treba prebaciti na @@siem:514 bez reda",
+      "@ je UDP bez potvrde prijema; prebaciti na TCP sa redom na disku (omfwd, queue) i po mogućnosti TLS",
+      "rsyslog ne podržava forwarding auth facility"
+    ],
+    "answer": 2,
+    "explain": "Jedno @ znači UDP, koji gubi poruke pri zagušenju ili nedostupnosti kolektora. omfwd preko TCP-a sa disk-assisted redom i resumeRetryCount=-1 čuva poruke dok kolektor ne proradi, a TLS štiti sadržaj. 1514 je port Wazuh agenata, ne syslog."
+  },
+  {
+    "obj": "1.3",
+    "q": "Pišeš pravilo koje treba da radi nad SSH, VPN i cloud prijavama. Koje polje u ECS-u označava da je prijava neuspjela?",
+    "options": [
+      "event.kind: alert",
+      "log.level: error",
+      "user.risk: high",
+      "event.outcome: failure"
+    ],
+    "answer": 3,
+    "explain": "U ECS-u event.category: authentication opisuje vrstu, a event.outcome: failure ishod. event.kind: alert označava alarm, log.level je nivo poruke iz izvora, a risk polja nisu ishod prijave."
+  },
+  {
+    "obj": "1.3",
+    "q": "AWS Security Lake normalizuje CloudTrail događaje u OCSF. U koju klasu idu API pozivi?",
+    "options": [
+      "API Activity (class_uid 6003)",
+      "Authentication (class_uid 3002)",
+      "Network Activity (class_uid 4001)",
+      "File System Activity (class_uid 1001)"
+    ],
+    "answer": 0,
+    "explain": "OCSF klasa API Activity (6003, kategorija Application Activity) opisuje pozive API-ja, što je CloudTrail. Authentication je za prijave, Network Activity za mrežne tokove, a File System Activity za operacije nad fajlovima."
+  },
+  {
+    "obj": "1.3",
+    "q": "Parser u SIEM-u je normalizovao SSH zapise u ECS, ali je zbog nove verzije sshd-a pogrešno izvukao korisničko ime. Šta ti omogućava da ispraviš istragu?",
+    "options": [
+      "event.hash",
+      "Sačuvana originalna poruka (event.original u ECS-u, full_log u Wazuhu)",
+      "Ponovno pokretanje parsera nad indeksom bez originala",
+      "Polje @timestamp"
+    ],
+    "answer": 1,
+    "explain": "Normalizacija može pogriješiti, pa se sirovi zapis uvijek čuva uz normalizovana polja. Bez originala nema iz čega ponovo parsirati, a hash i timestamp ne vraćaju sadržaj."
+  },
+  {
+    "obj": "1.3",
+    "q": "Kompanija plaća SIEM po GB dnevno, a debug logovi jedne aplikacije su 70% volumena bez sigurnosne vrijednosti. Gdje ih je najbolje filtrirati?",
+    "options": [
+      "U SIEM-u, pravilom nivoa 0",
+      "Ne filtrirati, jer svaki log može zatrebati",
+      "Na izvoru ili u kolektoru (rsyslog/agent), prije ingesta",
+      "Brisati ih ručno iz indeksa svake sedmice"
+    ],
+    "answer": 2,
+    "explain": "Sve što stigne u SIEM se plaća i troši disk, pa se šum filtrira prije ingesta. Pravilo nivoa 0 samo ne pravi alarm, ali događaj je već primljen. Neselektivno skupljanje sve i svega je skupo i usporava istragu."
+  },
+  {
+    "type": "match",
+    "obj": "1.1",
+    "q": "Upari pitanje iz istrage sa izvorom koji na njega najbolje odgovara.",
+    "options": [
+      "Koji je proces pročitao /etc/shadow i ko se prvobitno prijavio",
+      "Sa koje IP adrese su bile neuspjele SSH prijave",
+      "Koji systemd servis je pao i sa kojim PID-om",
+      "Koje komande je korisnik deploy pokretao preko sudo"
+    ],
+    "targets": ["journalctl -u <servis> -o json", "ausearch -k shadow_access -i", "grep 'sudo:' /var/log/auth.log | grep COMMAND=", "grep 'Failed password' /var/log/auth.log", "aws cloudtrail lookup-events"],
+    "answer": [1, 3, 0, 2],
+    "explain": "auditd bilježi pristup fajlu sa auid, sshd neuspjele prijave piše u auth.log, journald ima strukturirana polja servisa (_SYSTEMD_UNIT, _PID), a sudo loguje svaku komandu sa COMMAND= u auth.log. CloudTrail je za AWS API pozive, ne za Linux host."
+  },
+  {
+    "type": "order",
+    "obj": "1.1",
+    "q": "Poredaj korake za pouzdanu hronologiju incidenta iz auth.log-a (Frankfurt, CET), CloudTraila i Kubernetes audita.",
+    "options": [
+      "Spojiti događaje u jednu tabelu sortiranu po vremenu",
+      "Zapisati vremensku zonu i format vremena svakog izvora",
+      "Pretvoriti sva vremena u UTC (date -u -d, jq)",
+      "Provjeriti da li su satovi bili sinhronizovani (NTP) u periodu incidenta"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "Prvo moraš znati u kojoj je zoni i formatu svaki izvor, pa provjeriti da sat nije odlutao, zatim sve svesti na UTC i tek onda spajati. Spajanje prije normalizacije vremena daje lažan redoslijed."
+  },
+  {
+    "type": "match",
+    "obj": "1.3",
+    "q": "Upari način prikupljanja sa njegovom glavnom slabošću.",
+    "options": [
+      "Syslog preko UDP-a",
+      "Agent na hostu",
+      "API pull iz clouda",
+      "Samo lokalni fajlovi sa logrotate"
+    ],
+    "targets": ["Kašnjenje, kvote API-ja i kredencijali kolektora", "Nema potvrde prijema, poruke se gube i lako lažiraju", "Napadač sa root pristupom ih briše, a rotacija ih ionako uklanja nakon nekoliko sedmica", "Softver na svakom hostu koji treba održavati"],
+    "answer": [1, 3, 0, 2],
+    "explain": "UDP syslog nema potvrdu ni zaštitu, agent traži instalaciju i održavanje, API pull zavisi od kvota i kredencijala, a lokalni fajlovi nisu ni sigurni ni dugotrajni."
+  },
+  {
+    "obj": "1.1",
+    "q": "Na osnovu ovog isječka iz /var/log/auth.log, šta se desilo?",
+    "snippet": "Oct 16 02:11:04 web1 sshd[2210]: Invalid user oracle from 203.0.113.45 port 40112\nOct 16 02:11:06 web1 sshd[2210]: Failed password for invalid user oracle from 203.0.113.45 port 40112 ssh2\nOct 16 02:11:09 web1 sshd[2214]: Failed password for deploy from 203.0.113.45 port 40130 ssh2\nOct 16 02:11:12 web1 sshd[2219]: Failed password for deploy from 203.0.113.45 port 40148 ssh2\nOct 16 02:11:15 web1 sshd[2223]: Accepted password for deploy from 203.0.113.45 port 40166 ssh2\nOct 16 02:11:15 web1 sshd[2223]: pam_unix(sshd:session): session opened for user deploy(uid=1001) by (uid=0)\nOct 16 02:12:40 web1 sudo: deploy : TTY=pts/0 ; PWD=/tmp ; USER=root ; COMMAND=/usr/sbin/useradd backup2\nOct 16 02:12:41 web1 useradd[2301]: new user: name=backup2, UID=1002, GID=1002, home=/home/backup2",
+    "lang": "log",
+    "options": [
+      "Uspješno pogađanje lozinke naloga deploy sa 203.0.113.45, zatim upotreba sudo prava i kreiranje naloga backup2 za perzistenciju",
+      "Samo neuspjeli pokušaji prijave; napadač nije ušao jer nalog oracle ne postoji",
+      "Administrator je lokalno na konzoli kreirao nalog backup2, nepovezano sa SSH pokušajima",
+      "Napadač je ušao direktno kao root preko ranjivosti u sshd-u, bez lozinke"
+    ],
+    "answer": 0,
+    "explain": "Ista adresa prvo pogađa (invalid user oracle, pa neuspjesi za deploy), a sekunde kasnije sa nje stiže Accepted password za deploy: uspješan brute force (T1110) i upotreba validnog naloga (T1078). sudo zapis pokazuje da deploy kao root pokreće useradd, a useradd potvrđuje novi nalog backup2: perzistencija (T1136.001). TTY=pts/0 je SSH sesija, ne konzola, i nigdje nema prijave kao root."
+  }
+]

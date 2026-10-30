@@ -1,0 +1,41 @@
+#!/opt/tools/bin/python
+"""Izdaje JWT kakav GitLab daje jobu kroz `id_tokens` (simulacija GitLab OIDC issuera za lab).
+
+Ključ za potpis je u /etc/kurs/ci-oidc/ (pravi se pri prvom pokretanju); javni ključ je
+/etc/kurs/ci-oidc/public.pem i njega Vault (auth/jwt) koristi za provjeru potpisa.
+"""
+import argparse, os, time, uuid
+import jwt
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+
+D = "/etc/kurs/ci-oidc"
+ISS = "https://gitlab.kurs-shop.ba"
+
+p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+p.add_argument("--aud", default="https://vault.kurs-shop.ba", help="audience (id_tokens: aud)")
+p.add_argument("--project", default="shop/kurs-shop", help="project_path")
+p.add_argument("--ref", default="main", help="grana ili tag")
+p.add_argument("--ref-type", default="branch", choices=["branch", "tag"])
+p.add_argument("--protected", default="true", choices=["true", "false"], help="ref_protected")
+p.add_argument("--pipeline-source", default="push")
+p.add_argument("--user", default="dev@kurs-shop.ba", help="user_email")
+p.add_argument("--ttl", type=int, default=600)
+a = p.parse_args()
+
+os.makedirs(D, exist_ok=True)
+key = os.path.join(D, "private.pem")
+if not os.path.exists(key):
+    k = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    open(key, "wb").write(k.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()))
+    open(os.path.join(D, "public.pem"), "wb").write(k.public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo))
+now = int(time.time())
+ns = a.project.rsplit("/", 1)[0]
+claims = {
+    "iss": ISS, "aud": a.aud, "iat": now, "nbf": now - 5, "exp": now + a.ttl, "jti": str(uuid.uuid4()),
+    "sub": f"project_path:{a.project}:ref_type:{a.ref_type}:ref:{a.ref}",
+    "namespace_path": ns, "project_path": a.project, "user_email": a.user,
+    "pipeline_source": a.pipeline_source, "ref": a.ref, "ref_type": a.ref_type, "ref_protected": a.protected,
+    "job_id": "4711", "pipeline_id": "1024",
+}
+print(jwt.encode(claims, open(key).read(), algorithm="RS256", headers={"kid": "kurs-ci"}))

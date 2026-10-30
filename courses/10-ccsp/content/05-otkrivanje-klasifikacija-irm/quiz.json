@@ -1,0 +1,269 @@
+[
+  {
+    "obj": "2.4",
+    "q": "Kompanija planira uvesti DLP i automatsku enkripciju za podatke u više SaaS aplikacija i IaaS storageu. Niko ne zna tačno koji osjetljivi podaci postoje i gdje se nalaze. Šta sigurnosni menadžer treba uraditi FIRST?",
+    "options": [
+      "Uključiti enkripciju sa customer-managed ključevima na svim storage servisima.",
+      "Definisati DLP pravila za brojeve kartica i lične brojeve u email gatewayu.",
+      "Sprovesti data discovery da se napravi inventar podataka i njihovih lokacija.",
+      "Zatražiti od svih providera SOC 2 Type II izvještaj."
+    ],
+    "answer": 2,
+    "explain": "Bez inventara ne možeš klasifikovati podatke, a bez klasifikacije DLP i enkripcija ne znaju šta štite. Discovery je prvi korak; enkripcija i DLP pravila su kasnije kontrole, a SOC 2 izvještaj ne govori šta su tvoji podaci."
+  },
+  {
+    "obj": "2.4",
+    "q": "Tim koristi alat koji traži osjetljive podatke isključivo po nazivima kolona i opisima u katalogu podataka. Revizija je pronašla JMBG brojeve u koloni 'napomena'. Koji pristup bi NAJBOLJE otklonio ovaj nedostatak?",
+    "options": [
+      "Dodati content-based analizu koja uzorkuje vrijednosti i traži obrasce.",
+      "Preimenovati kolonu 'napomena' u 'jmbg' i ponoviti metadata skeniranje.",
+      "Osloniti se na label-based discovery jer su labele preciznije od metapodataka.",
+      "Šifrovati cijelu bazu da sadržaj kolona ne bude čitljiv."
+    ],
+    "answer": 0,
+    "explain": "Metadata-based discovery ne vidi sadržaj, pa promaši osjetljive podatke u slobodnom tekstu. Content-based analiza čita vrijednosti. Preimenovanje rješava jedan slučaj, labele ne postoje za te vrijednosti, a enkripcija ne otkriva ništa."
+  },
+  {
+    "obj": "2.4",
+    "q": "Organizacija šifruje dokumente na strani klijenta prije uploada u object storage. Novi content-based discovery alat ne prijavljuje nijedan osjetljiv podatak u tom storageu. Šta je NAJVJEROVATNIJI razlog?",
+    "options": [
+      "Alat ne podržava object storage, samo relacione baze.",
+      "Dokumenti su nestrukturirani, a content-based alati rade samo nad strukturiranim podacima.",
+      "Provider blokira skeniranje zbog multi-tenancy pravila.",
+      "Alat vidi samo šifrovani sadržaj i ne može prepoznati obrasce u njemu."
+    ],
+    "answer": 3,
+    "explain": "Content-based analiza traži plaintext. Kod client-side enkripcije storage sadrži samo šifrovane podatke. Rješenje je discovery prije enkripcije ili oslanjanje na labele i metapodatke. Content-based alati upravo i jesu namijenjeni nestrukturiranim podacima."
+  },
+  {
+    "obj": "2.4",
+    "q": "Koji skup podataka je primjer semi-structured podataka?",
+    "options": [
+      "Tabela narudžbi u relacionoj bazi sa definisanim tipovima kolona",
+      "JSON zapisi aplikacijskih logova i dokumenti u NoSQL bazi",
+      "Skenirani obrasci saglasnosti pacijenata u PDF formatu",
+      "Snimci video nadzora u data centru"
+    ],
+    "answer": 1,
+    "explain": "Semi-structured podaci imaju samoopisujuću, fleksibilnu strukturu (ključevi, tagovi) bez krute šeme: JSON, XML, logovi, NoSQL dokumenti. Relaciona tabela je structured, a skenovi i video su unstructured."
+  },
+  {
+    "obj": "2.4",
+    "q": "Analiza proxy logova pokazuje da zaposleni u prodaji redovno uploaduju fajlove u nekoliko SaaS servisa koje IT nije odobrio. Koji alat NAJBOLJE pomaže da se otkrije gdje se podaci kompanije zaista nalaze?",
+    "options": [
+      "Hypervisor introspekcija na serverima u data centru",
+      "Cloud Access Security Broker (CASB) sa analizom shadow IT-a",
+      "Web Application Firewall ispred korporativnog portala",
+      "Hardware Security Module za ključeve enkripcije"
+    ],
+    "answer": 1,
+    "explain": "CASB analizira saobraćaj i logove i otkriva upotrebu nesankcionisanih cloud servisa (shadow IT), čime otkriva lokacije podataka van poznatog inventara. WAF, HSM i hypervisor alati ne rješavaju ovaj problem."
+  },
+  {
+    "obj": "2.4",
+    "q": "Discovery je pokazao da SaaS provider bolnice šalje kopije zapisa podprocesoru u drugoj zemlji radi tehničke podrške. Šta je MOST important pitanje za data ownera?",
+    "options": [
+      "Da li podprocesor koristi istu verziju TLS-a kao provider.",
+      "Da li je podprocesor brži od primarnog providera.",
+      "Da li podprocesor ima više availability zona.",
+      "Da li ugovor i primjenjivi zakoni dozvoljavaju takav prenos i pod kojim mehanizmom."
+    ],
+    "answer": 3,
+    "explain": "Lokacija podataka je prije svega pitanje jurisdikcije i pravne odgovornosti. Customer ostaje odgovoran za usklađenost, pa prvo provjerava ugovor (DPA, lista podprocesora) i zakonit mehanizam prekograničnog prenosa. Tehnički detalji su sekundarni."
+  },
+  {
+    "obj": "2.4",
+    "q": "Zakon države traži da podaci o građanima budu pohranjeni i obrađivani isključivo na njenoj teritoriji. Koji pojam opisuje ovaj zahtjev?",
+    "options": [
+      "Data localization",
+      "Data portability",
+      "Data minimization",
+      "Data dispersion"
+    ],
+    "answer": 0,
+    "explain": "Data localization je zakonski zahtjev da podaci ostanu u zemlji. Portability je mogućnost prenosa između providera, minimization je prikupljanje samo potrebnog, a data dispersion je tehnika raspodjele fragmenata podataka po lokacijama radi otpornosti."
+  },
+  {
+    "obj": "2.5",
+    "q": "Ko je odgovoran za određivanje nivoa klasifikacije poslovnih podataka koji se čuvaju u IaaS okruženju?",
+    "options": [
+      "Cloud provider, jer fizički čuva podatke",
+      "Administrator baze koji upravlja storageom",
+      "Data owner iz poslovne jedinice",
+      "Glavni revizor organizacije"
+    ],
+    "answer": 2,
+    "explain": "Data owner je odgovoran za podatak i određuje njegovu klasifikaciju. Administrator (custodian) i provider provode kontrole koje klasifikacija traži, a revizor provjerava usklađenost."
+  },
+  {
+    "obj": "2.5",
+    "q": "Organizacija ima šemu klasifikacije sa osam nivoa. Revizija pokazuje da korisnici gotovo sve dokumente označavaju kao 'Internal'. Koja izmjena politike je NAJBOLJA?",
+    "options": [
+      "Dodati još dva nivoa da bi razlike bile preciznije.",
+      "Ukinuti ručnu klasifikaciju i sve podatke tretirati kao najviši nivo.",
+      "Kazniti korisnike koji pogrešno klasifikuju dokumente.",
+      "Smanjiti broj nivoa i dati jasne kriterijume i primjere za svaki."
+    ],
+    "answer": 3,
+    "explain": "Previše nivoa zbunjuje korisnike i vodi do jednoobrazne, netačne klasifikacije. Manji broj nivoa sa jasnim kriterijumima je praksa. Tretiranje svega kao najvišeg nivoa je skupo i ometa poslovanje, a kazne ne rješavaju loš dizajn."
+  },
+  {
+    "obj": "2.5",
+    "q": "Pojedinačno, podaci o lokaciji vozila flote, rasporedu smjena i imenima vozača su klasifikovani kao 'Internal'. Spojeni u jedan izvještaj omogućavaju praćenje kretanja konkretnih osoba. Šta politika klasifikacije treba da adresira?",
+    "options": [
+      "Deklasifikaciju podataka nakon isteka roka",
+      "Agregaciju podataka koja može zahtijevati višu klasifikaciju",
+      "Data portability prema drugom provideru",
+      "Format labela u zaglavlju dokumenta"
+    ],
+    "answer": 1,
+    "explain": "Agregacija nisko klasifikovanih podataka može proizvesti osjetljiviji skup. Politika mora definisati kako se klasifikuje rezultat agregacije. Deklasifikacija, portabilnost i format labela ne rješavaju ovaj rizik."
+  },
+  {
+    "obj": "2.5",
+    "q": "Dvije kompanije se spajaju i sele dokumente u zajednički cloud tenant. Jedna koristi nivoe Public/Internal/Secret, druga Open/Restricted/Confidential/Strictly Confidential. Šta treba uraditi FIRST prije migracije?",
+    "options": [
+      "Napraviti i odobriti mapiranje između dvije šeme klasifikacije.",
+      "Migrirati sve dokumente bez labela, pa ih kasnije ponovo klasifikovati.",
+      "Primijeniti najviši nivo na sve migrirane dokumente.",
+      "Ugasiti stariji sistem i zadržati samo šemu veće kompanije."
+    ],
+    "answer": 0,
+    "explain": "Data mapping između šema osigurava da podatak u novom sistemu dobije ekvivalentnu zaštitu. Migracija bez labela gubi informaciju, najviši nivo na sve je neefikasan, a jednostrano gašenje šeme bez mapiranja ostavlja dokumente pogrešno zaštićene."
+  },
+  {
+    "obj": "2.5",
+    "q": "Tim za privatnost priprema procjenu uticaja (DPIA) za novu cloud aplikaciju. Koji artefakt je MOST important da bi se razumjelo kuda lični podaci idu?",
+    "options": [
+      "Mapa mrežne topologije VPC-a",
+      "Lista ranjivosti iz posljednjeg skeniranja",
+      "Data flow mapa sa izvorima, sistemima, lokacijama i primaocima podataka",
+      "SLA dokument providera sa procentom dostupnosti"
+    ],
+    "answer": 2,
+    "explain": "Data flow mapping dokumentuje odakle podatak dolazi, gdje se obrađuje i pohranjuje i kome se šalje. To je osnova za DPIA i evidenciju aktivnosti obrade. Mrežna mapa, ranjivosti i SLA ne pokazuju tokove ličnih podataka."
+  },
+  {
+    "obj": "2.5",
+    "q": "Cloud resursi imaju tag DataClassification koji pokreće ABAC pravila i obaveznu enkripciju. Revizija otkriva da je developer promijenio tag sa Restricted na Public da bi lakše dijelio bucket. Koja kontrola NAJBOLJE sprečava ovakvu situaciju?",
+    "options": [
+      "Ograničiti ko smije mijenjati klasifikacijske tagove i provjeravati usklađenost tagova automatski.",
+      "Ukloniti tagove i oslanjati se samo na nazive bucketa.",
+      "Zahtijevati da developeri potpišu izjavu o povjerljivosti.",
+      "Uključiti verzionisanje objekata u bucketu."
+    ],
+    "answer": 0,
+    "explain": "Tagging politika mora definisati ko smije mijenjati klasifikacijske tagove (npr. samo owner ili sigurnosni tim) uz automatsku provjeru i upozorenje. Nazivi bucketa nisu pouzdani, izjava nije tehnička kontrola, a verzionisanje ne štiti tag."
+  },
+  {
+    "obj": "2.5",
+    "q": "Koji element NIJE tipičan sadržaj labele podatka prema ISC2 smjernicama?",
+    "options": [
+      "Datum kreiranja i planirani datum uništenja",
+      "Vlasnik i izvor podatka",
+      "Lozinka potrebna za otvaranje dokumenta",
+      "Jurisdikcija i ograničenja rukovanja"
+    ],
+    "answer": 2,
+    "explain": "Labela nosi metapodatke: datum kreiranja, datum uništenja, vlasnika, izvor, jurisdikciju, klasifikaciju i ograničenja. Lozinka (tajna) nikad ne smije biti u labeli."
+  },
+  {
+    "obj": "2.6",
+    "q": "Inženjerska firma šalje nacrte podizvođaču. Po završetku projekta pristup nacrtima mora prestati, čak i za kopije koje je podizvođač već preuzeo. Koja kontrola to NAJBOLJE omogućava?",
+    "options": [
+      "DLP pravilo koje blokira slanje nacrta emailom",
+      "Information Rights Management sa opozivom prava i istekom",
+      "TLS 1.3 na portalu za razmjenu fajlova",
+      "Enkripcija storagea sa customer-managed ključem"
+    ],
+    "answer": 1,
+    "explain": "IRM zaštita putuje sa fajlom i omogućava remote rights revocation i automatic expiration, pa i preuzete kopije postaju nedostupne. DLP sprečava izlazak, TLS štiti prenos, a enkripcija storagea prestaje važiti kada se fajl preuzme."
+  },
+  {
+    "obj": "2.6",
+    "q": "Pravni tim je poslao zaštićeni ugovor uz pravo izmjene. Sada želi da svi primaoci, uključujući one koji već imaju fajl, mogu samo čitati dokument. Koja IRM mogućnost to omogućava?",
+    "options": [
+      "Continuous audit trail",
+      "Replication restrictions",
+      "Persistent protection",
+      "Dynamic policy control"
+    ],
+    "answer": 3,
+    "explain": "Dynamic policy control dozvoljava naknadnu promjenu prava koja se primjenjuje i na već distribuirane kopije, jer klijent pri otvaranju traži važeću licencu. Audit trail loguje, replication restrictions ograničavaju kopiranje, a persistent protection znači da zaštita ostaje sa fajlom."
+  },
+  {
+    "obj": "2.6",
+    "q": "Organizacija želi uvesti IRM za dokumente koji se dijele sa desetinama partnerskih organizacija. Šta je MOST important preduslov za uspjeh?",
+    "options": [
+      "Pouzdana identifikacija eksternih korisnika, npr. federacija sa IdP-om partnera",
+      "Uvođenje vodenih žigova na sve dokumente",
+      "Prelazak svih dokumenata u PDF format",
+      "Povećanje propusnog opsega internet linka"
+    ],
+    "answer": 0,
+    "explain": "IRM izdaje prava identitetima; bez pouzdane autentifikacije eksternih korisnika ne zna kome dodjeljuje licencu. Federacija ili drugi provisioning eksternih identiteta je ključni preduslov. Ostale opcije su sporedne."
+  },
+  {
+    "obj": "2.6",
+    "q": "Privatni ključ IRM klijentskog certifikata jednog partnera je kompromitovan. Šta treba uraditi FIRST da kompromitovani certifikat više ne bude prihvaćen?",
+    "options": [
+      "Promijeniti klasifikaciju svih dokumenata partnera.",
+      "Izdati partneru novi certifikat sa dužim rokom važenja i zadržati stari.",
+      "Opozvati certifikat kod CA i objaviti ga kroz CRL/OCSP.",
+      "Obrisati audit logove vezane uz tog partnera."
+    ],
+    "answer": 2,
+    "explain": "Opoziv certifikata i objava statusa kroz CRL ili OCSP sprečava da se kompromitovani certifikat koristi za autentifikaciju i dobijanje licenci. Novi certifikat se izdaje nakon opoziva starog. Reklasifikacija ne rješava problem, a brisanje logova uništava dokaze."
+  },
+  {
+    "obj": "2.6",
+    "q": "Korisnik otvori IRM-zaštićen dokument sa pravom samo pregleda i fotografiše ekran mobilnim telefonom. Šta ovaj slučaj NAJBOLJE ilustruje?",
+    "options": [
+      "Grešku u dynamic policy control mehanizmu",
+      "Ograničenje IRM-a poznato kao analogna rupa",
+      "Nedostatak enkripcije u tranzitu",
+      "Neispravno mapiranje klasifikacije"
+    ],
+    "answer": 1,
+    "explain": "IRM provodi prava u aplikaciji, ali ne može spriječiti fotografisanje ekrana drugim uređajem (analog hole). Vodeni žigovi pomažu da se otkrije izvor curenja. Ostale opcije nisu povezane sa ovim slučajem."
+  },
+  {
+    "obj": "2.6",
+    "q": "Pravna služba mora u eDiscovery postupku predati sudu dokumente zaštićene IRM-om, a autori su napustili kompaniju. Koja mogućnost je trebala biti planirana pri dizajnu IRM-a?",
+    "options": [
+      "Kraći period offline pristupa",
+      "Strožija replication restrictions pravila",
+      "Automatski istek svih dokumenata nakon 90 dana",
+      "Organizacijski pristup za dešifrovanje (super user / recovery) uz kontrolu i logovanje"
+    ],
+    "answer": 3,
+    "explain": "Organizacija mora zadržati kontrolisanu mogućnost dešifrovanja zaštićenog sadržaja zbog eDiscoveryja, legal holda i odlaska zaposlenih. Kraći offline period i strožija ograničenja ne pomažu, a automatski istek bi mogao uništiti dokaze."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Upari tip podataka sa tehnikom discoveryja koja je za njega NAJPRIKLADNIJA.",
+    "options": [
+      "Relaciona baza sa jasno imenovanim kolonama",
+      "Skenirani papirni obrasci u PDF formatu",
+      "JSON eksport iz laboratorijskog uređaja",
+      "Ugovori različitih formata bez fiksnog obrasca podataka"
+    ],
+    "targets": ["OCR pa pattern matching", "Metadata-based analiza šeme uz uzorkovanje vrijednosti", "ML klasifikator (trainable classifier)", "Parsiranje ključeva i content analiza vrijednosti", "Analiza veličine i datuma fajla"],
+    "answer": [1, 0, 3, 2],
+    "explain": "Strukturirani podaci imaju šemu, pa metapodaci uz uzorkovanje daju dobre rezultate. Skenovi su slike i traže OCR prije pattern matchinga. JSON ima ključeve koji daju kontekst, pa se kombinuje parsiranje i content analiza. Ugovori nemaju fiksni obrazac, pa ih najbolje prepoznaje ML klasifikator. Veličina i datum ne otkrivaju osjetljivost."
+  },
+  {
+    "obj": "2.6",
+    "type": "order",
+    "q": "Poredaj korake otvaranja IRM-zaštićenog dokumenta kod primaoca, od prvog do posljednjeg.",
+    "options": [
+      "IRM servis provjeri politiku i izda licencu sa pravima.",
+      "Primalac otvara dokument u IRM-enabled aplikaciji.",
+      "Aplikacija provodi prava (npr. zabranjuje štampu) i događaj se loguje.",
+      "Klijent autentifikuje korisnika kod IdP-a i traži licencu."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Otvaranje dokumenta pokreće autentifikaciju i zahtjev za licencu; servis provjerava politiku (uključujući istek i opoziv) i izdaje licencu; tek tada aplikacija dešifruje sadržaj, provodi prava i bilježi pristup."
+  }
+]

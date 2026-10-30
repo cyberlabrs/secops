@@ -1,0 +1,140 @@
+[
+  {
+    "obj": "3.3",
+    "q": "A fintech company processes customer data in the cloud and wants neither the provider's administrators nor root on the host to be able to read the data WHILE the application is processing it in memory. Which data state is being protected, and which technology is MOST appropriate?",
+    "options": ["Data at rest; EBS volume encryption", "Data in transit; TLS 1.3", "Data in use; confidential computing (secure enclave)", "Data at rest; tokenization"],
+    "answer": 2,
+    "explain": "Data in memory during processing is data in use, and it's protected by secure enclave / confidential computing solutions. Disk encryption protects data at rest, and TLS only protects data traveling over the network."
+  },
+  {
+    "obj": "3.3",
+    "q": "An online store keeps card numbers for repeat payments and wants to reduce the PCI DSS scope of its systems. The numbers should be replaced with values that have no mathematical relationship to the original, and the original should be kept only at the payment provider. Which method is BEST?",
+    "options": ["Tokenization", "Masking", "Hashing", "Obfuscation"],
+    "answer": 0,
+    "explain": "Tokenization replaces the number with a random token, and the mapping exists only in the provider's vault, so the store's systems don't hold real numbers. Masking only hides the display, and a hash can't be turned back into the original for charging."
+  },
+  {
+    "obj": "3.3",
+    "q": "The sales director decided that CRM data is \"Confidential\" and that only the sales team may access it. The ops team then enables database encryption and configures backups and permissions. What roles do the director and the ops team have?",
+    "options": ["Data controller and data subprocessor", "Data steward and data operator", "Data custodian and data owner", "Data owner and data custodian"],
+    "answer": 3,
+    "explain": "The owner is accountable for the data and determines its classification and access; the custodian implements the controls (encryption, backups, permissions). The steward looks after quality and metadata, not classification."
+  },
+  {
+    "obj": "3.3",
+    "q": "Company A collects customers' personal data and determines why it's processed. Company B provides an email marketing service for company A and hosts its servers at cloud provider C. What is provider C's role under GDPR logic?",
+    "options": ["Data controller", "Data subprocessor", "Data owner", "Data steward"],
+    "answer": 1,
+    "explain": "A is the controller (determines the purpose and means), B is the processor (processes on instruction), and C, engaged by the processor, is a subprocessor."
+  },
+  {
+    "obj": "3.3",
+    "q": "A production monitoring system holds no personal or secret data, but without it the factory stops within an hour. How is this data MOST precisely classified?",
+    "options": ["Public", "Top secret", "Critical", "Restricted"],
+    "answer": 2,
+    "explain": "Critical denotes data without which the business can't function, with an emphasis on availability and integrity. Top secret and restricted relate to confidentiality, and public would ignore its importance to the business."
+  },
+  {
+    "obj": "3.3",
+    "q": "A research team needs health data for analysis. Names and national ID numbers (JMBG) are replaced with a random identifier, and the linking table is stored separately with the data protection officer. Which technique was applied?",
+    "options": ["Anonymization", "Hashing without a salt", "Data masking for display", "Pseudonymization (deidentification)"],
+    "answer": 3,
+    "explain": "Replacing identifiers while keeping a separately stored linking table is pseudonymization, a reversible form of deidentification. Anonymization would be irreversible, with no possibility of re-linking."
+  },
+  {
+    "obj": "3.3",
+    "q": "A hospital wants its patient-record app to work on tablets only inside the hospital building and to lock as soon as the device leaves that area. Which data handling control makes this possible?",
+    "options": ["Geofencing", "Data labeling", "Data transpose", "Retention"],
+    "answer": 0,
+    "explain": "Geofencing allows a function or access only within a defined geographic area. Labeling marks the classification, transpose rearranges data, and retention determines how long data is kept."
+  },
+  {
+    "obj": "3.4",
+    "q": "A stock trading system must resume operation within a few minutes after the loss of the primary data center, and budget isn't a limiting factor. Which option is BEST?",
+    "options": ["Cold site", "Hot site with continuous replication", "Warm site with weekly backups", "Backup tapes in a bank vault"],
+    "answer": 1,
+    "explain": "A hot site is fully equipped and has replicated data, so it enables recovery in minutes. Warm and cold sites take hours to days, and tapes have no infrastructure to run on."
+  },
+  {
+    "obj": "3.4",
+    "q": "Management says: \"We can lose at most 15 minutes of orders, but the system can be unavailable for up to 4 hours.\" Which statement correctly describes the requirements?",
+    "options": ["RTO = 15 min, RPO = 4 h", "MTTR = 15 min, MTBF = 4 h", "RPO = 4 h, MTTR = 15 min", "RPO = 15 min, RTO = 4 h"],
+    "answer": 3,
+    "explain": "The acceptable data loss measured in time is the RPO (15 min), and the acceptable downtime is the RTO (4 h). MTTR and MTBF are operational metrics for repair and reliability, not recovery objectives."
+  },
+  {
+    "obj": "3.4",
+    "q": "A ransomware group compromised an admin account and deleted all backups before encrypting the servers. Which control would BEST prevent backup deletion in the future?",
+    "options": ["More frequent incremental backups", "RAID 10 on the backup server", "Immutable backups (e.g., S3 Object Lock in compliance mode) plus an offline copy", "A longer retention period"],
+    "answer": 2,
+    "explain": "An immutable backup can't be deleted or modified until its retention expires, even with admin rights. More frequent backups and longer retention don't help if the attacker can delete everything, and RAID isn't a backup."
+  },
+  {
+    "obj": "3.4",
+    "q": "During a power outage, servers must keep running without interruption, and outages in the region can last for hours. Which combination is BEST?",
+    "options": ["A UPS that bridges the first minutes and a generator for longer operation", "Only a surge protector", "Only a redundant power supply in each server", "Only a generator"],
+    "answer": 0,
+    "explain": "A UPS takes over power instantly, but only briefly; a generator provides long-term power, but needs time to start. A surge protector only protects against voltage spikes, and an RPS doesn't help if the whole building loses power."
+  },
+  {
+    "obj": "3.4",
+    "q": "A full backup runs on Sunday and an incremental backup every other day. The server failed on Thursday morning. What is needed to restore the state as of Wednesday evening?",
+    "options": ["Only Wednesday's incremental", "Sunday's full and all incrementals from Monday through Wednesday", "Sunday's full and only Wednesday's incremental", "Only Sunday's full"],
+    "answer": 1,
+    "explain": "An incremental contains only the changes since the last backup of any kind, so a restore requires the full backup and ALL incrementals in order. Full + only the latest applies to a differential backup."
+  },
+  {
+    "obj": "3.4",
+    "q": "A bank is introducing a new DR system and wants to verify it by having it process the same real transactions as production and comparing the results, without switching users over and without risk to production. What type of test is this?",
+    "options": ["Failover", "Tabletop exercise", "Parallel processing", "Simulation"],
+    "answer": 2,
+    "explain": "Parallel processing runs the secondary system alongside the primary on the same data and compares the results. Failover actually switches operation over, a tabletop is just a discussion, and a simulation practices the response to an imagined event."
+  },
+  {
+    "obj": "3.4",
+    "q": "A storage array ran for a total of 6,000 hours in a period during which it had 4 failures, and the repairs took 10 hours in total. What are the MTBF and MTTR values?",
+    "options": ["MTBF 2.5 h, MTTR 1,500 h", "MTBF 6,000 h, MTTR 10 h", "MTBF 1,500 h, MTTR 10 h", "MTBF 1,500 h, MTTR 2.5 h"],
+    "answer": 3,
+    "explain": "MTBF = operating time / number of failures = 6,000 / 4 = 1,500 h. MTTR = total repair time / number of repairs = 10 / 4 = 2.5 h."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Order the phases of the data management life cycle.",
+    "options": ["Retention", "Distribution", "Creation", "Disposal", "Management"],
+    "answer": [2, 4, 1, 0, 3],
+    "explain": "Data is created (creation, where it gets classified), then managed and protected (management), shared (distribution), kept as long as regulations require (retention), and finally securely destroyed (disposal)."
+  },
+  {
+    "obj": "3.3",
+    "type": "match",
+    "q": "Match each type of data with the compliance category it BEST belongs to.",
+    "options": [
+      "Patients' lab results",
+      "A game account of an 11-year-old user",
+      "Revenue reports of a publicly traded company",
+      "Source code of a patented algorithm",
+      "Emails preserved because of a lawsuit",
+      "A customer's address and phone number"
+    ],
+    "targets": ["Legal data", "Financial", "Personal information", "Health data", "Intellectual property", "Child/minor data"],
+    "answer": [3, 5, 1, 4, 0, 2],
+    "explain": "Lab results are health data, a child's account is minor data, financial reports fall under the financial category, the algorithm's code is intellectual property, emails kept for a lawsuit are legal data (legal hold), and a customer's contact details are personal information."
+  },
+  {
+    "obj": "3.4",
+    "type": "match",
+    "q": "Match each situation with the redundancy or resilience solution it describes.",
+    "options": [
+      "Traffic is distributed across three web servers behind an ALB",
+      "The number of pods grows automatically when CPU exceeds 70%",
+      "Two database nodes; the passive one takes over when the active one fails",
+      "A server has two power supplies connected to different circuits",
+      "A device protects equipment from a voltage surge during a lightning strike",
+      "The outer firewall and the hypervisors are from different vendors"
+    ],
+    "targets": ["Clustering", "Surge protector", "Load balancing", "Platform diversity", "Autoscaling", "Redundant power supply (RPS)"],
+    "answer": [2, 4, 0, 5, 1, 3],
+    "explain": "Distributing traffic is load balancing, automatically adding instances is autoscaling, active/passive nodes are clustering, two power supplies in a device are an RPS, protection against voltage spikes is a surge protector, and different vendors are platform diversity."
+  }
+]

@@ -1,0 +1,200 @@
+[
+  {
+    "obj": "6.1",
+    "q": "DAST job sa ZAP automation planom (spider + passiveScan-wait + report) prolazi zeleno, iako izvještaj sadrži High alert. Šta nedostaje u planu?",
+    "options": [
+      "Job exitStatus sa npr. errorLevel: High, koji nalaze pretvara u izlazni kod",
+      "env.parameters.failOnError: true",
+      "Job activeScan, jer pasivni alerti nikad ne utiču na izlazni kod",
+      "Flag -silent u komandi zap.sh"
+    ],
+    "answer": 0,
+    "explain": "Bez exitStatus joba izlazni kod plana zavisi od grešaka i upozorenja samih jobova, ne od alerta. failOnError prekida plan kad job pukne, activeScan dodaje napade ali ne pravi kapiju, a -silent samo sprječava nenajavljene zahtjeve prema internetu."
+  },
+  {
+    "obj": "6.1",
+    "q": "Aktivni ZAP sken nad kurs-shop prijavljuje SQL injection na /products, ali ništa za /ping, iako app.py ima subprocess sa shell=True. Spider je pokrenut od http://127.0.0.1:8080. Najvjerovatniji razlog?",
+    "options": [
+      "Pravilo 90020 je podrazumijevano isključeno u ZAP-u 2.17",
+      "Command injection može naći samo SAST, ne DAST",
+      "/ping nije linkovan ni sa jedne stranice, pa ga spider nije našao i aktivni sken ga nije testirao",
+      "Flask vraća 404 za zahtjeve koji dolaze preko proxyja"
+    ],
+    "answer": 2,
+    "explain": "DAST testira samo URL-ove u stablu sajta; početna stranica linkuje samo /products. Treba dodati /ping kroz requestor job, OpenAPI definiciju ili dodatni URL. Pravilo 90020 (Remote OS Command Injection) je aktivno pravilo koje DAST koristi, a Flask ne razlikuje zahtjeve preko proxyja."
+  },
+  {
+    "obj": "6.1",
+    "q": "Tim želi DAST na svakom merge requestu, ali da ne traje duže od par minuta i da ne šalje napade. Koji tip skeniranja biraš?",
+    "options": [
+      "Full scan sa -m 2",
+      "API scan sa -f openapi",
+      "Full scan sa maxScanDurationInMins: 2",
+      "Baseline: spider i samo pasivna pravila"
+    ],
+    "answer": 3,
+    "explain": "Baseline samo spiderom prikuplja stranice i pasivno ih analizira, bez napada, pa je brz i bezbjedan za MR. Full scan i API scan podrazumijevano rade aktivni sken (napade); -m ograničava samo spider, a ograničavanje trajanja aktivnog skena ne mijenja činjenicu da šalje napade."
+  },
+  {
+    "obj": "6.1",
+    "q": "kurs-shop dobija OpenAPI definiciju openapi.yaml. Koji job u ZAP automation planu je uvozi da bi aktivni sken testirao sve endpointe?",
+    "options": [
+      "type: spider sa url: openapi.yaml",
+      "type: openapi sa parameters.apiFile i targetUrl",
+      "type: requestor sa url: openapi.yaml",
+      "type: passiveScan-config sa rules: openapi"
+    ],
+    "answer": 1,
+    "explain": "openapi job uvozi definiciju (apiFile ili apiUrl), a targetUrl preusmjerava zahtjeve na test okruženje. Spider bi samo dohvatio YAML fajl, requestor šalje jedan zahtjev, a passiveScan-config podešava pasivna pravila."
+  },
+  {
+    "obj": "6.1",
+    "q": "zap-baseline.py u pipelineu nikad ne pada, iako izvještaj ima 14 upozorenja. Komanda: zap-baseline.py -t $URL -I -J zap.json. Šta treba promijeniti da nedostajući X-Content-Type-Options obori build?",
+    "options": [
+      "Ukloniti -J, jer JSON izvještaj potiskuje izlazni kod",
+      "Dodati -a da se uključe alpha pravila",
+      "Dodati -c zap-rules.tsv u kojem je pravilo 10021 postavljeno na FAIL",
+      "Dodati -m 10 da spider radi duže"
+    ],
+    "answer": 2,
+    "explain": "Bez config fajla svi nalazi su WARN, a -I sprječava da upozorenja daju grešku; FAIL za 10021 daje izlazni kod 1. -J samo upisuje izvještaj, alpha pravila i duži spider ne mijenjaju kako se nalazi tretiraju."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Upari ZAP pravilo sa njegovim ID-jem.",
+    "options": [
+      "Remote OS Command Injection",
+      "Cookie No HttpOnly Flag",
+      "Content Security Policy (CSP) Header Not Set",
+      "X-Content-Type-Options Header Missing",
+      "SQL Injection"
+    ],
+    "targets": ["10021", "40018", "10010", "90020", "10038", "10020"],
+    "answer": [3, 2, 4, 0, 1],
+    "explain": "90020 je Remote OS Command Injection, 10010 kolačić bez HttpOnly, 10038 nedostaje CSP, 10021 nedostaje X-Content-Type-Options, 40018 SQL Injection. 10020 je Missing Anti-clickjacking Header i ovdje je distraktor."
+  },
+  {
+    "obj": "6.1",
+    "q": "Pravilo 10038 (CSP nije postavljen) prijavljuje se za JSON odgovore na /products i /health, gdje CSP nema efekta. Tim koristi automation framework. Koji izuzetak je ispravan?",
+    "options": [
+      "passiveScan-config sa rules: - id: 10038, threshold: Off",
+      "alertFilter sa ruleId: 10038, newRisk: \"False Positive\", url regexom za /products i /health i komentarom sa razlogom i rokom",
+      "env.contexts.excludePaths za /products i /health",
+      "exitStatus sa warnLevel: High"
+    ],
+    "answer": 1,
+    "explain": "alertFilter sužen na URL-ove isključuje samo lažne pozitive, a pravilo i dalje radi za HTML stranice. threshold: Off gasi pravilo svuda, excludePaths izbacuje te endpointe iz svih skeniranja (i aktivnog SQLi testa), a warnLevel: High oslabljuje kapiju za sva pravila."
+  },
+  {
+    "obj": "6.1",
+    "q": "DAST job je prošao bez ijednog nalaza. U logu joba piše: curl: (7) Failed to connect to 127.0.0.1 port 8080. Šta je pouka?",
+    "options": [
+      "Prije skeniranja čekati da aplikacija odgovori na /health i oboriti job ako ne odgovori; prazan izvještaj bez dostupne mete ne znači sigurnu aplikaciju",
+      "Port 8080 je blokiran za ZAP; treba koristiti 80",
+      "Treba dodati failOnWarning: true, pa će ZAP sam prijaviti da meta nije dostupna",
+      "Treba prebaciti na full scan, koji podiže aplikaciju sam"
+    ],
+    "answer": 0,
+    "explain": "Ako aplikacija nije podignuta, skener nema šta da nađe i job lažno prolazi; provjera dostupnosti prije skeniranja to sprječava. Port nije problem, failOnWarning se odnosi na upozorenja jobova plana, a nijedan ZAP sken ne pokreće aplikaciju."
+  },
+  {
+    "obj": "6.1",
+    "q": "Aktivni sken u noćnom pipelineu ponekad traje 6 sati i blokira runner. Šta dodaješ activeScan jobu u planu?",
+    "options": [
+      "maxDuration: 30 u spider jobu",
+      "maxDuration: 30 u passiveScan-wait jobu",
+      "defaultThreshold: High u policyDefinition",
+      "maxScanDurationInMins i maxRuleDurationInMins u parameters"
+    ],
+    "answer": 3,
+    "explain": "Ova dva parametra ograničavaju ukupno trajanje aktivnog skena i trajanje svakog pravila (podrazumijevano 0 = bez limita). Ograničenje spidera i pasivnog čekanja ne utiče na aktivni sken, a viši threshold smanjuje broj prijavljenih nalaza, ne broj poslanih napada."
+  },
+  {
+    "obj": "6.1",
+    "type": "order",
+    "q": "Poredaj jobove u ZAP automation planu za aktivno skeniranje kurs-shop tako da izvještaj bude potpun i da build padne na High nalaz.",
+    "options": [
+      "report (sarif-json)",
+      "activeScan",
+      "spider",
+      "exitStatus",
+      "passiveScan-wait",
+      "alertFilter (poznati lažni pozitivi)"
+    ],
+    "answer": [5, 2, 4, 1, 0, 3],
+    "explain": "Filteri lažnih pozitiva idu prvi da važe kad se alerti podignu; spider otkriva URL-ove, pasivni skener se pusti da obradi sve, pa aktivni sken napada; izvještaj se piše kad su svi alerti tu, a exitStatus na kraju pretvara rezultat u izlazni kod."
+  },
+  {
+    "obj": "6.1",
+    "q": "U .gitlab-ci.yml DAST job ima allow_failure: exit_codes: [2], a plan ima exitStatus sa errorLevel: High i warnLevel: Medium. Šta se dešava ako ZAP nađe samo Medium alerte?",
+    "options": [
+      "Job pada i blokira pipeline",
+      "Job prolazi zeleno jer Medium nije u errorLevel",
+      "Job pada sa izlaznim kodom 2, ali je označen kao dozvoljen neuspjeh (žut) i pipeline nastavlja",
+      "ZAP vraća izlazni kod 3 jer nema High alerta"
+    ],
+    "answer": 2,
+    "explain": "warnLevel: Medium daje warnExitValue (podrazumijevano 2), a exit_codes: [2] taj kod tretira kao dozvoljen neuspjeh. High bi dao 1 i blokirao pipeline. Kod 3 je za druge greške kod pakovanih skripti."
+  },
+  {
+    "obj": "6.1",
+    "q": "Security tim predlaže da noćni full scan ide direktno nad produkcijskim kurs-shop, „jer je to ono što napadač vidi“. Koji je glavni argument protiv?",
+    "options": [
+      "Aktivni sken šalje stvarne napade: može upisati smeće u bazu, pokrenuti destruktivne akcije i oboriti servis; ide nad test okruženjem uz odobrenje",
+      "ZAP ne podržava HTTPS, a produkcija koristi TLS",
+      "Rezultati sa produkcije se ne mogu izvesti u SARIF",
+      "Produkcija ima CSP, pa pasivna pravila ne rade"
+    ],
+    "answer": 0,
+    "explain": "Full scan mijenja parametre i šalje napade (SQLi, command injection), pa nad produkcijom rizikuje podatke i dostupnost i traži izričito odobrenje. ZAP radi sa HTTPS-om, format izvještaja ne zavisi od mete, a pasivna pravila rade bez obzira na CSP."
+  },
+  {
+    "obj": "6.1",
+    "q": "DAST job treba da pošalje rezultate u GitLab SARIF ingestion i DefectDojo, i da ostavi čitljiv izvještaj za developera. Koji report jobovi u planu?",
+    "options": [
+      "Jedan report sa template: modern, jer sadrži sve formate",
+      "report sa template: sarif-json i report sa template: traditional-html (po potrebi i traditional-json)",
+      "report sa template: sarif i reportFile: zap.html",
+      "exitStatus sa reportFormat: sarif"
+    ],
+    "answer": 1,
+    "explain": "Svaki report job piše jedan format, pa za SARIF i HTML trebaju dva joba sa šablonima sarif-json i traditional-html. modern je samo HTML, šablon se zove sarif-json (ne sarif), a exitStatus nema parametar za izvještaj."
+  },
+  {
+    "obj": "6.1",
+    "q": "DAST nalog u testnom okruženju je administrator. Nakon aktivnog skena svi testni korisnici su obrisani. Šta treba promijeniti u planu?",
+    "options": [
+      "Smanjiti defaultStrength na Low",
+      "Ukloniti users iz env, da sken radi bez prijave",
+      "Postaviti failOnError: false",
+      "Dodati destruktivne putanje (npr. .*/admin/delete.*, .*/logout.*) u excludePaths konteksta ili skenirati sa običnim korisnikom"
+    ],
+    "answer": 3,
+    "explain": "Aktivni sken poziva svaku pronađenu akciju, pa se destruktivne putanje isključuju iz opsega ili se koristi nalog bez tih prava. Manji strength i dalje šalje zahtjeve na brisanje, sken bez prijave gubi pokrivenost, a failOnError ne utiče na to šta se poziva."
+  },
+  {
+    "obj": "6.1",
+    "q": "Pipeline za API servis koristi zap-api-scan.py -t openapi.yaml -f openapi. Na MR-u traje predugo; tim želi na MR-u samo pasivne provjere, a puni sken noću. Koji flag dodaješ za MR?",
+    "options": [
+      "-I",
+      "-S",
+      "-m 1",
+      "-j"
+    ],
+    "answer": 1,
+    "explain": "-S (safe mode) preskače aktivni sken i radi samo baseline (pasivno). -I samo ignoriše upozorenja u izlaznom kodu, -m ograničava spider, a -j uključuje AJAX spider kod drugih skripti."
+  },
+  {
+    "obj": "6.1",
+    "q": "Za GitLab Ultimate projekat kolega predlaže da umjesto vlastitog ZAP joba uključi Security/DAST.gitlab-ci.yml, „jer je to isti ZAP“. Šta je tačno?",
+    "options": [
+      "Tačno je; šablon pokreće zap-baseline.py iz ZAP Docker slike",
+      "Šablon radi samo za API skeniranje",
+      "Od GitLaba 17.0 šablon koristi GitLabov browser-based DAST analizator, ne stari ZAP proxy-based; konfiguracija (npr. DAST_TARGET_URL) i pravila se razlikuju od ZAP plana",
+      "Šablon je dostupan na svim tierovima i ne traži Ultimate"
+    ],
+    "answer": 2,
+    "explain": "Proxy-based analizator zasnovan na ZAP-u je uklonjen u 17.0; GitLabov DAST je sada vlastiti browser-based analizator, pa ZAP plan i ID-jevi pravila nisu direktno prenosivi. Šablon nije samo za API i DAST je funkcija Ultimate tiera."
+  }
+]

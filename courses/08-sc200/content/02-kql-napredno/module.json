@@ -1,0 +1,11 @@
+{
+  "title": "KQL za hunting: join, parse, vremenske serije",
+  "summary": "Napredni KQL za hunting: let i funkcije, vrste join-a i lookup, union, parse/extract/parse_json, mv-expand, arg_max, make-series sa series_decompose_anomalies, te hunting graph, blast radius i Microsoft Sentinel graph.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.1"
+  ],
+  "title_en": "KQL for hunting: join, parse, time series",
+  "summary_en": "Advanced KQL for hunting: let and functions, join kinds and lookup, union, parse/extract/parse_json, mv-expand, arg_max, make-series with series_decompose_anomalies, plus the hunting graph, blast radius and Microsoft Sentinel graph."
+}

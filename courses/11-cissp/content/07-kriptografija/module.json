@@ -1,0 +1,12 @@
+{
+  "title": "Kriptografija i kriptoanaliza",
+  "summary": "Simetrična, asimetrična, ECC i post-kvantna kriptografija, hash i digitalni potpis, životni ciklus i upravljanje ključevima, PKI i certifikati, te kriptoanalitički napadi i savremene prijetnje (MITM, pass the hash, Kerberos, ransomware, AI) iz ugla odbrane.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.6",
+    "3.7"
+  ],
+  "title_en": "Cryptography and Cryptanalysis",
+  "summary_en": "Symmetric, asymmetric, ECC and post-quantum cryptography, hashing and digital signatures, the key life cycle and key management, PKI and certificates, and cryptanalytic attacks and modern threats (MITM, pass the hash, Kerberos, ransomware, AI) from the defender's perspective."
+}

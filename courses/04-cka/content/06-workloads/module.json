@@ -1,0 +1,13 @@
+{
+  "title": "Workloads: Deployment, rollout, ConfigMap, Secret, probe",
+  "summary": "Deploymenti sa rolling update i rollbackom, ConfigMap i Secret, probe, init i sidecar kontejneri, DaemonSet, StatefulSet, Job/CronJob i PodDisruptionBudget kroz praktične kubectl zadatke.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.2",
+    "2.4"
+  ],
+  "title_en": "Workloads: Deployments, rollouts, ConfigMaps, Secrets, probes",
+  "summary_en": "Deployments with rolling updates and rollbacks, ConfigMaps and Secrets, probes, init and sidecar containers, DaemonSets, StatefulSets, Jobs/CronJobs and PodDisruptionBudgets through hands-on kubectl tasks."
+}

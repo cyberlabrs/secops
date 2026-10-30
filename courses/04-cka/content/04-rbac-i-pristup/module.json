@@ -1,0 +1,11 @@
+{
+  "title": "RBAC, ServiceAccount, korisnici i kubeconfig",
+  "summary": "Autentifikacija i autorizacija u Kubernetesu: Role, ClusterRole i bindinzi, ServiceAccount tokeni, korisnici preko CSR API-ja, kubeconfig i provjera sa kubectl auth can-i.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.1"
+  ],
+  "title_en": "RBAC, ServiceAccounts, users and kubeconfig",
+  "summary_en": "Authentication and authorization in Kubernetes: Roles, ClusterRoles and bindings, ServiceAccount tokens, users via the CSR API, kubeconfig, and verification with kubectl auth can-i."
+}

@@ -1,0 +1,244 @@
+[
+  {
+    "obj": "2.1",
+    "q": "A Deployment has replicas: 4 and the RollingUpdate strategy with maxSurge: 1 and maxUnavailable: 0. You run kubectl set image. What holds during the rollout?",
+    "options": [
+      "At most 4 Pods exist at the same time, and at least 3 are available",
+      "All old Pods are shut down first, then 4 new ones come up",
+      "At most 5 Pods exist at the same time, and never fewer than 4 are available",
+      "At most 8 Pods exist at the same time because the new ReplicaSet comes up all at once"
+    ],
+    "answer": 2,
+    "explain": "maxSurge: 1 allows one Pod above replicas (5 in total), and maxUnavailable: 0 forbids dropping below 4 available. Shutting down all old Pods at once is the behavior of the Recreate strategy."
+  },
+  {
+    "obj": "2.1",
+    "q": "Task: roll Deployment web in namespace prod back to revision 2. Which command does this?",
+    "options": [
+      "kubectl -n prod rollout undo deployment/web --to-revision=2",
+      "kubectl -n prod rollout history deployment/web --revision=2",
+      "kubectl -n prod rollout restart deployment/web --to-revision=2",
+      "kubectl -n prod rollout resume deployment/web --revision=2"
+    ],
+    "answer": 0,
+    "explain": "rollout undo with --to-revision restores the Pod template from that revision. rollout history --revision=2 only shows the revision details, and restart and resume have no option to choose a revision."
+  },
+  {
+    "obj": "2.1",
+    "q": "kubectl rollout history deployment/web shows <none> in the CHANGE-CAUSE column for all revisions. The task requires the new revision to have the reason 'upgrade to 1.28'. What should you do after kubectl set image?",
+    "options": [
+      "kubectl label deployment/web change-cause='upgrade to 1.28'",
+      "kubectl rollout history deployment/web --cause='upgrade to 1.28'",
+      "Add a change-cause annotation to spec.template.metadata.labels",
+      "kubectl annotate deployment/web kubernetes.io/change-cause='upgrade to 1.28' --overwrite"
+    ],
+    "answer": 3,
+    "explain": "The CHANGE-CAUSE column is filled from the kubernetes.io/change-cause annotation on the Deployment. A label is not an annotation, and rollout history has no --cause flag."
+  },
+  {
+    "obj": "2.1",
+    "q": "After kubectl set image deployment/api api=registry.example.com/api:2.0 the new Pods are in ImagePullBackOff and rollout status hangs. The old version 1.9 Pods are still running. What is the fastest way to get the application back to a working state?",
+    "options": [
+      "Delete the new ReplicaSet with kubectl delete rs",
+      "kubectl rollout undo deployment/api",
+      "kubectl rollout pause deployment/api",
+      "kubectl scale deployment/api --replicas=0 and then back to the previous count"
+    ],
+    "answer": 1,
+    "explain": "rollout undo restores the previous Pod template, so the Deployment scales the old ReplicaSet back up. The Deployment would immediately recreate a deleted ReplicaSet, pause only stops the rollout, and scaling does not change the wrong image."
+  },
+  {
+    "obj": "2.1",
+    "q": "rollout history for Deployment web shows revisions 1, 2 and 3. You run kubectl rollout undo deployment/web --to-revision=1. Which revisions does history show afterwards?",
+    "options": [
+      "1, 2, 3 (1 is active)",
+      "1, 2 (revision 3 is deleted)",
+      "2, 3, 4 (the former revision 1 is now 4)",
+      "1, 2, 3, 4 (a new copy of revision 1)"
+    ],
+    "answer": 2,
+    "explain": "A rollback creates a new revision from the old template: the same ReplicaSet gets the next number (4), so revision 1 disappears from the list. History is not rewound and no duplicate is created."
+  },
+  {
+    "obj": "2.1",
+    "q": "Which two changes to Deployment web trigger a new rollout and a new revision? (Choose TWO.)",
+    "options": [
+      "kubectl scale deployment/web --replicas=6",
+      "kubectl set env deployment/web LOG_LEVEL=debug",
+      "kubectl annotate deployment/web owner=team-a",
+      "kubectl set resources deployment/web -c nginx --limits=memory=256Mi",
+      "kubectl label deployment/web tier=frontend"
+    ],
+    "answer": [1, 3],
+    "explain": "A new revision is created only when spec.template changes (env, resources, image). Scaling changes spec.replicas, and a label or annotation on the Deployment itself changes its metadata, not the Pod template."
+  },
+  {
+    "obj": "2.2",
+    "q": "A Pod in namespace shop is in the CreateContainerConfigError status. Events say: Error: secret \"db-cred\" not found. Secret db-cred exists in namespace default. What is the cause?",
+    "options": [
+      "A Pod can only reference a Secret in its own namespace; db-cred must be created in shop",
+      "The values in the Secret are not base64 encoded",
+      "The Pod's ServiceAccount has no RBAC get permission on secrets",
+      "The Secret must be of type kubernetes.io/basic-auth to be used in env"
+    ],
+    "answer": 0,
+    "explain": "ConfigMaps and Secrets are namespaced resources, and a Pod sees them only in its own namespace. The kubelet reads the Secret for the Pod, so the ServiceAccount's RBAC does not matter, and type Opaque is used in env normally."
+  },
+  {
+    "obj": "2.2",
+    "q": "A Deployment uses envFrom with ConfigMap app-config. You change LOG_LEVEL in the ConfigMap with kubectl edit, but even after 10 minutes the application uses the old value. What should you do?",
+    "options": [
+      "Nothing, the kubelet refreshes env variables every 60 seconds, so you need to wait",
+      "Set immutable: true on the ConfigMap",
+      "Delete the ConfigMap and recreate it with the same name",
+      "Run kubectl rollout restart deployment/<name>, because env variables are read only when the container starts"
+    ],
+    "answer": 3,
+    "explain": "Env variables are set when the container starts and do not change while it runs; new Pods are needed. The kubelet refreshes only files in a ConfigMap volume (without subPath), and immutable would prevent changes."
+  },
+  {
+    "obj": "2.2",
+    "q": "The image has several files in /etc/nginx/conf.d/. Task: from ConfigMap nginx-conf (key default.conf) inject only /etc/nginx/conf.d/default.conf, and the other files in the directory must remain. What goes in volumeMounts?",
+    "options": [
+      "mountPath: /etc/nginx/conf.d and readOnly: true",
+      "mountPath: /etc/nginx/conf.d/default.conf and subPath: default.conf",
+      "mountPath: /etc/nginx/conf.d and items with key: default.conf in volumeMounts",
+      "mountPath: /etc/nginx/conf.d/default.conf without any extra fields"
+    ],
+    "answer": 1,
+    "explain": "subPath mounts just one key as a file at the given path and does not cover the rest of the directory. Mounting onto the directory itself covers all files, and items is a volume field, not a volumeMounts field."
+  },
+  {
+    "obj": "2.2",
+    "q": "The file app.env has the lines DB_HOST=db and DB_PORT=5432. You need a ConfigMap app-env in which DB_HOST and DB_PORT are separate keys. Which command?",
+    "options": [
+      "kubectl create configmap app-env --from-file=app.env",
+      "kubectl create configmap app-env --from-literal=app.env",
+      "kubectl create configmap app-env --from-env-file=app.env",
+      "kubectl create secret generic app-env --from-env-file=app.env"
+    ],
+    "answer": 2,
+    "explain": "--from-env-file parses KEY=VALUE lines and creates one key for each. --from-file would create a single key app.env with the whole content, and create secret creates a Secret, not a ConfigMap."
+  },
+  {
+    "obj": "2.2",
+    "q": "A developer has the RBAC get permission on secrets in namespace prod and claims they cannot see the passwords because they are 'base64 encrypted'. What is true?",
+    "options": [
+      "False: base64 is an encoding, so kubectl get secret -o jsonpath and base64 -d reveal the password; protection comes from RBAC and encryption at rest",
+      "True: base64 cannot be decoded without the API server's private key",
+      "True: kubectl shows a Secret only to users with the cluster-admin ClusterRole",
+      "False, but only if the Secret is of type Opaque; kubernetes.io/tls is encrypted"
+    ],
+    "answer": 0,
+    "explain": "base64 is a reversible encoding without a key, regardless of the Secret type. Whoever has get on a Secret has its value; that is why access is restricted with RBAC and etcd is protected with encryption at rest."
+  },
+  {
+    "obj": "2.4",
+    "q": "A Pod is Running, but READY is 0/1 and RESTARTS is 0. Events: Readiness probe failed: dial tcp 10.244.1.7:8080: connect: connection refused. The application listens on port 80. What is happening?",
+    "options": [
+      "The kubelet will restart the container after 3 failures",
+      "The Pod will be evicted from the node",
+      "The scheduler will move the Pod to another node",
+      "The Pod is not in the Service endpoints and receives no traffic; the port in readinessProbe must be fixed"
+    ],
+    "answer": 3,
+    "explain": "A failing readiness probe only removes the Pod from the Service endpoints and does not cause a restart, which is why RESTARTS is 0. Restarts are caused by the liveness probe; eviction and rescheduling have nothing to do with probes."
+  },
+  {
+    "obj": "2.4",
+    "q": "An application needs up to 4 minutes to start. It has a livenessProbe with periodSeconds: 10 and failureThreshold: 3, so the kubelet keeps restarting it and the Pod is in CrashLoopBackOff. What is the correct fix?",
+    "options": [
+      "Add a readinessProbe with initialDelaySeconds: 240",
+      "Add a startupProbe with periodSeconds: 10 and failureThreshold: 30",
+      "Set restartPolicy: Never",
+      "Set timeoutSeconds: 240 on the livenessProbe"
+    ],
+    "answer": 1,
+    "explain": "A startupProbe delays liveness and readiness until the application starts; 30 x 10s gives 5 minutes. Readiness does not stop liveness, restartPolicy Never is not allowed in a Deployment, and timeoutSeconds applies to a single attempt."
+  },
+  {
+    "obj": "2.4",
+    "q": "kubectl apply for a Job returns the error: spec.template.spec.restartPolicy: Unsupported value: \"Always\". What must be changed?",
+    "options": [
+      "Add backoffLimit: 0",
+      "Move restartPolicy into the Job spec instead of the template",
+      "Set restartPolicy to Never or OnFailure",
+      "Change apiVersion to batch/v1beta1"
+    ],
+    "answer": 2,
+    "explain": "A Job allows only restartPolicy Never or OnFailure because the Pod has to finish. The field belongs to the Pod template, backoffLimit does not fix the validation, and batch/v1beta1 no longer exists for Job."
+  },
+  {
+    "obj": "2.4",
+    "q": "In a cluster with nodes controlplane and node01 you create a DaemonSet log-agent. kubectl get ds shows DESIRED 1. The task requires a Pod on every node. What is missing?",
+    "options": [
+      "A toleration for the node-role.kubernetes.io/control-plane:NoSchedule taint in the Pod template",
+      "spec.replicas: 2 in the DaemonSet",
+      "nodeName: controlplane in the Pod template",
+      "The updateStrategy: OnDelete strategy"
+    ],
+    "answer": 0,
+    "explain": "The controlplane node has a NoSchedule taint, so a DaemonSet Pod goes only where it tolerates the taint. A DaemonSet has no replicas, nodeName would pin all Pods to one node, and the update strategy does not affect scheduling."
+  },
+  {
+    "obj": "2.4",
+    "q": "StatefulSet db has replicas: 3 and volumeClaimTemplates named data. You delete Pod db-1. What happens?",
+    "options": [
+      "A Pod with a random suffix is created, e.g. db-7f9c, with a new PVC",
+      "PVC data-db-1 is deleted together with the Pod",
+      "The StatefulSet stays at 2 Pods until you increase the replicas manually",
+      "A new Pod db-1 is created that mounts the same PVC data-db-1"
+    ],
+    "answer": 3,
+    "explain": "A StatefulSet preserves identity: the replacement Pod has the same name and binds to the same PVC from volumeClaimTemplates. Random suffixes are Deployment behavior, and the PVC is not deleted with the Pod."
+  },
+  {
+    "obj": "2.4",
+    "q": "kubectl drain node01 --ignore-daemonsets keeps printing: Cannot evict pod as it would violate the pod's disruption budget. Deployment web has 2 replicas, the PDB has minAvailable: 2. What allows the drain without turning off the protection?",
+    "options": [
+      "Add --force to kubectl drain",
+      "Scale the Deployment to 3 replicas (or set the PDB to minAvailable: 1)",
+      "Add --delete-emptydir-data to kubectl drain",
+      "Delete the PDB and leave it deleted"
+    ],
+    "answer": 1,
+    "explain": "With 2 replicas and minAvailable: 2, 0 disruptions are allowed, so eviction always fails; a third replica or a looser PDB gives one allowed disruption. --force is for Pods without a controller, and --delete-emptydir-data is for emptyDir volumes."
+  },
+  {
+    "obj": "2.4",
+    "type": "order",
+    "q": "A Pod has initContainers: wait-db (a regular init) then log-shipper (restartPolicy: Always), and containers: app. Put the events in the order in which they happen.",
+    "options": [
+      "app starts",
+      "wait-db finishes with exit code 0",
+      "log-shipper starts and keeps running",
+      "wait-db starts"
+    ],
+    "answer": [3, 1, 2, 0],
+    "explain": "Init containers run in order: wait-db must finish before the next one. The native sidecar log-shipper starts and nobody waits for it to finish, after which the main container app starts."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Match each Job spec field with its meaning.",
+    "options": ["completions", "parallelism", "backoffLimit", "activeDeadlineSeconds"],
+    "targets": [
+      "The maximum number of Pods running at the same time",
+      "The maximum duration of the whole Job, after which it is terminated",
+      "How many successfully completed Pods are needed",
+      "How long a finished Job is kept before automatic deletion",
+      "The number of failed attempts before the Job becomes Failed"
+    ],
+    "answer": [2, 0, 4, 1],
+    "explain": "completions is the number of required successes, parallelism the number of concurrent Pods, backoffLimit the number of allowed failures, and activeDeadlineSeconds the time limit. Keeping a finished Job is ttlSecondsAfterFinished."
+  },
+  {
+    "obj": "2.1",
+    "type": "spot",
+    "q": "kubectl apply returns: spec.template.metadata.labels: Invalid value: ...: `selector` does not match template `labels`. Click the two lines that conflict.",
+    "lang": "yaml",
+    "snippet": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: web-frontend\n  strategy: {type: RollingUpdate, rollingUpdate: {maxSurge: 1, maxUnavailable: 0}}\n  template:\n    metadata:\n      labels:\n        app: web\n        tier: frontend\n    spec:\n      containers:\n      - {name: web, image: \"nginx:1.27\", ports: [{containerPort: 80}]}",
+    "answer": [8, 13],
+    "explain": "spec.selector.matchLabels requires app=web-frontend, while the pod template has app=web (and tier=frontend). Every label in the selector must exist in the template with the same value; the template may have extra labels. Make them match, e.g. app: web in both places. Note: the selector of an existing Deployment is immutable, so in that case you change the template or recreate the Deployment."
+  }
+]

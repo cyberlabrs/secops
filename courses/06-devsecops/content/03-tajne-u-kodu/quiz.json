@@ -1,0 +1,234 @@
+[
+  {
+    "obj": "2.3",
+    "q": "Developer je commitovao AWS access key u config/settings.py, pushao na GitLab i odmah ga obrisao u sljedećem commitu. Šta je PRVI korak?",
+    "options": [
+      "Prepisati istoriju sa git filter-repo i force pushati",
+      "Dodati fingerprint nalaza u .gitleaksignore",
+      "Deaktivirati ključ u IAM-u (aws iam update-access-key --status Inactive)",
+      "Napraviti novi repo bez stare istorije"
+    ],
+    "answer": 2,
+    "explain": "Tajna je kompromitovana od trenutka pusha, a brisanje ili prepisivanje istorije ne poništava kopije koje su već napravljene. Prvo se ključ deaktivira, pa slijede rotacija, istraga i tek onda eventualno čišćenje istorije. .gitleaksignore bez opoziva samo sakriva problem."
+  },
+  {
+    "obj": "2.1",
+    "q": "Pokrećeš gitleaks dir . nad /root/kurs-shop i ne vidiš AWS ključ za koji znaš da je procurio u commitu „Početna verzija API-ja“. Zašto?",
+    "options": [
+      "gitleaks ne prepoznaje AWS ključeve bez .gitleaks.toml",
+      "gitleaks dir skenira samo trenutne fajlove na disku; ključ je u istoriji, pa treba gitleaks git",
+      "Nedostaje --redact",
+      "Treba dodati --log-opts=\"--all\" uz dir"
+    ],
+    "answer": 1,
+    "explain": "dir (files) gleda fajlove kakvi su sada, a ključ je uklonjen kasnijim commitom. gitleaks git čita istoriju preko git log -p. Podrazumijevana pravila pokrivaju AWS, --redact samo sakriva vrijednost, a --log-opts važi za git podkomandu, ne za dir."
+  },
+  {
+    "obj": "2.1",
+    "q": "Stari pipeline poziva gitleaks detect --source . -v i developeri pitaju je li to ispravno za gitleaks 8.30. Šta je ispravan savremeni ekvivalent?",
+    "options": [
+      "gitleaks scan --git .",
+      "gitleaks protect --staged",
+      "trufflehog git file://.",
+      "gitleaks git . -v"
+    ],
+    "answer": 3,
+    "explain": "Od 8.19 detect i protect su zastarjeli (rade, ali su sakriveni); skeniranje istorije je gitleaks git, a fajlova gitleaks dir. protect --staged je stari pre-commit način, scan podkomanda ne postoji, a TruffleHog je drugi alat."
+  },
+  {
+    "obj": "2.1",
+    "q": "Job za otkrivanje tajni u CI logu ispisuje pune vrijednosti nađenih tokena. Šta dodaješ komandi gitleaks git . -v?",
+    "options": [
+      "--redact",
+      "--no-banner",
+      "--exit-code 0",
+      "--report-format sarif"
+    ],
+    "answer": 0,
+    "explain": "--redact zamjenjuje vrijednost tajne u izlazu i izvještaju (opcionalno procenat, npr. --redact=50). --no-banner samo uklanja logo, --exit-code 0 bi isključio gate, a format izvještaja ne utiče na ispis u logu."
+  },
+  {
+    "obj": "2.1",
+    "q": "Interni tokeni kurs-shopa imaju format kshop_ i 32 mala alfanumerička znaka. Podrazumijevana pravila ih ne hvataju. Kako ih dodaješ, a da zadržiš sva ugrađena pravila?",
+    "options": [
+      "U .gitleaks.toml napraviš [[rules]] sa regex kshop_[a-z0-9]{32}, bez [extend]",
+      "U .gitleaksignore dodaš red kshop_*",
+      "U .gitleaks.toml staviš [extend] useDefault = true i dodaš [[rules]] sa id, regex i keywords = [\"kshop_\"]",
+      "Pokreneš gitleaks git --enable-rule kshop"
+    ],
+    "answer": 2,
+    "explain": "[extend] useDefault = true zadržava ugrađena pravila, a [[rules]] dodaje novo; keywords ubrzavaju sken. Bez [extend] vlastita konfiguracija zamjenjuje podrazumijevanu, .gitleaksignore služi za izuzetke, a --enable-rule samo bira postojeća pravila po ID-u."
+  },
+  {
+    "obj": "2.1",
+    "q": "Security tim ima 300 nalaza iz skeniranja svih repoa i želi prvo riješiti tajne koje su stvarno aktivne. Koji alat i opcija najdirektnije daju tu listu?",
+    "options": [
+      "gitleaks git --baseline-path",
+      "TruffleHog sa --results=verified",
+      "gitleaks dir --max-target-megabytes 1",
+      "TruffleHog sa --no-verification"
+    ],
+    "answer": 1,
+    "explain": "TruffleHog verifikuje tajnu prema API-ju dobavljača i sa --results=verified prikazuje samo potvrđeno aktivne. gitleaks nema verifikaciju; baseline samo skriva stare nalaze, a --no-verification isključuje upravo ono što treba."
+  },
+  {
+    "obj": "2.1",
+    "q": "U MR pipelineu job pokreće trufflehog git file://. --since-commit main --branch HEAD --results=verified,unknown --fail. Job završava sa izlaznim kodom 183. Šta to znači?",
+    "options": [
+      "TruffleHog je pronašao rezultate koji odgovaraju filteru --results",
+      "Git klon nije uspio jer GIT_DEPTH nije 0",
+      "Verifikacija nije uspjela zbog mreže",
+      "TruffleHog se nije mogao ažurirati"
+    ],
+    "answer": 0,
+    "explain": "Sa --fail TruffleHog vraća 183 kad ima rezultata; 0 znači da nema nalaza, a 1 da je došlo do greške. Neuspjela verifikacija daje status unknown za nalaz, a ne poseban izlazni kod."
+  },
+  {
+    "obj": "2.1",
+    "type": "match",
+    "q": "Upari zadatak sa komandom koja ga rješava u labu (bez mreže).",
+    "options": [
+      "Skenirati staged izmjene u pre-commit hooku",
+      "Skenirati cijelu git istoriju kurs-shopa TruffleHogom",
+      "Napraviti SARIF izvještaj za istoriju",
+      "Testirati novo pravilo nad jednim stringom"
+    ],
+    "targets": ["echo '...' | gitleaks stdin -c .gitleaks.toml -v", "gitleaks dir . --log-opts=\"--all\"", "gitleaks git . --redact --report-format sarif --report-path gitleaks.sarif", "gitleaks git --pre-commit --staged --redact", "trufflehog git file:///root/kurs-shop --no-verification --no-update"],
+    "answer": [3, 4, 2, 0],
+    "explain": "Hook koristi git --pre-commit --staged, TruffleHog čita lokalni repo preko file:// URL-a bez verifikacije jer nema mreže, SARIF daju --report-format i --report-path, a stdin je zgodan za test pravila. dir sa --log-opts je distraktor: log-opts važi za git podkomandu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Uvodiš gitleaks u repo sa 8 godina istorije. Prvi sken nađe 45 starih nalaza (sve tajne su već opozvane), a tim želi da MR-ovi padaju samo na NOVE tajne. Šta radiš?",
+    "options": [
+      "Postaviš allow_failure: true na job",
+      "Isključiš pravilo generic-api-key",
+      "Dodaš --exit-code 0",
+      "Napraviš redaktovani baseline izvještaj i u pipelineu koristiš --baseline-path"
+    ],
+    "answer": 3,
+    "explain": "--baseline-path ignoriše nalaze koji su već u baseline izvještaju, pa job pada samo na nove. allow_failure i --exit-code 0 isključuju gate za sve, uključujući nove tajne, a gašenje pravila ne razlikuje staro od novog."
+  },
+  {
+    "obj": "2.2",
+    "q": "Developer kaže da je pre-commit hook sa gitleaksom dovoljan i da job u pipelineu nije potreban. Šta je ključni kontraargument?",
+    "options": [
+      "Hook je spor i ne podržava .gitleaks.toml",
+      "Hook radi samo na Linuxu",
+      "Hook je na developerovom računaru: može se zaobići sa git commit --no-verify ili se nikad ne instalira, pa treba i kontrola na serveru",
+      "pre-commit ne može pozvati binarni fajl, samo Python skripte"
+    ],
+    "answer": 2,
+    "explain": "Lokalni hook je pogodnost, ne garantovana kontrola. Push protection i obavezan pipeline job su na serveru i ne zavise od laptopa. Hook podržava konfiguraciju, radi na svim platformama, a language: system poziva bilo koji binarni fajl."
+  },
+  {
+    "obj": "2.2",
+    "q": "Koji .pre-commit-config.yaml radi u labu bez mreže i skenira samo staged izmjene?",
+    "options": [
+      "repos:\n  - repo: local\n    hooks:\n      - id: gitleaks\n        name: gitleaks\n        entry: gitleaks git --pre-commit --staged --redact\n        language: system\n        pass_filenames: false",
+      "repos:\n  - repo: https://github.com/gitleaks/gitleaks\n    rev: v8.30.0\n    hooks:\n      - id: gitleaks",
+      "repos:\n  - repo: local\n    hooks:\n      - id: gitleaks\n        entry: gitleaks dir .\n        language: python",
+      "hooks:\n  pre-commit: gitleaks protect"
+    ],
+    "answer": 0,
+    "explain": "repo: local sa language: system poziva instalirani gitleaks bez preuzimanja, a git --pre-commit --staged gleda samo ono što ide u commit. Zvanični hook sa GitHuba treba mrežu za kloniranje, language: python bi pokušao napraviti okruženje i dir skenira cijeli direktorij, a četvrta opcija nije pre-commit format."
+  },
+  {
+    "obj": "2.2",
+    "q": "U tests/fixtures/ su namjerno lažni ključevi za testove i gitleaks svaki put prijavljuje 12 nalaza. Koji je najprikladniji izuzetak?",
+    "options": [
+      "Dodati # gitleaks:allow na kraj svakog fajla",
+      "[[allowlists]] u .gitleaks.toml sa paths = ['''tests/fixtures/.*'''] i opisom razloga",
+      "Pokretati gitleaks sa --exit-code 0",
+      "Isključiti [extend] useDefault"
+    ],
+    "answer": 1,
+    "explain": "Allowlist po putanji je uzak, dokumentovan i prolazi review kroz MR. gitleaks:allow važi samo za liniju na kojoj stoji, --exit-code 0 gasi gate za sve, a isključivanje ugrađenih pravila uklanja i pravu detekciju."
+  },
+  {
+    "obj": "2.2",
+    "q": "Developer na GitLab Ultimate projektu sa uključenim secret push protection dobija odbijen push zbog testnog tokena i pushne sa git push -o secret_push_protection.skip_all. Šta je tačno?",
+    "options": [
+      "Push prolazi, zaobilaženje se bilježi kao audit događaj, a pipeline secret detection će i dalje skenirati commite ako je uključen",
+      "Push opet pada jer se push protection ne može zaobići",
+      "Push prolazi i nigdje ne ostaje trag",
+      "Push prolazi, ali GitLab automatski opoziva token"
+    ],
+    "answer": 0,
+    "explain": "Push protection se može zaobići push opcijom ili sa [skip secret push protection] u poruci commita, a svako zaobilaženje se bilježi u auditu. Pipeline secret detection je zasebna kontrola. GitLab ne opoziva tokene trećih strana automatski."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Poredaj slojeve zaštite od curenja tajni po trenutku u kojem djeluju, od najranijeg.",
+    "options": [
+      "Periodični (scheduled) sken cijele istorije svih grana",
+      "pre-commit hook na računaru developera",
+      "gitleaks job u MR pipelineu nad commitima iz MR-a",
+      "Push protection na Git serveru"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "Hook djeluje prije commita, push protection pri pushu, MR job nakon pusha u pipelineu, a periodični sken kasnije hvata ono što je promaklo ili što nova pravila tek sada prepoznaju."
+  },
+  {
+    "obj": "2.2",
+    "q": "U .gitleaksignore je dodan red 3f2c9a1…:config/settings.py:aws-access-token:4 bez komentara, a tiket o opozivu ključa ne postoji. Šta je problem?",
+    "options": [
+      "Format fingerprinta je pogrešan; mora početi imenom pravila",
+      ".gitleaksignore važi samo za gitleaks dir",
+      "Fingerprint mora biti u .gitleaks.toml",
+      "Izuzetak je dodat bez dokaza da je tajna opozvana i bez razloga; nalaz je sakriven, a ključ je možda i dalje aktivan"
+    ],
+    "answer": 3,
+    "explain": "Izuzetak treba značiti „obrađeno“: opozvano, sa razlogom, datumom i brojem incidenta. Format commit:fajl:pravilo:linija je ispravan za git sken, .gitleaksignore važi i za istoriju, a fingerprinti idu baš u taj fajl."
+  },
+  {
+    "obj": "2.3",
+    "type": "order",
+    "q": "Poredaj korake odgovora na procurjeli AWS ključ iz kurs-shop istorije.",
+    "options": [
+      "Prepisati istoriju (git filter-repo) ako je potrebno i dodati fingerprint u .gitleaksignore sa brojem incidenta",
+      "Deaktivirati ključ",
+      "Pregledati CloudTrail događaje za taj AccessKeyId",
+      "Izdati novu tajnu (ili OIDC rolu), prebaciti servise i obrisati stari ključ"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "Opoziv (deaktivacija) je uvijek prvi, zatim rotacija da servisi rade, istraga upotrebe, i na kraju čišćenje istorije i dokumentovanje izuzetka. Istraga može teći paralelno sa rotacijom, ali nikad prije deaktivacije."
+  },
+  {
+    "obj": "2.3",
+    "q": "Ključ je deaktiviran. Kako najbrže vidiš šta je rađeno tim ključem u posljednjih 90 dana?",
+    "options": [
+      "aws iam get-access-key-last-used --access-key-id AKIA...",
+      "aws sts get-caller-identity",
+      "aws cloudtrail lookup-events --lookup-attributes AttributeKey=AccessKeyId,AttributeValue=AKIA...",
+      "aws iam list-access-keys --user-name kurs-shop-ci"
+    ],
+    "answer": 2,
+    "explain": "lookup-events filtrirano po AccessKeyId daje upravljačke događaje iz CloudTrail istorije (90 dana). get-access-key-last-used daje samo posljednju upotrebu, get-caller-identity pokazuje tvoj identitet, a list-access-keys samo spisak ključeva."
+  },
+  {
+    "obj": "2.3",
+    "q": "Repo je privatan, ima 60 aktivnih developera i 40 otvorenih MR-ova. Procurjeli Slack webhook je opozvan i zamijenjen. Šta je razuman sljedeći korak?",
+    "options": [
+      "Obavezno prepisati istoriju i force pushati, bez obzira na posljedice",
+      "Obrisati repo i napraviti novi",
+      "Ne raditi ništa dalje; nalaz će nestati sam",
+      "Ne prepisivati istoriju; dodati fingerprint u .gitleaksignore sa brojem incidenta i datumom opoziva, i uvesti hook i push protection"
+    ],
+    "answer": 3,
+    "explain": "Opozvana tajna je bezopasna, a prepisivanje istorije bi promijenilo sve hasheve, polomilo otvorene MR-ove i lokalne grane. Dokumentovan izuzetak i prevencija su razumniji. Bez izuzetka bi periodični sken stalno prijavljivao isti nalaz."
+  },
+  {
+    "obj": "2.3",
+    "q": "Nakon git filter-repo --replace-text i force pusha svih grana, gitleaks nad svježim klonom ne nalazi tajnu. Šta je i dalje izloženo?",
+    "options": [
+      "Ništa: filter-repo uklanja tajnu i sa servera i iz svih klonova",
+      "Stari klonovi developera, forkovi, artefakti i keš runnera, a na GitLabu i stari objekti dok se ne pokrene Repository cleanup / Remove blobs",
+      "Samo tagovi, jer ih filter-repo ne mijenja",
+      "Samo .gitleaksignore fajl"
+    ],
+    "answer": 1,
+    "explain": "Prepisivanje mijenja samo repo koji pushaš; kopije van njega ostaju, a server čuva stare objekte (npr. preko MR referenci) dok se ne očisti. filter-repo prepisuje i tagove. Zato je opoziv tajne uvijek obavezan."
+  }
+]

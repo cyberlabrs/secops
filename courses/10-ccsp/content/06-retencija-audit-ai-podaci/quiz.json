@@ -1,0 +1,278 @@
+[
+  {
+    "obj": "2.7",
+    "q": "Organizacija prekida ugovor sa IaaS providerom i mora osigurati da njeni podaci, uključujući replike i snapshote, ne mogu biti oporavljeni. Koji metod je BEST?",
+    "options": [
+      "Zatražiti od providera degaussing diskova na kojima su bili podaci.",
+      "Prepisati sve volumene nulama prije gašenja instanci.",
+      "Crypto-shredding: uništiti sve kopije ključeva kojima su podaci šifrovani.",
+      "Obrisati objekte i volumene kroz konzolu providera."
+    ],
+    "answer": 2,
+    "explain": "U dijeljenom, repliciranom storageu customer nema pristup fizičkim medijima. Crypto-shredding čini sve kopije šifrata neupotrebljivim. Degaussing nije dostupan customeru i ne radi na SSD-u, prepisivanje ne garantuje da su svi blokovi prepisani, a obično brisanje ostavlja data remanence."
+  },
+  {
+    "obj": "2.7",
+    "q": "Pravna služba je obavijestila IT da se očekuje tužba bivšeg partnera. Za tri dana lifecycle politika treba da obriše relevantne emailove starije od pet godina. Šta treba uraditi FIRST?",
+    "options": [
+      "Primijeniti legal hold na relevantne podatke i suspendovati njihovo automatsko brisanje.",
+      "Pustiti politiku da obriše emailove jer je retencijski rok istekao.",
+      "Izvesti emailove na USB disk i predati ih advokatu partnera.",
+      "Sačekati da tužba bude formalno podnesena prije bilo kakve akcije."
+    ],
+    "answer": 0,
+    "explain": "Obaveza čuvanja nastaje kada se spor razumno očekuje. Legal hold ima prednost nad retencijom; brisanje bi bilo uništavanje dokaza (spoliation). Predaja drugoj strani nije dio čuvanja, a čekanje formalne tužbe je prekasno."
+  },
+  {
+    "obj": "2.7",
+    "q": "Ko treba da odobri rokove u politici retencije podataka?",
+    "options": [
+      "Cloud provider, jer upravlja storageom",
+      "Administrator sistema za backup",
+      "Sigurnosni analitičar u SOC-u",
+      "Uprava, uz učešće pravne službe i data ownera"
+    ],
+    "answer": 3,
+    "explain": "Rokovi proizlaze iz regulative, ugovora i poslovnih potreba. Politiku odobrava uprava, pravna služba tumači zahtjeve, a data owneri znaju poslovne potrebe. IT i provider provode politiku, ali je ne određuju."
+  },
+  {
+    "obj": "2.7",
+    "q": "Kompanija čuva arhive 15 godina u cold storageu, šifrovane customer-managed ključevima. Šta je MOST important rizik koji procedura arhiviranja mora adresirati?",
+    "options": [
+      "Vrijeme povrata iz cold storagea može biti nekoliko sati.",
+      "Gubitak ili neplanirano uništenje ključeva i zastarjelost formata podataka.",
+      "Cijena storagea može porasti tokom godina.",
+      "Provider može promijeniti naziv storage klase."
+    ],
+    "answer": 1,
+    "explain": "Bez ključa šifrovana arhiva je trajno izgubljena, a format koji niko ne može pročitati ima isti efekat. Ključevi se moraju čuvati koliko i arhiva, uz periodičnu provjeru čitljivosti. Sporiji povrat i cijena su poznati kompromisi, a ne kritični rizici."
+  },
+  {
+    "obj": "2.7",
+    "q": "Koja tvrdnja NAJBOLJE opisuje razliku između backupa i arhive?",
+    "options": [
+      "Backup se čuva duže od arhive i služi za usklađenost.",
+      "Arhiva služi za dugoročno čuvanje podataka uklonjenih iz aktivne upotrebe, a backup za oporavak aktivnih podataka.",
+      "Arhiva i backup su isto, razlikuju se samo po storage klasi.",
+      "Backup se nikad ne šifruje, a arhiva uvijek."
+    ],
+    "answer": 1,
+    "explain": "Backup je kopija aktivnih podataka za oporavak (veza sa RPO/RTO), a arhiva čuva podatke koji više nisu aktivni, dugoročno, zbog zakona ili poslovanja. Rokovi, svrha i pristup se razlikuju."
+  },
+  {
+    "obj": "2.7",
+    "q": "Revizija utvrdi da firma čuva sve lične podatke klijenata neograničeno 'za svaki slučaj'. Koji princip je NAJDIREKTNIJE prekršen?",
+    "options": [
+      "Data portability",
+      "Non-repudiation",
+      "Least privilege",
+      "Storage limitation"
+    ],
+    "answer": 3,
+    "explain": "GDPR princip storage limitation traži da se lični podaci čuvaju samo koliko je potrebno za svrhu. Neograničeno čuvanje uz to povećava rizik curenja i obim eDiscoveryja. Ostali principi nisu direktno povezani."
+  },
+  {
+    "obj": "2.7",
+    "q": "Podaci su pod legal holdom u object storageu. Šta je BEST tehnička kontrola za outline zahtjeve 'deletion prevention' i 'authorized access'?",
+    "options": [
+      "Legal hold zaštita na objektima uz pristup ograničen na eDiscovery tim i logovanje pristupa",
+      "Kopija podataka na laptop pravnika",
+      "Verzionisanje objekata bez ograničenja pristupa",
+      "Premještanje podataka u jeftiniju storage klasu"
+    ],
+    "answer": 0,
+    "explain": "Legal hold mehanizam (npr. Object Lock legal hold, litigation hold) sprečava brisanje i izmjenu, a ograničen i logovan pristup ispunjava zahtjev ovlaštenog pristupa. Kopija na laptopu nema kontrolu, verzionisanje bez ograničenja dozvoljava brisanje verzija, a storage klasa ne štiti."
+  },
+  {
+    "obj": "2.8",
+    "q": "Svi administratori baze koriste zajednički nalog 'dbadmin'. Logovanje je detaljno i nepromjenjivo. Revizor kaže da organizacija ipak ne ispunjava zahtjev accountabilityja. Zašto?",
+    "options": [
+      "Logovi nisu šifrovani u tranzitu.",
+      "Dijeljeni nalog onemogućava vezivanje radnje za konkretnu osobu.",
+      "Logovi se ne čuvaju 12 mjeseci.",
+      "Baza nije u istom regionu kao log archive."
+    ],
+    "answer": 1,
+    "explain": "Accountability traži da se radnja veže za jedinstven identitet. Dijeljeni nalog to onemogućava bez obzira na kvalitet logova. Rješenje su individualni nalozi, npr. kroz PAM ili federaciju."
+  },
+  {
+    "obj": "2.8",
+    "q": "Sigurnosni tim definiše obavezne atribute za događaje pristupa osjetljivim podacima. Koji skup je NAJPOTPUNIJI?",
+    "options": [
+      "Naziv servera, verzija OS-a i slobodan prostor na disku",
+      "Lozinka korisnika, session token i vrijeme",
+      "Samo izvorna IP adresa i HTTP status kod",
+      "Sinhronizovano vrijeme, identitet korisnika, izvorna IP adresa i geolokacija, objekt, akcija i rezultat"
+    ],
+    "answer": 3,
+    "explain": "Događaj mora odgovoriti na when, where, who i what. Lozinke i tokeni se nikad ne loguju, IP adresa sama nije identitet, a podaci o serveru ne opisuju pristup podatku."
+  },
+  {
+    "obj": "2.8",
+    "q": "Organizacija koristi SaaS HR sistem i mora pratiti ko pregleda platne podatke. Šta treba provjeriti BEFORE potpisivanja ugovora?",
+    "options": [
+      "Da li provider dozvoljava instaliranje agenata na svojim serverima",
+      "Da li SaaS koristi relacionu ili NoSQL bazu",
+      "Da li provider izlaže audit logove pristupa podacima, njihovu retenciju i API za izvoz",
+      "Da li provider koristi Type 1 hypervisor"
+    ],
+    "answer": 2,
+    "explain": "U SaaS-u customer vidi samo logove koje provider izloži. Dostupnost, granularnost, retencija i mogućnost izvoza logova u vlastiti SIEM su kriterij izbora i stavka ugovora. Agenti, tip baze i hypervisor su van kontrole i vidljivosti customera."
+  },
+  {
+    "obj": "2.8",
+    "q": "Administratori cloud okruženja imaju puna prava i nad nalogom u kojem se čuvaju audit logovi. Koja izmjena NAJBOLJE štiti integritet logova?",
+    "options": [
+      "Premjestiti logove u poseban nalog sa nepromjenjivim storageom i odvojenim pristupom",
+      "Povećati učestalost logovanja",
+      "Uključiti kompresiju logova",
+      "Zamoliti administratore da ne brišu logove"
+    ],
+    "answer": 0,
+    "explain": "Separation of duties i nepromjenjiv storage (WORM) sprečavaju da administrator čije se radnje loguju izmijeni ili obriše tragove. Učestalost i kompresija ne štite integritet, a molba nije kontrola."
+  },
+  {
+    "obj": "2.8",
+    "q": "Ugovorna strana tvrdi da nikad nije poslala instrukciju za plaćanje zabilježenu u sistemu. Koji mehanizam bi NAJBOLJE omogućio non-repudiation?",
+    "options": [
+      "SHA-256 hash svake instrukcije",
+      "HMAC sa ključem koji dijele obje strane",
+      "Digitalni potpis instrukcije privatnim ključem pošiljaoca uz pouzdanu vremensku oznaku",
+      "TLS veza između strana"
+    ],
+    "answer": 2,
+    "explain": "Samo pošiljalac ima privatni ključ, pa potpis dokazuje porijeklo i integritet. Hash može izračunati bilo ko, HMAC ključ dijele obje strane, a TLS štiti kanal, ali ne ostavlja dokaz o porijeklu poruke nakon prenosa."
+  },
+  {
+    "obj": "2.8",
+    "q": "Tokom istrage incidenta forenzičar pravi snapshot cloud volumena. Šta je MOST important da dokaz bude prihvatljiv na sudu?",
+    "options": [
+      "Dokumentovan chain of custody sa hash vrijednostima pri prikupljanju i svakoj predaji",
+      "Da snapshot bude u istom regionu kao produkcija",
+      "Da se analiza radi direktno na originalnom volumenu",
+      "Da snapshot bude kompresovan radi bržeg prenosa"
+    ],
+    "answer": 0,
+    "explain": "Chain of custody dokazuje ko je, kada i kako rukovao dokazom i da nije izmijenjen (hash). Analiza se radi na kopijama, ne na originalu. Region i kompresija ne utiču na prihvatljivost."
+  },
+  {
+    "obj": "2.8",
+    "q": "SIEM prijavljuje prijavu istog korisnika iz Sarajeva i, deset minuta kasnije, iz druge zemlje. Šta analitičar treba imati na umu prije zaključka da je nalog kompromitovan?",
+    "options": [
+      "Geolokacija iz IP adrese je uvijek precizna, pa je kompromitacija sigurna.",
+      "Geolokacija je približna; VPN, proxy i cloud egress adrese mogu dati lažno 'nemoguće putovanje'.",
+      "Geolokacija nije relevantan atribut događaja.",
+      "Vremenske oznake u logovima se nikad ne moraju sinhronizovati."
+    ],
+    "answer": 1,
+    "explain": "Geolokacija je koristan, ali približan atribut. Prije zaključka treba provjeriti VPN, proxy i druge izvore. Sinhronizovano vrijeme je preduslov korelacije."
+  },
+  {
+    "obj": "2.9",
+    "q": "Data science tim želi trenirati model na istoriji razgovora korisničke podrške koja sadrži lične podatke klijenata. Šta treba uraditi FIRST?",
+    "options": [
+      "Odmah trenirati model i kasnije ukloniti lične podatke iz modela.",
+      "Kupiti veći GPU klaster da trening traje kraće.",
+      "Utvrditi pravni osnov i svrhu, klasifikovati skup i primijeniti minimizaciju ili pseudonimizaciju.",
+      "Objaviti skup podataka partnerima radi validacije."
+    ],
+    "answer": 2,
+    "explain": "Zaštita podataka za treniranje počinje upravljački: pravni osnov, svrha, klasifikacija i minimizacija prije treniranja. Uklanjanje podataka iz već istreniranog modela je teško, a objava skupa je curenje."
+  },
+  {
+    "obj": "2.9",
+    "q": "Istraživač pokaže da može sa velikom sigurnošću utvrditi da li je određeni pacijent bio u skupu za treniranje dijagnostičkog modela. Kako se zove ovaj napad?",
+    "options": [
+      "Data poisoning",
+      "Prompt injection",
+      "Model extraction",
+      "Membership inference"
+    ],
+    "answer": 3,
+    "explain": "Membership inference otkriva da li je zapis bio u skupu za treniranje, što je samo po sebi curenje osjetljive informacije. Poisoning mijenja podatke za treniranje, extraction kopira model, a prompt injection mijenja ponašanje LLM-a ulazom."
+  },
+  {
+    "obj": "2.9",
+    "q": "Tim preuzima pre-trained model iz javnog repozitorija za upotrebu u produkciji. Koja kontrola NAJBOLJE adresira verifikaciju modela?",
+    "options": [
+      "Provjera porijekla, hasha i potpisa modela i skeniranje prije unosa u interni registry",
+      "Mjerenje tačnosti modela na javnom benchmarku",
+      "Povećanje broja replika modela u produkciji",
+      "Uključivanje automatskog skaliranja inference endpointa"
+    ],
+    "answer": 0,
+    "explain": "Verifikacija provjerava da je model ono što tvrdi da jeste i da nije izmijenjen: porijeklo, integritet (hash, potpis) i skeniranje zbog rizika lanca snabdijevanja. Tačnost na benchmarku je validacija, a replike i skaliranje su dostupnost."
+  },
+  {
+    "obj": "2.9",
+    "q": "Model za otkrivanje prevara počeo je propuštati transakcije sa određenim obrascem. Istraga pokaže da je zaposleni mjesecima ubacivao lažno označene primjere u skup za treniranje. Koja kontrola bi ovo NAJVJEROVATNIJE spriječila?",
+    "options": [
+      "Rate limiting upita prema modelu",
+      "Kontrola pristupa skupu, provenance i automatska validacija podataka prije treniranja",
+      "Differential privacy pri treniranju",
+      "Filtriranje izlaza modela"
+    ],
+    "answer": 1,
+    "explain": "Ovo je data poisoning. Ograničen pristup skupu, praćenje porijekla i izmjena te validacija (anomalije, neslaganje labela) prije treniranja ga sprečavaju. Rate limiting i filtriranje izlaza štite od extractiona i curenja, a differential privacy štiti privatnost, ne integritet."
+  },
+  {
+    "obj": "2.9",
+    "q": "Koja tvrdnja NAJBOLJE razlikuje validaciju od verifikacije AI modela?",
+    "options": [
+      "Validacija provjerava potpis modela, verifikacija tačnost.",
+      "Validacija i verifikacija su sinonimi.",
+      "Verifikacija provjerava da je model ispravan i neizmijenjen prema specifikaciji, validacija da je prikladan za namjenu.",
+      "Verifikacija se radi samo nad podacima, validacija samo nad modelima."
+    ],
+    "answer": 2,
+    "explain": "Verifikacija odgovara na pitanje 'da li je napravljeno ispravno' (integritet, porijeklo, specifikacija), a validacija 'da li je napravljena prava stvar' (tačnost, robusnost, pristrasnost za namjenu). Oba se primjenjuju i na podatke i na modele."
+  },
+  {
+    "obj": "2.9",
+    "q": "Zaposleni lijepe interne ugovore u javni generativni AI servis da bi dobili sažetke. Šta je BEST prvi korak sigurnosnog menadžera?",
+    "options": [
+      "Otpustiti zaposlene koji su koristili servis.",
+      "Ignorisati jer provider tvrdi da je servis siguran.",
+      "Blokirati sav internet saobraćaj prema svim domenima koji sadrže 'ai'.",
+      "Procijeniti rizik i definisati politiku prihvatljive upotrebe uz odobren servis sa ugovornim garancijama o korištenju i retenciji podataka."
+    ],
+    "answer": 3,
+    "explain": "Menadžer prvo procjenjuje rizik i daje kontrolisanu alternativu: politika, odobren servis, ugovor koji zabranjuje treniranje na podacima i određuje retenciju, uz DLP i CASB kao tehničke kontrole. Slijepo povjerenje, grubo blokiranje i kazne ne rješavaju problem."
+  },
+  {
+    "obj": "2.7",
+    "type": "match",
+    "q": "Upari situaciju sa metodom sanitizacije koja je NAJPRIKLADNIJA prema NIST SP 800-88.",
+    "options": [
+      "Cloud customer napušta SaaS i želi da podaci postanu nečitljivi",
+      "Interni HDD-ovi sa podacima niske osjetljivosti se ponovo koriste u istom odjeljenju",
+      "Neispravni diskovi sa strogo povjerljivim podacima iz vlastitog data centra",
+      "Magnetne trake sa arhivom koje se više neće koristiti"
+    ],
+    "targets": ["Purge: degaussing", "Clear: prepisivanje", "Destroy: fizičko uništenje", "Purge: cryptographic erase (crypto-shredding)", "Promjena klasifikacije"],
+    "answer": [3, 1, 2, 0],
+    "explain": "Customer u cloudu realno ima samo cryptographic erase. Ponovna upotreba unutar organizacije za podatke niske osjetljivosti dozvoljava clear. Neispravni diskovi sa strogo povjerljivim podacima se fizički uništavaju jer se ne mogu pouzdano prepisati. Magnetne trake se mogu purgeovati degaussingom. Promjena klasifikacije ne sanitizuje ništa."
+  },
+  {
+    "obj": "2.8",
+    "type": "order",
+    "q": "Poredaj korake rukovanja digitalnim dokazom iz cloud okruženja, od prvog do posljednjeg.",
+    "options": [
+      "Analiza na forenzičkoj kopiji uz dokumentovanje svakog koraka",
+      "Identifikacija relevantnih izvora (volumeni, logovi, memorija) i vlasnika",
+      "Izvještaj sa nalazima i dokumentovanim chain of custody",
+      "Prikupljanje (snapshot, izvoz logova) i izračunavanje hash vrijednosti"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Prvo se identifikuju izvori dokaza, zatim se prikupljaju uz hash koji potvrđuje integritet, analiza se radi na kopiji, a na kraju se pravi izvještaj kojem chain of custody daje dokaznu vrijednost."
+  },
+  {
+    "obj": "2.8",
+    "type": "spot",
+    "q": "Organizacija podliježe PCI DSS-u (godinu dana istorije audit logova) i mora moći dokazati da CloudTrail logovi nisu mijenjani. Označi redove Terraform konfiguracije koji to onemogućavaju.",
+    "snippet": "resource \"aws_cloudtrail\" \"org\" {\n  name                          = \"org-trail\"\n  s3_bucket_name                = aws_s3_bucket.logs.id   # bucket u zasebnom log-archive nalogu\n  is_multi_region_trail         = true\n  include_global_service_events = true\n  enable_log_file_validation    = false\n}\n\nresource \"aws_s3_bucket_lifecycle_configuration\" \"logs\" {\n  bucket = aws_s3_bucket.logs.id\n  rule {\n    id     = \"expire-logs\"\n    status = \"Enabled\"\n    expiration { days = 30 }\n  }\n}",
+    "lang": "hcl",
+    "answer": [5, 13],
+    "explain": "Red 6: enable_log_file_validation = false isključuje digest fajlove sa hashevima i potpisom, pa se ne može dokazati integritet logova (da nisu izmijenjeni ili obrisani); treba true, uz nepromjenjiv storage (Object Lock/WORM). Red 14: lifecycle pravilo briše logove nakon 30 dana, a PCI DSS traži najmanje 12 mjeseci (tri mjeseca odmah dostupno); retencija treba pratiti regulatorni zahtjev, npr. prelazak u hladniji sloj umjesto brisanja. Multi-region trail, globalni događaji i bucket u zasebnom log-archive nalogu su dobra praksa."
+  }
+]

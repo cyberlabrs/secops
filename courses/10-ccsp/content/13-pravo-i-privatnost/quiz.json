@@ -1,0 +1,279 @@
+[
+  {
+    "obj": "6.1",
+    "q": "Evropska kompanija koristi US cloud provajdera u regionu Frankfurt. Uprava pita da li US vlasti mogu tražiti njene podatke od provajdera. Šta je NAJTAČNIJI odgovor?",
+    "options": [
+      "Ne, jer su podaci fizički u EU i podliježu samo GDPR-u.",
+      "Mogu, jer CLOUD Act cilja podatke pod kontrolom US provajdera bez obzira na lokaciju; rizik se ublažava ugovorom i šifrovanjem ključevima pod kontrolom kompanije.",
+      "Mogu samo ako kompanija ima podružnicu u SAD.",
+      "Ne, jer EU-US Data Privacy Framework zabranjuje takve zahtjeve."
+    ],
+    "answer": 1,
+    "explain": "CLOUD Act se odnosi na provajdera pod US nadležnošću, bez obzira gdje su podaci. GDPR čl. 48 stvara sukob, ali ne eliminiše rizik. Ugovor (osporavanje, transparentnost) i ključevi pod kontrolom korisnika su praktične mjere. DPF reguliše komercijalne prenose, ne zabranjuje zahtjeve vlasti."
+  },
+  {
+    "obj": "6.1",
+    "q": "Security menadžer otkrije da bi zahtjev za čuvanje podataka iz US spora mogao biti u sukobu sa obavezom brisanja po GDPR-u. Šta treba uraditi PRVO?",
+    "options": [
+      "Obrisati podatke jer GDPR ima prednost.",
+      "Čuvati podatke neograničeno jer sud ima prednost.",
+      "Konsultovati pravnu službu da utvrdi primjenjive obaveze i prioritet.",
+      "Premjestiti podatke u treću državu bez tih obaveza."
+    ],
+    "answer": 2,
+    "explain": "Sukob zakona traži pravno tumačenje. Security profesionalac identifikuje i eskalira rizik, a pravna služba određuje kako postupiti. Jednostrano brisanje ili premještanje može biti nezakonito."
+  },
+  {
+    "obj": "6.1",
+    "q": "Koji ISO/IEC standard daje smjernice za identifikaciju, prikupljanje, akviziciju i očuvanje digitalnih dokaza?",
+    "options": [
+      "ISO/IEC 27037",
+      "ISO/IEC 27042",
+      "ISO/IEC 27050",
+      "ISO/IEC 27018"
+    ],
+    "answer": 0,
+    "explain": "27037 pokriva početno rukovanje dokazima. 27042 je analiza i interpretacija, 27050 eDiscovery, a 27018 zaštita PII u javnom cloudu."
+  },
+  {
+    "obj": "6.1",
+    "q": "Forenzički tim želi da dokaže da je alat za analizu cloud logova pouzdan i da daje tačne rezultate prije nego što se nalazi iznesu pred sud. Koji standard je NAJRELEVANTNIJI?",
+    "options": [
+      "ISO/IEC 27037",
+      "ISO/IEC 27043",
+      "ISO/IEC 27050-3",
+      "ISO/IEC 27041"
+    ],
+    "answer": 3,
+    "explain": "27041 se bavi osiguranjem prikladnosti i adekvatnosti istražnih metoda, tj. validacijom metoda i alata. 27043 je krovni proces istrage, 27037 rukovanje dokazima, a 27050-3 praksa eDiscoveryja."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija je primila pismo advokata koje najavljuje tužbu. Relevantni podaci su u SaaS kolaboracionoj platformi sa politikom brisanja nakon 180 dana. Koji je NAJBOLJI prvi korak?",
+    "options": [
+      "Primijeniti legal hold u SaaS platformi nad relevantnim čuvarima i lokacijama.",
+      "Exportovati sve podatke kompanije na lokalni storage.",
+      "Sačekati da sud izda nalog za čuvanje.",
+      "Promijeniti politiku retencije za cijelu kompaniju na neograničeno."
+    ],
+    "answer": 0,
+    "explain": "Obaveza očuvanja nastaje kad se spor razumno očekuje. Ciljani legal hold je faza preservation u EDRM-u. Masovni export i neograničena retencija krše minimizaciju i stvaraju nove rizike, a čekanje naloga je prekasno."
+  },
+  {
+    "obj": "6.1",
+    "q": "Koji dio ISO/IEC 27050 se bavi pripremom sistema i infrastrukture PRIJE nego što stigne zahtjev za eDiscovery?",
+    "options": [
+      "27050-1",
+      "27050-2",
+      "27050-4",
+      "27050-3"
+    ],
+    "answer": 2,
+    "explain": "27050-4 je technical readiness. Dio 1 su pregled i koncepti, dio 2 upravljanje (governance), dio 3 kodeks prakse za izvođenje eDiscoveryja."
+  },
+  {
+    "obj": "6.1",
+    "q": "Banka u EU bira cloud provajdera za kritičnu funkciju. Koji akt EU NAJDIREKTNIJE propisuje obavezne ugovorne odredbe sa ICT trećim stranama i nadzor nad kritičnim ICT provajderima?",
+    "options": [
+      "NIS2 direktiva",
+      "DORA",
+      "EU AI Act",
+      "eIDAS 2"
+    ],
+    "answer": 1,
+    "explain": "DORA (Uredba 2022/2554), u primjeni od 17. 1. 2025, za finansijski sektor propisuje upravljanje ICT rizikom trećih strana, obavezne ugovorne odredbe i EU nadzor kritičnih ICT provajdera. NIS2 je opšti okvir sajber sigurnosti, a za finansijske subjekte DORA je lex specialis."
+  },
+  {
+    "obj": "6.1",
+    "q": "Koji je NAJVEĆI pravni rizik specifičan za cloud kada provajder koristi podizvođače u više država?",
+    "options": [
+      "Veća latencija aplikacije.",
+      "Viši troškovi licenci.",
+      "Teža integracija sa SIEM-om.",
+      "Podaci mogu biti obrađivani u jurisdikcijama koje korisnik nije procijenio, što može prekršiti zakonske obaveze o lokaciji i prenosu."
+    ],
+    "answer": 3,
+    "explain": "Podizvođači u drugim državama mijenjaju pravni okvir obrade i mogu značiti nezakonit prenos ličnih podataka. Ublažava se ugovorom (lista podizvođača, pravo prigovora, flow-down) i due diligence. Ostale opcije nisu pravni rizici."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija želi da u budućnosti lakše pređe sa jednog cloud provajdera na drugog bez visokih naknada za izlazak. Koji EU propis je za to NAJRELEVANTNIJI?",
+    "options": [
+      "EU Data Act",
+      "GDPR",
+      "Cyber Resilience Act",
+      "NIS2"
+    ],
+    "answer": 0,
+    "explain": "EU Data Act (u primjeni od 12. 9. 2025) sadrži pravila o promjeni provajdera usluga obrade podataka (switching) i postepeno ukidanje naknada za prelazak. GDPR ima pravo na prenosivost ličnih podataka za pojedince, ali ne reguliše prelazak kompanije između cloud provajdera."
+  },
+  {
+    "obj": "6.1",
+    "q": "Šta od navedenog je ugovorna, a ne zakonska obaveza u većini država?",
+    "options": [
+      "HIPAA Security Rule",
+      "Prijava povrede po GDPR čl. 33",
+      "PCI DSS",
+      "SOX zahtjevi za interne kontrole"
+    ],
+    "answer": 2,
+    "explain": "PCI DSS je industrijski standard koji trgovci i procesori prihvataju ugovorom sa kartičnim brendovima i bankama. HIPAA, GDPR i SOX su zakoni."
+  },
+  {
+    "obj": "6.2",
+    "q": "Organizacija iz EU koristi IP adrese i cookie identifikatore za analitiku. Marketing tvrdi da to nisu lični podaci jer nema imena. Šta je TAČNO?",
+    "options": [
+      "Marketing je u pravu, jer lični podaci po GDPR-u moraju sadržati ime.",
+      "To su lični podaci samo ako se čuvaju duže od 30 dana.",
+      "To su lični podaci samo ako se prenose van EU.",
+      "Online identifikatori mogu biti lični podaci jer se odnose na identifikabilno lice."
+    ],
+    "answer": 3,
+    "explain": "GDPR definiše lični podatak kao svaki podatak o identifikovanom ili identifikabilnom licu i izričito pominje online identifikatore. Definicija je šira od tipične US definicije PII."
+  },
+  {
+    "obj": "6.2",
+    "q": "US bolnica želi da čuva ePHI kod cloud provajdera. Šta mora biti potpisano PRIJE prenosa podataka?",
+    "options": [
+      "Data Processing Agreement po GDPR čl. 28",
+      "Business Associate Agreement (BAA)",
+      "Non-disclosure agreement sa svakim zaposlenim provajdera",
+      "Standard Contractual Clauses"
+    ],
+    "answer": 1,
+    "explain": "Po HIPAA-i provajder koji kreira, prima, čuva ili prenosi ePHI je business associate i mora potpisati BAA. DPA i SCC su GDPR instrumenti."
+  },
+  {
+    "obj": "6.2",
+    "q": "Trgovac obrađuje podatke platnih kartica kupaca iz EU. Kako NAJBOLJE klasifikovati obaveze zaštite tih podataka?",
+    "options": [
+      "Samo ugovorne, po PCI DSS-u.",
+      "Samo regulisane, po GDPR-u.",
+      "I regulisane (GDPR, jer su lični podaci) i ugovorne (PCI DSS, prema kartičnim brendovima).",
+      "Nijedne, ako su podaci tokenizovani kod provajdera."
+    ],
+    "answer": 2,
+    "explain": "Isti podatak može biti predmet zakona i ugovora. Ime i broj kartice osobe iz EU su lični podaci po GDPR-u i kartični podaci po PCI DSS-u. Tokenizacija smanjuje obim, ali ne briše obaveze automatski."
+  },
+  {
+    "obj": "6.2",
+    "q": "Univerzitet u SAD planira cloud sistem za ocjene i dosijee studenata. Koji US zakon je NAJDIREKTNIJE primjenjiv?",
+    "options": [
+      "FERPA",
+      "HIPAA",
+      "GLBA",
+      "COPPA"
+    ],
+    "answer": 0,
+    "explain": "FERPA štiti obrazovne zapise u ustanovama koje primaju federalna sredstva. HIPAA je zdravstvo, GLBA finansije, COPPA djeca mlađa od 13 godina online."
+  },
+  {
+    "obj": "6.2",
+    "q": "Po indijskom Digital Personal Data Protection Act-u, koja uloga odgovara kontroleru po GDPR-u?",
+    "options": [
+      "Data Principal",
+      "Consent Manager",
+      "Data Protection Board",
+      "Data Fiduciary"
+    ],
+    "answer": 3,
+    "explain": "Data Fiduciary određuje svrhu i način obrade (≈ kontroler), Data Principal je lice na koje se podaci odnose, Consent Manager upravlja pristancima, a Data Protection Board je nadzorni organ."
+  },
+  {
+    "obj": "6.2",
+    "q": "Kanadska kompanija u privatnom sektoru prikuplja lične podatke kupaca. Koji zakon i koji pristup su NAJTAČNIJI?",
+    "options": [
+      "FERPA, sa fokusom na obrazovne zapise.",
+      "PIPEDA, zasnovan na deset principa fer obrade informacija, uključujući accountability i consent.",
+      "GDPR, jer Kanada nema vlastiti zakon.",
+      "HIPAA, jer pokriva sve lične podatke u Sjevernoj Americi."
+    ],
+    "answer": 1,
+    "explain": "PIPEDA se primjenjuje na privatni sektor u komercijalnim aktivnostima i zasniva se na deset principa. Kanada ima vlastiti zakon; GDPR se može primijeniti samo dodatno, ako kompanija cilja lica u EU."
+  },
+  {
+    "obj": "6.2",
+    "q": "Javni cloud provajder želi da korisnicima pokaže da štiti PII koji obrađuje u njihovo ime (kao PII processor). Koji standard je NAJPRIKLADNIJI?",
+    "options": [
+      "ISO/IEC 27017",
+      "ISO/IEC 27037",
+      "ISO/IEC 27018",
+      "ISO/IEC 27050"
+    ],
+    "answer": 2,
+    "explain": "ISO/IEC 27018 je kodeks prakse za zaštitu PII u javnom cloudu kada provajder djeluje kao obrađivač. 27017 su opšte cloud sigurnosne kontrole, 27037 forenzika, 27050 eDiscovery."
+  },
+  {
+    "obj": "6.2",
+    "q": "Kompanija planira da u cloud preseli sistem koji obrađuje biometrijske podatke zaposlenih. Šta treba uraditi PRVO?",
+    "options": [
+      "Uključiti šifrovanje svih podataka u mirovanju.",
+      "Sprovesti procjenu uticaja na privatnost (DPIA) prije početka obrade.",
+      "Potpisati SLA sa provajderom.",
+      "Imenovati novog CISO-a."
+    ],
+    "answer": 1,
+    "explain": "Biometrija za identifikaciju je posebna kategorija, pa je obrada vjerovatno visokog rizika i DPIA je obavezna prije početka. DPIA određuje koje kontrole (uključujući šifrovanje) i ugovorne obaveze trebaju."
+  },
+  {
+    "obj": "6.2",
+    "q": "Koji GAPP princip NAJDIREKTNIJE pokriva zahtjev da se lični podaci čuvaju samo koliko je potrebno i zatim sigurno unište?",
+    "options": [
+      "Use, retention and disposal",
+      "Notice",
+      "Quality",
+      "Monitoring and enforcement"
+    ],
+    "answer": 0,
+    "explain": "Princip use, retention and disposal ograničava upotrebu na navedene svrhe, čuvanje na potreban period i traži sigurno uništavanje. Notice je obavještenje, quality tačnost, a monitoring and enforcement nadzor usklađenosti."
+  },
+  {
+    "obj": "6.2",
+    "q": "Kompanija iz EU želi prenijeti lične podatke US SaaS provajderu koji NIJE certifikovan po EU-US Data Privacy Frameworku. Koji mehanizam je NAJPRIKLADNIJI?",
+    "options": [
+      "Nijedan, prenos u SAD je zabranjen.",
+      "Usmena saglasnost provajdera da će poštovati GDPR.",
+      "Prenos je dozvoljen bez dodatnih mjera jer je provajder velika kompanija.",
+      "Standardne ugovorne klauzule (SCC) uz procjenu uticaja prenosa (TIA) i dodatne mjere po potrebi."
+    ],
+    "answer": 3,
+    "explain": "Bez adekvatnosti (DPF važi samo za certifikovane organizacije) prenos ide uz odgovarajuće zaštitne mjere iz čl. 46, najčešće SCC, a nakon Schrems II i uz TIA i dodatne mjere kao što je šifrovanje."
+  },
+  {
+    "obj": "6.1",
+    "type": "order",
+    "q": "Poredaj faze EDRM modela eDiscoveryja od rane ka kasnoj.",
+    "options": [
+      "Review",
+      "Preservation",
+      "Production",
+      "Identification",
+      "Collection",
+      "Processing"
+    ],
+    "answer": [3, 1, 4, 5, 0, 2],
+    "explain": "Nakon information governance slijede identifikacija ESI i čuvara, očuvanje (legal hold), prikupljanje, obrada (deduplikacija, filtriranje), pregled, analiza, predaja (production) i prezentacija."
+  },
+  {
+    "obj": "6.2",
+    "type": "match",
+    "q": "Upari zakon sa njegovim glavnim fokusom.",
+    "options": [
+      "Obrazovni zapisi učenika i studenata u SAD",
+      "Privatni sektor u Kanadi, deset principa fer obrade",
+      "Zdravstveni podaci kod covered entities i business associates",
+      "Digitalni lični podaci u Indiji, uloge Data Fiduciary i Data Principal",
+      "Lični podaci u EU, ekstrateritorijalna primjena i kazne do 4% prometa"
+    ],
+    "targets": [
+      "GDPR",
+      "HIPAA",
+      "FERPA",
+      "GLBA",
+      "PIPEDA",
+      "DPDP Act"
+    ],
+    "answer": [2, 4, 1, 5, 0],
+    "explain": "FERPA štiti obrazovne zapise, PIPEDA kanadski privatni sektor, HIPAA zdravstvene podatke, DPDP Act indijske digitalne lične podatke, a GDPR lične podatke u EU. GLBA (finansijske institucije u SAD) je distraktor."
+  }
+]

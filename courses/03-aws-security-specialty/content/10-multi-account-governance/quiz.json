@@ -1,0 +1,282 @@
+[
+  {
+    "obj": "6.1",
+    "q": "Kompanija ima 120 naloga u AWS Organizations. Security tim mora spriječiti da iko u member nalozima, uključujući administratore, isključi CloudTrail ili obriše GuardDuty detektor. Pravilo mora važiti i za buduće naloge. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "SCP sa Deny za cloudtrail:StopLogging, cloudtrail:DeleteTrail i guardduty:DeleteDetector, zakačen na root organizacije",
+      "IAM permission boundary na svim rolama u svim nalozima",
+      "AWS Config pravilo koje detektuje isključen CloudTrail i automatski ga uključuje",
+      "RCP sa Deny za iste akcije zakačen na root organizacije"
+    ],
+    "answer": 0,
+    "explain": "SCP ograničava principale u svim member nalozima i automatski važi za nove naloge u OU. Permission boundary treba postaviti na svaku rolu, Config samo detektuje nakon događaja, a RCP ograničava pristup resursima i nije namijenjen ovim akcijama nad konfiguracijom servisa."
+  },
+  {
+    "obj": "6.1",
+    "q": "Inženjer je greškom u bucket policy jednog bucketa dodao Allow za nalog partnera van organizacije. Security tim želi garanciju da S3 bucketi, KMS ključevi i SQS redovi u svim member nalozima nikad ne mogu biti dostupni principalima van organizacije, bez obzira na resource policy. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "SCP koji zabranjuje s3:PutBucketPolicy svim principalima",
+      "RCP sa Deny kada aws:PrincipalOrgID nije ID organizacije (osim za AWS servise), zakačen na root",
+      "IAM Access Analyzer sa organizacijom kao zonom povjerenja",
+      "AWS Config pravilo s3-bucket-policy-grantee-check sa automatskom remedijacijom"
+    ],
+    "answer": 1,
+    "explain": "RCP postavlja maksimalne dozvole na resurse i djeluje i na principale iz drugih organizacija, pa poništava pogrešan Allow u bucket policy. SCP ne može ograničiti spoljne principale, a Access Analyzer i Config samo otkrivaju problem nakon što nastane."
+  },
+  {
+    "obj": "6.1",
+    "q": "Tim je zakačio SCP sa Deny za ec2:RunInstances van eu-central-1 na root organizacije. Inženjer u management nalogu i dalje može pokrenuti instance u us-east-1. Zašto?",
+    "options": [
+      "SCP se primjenjuje tek nakon 24 sata",
+      "Inženjer koristi service-linked rolu",
+      "SCP ne djeluje na principale u management nalogu",
+      "Root organizacije ne može imati Deny SCP"
+    ],
+    "answer": 2,
+    "explain": "SCP i RCP ne utiču na management account, zato se u njemu ne drže radna opterećenja. SCP djeluje odmah, a Deny SCP se može kačiti na root."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija želi zabraniti javno dijeljenje AMI-ja i EBS snapshotova i zahtijevati IMDSv2 za nove instance u svim nalozima. Kontrola mora ostati na snazi i kada EC2 doda nove API-je, a korisnici trebaju dobiti poruku sa linkom na internu politiku. Koje rješenje ispunjava zahtjeve uz NAJMANJE održavanja?",
+    "options": [
+      "SCP sa listom EC2 API akcija koje mijenjaju dijeljenje AMI-ja i snapshotova",
+      "AWS Config pravila sa SSM Automation remedijacijom",
+      "Lambda funkcija pokrenuta EventBridge pravilom koja vraća dijeljenje na privatno",
+      "EC2 declarative policy u AWS Organizations sa image i snapshot block public access, IMDS podrazumijevanim vrijednostima i custom porukom greške"
+    ],
+    "answer": 3,
+    "explain": "Declarative policy drži konfiguraciju na nivou servisa, važi i za nove API-je i nove naloge i podržava custom error message. SCP lista API-ja zahtijeva održavanje, a Config i Lambda reaguju nakon događaja."
+  },
+  {
+    "obj": "6.1",
+    "q": "Pravna služba traži da nijedan AWS AI servis (npr. Amazon Rekognition, Amazon Transcribe) ne koristi sadržaj kompanije za unapređenje servisa, u svim sadašnjim i budućim nalozima. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "AI services opt-out policy sa default optOut na rootu organizacije i zabranom izmjena u child politikama",
+      "SCP koja zabranjuje sve rekognition:* i transcribe:* akcije",
+      "Podnijeti zahtjev AWS Supportu za svaki nalog",
+      "Uključiti CloudTrail data events za AI servise"
+    ],
+    "answer": 0,
+    "explain": "AI services opt-out policy na rootu isključuje upotrebu sadržaja za sve podržane servise i nasljeđuje se na nove naloge. SCP bi zabranio korištenje servisa, što nije zahtjev, a pojedinačni zahtjevi nisu skalabilni."
+  },
+  {
+    "obj": "6.1",
+    "q": "Startup sa jednim nalogom prelazi na multi-account okruženje. Treba im centralizovano logovanje, pristup kroz IAM Identity Center, gotove preventivne i detektivne kontrole i standardizovano kreiranje novih naloga. Tim je mali i želi NAJMANJE operativnog napora. Šta preporučiti?",
+    "options": [
+      "Ručno kreirati Organizations, OU i SCP-ove, te CloudFormation StackSets za logovanje",
+      "Postaviti AWS Control Tower landing zone i koristiti Account Factory za nove naloge",
+      "Kreirati naloge kroz Terraform i ručno podesiti CloudTrail u svakom",
+      "Koristiti jedan nalog sa odvojenim VPC-ovima po timu"
+    ],
+    "answer": 1,
+    "explain": "Control Tower automatski pravi landing zone sa Security OU, Log Archive i Audit nalogom, kontrolama i Account Factory. Ručna izgradnja daje isti rezultat uz mnogo više rada, a jedan nalog ne daje izolaciju."
+  },
+  {
+    "obj": "6.1",
+    "q": "Organizacija koristi AWS Control Tower. Security tim želi da CloudFormation deploy koji pokušava kreirati S3 bucket bez uključenog verzionisanja bude odbijen PRIJE nego što se resurs kreira. Koji tip kontrole treba uključiti?",
+    "options": [
+      "Detective kontrolu zasnovanu na AWS Config pravilu",
+      "Preventive kontrolu zasnovanu na SCP",
+      "Proactive kontrolu zasnovanu na CloudFormation Hooks",
+      "Security Hub CSPM standard FSBP"
+    ],
+    "answer": 2,
+    "explain": "Proactive kontrole su CloudFormation Hooks koji provjeravaju resurs prije provisioninga. Detective kontrola otkriva problem tek nakon kreiranja, a SCP ne može lako provjeriti konfiguraciju svojstava resursa u šablonu."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija već ima organizaciju sa 15 OU i 400 naloga. Želi uvesti AWS Control Tower bez kreiranja naloga ispočetka. Kako postojeće naloge staviti pod upravljanje Control Towera?",
+    "options": [
+      "Zatvoriti postojeće naloge i ponovo ih kreirati kroz Account Factory",
+      "Napraviti novu organizaciju i pozvati naloge u nju",
+      "Ručno kopirati SCP-ove Control Towera u postojeće OU",
+      "Postaviti landing zone u postojećoj organizaciji, a zatim registrovati postojeće OU kako bi njihovi nalozi bili enroll-ovani"
+    ],
+    "answer": 3,
+    "explain": "Control Tower se može postaviti u postojećoj organizaciji, a Register OU enroll-uje naloge, dodaje rolu AWSControlTowerExecution i primjenjuje kontrole. Ponovno kreiranje naloga ili nova organizacija su nepotrebni i rizični."
+  },
+  {
+    "obj": "6.1",
+    "q": "Nakon registracije OU u AWS Control Tower, jedan od pet naloga ima status Enrollment failed. Šta je NAJVJEROVATNIJI uzrok i postupak?",
+    "options": [
+      "Nalog ne ispunjava preduslove (npr. postojeći AWS Config recorder ili delivery channel); otkloniti problem i ponovo registrovati OU",
+      "Nalog ima previše IAM rola; obrisati suvišne role",
+      "Control Tower podržava najviše četiri naloga po OU; premjestiti nalog u novi OU",
+      "Nalog nije u regionu landing zone; premjestiti nalog u drugi region"
+    ],
+    "answer": 0,
+    "explain": "Neuspjelo enroll-ovanje obično znači da nalog ne ispunjava preduslove, a česti su postojeći Config resursi u konfliktu. Nakon popravke ide Re-register OU. Nema limita od četiri naloga po OU, a nalozi nisu vezani za region."
+  },
+  {
+    "obj": "6.1",
+    "q": "Prema AWS Security Reference Architecture, gdje treba biti delegated administrator za Amazon GuardDuty, AWS Security Hub i Amazon Macie?",
+    "options": [
+      "U management nalogu organizacije",
+      "U Security Tooling (Audit) nalogu u Security OU",
+      "U Log Archive nalogu",
+      "U svakom produkcijskom nalogu posebno"
+    ],
+    "answer": 1,
+    "explain": "SRA stavlja upravljanje sigurnosnim servisima u Security Tooling nalog, a management account ostaje minimalan. Log Archive služi samo za nepromjenjivo čuvanje logova sa vrlo ograničenim pristupom."
+  },
+  {
+    "obj": "6.1",
+    "q": "SOC tim mora vidjeti Amazon GuardDuty nalaze iz svih 250 naloga i svih korištenih regiona, a svaki novi nalog mora automatski biti zaštićen. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "U svakom nalogu uključiti GuardDuty i slati nalaze u S3 bucket SOC-a",
+      "Iz SOC naloga slati invitations svim nalozima i prihvatati ih ručno",
+      "Iz management naloga registrovati Security Tooling nalog kao GuardDuty delegated administrator u svakom regionu i uključiti auto-enable za sve članove organizacije",
+      "Uključiti GuardDuty samo u management nalogu jer pokriva cijelu organizaciju"
+    ],
+    "answer": 2,
+    "explain": "Delegated administrator sa auto-enable automatski uključuje postojeće i nove naloge i centralizuje nalaze; GuardDuty je regionalan, pa se podešava po regionu. Invitations i ručno uključivanje ne skaliraju, a management account ne pokriva druge naloge sam po sebi."
+  },
+  {
+    "obj": "6.1",
+    "q": "Security tim želi da root korisnici u 300 member naloga ne postoje kao prijavljivi identiteti, a da novi nalozi uopšte ne dobijaju root kredencijale. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Postaviti hardverski MFA na root u svakom nalogu i čuvati uređaje u sefu",
+      "SCP koja zabranjuje sve akcije za aws:PrincipalArn root korisnika",
+      "Promijeniti root email svakog naloga u nepostojeću adresu",
+      "Uključiti centralizovan root access management (root credentials management) u IAM i obrisati root kredencijale member naloga"
+    ],
+    "answer": 3,
+    "explain": "Root credentials management briše root lozinku, ključeve i MFA u member nalozima, a nalozi kreirani kroz Organizations nemaju root kredencijale. MFA za 300 naloga je velik operativni teret, SCP ne uklanja kredencijale, a nepostojeći email onemogućava kontrolu."
+  },
+  {
+    "obj": "6.1",
+    "q": "U member nalogu sa obrisanim root kredencijalima, bucket policy sa Deny za Principal * zaključala je S3 bucket i niko ga ne može ni pročitati ni ispraviti. Koje rješenje omogućava popravku uz NAJMANJE privilegija?",
+    "options": [
+      "Iz delegated admin naloga za IAM pokrenuti sts:AssumeRoot prema tom nalogu sa task politikom S3UnlockBucketPolicy i obrisati bucket policy",
+      "Dozvoliti password recovery za root, prijaviti se kao root i obrisati politiku",
+      "Otvoriti tiket kod AWS Supporta za brisanje bucketa",
+      "Zakačiti SCP sa Allow s3:* na nalog"
+    ],
+    "answer": 0,
+    "explain": "AssumeRoot sa task politikom S3UnlockBucketPolicy daje kratku sesiju ograničenu baš na taj zadatak. Vraćanje root lozinke daje mnogo šire privilegije, a SCP nikad ne daje dozvole i ne poništava Deny u bucket policy."
+  },
+  {
+    "obj": "6.1",
+    "q": "Platform tim želi ograničiti da njihova automatizacija smije koristiti sts:AssumeRoot samo za reviziju stanja root kredencijala, a ne za brisanje bucket politika. Koji mehanizam to omogućava?",
+    "options": [
+      "Uslov aws:MultiFactorAuthPresent u trust policy",
+      "Uslov sts:TaskPolicyArn u IAM politici automatizacije, ograničen na IAMAuditRootUserCredentials",
+      "RCP na S3 bucketima member naloga",
+      "Permission boundary na root korisnicima member naloga"
+    ],
+    "answer": 1,
+    "explain": "Ključ sts:TaskPolicyArn ograničava koje task politike principal smije tražiti pri AssumeRoot. MFA uslov ne bira zadatak, a root korisnicima se ne može dodijeliti permission boundary."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija koristi IAM Identity Center sa eksternim IdP-om za sav pristup. Security tim mora obezbijediti pristup administratora ako IdP postane nedostupan. Šta je NAJBOLJA break-glass praksa? (Izaberi DVA.)",
+    "options": [
+      "Kreirati mali broj break-glass IAM korisnika sa hardverskim MFA, čije su lozinke u sefu pod kontrolom dvije osobe",
+      "Svim administratorima dati dugotrajne access ključeve kao rezervu",
+      "Napraviti EventBridge pravilo koje šalje alarm visokog prioriteta na svaku prijavu break-glass identiteta",
+      "Isključiti CloudTrail za break-glass naloge da se smanji šum",
+      "Dijeliti root lozinku management naloga u timskom chatu"
+    ],
+    "answer": [0, 2],
+    "explain": "Break-glass identiteti trebaju biti malobrojni, zaštićeni MFA-om i kontrolom dvije osobe, a svaka upotreba mora dići alarm. Dugotrajni ključevi, isključen CloudTrail i dijeljenje root lozinke direktno povećavaju rizik."
+  },
+  {
+    "obj": "6.1",
+    "q": "Security tim želi obavještenje u roku od nekoliko minuta kad god se bilo koji root korisnik u organizaciji prijavi ili koristi API. Organization CloudTrail trail već postoji. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "Dnevni Athena upit nad CloudTrail logovima u S3",
+      "Amazon Inspector pravilo za root aktivnost",
+      "EventBridge pravilo koje hvata CloudTrail događaje gdje je userIdentity.type = Root i šalje ih na SNS",
+      "AWS Config pravilo root-account-mfa-enabled"
+    ],
+    "answer": 2,
+    "explain": "EventBridge reaguje na CloudTrail događaje skoro u realnom vremenu i filtrira po tipu identiteta Root. Athena upit je dnevni, Inspector ne prati API aktivnost, a Config pravilo provjerava samo da li je MFA uključen."
+  },
+  {
+    "obj": "6.1",
+    "q": "Kompanija želi da svi resursi u produkcijskom OU imaju tag CostCenter tačno tim pisanjem i sa vrijednostima iz odobrene liste, a da se kreiranje EC2 instanci sa neispravnom vrijednošću odbije. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "AWS Config pravilo required-tags",
+      "SCP koja zahtijeva aws:RequestTag/CostCenter",
+      "AWS Resource Groups Tag Editor",
+      "Tag policy sa definisanim ključem i vrijednostima i enforced_for za ec2:instance"
+    ],
+    "answer": 3,
+    "explain": "Tag policy standardizuje pisanje ključa i dozvoljene vrijednosti, a enforced_for odbija neusklađene operacije tagovanja za navedene tipove resursa. Config samo detektuje, SCP provjerava prisustvo taga ali teško održava listu vrijednosti i pisanje, a Tag Editor je ručni alat."
+  },
+  {
+    "obj": "6.1",
+    "q": "Compliance traži da EBS volumeni i RDS baze u svim produkcijskim nalozima imaju dnevni backup sa retencijom od 35 dana i kopijom u drugi region. Novi nalozi moraju automatski dobiti isto. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "AWS Organizations backup policy zakačena na produkcijski OU",
+      "Data Lifecycle Manager politika ručno kreirana u svakom nalogu",
+      "Lambda funkcija koja svaki dan pravi snapshotove u svim nalozima",
+      "CloudFormation StackSet sa AWS Backup planom samo za postojeće naloge"
+    ],
+    "answer": 0,
+    "explain": "Backup policy centralno definiše AWS Backup planove (raspored, retencija, cross-Region kopija) i nasljeđuje se na nove naloge u OU. Ručne politike i Lambda traže održavanje, a StackSet ograničen na postojeće naloge ne pokriva nove."
+  },
+  {
+    "obj": "6.1",
+    "type": "order",
+    "q": "Poredaj korake uvođenja centralizovanog root pristupa i popravke zaključanog S3 bucketa u member nalogu.",
+    "options": [
+      "Pokrenuti aws sts assume-root sa task politikom S3UnlockBucketPolicy prema member nalogu",
+      "Uključiti trusted access za IAM u AWS Organizations",
+      "Registrovati Security Tooling nalog kao delegated administrator za iam.amazonaws.com",
+      "Uključiti root credentials management i privileged root actions (root sessions)",
+      "Obrisati pogrešnu bucket policy privremenim kredencijalima i postaviti ispravnu"
+    ],
+    "answer": [1, 3, 2, 0, 4],
+    "explain": "Prvo trusted access za IAM, zatim uključivanje obje mogućnosti, pa registracija delegated administratora. Tek tada se pokreće AssumeRoot sesija i njome se briše pogrešna politika."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Upari zahtjev sa vrstom organization policy koja ga NAJBOLJE ispunjava.",
+    "options": [
+      "Zabraniti developerima u member nalozima da napuste organizaciju",
+      "Spriječiti pristup S3 i KMS resursima organizacije od principala van organizacije",
+      "Zahtijevati IMDSv2 i blokirati javno dijeljenje snapshotova, i za buduće API-je",
+      "Isključiti upotrebu sadržaja za unapređenje AWS AI servisa",
+      "Standardizovati ključ i vrijednosti taga CostCenter"
+    ],
+    "targets": [
+      "Tag policy",
+      "Backup policy",
+      "Resource control policy (RCP)",
+      "Service control policy (SCP)",
+      "AI services opt-out policy",
+      "Declarative policy (EC2)"
+    ],
+    "answer": [3, 2, 5, 4, 0],
+    "explain": "SCP ograničava principale, RCP resurse i spoljne principale, declarative policy drži konfiguraciju servisa, AI opt-out kontroliše upotrebu sadržaja, a tag policy standardizuje tagove. Backup policy je distraktor."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Upari AWS Control Tower kontrolu sa mehanizmom kojim je implementirana.",
+    "options": [
+      "Odbiti CloudFormation stack koji kreira nešifrovan EBS volumen prije kreiranja",
+      "Otkriti postojeće S3 buckete sa javnim read pristupom",
+      "Zabraniti brisanje CloudTrail traila koji je postavio Control Tower"
+    ],
+    "targets": [
+      "AWS Config rule (detective)",
+      "IAM permission boundary",
+      "SCP (preventive)",
+      "CloudFormation Hook (proactive)"
+    ],
+    "answer": [3, 0, 2],
+    "explain": "Proactive kontrole su CloudFormation Hooks, detective kontrole su Config pravila, a preventive kontrole su SCP, RCP i declarative politike. Permission boundary Control Tower ne koristi za kontrole."
+  },
+  {
+    "obj": "6.1",
+    "type": "spot",
+    "q": "SCP treba svima osim role OrgPlatformAdmin zabraniti gašenje sigurnosnih servisa, a svima zabraniti rad van regiona eu-central-1 i eu-west-1 (globalni servisi su izuzeti). Klikni redove sa greškom.",
+    "lang": "json",
+    "snippet": "{\"Version\": \"2012-10-17\", \"Statement\": [\n  {\n    \"Sid\": \"ProtectSecurityServices\",\n    \"Effect\": \"Deny\",\n    \"Action\": [\"guardduty:DeleteDetector\", \"cloudtrail:StopLogging\", \"cloudtrail:DeleteTrail\",\n               \"config:StopConfigurationRecorder\", \"organizations:LeaveOrganization\"],\n    \"Resource\": \"*\",\n    \"Condition\": {\"ArnNotLike\": {\"aws:PrincipalArn\": \"arn:aws:iam::*:role/*\"}}\n  },\n  {\n    \"Sid\": \"DenyOtherRegions\",\n    \"Effect\": \"Deny\",\n    \"NotAction\": [\"iam:*\", \"organizations:*\", \"sts:*\", \"support:*\", \"cloudfront:*\", \"route53:*\"],\n    \"Resource\": \"*\",\n    \"Condition\": {\"StringEquals\": {\"aws:RequestedRegion\": [\"eu-central-1\", \"eu-west-1\"]}}\n  }\n]}",
+    "answer": [7, 14],
+    "explain": "Red 8: izuzetak arn:aws:iam::*:role/* izuzima SVAKU rolu, pa zabrana važi samo za IAM korisnike; treba arn:aws:iam::*:role/OrgPlatformAdmin. Red 15: StringEquals zabranjuje upravo odobrene regione, a dozvoljava sve ostale; treba StringNotEquals. NotAction sa globalnim servisima (IAM, STS, CloudFront, Route 53) je ispravan, jer bi ih inače region uslov blokirao."
+  }
+]

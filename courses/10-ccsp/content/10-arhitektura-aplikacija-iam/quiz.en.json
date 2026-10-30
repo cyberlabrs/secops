@@ -1,0 +1,293 @@
+[
+  {
+    "obj": "4.6",
+    "q": "A web shop has a confirmed SQL injection vulnerability in an old module, and the code fix will take three weeks. What is the BEST immediate measure?",
+    "options": [
+      "Shut down the entire web shop until the code is fixed.",
+      "Deploy a WAF rule as a virtual patch for the vulnerable parameter and fix the code in parallel.",
+      "Enable encryption at rest for the database.",
+      "Move the database to another region."
+    ],
+    "answer": 1,
+    "explain": "A WAF as a virtual patch immediately reduces exposure while the permanent fix (a parameterized query) is underway. Shutting down the service is disproportionate when a compensating control exists, and encryption at rest and changing regions do not prevent injection through the application."
+  },
+  {
+    "obj": "4.6",
+    "q": "An auditor requires that database administrator (DBA) activity be monitored in real time and that DBAs cannot erase traces of their queries. Which component BEST meets this?",
+    "options": [
+      "A WAF in front of the application.",
+      "An API gateway with logging.",
+      "Transparent database encryption (TDE).",
+      "Database Activity Monitoring managed by a team separate from the DBAs."
+    ],
+    "answer": 3,
+    "explain": "DAM monitors SQL activity including privileged users and, if managed by another team, ensures separation of duties. A WAF and API gateway see only application traffic, not direct DBA access, and TDE protects media but does not record activity."
+  },
+  {
+    "obj": "4.6",
+    "q": "An organization exposes an old SOAP service to partners and needs to validate messages against an XSD schema, verify WS-Security signatures, and block XML External Entity attacks. Which component is MOST appropriate?",
+    "options": [
+      "XML firewall",
+      "Network load balancer (L4)",
+      "Database Activity Monitoring",
+      "Network security group"
+    ],
+    "answer": 0,
+    "explain": "An XML firewall is specialized for XML/SOAP: schema validation, WS-Security, and protection against XML attacks. An L4 load balancer and security groups do not understand message content, and DAM works at the database level."
+  },
+  {
+    "obj": "4.6",
+    "q": "A legal requirement states that neither the CSP nor the database administrators may be able to see customers' passport numbers. Which approach BEST meets the requirement?",
+    "options": [
+      "Transparent disk encryption provided by the CSP.",
+      "TLS 1.3 between the application and the database.",
+      "Application-level encryption before writing to the database, with customer-controlled keys.",
+      "Encryption of database backups."
+    ],
+    "answer": 2,
+    "explain": "Only application-level encryption (or tokenization) with keys outside the control of the CSP and DBAs prevents them from seeing plaintext. Transparent disk encryption protects against media theft, TLS protects data in transit, and backup encryption does not protect the live database."
+  },
+  {
+    "obj": "4.6",
+    "q": "What is the main advantage of the envelope encryption approach in a cloud application?",
+    "options": [
+      "It removes the need for access control on keys.",
+      "It enables searching encrypted data without decryption.",
+      "It encrypts data in use inside the CPU.",
+      "Data is encrypted locally with a DEK, while the KEK never leaves the KMS/HSM, so rotation and access are controlled centrally."
+    ],
+    "answer": 3,
+    "explain": "With envelope encryption, the DEK encrypts the data and the KEK in the KMS encrypts the DEK; KEK rotation does not require re-encrypting all data, and access is controlled through the KEK. It does not enable searching (that is tokenization or FPE), does not protect data in use (confidential computing), and does not remove access control."
+  },
+  {
+    "obj": "4.6",
+    "q": "A SaaS platform runs customer-written code (custom scripts) on shared infrastructure. What BEST protects other tenants from one customer's malicious code?",
+    "options": [
+      "Running each script in a sandbox with strong isolation (e.g., a micro-VM), with no access to the network and secrets except what is explicitly allowed.",
+      "Running scripts in a shared container with separate Linux users.",
+      "A separate Kubernetes namespace for each customer on the same nodes, with no additional controls.",
+      "Scanning scripts with antivirus before execution."
+    ],
+    "answer": 0,
+    "explain": "Untrusted code from different tenants requires strong isolation, such as a micro-VM or sandbox runtime, with minimal privileges. Containers and namespaces share the kernel and are not a hard boundary, and antivirus does not detect purpose-written malicious code."
+  },
+  {
+    "obj": "4.6",
+    "q": "When moving from a monolith to microservices, which new security requirement gains the MOST importance?",
+    "options": [
+      "Physical security of the data center.",
+      "Encryption of backup tapes.",
+      "Authentication and authorization of service-to-service communication (e.g., mTLS and workload identity).",
+      "Password policy for end users."
+    ],
+    "answer": 2,
+    "explain": "Microservices turn in-process calls into network calls, so each service must authenticate and authorize other services (east-west). Physical security and backup tapes do not change with the architecture, and the end-user password policy is not a new requirement."
+  },
+  {
+    "obj": "4.6",
+    "q": "During a Kubernetes cluster review, it was found that application pods run as root, with privileged: true and a mounted Docker socket. What is the GREATEST risk?",
+    "options": [
+      "Increased memory consumption on nodes.",
+      "A compromised container can easily take over the host and other workloads on the node.",
+      "Slower pod startup due to additional privileges.",
+      "Inability to scale horizontally."
+    ],
+    "answer": 1,
+    "explain": "A privileged container with the Docker socket effectively controls the host, so an application compromise becomes a compromise of the node and all pods on it. The other options are not consequences of these settings or are negligible."
+  },
+  {
+    "obj": "4.6",
+    "q": "A team asks which component to deploy as a single entry point for 30 internal REST APIs in order to centrally validate OAuth tokens, apply per-client quotas, and log all calls. What is the BEST choice?",
+    "options": [
+      "API gateway",
+      "Database Activity Monitoring",
+      "XML firewall",
+      "L4 network load balancer"
+    ],
+    "answer": 0,
+    "explain": "An API gateway centralizes authentication, quotas, routing, and logging of API calls. DAM is for the database, an XML firewall is for SOAP/XML, and an L4 load balancer understands neither HTTP nor tokens."
+  },
+  {
+    "obj": "4.6",
+    "q": "TLS is terminated at the load balancer, and traffic to backend services in the same VPC travels unencrypted. Regulation requires end-to-end encryption of data in transit. What is the BEST solution?",
+    "options": [
+      "Remove the load balancer and expose the services directly.",
+      "Re-encrypt traffic from the load balancer to the backend (TLS re-encryption or mTLS through a service mesh).",
+      "Enable disk encryption on the backend services.",
+      "Accept the risk because the VPC is a private network."
+    ],
+    "answer": 1,
+    "explain": "Re-encryption or mTLS between the load balancer and services meets the end-to-end requirement while keeping the benefits of the load balancer. Removing the LB harms availability and exposes the services, disk encryption is data at rest, and accepting a risk contrary to regulation is not an option."
+  },
+  {
+    "obj": "4.7",
+    "q": "An application uses an OAuth 2.0 access token as proof of the user's identity and reads from it who is logged in. What is the BEST recommendation?",
+    "options": [
+      "Replace OAuth with HTTP Basic authentication.",
+      "Extend the access token lifetime so users log in less often.",
+      "Switch to Kerberos for all web clients.",
+      "Use OpenID Connect and the ID token for authentication, and the access token only for API access."
+    ],
+    "answer": 3,
+    "explain": "OAuth 2.0 is an authorization protocol; OIDC adds authentication on top of it through an ID token with defined claims (iss, aud, sub). Basic auth is weaker, longer tokens increase risk, and Kerberos is not intended for internet web clients."
+  },
+  {
+    "obj": "4.7",
+    "q": "A company has 40 SaaS applications with separate accounts, and former employees' accounts stay active for months. What BEST solves the problem?",
+    "options": [
+      "A monthly manual review of accounts in each application.",
+      "A password policy with a mandatory change every 30 days.",
+      "A central IdP with SSO and SCIM provisioning, along with periodic access reviews.",
+      "A CASB in forward proxy mode."
+    ],
+    "answer": 2,
+    "explain": "A central IdP with SSO and SCIM automatically creates and removes accounts in SaaS applications when the user is deactivated in the IdP. Manual review does not scale and lags, a password change does not revoke access, and a CASB does not manage the identity lifecycle."
+  },
+  {
+    "obj": "4.7",
+    "q": "After push MFA is introduced, an attacker with a stolen password sends dozens of push requests until the employee approves one. Which measure BEST prevents this attack?",
+    "options": [
+      "Switching to SMS OTP.",
+      "Phishing-resistant MFA (FIDO2/passkeys) or at least number matching for push.",
+      "A shorter session duration after login.",
+      "A longer minimum password length."
+    ],
+    "answer": 1,
+    "explain": "This is an MFA fatigue attack. Number matching forces the user to actively confirm a code from the screen, and FIDO2/passkeys are bound to the domain and key and cannot be approved blindly. SMS is weaker, and a shorter session and longer password do not prevent approving a fake request."
+  },
+  {
+    "obj": "4.7",
+    "q": "Which combination represents a TRUE multi-factor login?",
+    "options": [
+      "A password and a FIDO2 hardware key.",
+      "A password and an answer to a security question.",
+      "A PIN and a password.",
+      "An office IP address and a password."
+    ],
+    "answer": 0,
+    "explain": "MFA requires different types of factors: a password (knowledge) and a hardware key (possession). A password with a security question or PIN are two factors of the same type, and an IP address is context for adaptive authentication, not a factor."
+  },
+  {
+    "obj": "4.7",
+    "q": "A partner needs access to an internal portal for 300 of its employees, and employees join and leave frequently. What is the BEST approach?",
+    "options": [
+      "Create local accounts in the portal for each of the partner's employees.",
+      "Give the partner one shared account for all its employees.",
+      "Federate the portal with the partner's IdP (SAML/OIDC) and define identity management obligations in the contract.",
+      "Open the portal to the internet with an IP allowlist of the partner's network."
+    ],
+    "answer": 2,
+    "explain": "Federation leaves identity management to the partner (who knows who joins and leaves), while you control authorization and terms. Local accounts lag in deprovisioning, a shared account destroys accountability, and an IP allowlist is not an identity."
+  },
+  {
+    "obj": "4.7",
+    "q": "Management learns that employees use numerous unapproved AI and file-sharing services. What should be done FIRST?",
+    "options": [
+      "Block all traffic to unknown cloud services at the firewall.",
+      "Send an e-mail to all employees stating that use is prohibited.",
+      "Buy enterprise licenses for all discovered services.",
+      "Use CASB discovery to determine the services in use, data volume, and risk, and then base the policy on that."
+    ],
+    "answer": 3,
+    "explain": "The first step is visibility: a CASB (from logs or inline) discovers shadow IT and provides the basis for risk assessment. Blind blocking can disrupt legitimate business, an e-mail without visibility has no effect, and buying licenses before a risk assessment is premature."
+  },
+  {
+    "obj": "4.7",
+    "q": "An organization wants to apply DLP to sensitive documents ALREADY stored in an approved SaaS storage service, including those users uploaded from personal devices. Which CASB mode is MOST appropriate?",
+    "options": [
+      "API-based (out-of-band) CASB connected to the SaaS service's API.",
+      "Forward proxy with an agent on corporate devices.",
+      "Firewall log analysis.",
+      "Reverse proxy for new logins only."
+    ],
+    "answer": 0,
+    "explain": "An API-based CASB sees data at rest in the SaaS regardless of where it was uploaded from. A forward proxy sees only traffic from managed devices and only new transfers, log analysis provides only discovery, and a reverse proxy does not cover already stored documents."
+  },
+  {
+    "obj": "4.7",
+    "q": "A developer accidentally committed the production database password to a public Git repository. What should be done FIRST?",
+    "options": [
+      "Delete the commit and rewrite the repository history.",
+      "Introduce secret scanning in the CI pipeline.",
+      "Rotate (revoke) the compromised password.",
+      "Make the repository private."
+    ],
+    "answer": 2,
+    "explain": "A secret that was public must be considered compromised, so the first step is rotation. Deleting history and making the repository private do not undo copies that have already been taken, and secret scanning is a preventive measure for the future."
+  },
+  {
+    "obj": "4.7",
+    "q": "A regulator requires that the keys for encrypting customer data are never physically held by the CSP, not even in the CSP's HSM. Which model meets the requirement?",
+    "options": [
+      "CSP-managed keys.",
+      "Customer-managed keys in the CSP KMS.",
+      "BYOK import of the key into the CSP KMS.",
+      "HYOK / external key store in the customer's HSM outside the CSP."
+    ],
+    "answer": 3,
+    "explain": "Only HYOK (external key store) keeps the key outside the CSP; the CSP calls it for operations but does not possess it. BYOK and customer-managed models still keep the key in the CSP KMS. The price of HYOK is greater complexity and availability dependence on the customer's HSM."
+  },
+  {
+    "obj": "4.7",
+    "q": "One administrator has the right both to manage KMS key policies and to decrypt production data with those keys. Which principle is MOST violated?",
+    "options": [
+      "Defense in depth",
+      "Separation of duties",
+      "Fail secure",
+      "Need to know for end users"
+    ],
+    "answer": 1,
+    "explain": "Managing a key and using the key for decryption should be separate roles, so that compromise of one account does not expose everything. Defense in depth and fail secure are not primarily affected, and end-user need to know is not the topic of the scenario."
+  },
+  {
+    "obj": "4.6",
+    "type": "match",
+    "q": "Match each requirement with the MOST appropriate supplemental security component.",
+    "options": [
+      "Blocking XSS and SQL injection patterns in front of a web application",
+      "Monitoring privileged database users' queries in real time",
+      "Validating SOAP messages against an XSD schema and WS-Security signatures",
+      "Traffic distribution and health checks for application instances",
+      "Central token validation and quotas for all REST APIs"
+    ],
+    "targets": [
+      "Load balancer",
+      "API gateway",
+      "WAF",
+      "XML firewall",
+      "DAM"
+    ],
+    "answer": [2, 4, 3, 0, 1],
+    "explain": "A WAF filters L7 web attacks, DAM monitors database activity, an XML firewall protects SOAP/XML services, a load balancer distributes traffic and checks instance health, and an API gateway centralizes authentication and quotas for APIs."
+  },
+  {
+    "obj": "4.7",
+    "type": "match",
+    "q": "Match each IAM requirement with the MOST appropriate solution or protocol.",
+    "options": [
+      "A mobile application needs delegated access to the user's data in an API",
+      "Enterprise web SSO to a SaaS application via signed XML assertions",
+      "Automatic creation and removal of accounts in SaaS applications",
+      "Discovering unapproved cloud services used by employees",
+      "User login to an SPA application with an ID token"
+    ],
+    "targets": [
+      "SAML 2.0",
+      "OpenID Connect",
+      "OAuth 2.0",
+      "CASB",
+      "SCIM"
+    ],
+    "answer": [2, 0, 4, 3, 1],
+    "explain": "OAuth 2.0 provides delegated authorization, SAML 2.0 is the XML standard for enterprise SSO, SCIM automates provisioning, CASB discovers shadow IT, and OIDC adds authentication through an ID token."
+  },
+  {
+    "obj": "4.7",
+    "type": "spot",
+    "q": "Configuration of an API gateway that validates OIDC access tokens for a cloud application. Mark the lines that are security problems in token handling.",
+    "snippet": "# api-gateway.yaml - token validation for the public API\nauth:\n  provider: oidc\n  issuer: https://login.example.com/\n  jwks_uri: https://login.example.com/.well-known/jwks.json\n  allowed_algorithms: [RS256, none]\n  verify_audience: false\n  access_token_ttl: 30d\n  refresh_token_rotation: true\n  token_transport: header        # Authorization: Bearer\n  log_fields: [method, path, status, user_sub]",
+    "lang": "yaml",
+    "answer": [5, 6, 7],
+    "explain": "Line 6: allowing the none algorithm means the gateway accepts an unsigned token, so an attacker can write any claims; allow only the expected algorithm (RS256) and always verify the signature using the JWKS. Line 7: without the aud check the gateway accepts tokens the same IdP issued for other applications (a token for one application is replayed against another); aud must be this API. Line 8: an access token valid for 30 days practically cannot be revoked; access tokens should be short-lived (minutes), with longevity handled by refresh tokens with rotation and revocation. Header transport, refresh token rotation and logging without the token itself are correct."
+  }
+]

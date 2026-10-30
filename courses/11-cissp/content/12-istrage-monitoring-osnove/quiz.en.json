@@ -1,0 +1,352 @@
+[
+  {
+    "obj": "7.1",
+    "q": "During a routine administrative investigation of internet misuse, an analyst finds material on an employee's company laptop that indicates a serious crime. What should be done FIRST?",
+    "options": [
+      "Continue the analysis to collect as much evidence as possible before notifying anyone.",
+      "Delete the offending material so it does not spread further on the organization's network.",
+      "Stop further analysis, preserve the evidence and notify legal or senior management per policy.",
+      "Immediately call the police personally and hand over the laptop."
+    ],
+    "answer": 2,
+    "explain": "When an administrative investigation turns into a possible criminal one, the analyst stops work that could compromise the evidence, preserves the evidence and escalates per policy; the decision to report to the police is made by legal and management. Deletion destroys evidence, and continuing on one's own initiative or calling the police bypasses authority."
+  },
+  {
+    "obj": "7.1",
+    "q": "A server suspected of being compromised is still running. The IR plan does not require an urgent shutdown. What should the forensic examiner collect FIRST?",
+    "options": [
+      "The contents of RAM and the state of network connections",
+      "A bit-stream image of the system disk",
+      "A copy of the remote logs from the SIEM",
+      "Backup tapes from the offsite vault"
+    ],
+    "answer": 0,
+    "explain": "Following the order of volatility (RFC 3227), what disappears fastest is collected first: memory, processes and network connections. The disk, remote logs and archival media are more stable and come later."
+  },
+  {
+    "obj": "7.1",
+    "q": "Opposing counsel challenges logs as evidence, claiming they could have been modified after collection. What BEST refutes that claim?",
+    "options": [
+      "A statement from the administrator that no one accessed the server.",
+      "The fact that the logs were collected with a tool used across the industry.",
+      "A photocopy of the log printout signed by a manager.",
+      "A documented chain of custody and matching hash values recorded at collection and at every check."
+    ],
+    "answer": 3,
+    "explain": "The integrity and authenticity of evidence are proven by the chain of custody and hash values from the moment of acquisition. A statement and a signed copy are weaker (testimonial / secondary), and an accepted tool speaks to the reliability of the method, not to the evidence not having been changed later."
+  },
+  {
+    "obj": "7.1",
+    "q": "An organization sets up a server named \"payroll-backup\" on an isolated segment to monitor attackers who are already inside the network. How is this classified?",
+    "options": [
+      "Entrapment, so the collected evidence is inadmissible.",
+      "Enticement, which is generally allowed and the evidence may be usable.",
+      "Exigent circumstances, so no legal review is needed.",
+      "Unlawful employee monitoring, because the server does not display a banner."
+    ],
+    "answer": 1,
+    "explain": "Attracting an attacker who already has the intent (a honeypot with an interesting name) is enticement and is generally allowed. Entrapment would be inducing a person with no intent to commit a crime. Legal should still approve the honeypot program."
+  },
+  {
+    "obj": "7.1",
+    "q": "A forensic examiner must seize a suspected employee's smartphone, which is unlocked. Which step is BEST for preserving evidence?",
+    "options": [
+      "Power off the phone to prevent data modification.",
+      "Connect it to the corporate Wi-Fi for faster synchronization with MDM.",
+      "Isolate it from the network (e.g. a Faraday bag), leave it powered on and document its state.",
+      "Remove the SIM and memory card and analyze them immediately on your own computer."
+    ],
+    "answer": 2,
+    "explain": "Isolation from the network prevents remote wiping, and powering off an unlocked device can make encrypted data inaccessible. Analyzing the original on an ordinary computer compromises integrity and the chain of custody."
+  },
+  {
+    "obj": "7.1",
+    "q": "Which characteristic of a forensic report is MOST important for the court to accept it and for another expert to be able to verify it?",
+    "options": [
+      "That it contains the investigator's opinion on the suspect's guilt.",
+      "That it describes methods, tools, versions and hash values so the procedure is repeatable.",
+      "That it is short and has no appendices.",
+      "That it is written exclusively in technical language."
+    ],
+    "answer": 1,
+    "explain": "The report must be factual and repeatable: another investigator using the same method must get the same result. An opinion on guilt is not the job of a fact witness, and the report must be understandable to the audience, with technical details in appendices."
+  },
+  {
+    "obj": "7.2",
+    "q": "The SOC receives thousands of alerts a day and analysts are missing real incidents. What is the BEST first measure?",
+    "options": [
+      "Disable the rules that generate the most alerts.",
+      "Hire additional analysts for every shift.",
+      "Switch all IDS sensors to IPS mode.",
+      "Perform risk-based tuning: baseline, prioritization by asset criticality and correlation in the SIEM."
+    ],
+    "answer": 3,
+    "explain": "Alert fatigue is solved by risk-based tuning and prioritization, with change control over rules. Disabling rules creates false negatives, new people do not address the cause, and an IPS with bad rules blocks legitimate traffic."
+  },
+  {
+    "obj": "7.2",
+    "q": "Which detection outcome represents the GREATEST risk to the organization?",
+    "options": [
+      "False positive",
+      "True negative",
+      "False negative",
+      "True positive"
+    ],
+    "answer": 2,
+    "explain": "A false negative (Type II) means an attack is in progress and the system is silent. A false positive wastes time and can disrupt business, but it does not hide an attack."
+  },
+  {
+    "obj": "7.2",
+    "q": "An organization wants to detect employees who send sensitive documents to personal USB devices and personal e-mail accounts from the browser. Which solution covers this BEST?",
+    "options": [
+      "Endpoint DLP with previously classified and labeled data",
+      "A network IDS at the perimeter",
+      "Storage DLP that scans file shares",
+      "Full-disk encryption on laptops"
+    ],
+    "answer": 0,
+    "explain": "Endpoint DLP sees data in use on the device (USB, browser upload, clipboard), and it works only once the data is classified. Storage DLP discovers where data at rest is, a NIDS does not understand document content, and FDE does not prevent leakage."
+  },
+  {
+    "obj": "7.2",
+    "q": "The team suspects an attacker is already inside the network and bypassing existing SIEM rules. Which activity is MOST appropriate?",
+    "options": [
+      "Subscribing to an additional commercial threat feed",
+      "Hypothesis-driven threat hunting mapped to MITRE ATT&CK techniques",
+      "An annual penetration test",
+      "Increasing log retention from 90 to 365 days"
+    ],
+    "answer": 1,
+    "explain": "Threat hunting is a proactive search for a threat that has bypassed existing detections. A feed provides IoCs for the known, a pentest does not look for an existing attacker, and longer retention helps an investigation but detects nothing by itself."
+  },
+  {
+    "obj": "7.2",
+    "q": "What is the PRIMARY value of a SIEM compared to reviewing logs on each system individually?",
+    "options": [
+      "Encrypting logs at rest",
+      "Automatic isolation of compromised hosts",
+      "Correlating events from multiple sources to detect patterns that no single source shows on its own",
+      "Removing the need for time synchronization"
+    ],
+    "answer": 2,
+    "explain": "The key function of a SIEM is aggregation, normalization and correlation. Automatic isolation is the domain of SOAR/EDR, and correlation in fact requires accurate time (NTP)."
+  },
+  {
+    "obj": "7.2",
+    "q": "An organization is introducing SOAR. Which approach is BEST to start with?",
+    "options": [
+      "Immediately and automatically block every IP from the threat feed on all firewalls.",
+      "Replace the SIEM with the SOAR platform.",
+      "Allow every analyst to write and release playbooks without review.",
+      "First automate alert enrichment and ticket creation, and introduce actions that affect production gradually with human approval."
+    ],
+    "answer": 3,
+    "explain": "SOAR is introduced gradually: low-risk actions first, actions with business impact with approval and through change management. SOAR does not replace the SIEM, and uncontrolled blocking and unreviewed playbooks create operational risk."
+  },
+  {
+    "obj": "7.2",
+    "q": "Administrators have full rights on the servers. Which control BEST ensures that logs can serve as evidence of their activities?",
+    "options": [
+      "Local log storage with longer retention",
+      "Mandatory ethics training for administrators",
+      "Clipping levels on all servers",
+      "Centralized forwarding of logs to WORM storage that the server administrators do not manage"
+    ],
+    "answer": 3,
+    "explain": "Centralization into immutable storage under separate management (SoD) prevents the administrator from modifying or deleting the trail. Local logs are under their control, training is administrative, and clipping levels only reduce volume."
+  },
+  {
+    "obj": "7.3",
+    "q": "A drift detection tool shows that a production server's configuration differs from the approved baseline, and there is no approved change request. What is the BEST next step?",
+    "options": [
+      "Treat the deviation as a possible incident, investigate the cause and restore the configuration through the controlled process.",
+      "Update the baseline to match the current state.",
+      "Manually revert the settings on the server and close the alert.",
+      "Ignore the deviation if the server is working normally."
+    ],
+    "answer": 0,
+    "explain": "An unauthorized change may be a sign of compromise or of process circumvention. It is investigated first, then the state is restored in a controlled way and documented. Accepting drift as the new baseline or silently reverting erases the trail."
+  },
+  {
+    "obj": "7.3",
+    "q": "What is the PRIMARY security benefit of provisioning all servers from a hardened golden image using automation (IaC)?",
+    "options": [
+      "It eliminates the need for patch management.",
+      "It reduces licensing costs.",
+      "Every system starts from a known, approved and repeatable state, with fewer human errors.",
+      "It replaces the change management process."
+    ],
+    "answer": 2,
+    "explain": "Provisioning from a baseline and automation provide consistency and repeatability. The image still needs to be maintained (patches), and template changes go through change management."
+  },
+  {
+    "obj": "7.3",
+    "q": "How are configuration management and change management related?",
+    "options": [
+      "They are the same process with two names.",
+      "Change management decides whether and how a change is approved, and configuration management maintains a documented and verifiable state of configurations.",
+      "Configuration management approves changes, and change management maintains the CMDB.",
+      "Change management applies only to software, and configuration management only to hardware."
+    ],
+    "answer": 1,
+    "explain": "Change management governs the decision about a change (request, assessment, approval), while CM identifies configuration items, maintains the baseline, status and audit. Both apply to all types of systems."
+  },
+  {
+    "obj": "7.4",
+    "q": "An accountant is the only one who knows the supplier payment process and has not taken annual leave for three years. Which control BEST detects possible fraud?",
+    "options": [
+      "Separation of duties when creating suppliers",
+      "Need-to-know",
+      "Additional camera surveillance in the office",
+      "Mandatory vacation with the job performed by another person"
+    ],
+    "answer": 3,
+    "explain": "Mandatory vacation (and job rotation) are detective controls: the replacement uncovers concealed actions. SoD is preventive and does not uncover what has already been done, and need-to-know and cameras do not address this risk."
+  },
+  {
+    "obj": "7.4",
+    "q": "An analyst has a \"Top Secret\" clearance. Why can they still not read all \"Top Secret\" files?",
+    "options": [
+      "Because of the need-to-know principle: they have access only to the data needed for their task.",
+      "Because of separation of duties.",
+      "Because least privilege limits the clearance level.",
+      "Because of the job rotation policy."
+    ],
+    "answer": 0,
+    "explain": "Clearance says whether a person may access a classification level at all, and need-to-know restricts access to the specific data needed for the job. Least privilege relates to rights and actions."
+  },
+  {
+    "obj": "7.4",
+    "q": "Which measure BEST reduces the risk of misuse of domain administrator accounts?",
+    "options": [
+      "Longer and more complex passwords changed every 30 days",
+      "Just-in-time privilege assignment from a vault, with session recording and review by a person who is not an administrator",
+      "Giving administrator rights to all IT team members for redundancy",
+      "Annual administrator training"
+    ],
+    "answer": 1,
+    "explain": "PAM principles: privilege only when needed (JIT), secrets in a vault with rotation, session monitoring and independent review (SoD). Passwords and training help, but do not limit permanent standing privileges; spreading rights increases risk."
+  },
+  {
+    "obj": "7.4",
+    "q": "A developer can write code, approve the pull request and deploy to production all by themselves. Which principle is violated?",
+    "options": [
+      "Need-to-know",
+      "Job rotation",
+      "Separation of duties",
+      "Defense in depth"
+    ],
+    "answer": 2,
+    "explain": "One person controls the entire critical process, so they can introduce and conceal a malicious change – that is a violation of SoD. The solution is a mandatory review by another person and separate deployment approval."
+  },
+  {
+    "obj": "7.5",
+    "q": "An organization is retiring SSDs holding data classified as confidential and selling them to an outside reseller. Which method is MOST appropriate?",
+    "options": [
+      "Degaussing",
+      "Quick format",
+      "A single overwrite with zeros",
+      "Cryptographic erase or the built-in sanitize command, with verification (purge per NIST SP 800-88)"
+    ],
+    "answer": 3,
+    "explain": "An SSD leaving the organization requires purge: crypto erase or a sanitize command, followed by verification. Degaussing has no effect on flash memory, formatting is not sanitization, and overwriting is unreliable because of wear leveling."
+  },
+  {
+    "obj": "7.5",
+    "q": "Which control protects data in the \"in use\" state?",
+    "options": [
+      "TLS 1.3",
+      "Confidential computing (TEE / secure enclave)",
+      "Full-disk encryption",
+      "Encrypted backup tapes"
+    ],
+    "answer": 1,
+    "explain": "Data in use is data in memory during processing; a TEE isolates it even from the host's privileged software. TLS protects data in transit, and FDE and encrypted backups protect data at rest."
+  },
+  {
+    "obj": "7.5",
+    "q": "Backup tapes containing personal data are transported daily by courier to an offsite vault. Which combination of controls is BEST?",
+    "options": [
+      "Tape encryption with keys stored separately, sealed containers and a record of handovers (chain of custody)",
+      "Labeling tapes with the system name and date for easier retrieval",
+      "Transport in the administrator's personal vehicle to reduce the number of participants",
+      "Erasing the tapes after arrival at the vault and keeping only the index"
+    ],
+    "answer": 0,
+    "explain": "Media in transit is protected by encryption (key stored separately), physical seals and a record of who took the media and when. Overly descriptive labels reveal content, a personal vehicle is not controlled transport, and erasing defeats the purpose of the backup."
+  },
+  {
+    "obj": "7.5",
+    "q": "Policy requires financial records to be retained for 10 years. What is the GREATEST risk the archiving program must address?",
+    "options": [
+      "That the archive media and format become unreadable before the retention period expires, so the archive is periodically tested and migrated",
+      "That the archive takes up too much space in the primary data center",
+      "That archived data cannot be indexed in the SIEM",
+      "That no one reviews the archive daily"
+    ],
+    "answer": 0,
+    "explain": "Long-term archiving must ensure that the data remains available and readable until the end of retention: obsolete media, formats and keys are the main risk, so restores are tested and media is migrated. The other options are secondary."
+  },
+  {
+    "obj": "7.1",
+    "type": "order",
+    "q": "Order the steps of forensic handling of a compromised workstation's disk, from first to last.",
+    "options": [
+      "Analysis on a working copy and building a timeline",
+      "Documenting the scene and labeling the evidence with an entry in the chain of custody",
+      "A report describing methods, tools and hash values",
+      "Bit-stream acquisition through a write blocker",
+      "Hashing the original and the copy and sealing the original"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "First identification and documentation (the chain of custody starts immediately), then acquisition through a write blocker, then hashing and preservation of the original. Analysis is done only on a copy, and the report comes last."
+  },
+  {
+    "obj": "7.2",
+    "type": "match",
+    "q": "Match the description with the tool or activity.",
+    "options": [
+      "A behavioral baseline of users and service accounts and detection of deviations",
+      "Playbooks that automatically enrich an alert and open a ticket",
+      "A proactive search for an attacker who has bypassed existing alerts",
+      "Control of content leaving the organization based on classification labels",
+      "Aggregation and correlation of logs from multiple sources"
+    ],
+    "targets": [
+      "SIEM",
+      "DLP",
+      "IPS",
+      "UEBA",
+      "SOAR",
+      "Threat hunting"
+    ],
+    "answer": [
+      3,
+      4,
+      5,
+      1,
+      0
+    ],
+    "explain": "UEBA models behavior, SOAR automates response, threat hunting is proactive and hypothesis-driven, DLP controls sensitive data leaving the organization, and SIEM correlates logs. IPS is a distractor."
+  },
+  {
+    "obj": "7.2",
+    "q": "An analyst is building an incident timeline from the SIEM. According to the app01 record, the admin session was created about 7 minutes BEFORE the attacker's first contact with the firewall. What is the MOST likely cause and the appropriate control?",
+    "snippet": "# sources in the SIEM, sorted by receive time\nfw01   2026-10-27T14:02:11+00:00  DENY  tcp 203.0.113.9:51544 -> 10.0.1.20:22\nfw01   2026-10-27T14:02:19+00:00  ALLOW tcp 203.0.113.9:51560 -> 10.0.1.20:443\nweb01  2026-10-27T16:02:20+02:00  POST /login 200 src=203.0.113.9 user=admin\napp01  Oct 27 13:55:23            INFO admin session created src=203.0.113.9\ndb01   2026-10-27T14:09:58+00:00  LOGIN OK user=app_rw from 10.0.1.20",
+    "lang": "log",
+    "options": [
+      "The app01 clock is not synchronized and records time without a time zone; NTP on all sources and normalized UTC timestamps are needed",
+      "The time on web01 is two hours off, so the web01 log cannot be used as evidence",
+      "The attacker modified the logs on fw01 to hide the first access",
+      "The session was created before the attack, so an insider opened access for the attacker"
+    ],
+    "answer": 0,
+    "explain": "The web01 record has a +02:00 offset, so 16:02:20+02:00 equals 14:02:20 UTC and fits right after the ALLOW on fw01. app01 is the only source without a year or time zone, and a session from the same source 203.0.113.9 lands before any contact: the classic sign of an unsynchronized clock. Without NTP and time normalization, correlation and the evidentiary value of logs are undermined. There is no evidence of log tampering or an insider; that wrong conclusion would come precisely from poor time synchronization."
+  }
+]

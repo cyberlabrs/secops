@@ -1,0 +1,251 @@
+[
+  {
+    "obj": "3.1",
+    "type": "single",
+    "q": "Rudar je otkriven na node01, ali Falco pokazuje da je pod storefront-7d9c6b5f4-x2kqp na node02 imao alarme ranije. Šta je „pacijent nula“ i zašto?",
+    "options": [
+      "node01, jer je tamo najkritičniji alarm",
+      "Pod storefront-7d9c6b5f4-x2kqp, jer je u njemu prvo izvršavanje koda koje ne pripada aplikaciji (izlazna veza iz java pa shell)",
+      "Pod node-debug-7f4c, jer je privilegovan",
+      "Ne može se odrediti bez memorijskog dumpa"
+    ],
+    "answer": 1,
+    "explain": "Pacijent nula je mjesto prvog kompromitovanja, ne mjesto najglasnijeg alarma. Lanac u storefront podu (02:13 izlazna veza, reverzni shell, terminal, čitanje tokena) prethodi svemu na node01; node-debug-7f4c je napravljen kasnije, kroz API."
+  },
+  {
+    "obj": "3.1",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "time                 host    rule                                       k8s_ns       k8s_pod\n01:38:12  node03  Unexpected outbound connection             shop         newsletter-5f7d8c9b6-hq4ln\n01:42:03  node03  Drop and execute new binary in container   ci           runner-x1zq-project-412-0\n01:55:10  node01  Terminal shell in container                payments     payments-api-6c8b7d9f5-q4tzr\n02:00:06  node03  Contact K8S API Server From Container       ops          cert-checker-29340060-t9rbn\n02:13:06  node02  Unexpected outbound connection             shop         storefront-7d9c6b5f4-x2kqp\n02:13:07  node02  Redirect STDOUT/STDIN to Network Connection shop         storefront-7d9c6b5f4-x2kqp\n02:14:12  node02  Terminal shell in container                shop         storefront-7d9c6b5f4-x2kqp\n02:21:09  node01  Detect crypto miners using the Stratum protocol kube-system node-debug-7f4c",
+    "q": "Falco alarmi iz noći incidenta (sažeto). Koji redovi su PRVA DVA koraka napada na prodavnicu (eksploatacija i izvršavanje koda)?",
+    "answer": [
+      5,
+      6
+    ],
+    "explain": "U 02:13:06 java u storefront podu otvara vezu prema napadaču (JNDI/LDAP callback), a u 02:13:07 slijedi reverzni shell. Shell u 02:14 je sljedeći korak. Newsletter, CI, cert-checker i shell u payments (Anino održavanje) su šum, a rudar je posljedica."
+  },
+  {
+    "obj": "3.1",
+    "type": "single",
+    "lang": "json",
+    "snippet": "{\"Target\": \"Java\", \"Class\": \"lang-pkgs\", \"Vulnerabilities\": [\n  {\"VulnerabilityID\": \"CVE-2021-44228\", \"PkgName\": \"org.apache.logging.log4j:log4j-core\",\n   \"InstalledVersion\": \"2.14.1\", \"FixedVersion\": \"2.15.0, 2.12.2\", \"Severity\": \"CRITICAL\",\n   \"CVSS\": {\"nvd\": {\"V3Score\": 10.0}}},\n  {\"VulnerabilityID\": \"CVE-2022-42003\", \"PkgName\": \"com.fasterxml.jackson.core:jackson-databind\",\n   \"InstalledVersion\": \"2.13.2\", \"FixedVersion\": \"2.13.4.2\", \"Severity\": \"HIGH\",\n   \"CVSS\": {\"nvd\": {\"V3Score\": 7.5}}}]}\n{\"Target\": \"storefront:2.3.1 (debian 12.5)\", \"Class\": \"os-pkgs\", \"Vulnerabilities\": [\n  {\"VulnerabilityID\": \"CVE-2023-45853\", \"PkgName\": \"zlib1g\", \"Status\": \"will_not_fix\",\n   \"InstalledVersion\": \"1:1.2.13.dfsg-1\", \"Severity\": \"CRITICAL\", \"CVSS\": {\"nvd\": {\"V3Score\": 9.8}}}]}",
+    "q": "Isječak Trivy izvještaja za sliku storefront:2.3.1. Falco je vidio da java proces otvara vezu na port 1389. Koji nalaz je ulazna tačka i prvi prioritet?",
+    "options": [
+      "CVE-2023-45853 u zlib1g, jer je CRITICAL bez ispravke",
+      "CVE-2022-42003 u jackson-databind",
+      "CVE-2021-44228 u log4j-core 2.14.1",
+      "Nijedan; port 1389 znači da je napad došao preko SSH-a"
+    ],
+    "answer": 2,
+    "explain": "Log4Shell (CVSS 10, u CISA KEV) se aktivira kroz JNDI/LDAP lookup, što se vidi kao izlazna veza iz java procesa. zlib1g CVE pogađa MiniZip koji aplikacija ne koristi i Debian ga ne ispravlja; jackson-databind nalazi su DoS."
+  },
+  {
+    "obj": "3.1",
+    "type": "single",
+    "q": "Zašto je prvi Falco alarm u Log4Shell napadu IZLAZNA konekcija iz java procesa, a ne dolazni zahtjev?",
+    "options": [
+      "Falco ne vidi dolazni HTTP saobraćaj ni u jednom slučaju",
+      "Log4j razrješava ${jndi:ldap://…} u logovanoj poruci, pa JVM sama kontaktira napadačev LDAP server i učitava klasu",
+      "Napadač je prvo instalirao kubectl",
+      "Ingress kontroler je preusmjerio zahtjev na port 1389"
+    ],
+    "answer": 1,
+    "explain": "Zlonamjerni string je u običnom HTTP zahtjevu (npr. User-Agent), koji izgleda legitimno. Ranjivost je u tome što aplikacija, logujući ga, inicira vezu prema napadaču; ta veza je anomalija koju runtime alat vidi."
+  },
+  {
+    "obj": "3.2",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "requestReceivedTimestamp     pod-name (user.extra)        sourceIPs[0]   userAgent\n2026-10-21T01:30:41.512Z     storefront-7d9c6b5f4-x2kqp   10.244.2.17    fabric8-kubernetes-client/6.10.0\n2026-10-21T01:32:57.104Z     storefront-7d9c6b5f4-m8wzn   10.244.3.22    fabric8-kubernetes-client/6.10.0\n2026-10-21T02:15:01.912Z     storefront-7d9c6b5f4-x2kqp   10.244.2.17    curl/7.88.1\n2026-10-21T02:17:10.045Z     storefront-7d9c6b5f4-x2kqp   10.244.2.17    kubectl/v1.29.3\n2026-10-21T02:58:40.330Z     storefront-7d9c6b5f4-x2kqp   203.0.113.189  kubectl/v1.29.3\n2026-10-21T02:59:02.881Z     storefront-7d9c6b5f4-m8wzn   10.244.3.22    fabric8-kubernetes-client/6.10.0\n2026-10-21T03:04:17.020Z     storefront-7d9c6b5f4-x2kqp   203.0.113.189  kubectl/v1.29.3",
+    "q": "Zahtjevi ServiceAccounta shop:storefront iz audit loga sličnog incidenta, u kome je napadač nastavio i sa svoje mašine. Koji redovi dokazuju da je token iznesen i korišten VAN klastera?",
+    "answer": [
+      5,
+      7
+    ],
+    "explain": "user.extra kaže da je token izdat za pod x2kqp čiji je IP 10.244.2.17. Isti token sa 203.0.113.189 znači da ga napadač koristi sa svoje mašine. Redovi sa curl i kubectl sa IP-a poda su zloupotreba, ali iz poda; brisanje poda poništava bound token u oba slučaja."
+  },
+  {
+    "obj": "3.2",
+    "type": "single",
+    "lang": "json",
+    "snippet": "{\"verb\": \"create\",\n \"requestURI\": \"/api/v1/namespaces/kube-system/pods/node-debug-7f4c/exec?command=sh&stdin=true&tty=true\",\n \"user\": {\"username\": \"system:serviceaccount:shop:storefront\"},\n \"sourceIPs\": [\"10.244.2.17\"],\n \"objectRef\": {\"resource\": \"pods\", \"subresource\": \"exec\",\n               \"namespace\": \"kube-system\", \"name\": \"node-debug-7f4c\"},\n \"responseStatus\": {\"code\": 101},\n \"requestReceivedTimestamp\": \"2026-10-21T02:19:47.611090Z\",\n \"stageTimestamp\": \"2026-10-21T02:28:37.611090Z\"}",
+    "q": "Audit zapis iz kompromitacije. Šta pokazuje?",
+    "options": [
+      "Neuspio pokušaj exec-a, jer kod nije 200",
+      "Uspješan interaktivni exec (101 Switching Protocols) ukradenim tokenom u privilegovani pod; sesija je trajala oko 9 minuta",
+      "Kubelet je restartovao pod",
+      "kube-scheduler je rasporedio pod na čvor"
+    ],
+    "answer": 1,
+    "explain": "Exec se nadograđuje na stream protokol, pa je 101 uspjeh. Razlika requestReceivedTimestamp i stageTimestamp je trajanje sesije. Noviji kubectl preko WebSocketa može biti zabilježen kao get, pa se filtrira po subresource exec."
+  },
+  {
+    "obj": "3.2",
+    "type": "multi",
+    "q": "Napadač je ukradenim tokenom uradio list secrets u namespaceu shop i get na tri tajne. Koje tvrdnje su tačne?",
+    "options": [
+      "list secrets vraća i sadržaj (data) svih tajni u namespaceu, ne samo imena",
+      "Sve tajne iz shop treba rotirati, ne samo one tražene po imenu",
+      "Audit zapis na nivou Metadata sadrži vrijednosti tajni",
+      "Zahtjevi sa kodom 403 nisu bitni za istragu",
+      "Anotacija authorization.k8s.io/reason imenuje binding koji je dozvolio zahtjev"
+    ],
+    "answer": [
+      0,
+      1,
+      4
+    ],
+    "explain": "List vraća pune objekte, pa je cio namespace procurio. Metadata nivo ne bilježi tijelo zahtjeva ni odgovora (dobro je da tajne nisu u logu). 403 pokazuju namjeru (pokušaj ClusterRoleBindinga, list nodes) i obim koji NIJE postignut."
+  },
+  {
+    "obj": "3.2",
+    "type": "spot",
+    "lang": "yaml",
+    "snippet": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: node-debug-7f4c\n  namespace: kube-system\nspec:\n  nodeName: node01\n  hostPID: true\n  tolerations: [{operator: Exists}]\n  containers:\n    - name: debug\n      image: docker.io/library/alpine:3.20\n      command: [\"sh\", \"-c\", \"sleep 86400\"]\n      securityContext: {privileged: true}\n      volumeMounts: [{name: host, mountPath: /host}]\n  volumes:\n    - name: host\n      hostPath: {path: /}",
+    "q": "requestObject napadačevog poda. Koja tri reda mu daju kontrolu nad čvorom (bijeg iz kontejnera)?",
+    "answer": [
+      7,
+      13,
+      17
+    ],
+    "explain": "hostPID dijeli procesni namespace čvora, privileged daje sve capabilities i uređaje bez seccompa/AppArmora, a hostPath / montira cio fajl sistem čvora (chroot /host je root shell). nodeName samo bira čvor, tolerations zaobilaze taintove, a slika alpine je obična."
+  },
+  {
+    "obj": "3.2",
+    "type": "single",
+    "q": "Za napadačev pod u audit logu postoji create pods, ali ne i create pods/binding od kube-schedulera, kakav imaju ostali podovi. Zašto?",
+    "options": [
+      "Audit politika ne bilježi kube-scheduler",
+      "Pod je u spec-u imao postavljen nodeName, pa ga kubelet node01 pokreće direktno, bez schedulera",
+      "Pod nikad nije pokrenut",
+      "Binding se bilježi samo za Deploymente"
+    ],
+    "answer": 1,
+    "explain": "Postavljen spec.nodeName zaobilazi scheduler (i njegove provjere kao taintove sa NoSchedule). Odmah zatim kubelet node01 patchuje pods/status, a Falco javlja Launch Privileged Container na node01."
+  },
+  {
+    "obj": "3.3",
+    "type": "spot",
+    "lang": "yaml",
+    "snippet": "apiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRole\nmetadata:\n  name: storefront-ops\nrules:\n  - apiGroups: [\"\"]\n    resources: [\"pods\", \"pods/exec\", \"configmaps\", \"secrets\"]\n    verbs: [\"get\", \"list\", \"watch\", \"create\", \"delete\"]\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRoleBinding\nmetadata:\n  name: storefront-ops\nsubjects:\n  - {kind: ServiceAccount, name: storefront, namespace: shop}\nroleRef:\n  {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: storefront-ops}",
+    "q": "RBAC dodijeljen ServiceAccountu storefront. Koji redovi su omogućili čitanje tajni u payments i pod u kube-system?",
+    "answer": [
+      6,
+      7,
+      10
+    ],
+    "explain": "resources i verbs daju create pods, pods/exec i get/list secrets, a kind: ClusterRoleBinding ih primjenjuje na SVE namespaceove. Ista ClusterRole kroz RoleBinding u shop bi ograničila štetu na shop."
+  },
+  {
+    "obj": "3.3",
+    "type": "single",
+    "q": "Koja dozvola ServiceAccounta je u namespaceu bez Pod Security ograničenja praktično ekvivalentna root pristupu na čvoru?",
+    "options": [
+      "get configmaps",
+      "list namespaces",
+      "create pods",
+      "get pods/log"
+    ],
+    "answer": 2,
+    "explain": "Ko može napraviti pod, može tražiti privileged, hostPath / i hostPID, pa time root na čvoru, ako ga admission (PSA, VAP, Kyverno) ne zaustavi. Uz to može pokrenuti pod sa bilo kojim ServiceAccountom tog namespacea."
+  },
+  {
+    "obj": "3.3",
+    "type": "multi",
+    "q": "Koji propusti u konfiguraciji su olakšali napad, iako sami nisu bili ulazna tačka?",
+    "options": [
+      "Automatski montiran ServiceAccount token u javno izloženom kontejneru",
+      "Nema egress NetworkPolicy u namespaceu shop",
+      "Kontejner radi kao root sa upisivim root fajl sistemom",
+      "Klaster koristi Calico kao CNI",
+      "kube-system nema Pod Security enforce labelu ni admission politiku protiv privileged/hostPath"
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "explain": "Token je omogućio pristup API-ju, odsustvo egress pravila LDAP callback, C2 i rudara, root i upisiv fajl sistem preuzimanje kubectl-a, a kube-system bez zaštite privilegovani pod. Calico je samo CNI; on čak provodi NetworkPolicy, kad je ima."
+  },
+  {
+    "obj": "3.4",
+    "type": "single",
+    "q": "U 02:30 napadač aktivno koristi token. Dokazi su izvezeni. Šta je PRVI korak obuzdavanja sa najvećim efektom?",
+    "options": [
+      "Rotirati sve tajne",
+      "Obrisati ClusterRoleBinding storefront-ops",
+      "Obrisati sve podove u shop",
+      "Restartovati API server"
+    ],
+    "answer": 1,
+    "explain": "Brisanje bindinga odmah oduzima tokenu sva prava u cijelom klasteru, a aplikacija gubi samo čitanje ConfigMapa. Rotacija prije prekida pristupa ne pomaže, jer napadač sa get secrets čita i nove vrijednosti; brisanje podova uništava dokaze."
+  },
+  {
+    "obj": "3.4",
+    "type": "order",
+    "q": "Poredaj korake odgovora na ovaj incident.",
+    "options": [
+      "Rotirati tajne i kredencijale čvora",
+      "Izvesti audit log, Falco alarme i manifeste podova",
+      "Obrisati ClusterRoleBinding storefront-ops i izolovati podove NetworkPolicyjem",
+      "Ponovo izgraditi node01 i uvesti storefront:2.4.0 sa hardened securityContextom",
+      "Cordon node01, snapshot diska, obrisati node-debug-7f4c i kompromitovani pod"
+    ],
+    "answer": [
+      1,
+      2,
+      4,
+      0,
+      3
+    ],
+    "explain": "Prvo dokazi, pa prekid pristupa (RBAC i mreža), pa uklanjanje napadačevih resursa uz očuvanje diska, pa rotacija (tek kad napadač ne može pročitati nove vrijednosti), na kraju oporavak i hardening."
+  },
+  {
+    "obj": "3.4",
+    "type": "match",
+    "q": "Spoji kontrolu sa korakom napada koji bi zaustavila.",
+    "options": [
+      "Egress default-deny NetworkPolicy",
+      "Pod Security Admission restricted ili ValidatingAdmissionPolicy",
+      "Role sa get na jedan ConfigMap umjesto ClusterRoleBindinga",
+      "readOnlyRootFilesystem i runAsNonRoot",
+      "Trivy gate u CI-u za CRITICAL iz KEV kataloga"
+    ],
+    "targets": [
+      "Preuzimanje i pokretanje /tmp/kubectl kao root",
+      "Ranjiva slika u produkciji",
+      "JNDI/LDAP callback prema 203.0.113.189:1389",
+      "Privilegovani pod sa hostPath /",
+      "get secrets u payments"
+    ],
+    "answer": [
+      2,
+      3,
+      4,
+      0,
+      1
+    ],
+    "explain": "Egress pravila sprečavaju callback, admission odbija privilegovani pod, uska Role sprečava čitanje tajni, read-only fajl sistem bez root-a otežava ubacivanje alata (osim u emptyDir), a gate u CI-u ne pušta ranjivu sliku."
+  },
+  {
+    "obj": "3.4",
+    "type": "multi",
+    "q": "Inventar tajni: argocd/argocd-secret, payments/payments-db, payments/psp-webhook-secret, shop/postgres-credentials, shop/registry-pull, shop/stripe-api-key. Napadač je uradio list secrets u shop i get na payments/payments-db. Šta obavezno rotiraš?",
+    "options": [
+      "shop/postgres-credentials",
+      "shop/registry-pull",
+      "argocd/argocd-secret",
+      "payments/payments-db",
+      "shop/stripe-api-key",
+      "payments/psp-webhook-secret"
+    ],
+    "answer": [
+      0,
+      1,
+      3,
+      4
+    ],
+    "explain": "Sve iz shop je vraćeno kroz list, a payments-db je pročitan direktno. Za argocd-secret i psp-webhook-secret nema zahtjeva u audit logu; ipak provjeri tokene podova na node01, jer je napadač imao root tamo."
+  }
+]

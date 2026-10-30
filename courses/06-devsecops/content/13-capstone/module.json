@@ -1,0 +1,8 @@
+{
+  "title": "Capstone: kompletan DevSecOps pipeline",
+  "summary": "Spoji sve kontrole u jedan GitLab pipeline za kurs-shop: tajne, SAST, SCA, IaC, build sa SBOM-om, skeniranje slike, DAST, potpis i provjera potpisa prije deploya, uz izuzeća sa rokom.",
+  "minutes": 150,
+  "practice": true,
+  "title_en": "Capstone: a complete DevSecOps pipeline",
+  "summary_en": "Combine every control into one GitLab pipeline for kurs-shop: secrets, SAST, SCA, IaC, a build with an SBOM, image scanning, DAST, signing and signature verification before deploy, with exceptions that expire."
+}

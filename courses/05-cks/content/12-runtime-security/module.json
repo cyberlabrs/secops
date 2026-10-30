@@ -1,0 +1,14 @@
+{
+  "title": "Runtime security: Falco, istraga i nepromjenljivost",
+  "summary": "Falco pravila i detekcije, istraga od alarma do Poda i procesa uz izolaciju, te nepromjenljivi kontejneri sa readOnlyRootFilesystem i immutable ConfigMapama.",
+  "minutes": 90,
+  "domain": 6,
+  "objectives": [
+    "6.1",
+    "6.2",
+    "6.3",
+    "6.4"
+  ],
+  "title_en": "Runtime security: Falco, investigation and immutability",
+  "summary_en": "Falco rules and detections, investigating from alert to Pod and process with isolation, and immutable containers with readOnlyRootFilesystem and immutable ConfigMaps."
+}

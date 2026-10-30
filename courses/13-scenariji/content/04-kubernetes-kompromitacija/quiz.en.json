@@ -1,0 +1,251 @@
+[
+  {
+    "obj": "3.1",
+    "type": "single",
+    "q": "The miner was detected on node01, but Falco shows the Pod storefront-7d9c6b5f4-x2kqp on node02 had alerts earlier. What is \"patient zero\" and why?",
+    "options": [
+      "node01, because the most critical alert is there",
+      "The Pod storefront-7d9c6b5f4-x2kqp, because it shows the first code execution that does not belong to the application (an outbound connection from java, then a shell)",
+      "The Pod node-debug-7f4c, because it is privileged",
+      "It cannot be determined without a memory dump"
+    ],
+    "answer": 1,
+    "explain": "Patient zero is the place of the first compromise, not of the loudest alert. The chain in the storefront Pod (02:13 outbound connection, reverse shell, terminal, token read) precedes everything on node01; node-debug-7f4c was created later, through the API."
+  },
+  {
+    "obj": "3.1",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "time                 host    rule                                       k8s_ns       k8s_pod\n01:38:12  node03  Unexpected outbound connection             shop         newsletter-5f7d8c9b6-hq4ln\n01:42:03  node03  Drop and execute new binary in container   ci           runner-x1zq-project-412-0\n01:55:10  node01  Terminal shell in container                payments     payments-api-6c8b7d9f5-q4tzr\n02:00:06  node03  Contact K8S API Server From Container       ops          cert-checker-29340060-t9rbn\n02:13:06  node02  Unexpected outbound connection             shop         storefront-7d9c6b5f4-x2kqp\n02:13:07  node02  Redirect STDOUT/STDIN to Network Connection shop         storefront-7d9c6b5f4-x2kqp\n02:14:12  node02  Terminal shell in container                shop         storefront-7d9c6b5f4-x2kqp\n02:21:09  node01  Detect crypto miners using the Stratum protocol kube-system node-debug-7f4c",
+    "q": "Falco alerts from the night of the incident (condensed). Which lines are the FIRST TWO steps of the attack on the shop (exploitation and code execution)?",
+    "answer": [
+      5,
+      6
+    ],
+    "explain": "At 02:13:06 java in the storefront Pod opens a connection to the attacker (JNDI/LDAP callback), and at 02:13:07 a reverse shell follows. The shell at 02:14 is the next step. Newsletter, CI, cert-checker and the shell in payments (Ana's maintenance) are noise, and the miner is a consequence."
+  },
+  {
+    "obj": "3.1",
+    "type": "single",
+    "lang": "json",
+    "snippet": "{\"Target\": \"Java\", \"Class\": \"lang-pkgs\", \"Vulnerabilities\": [\n  {\"VulnerabilityID\": \"CVE-2021-44228\", \"PkgName\": \"org.apache.logging.log4j:log4j-core\",\n   \"InstalledVersion\": \"2.14.1\", \"FixedVersion\": \"2.15.0, 2.12.2\", \"Severity\": \"CRITICAL\",\n   \"CVSS\": {\"nvd\": {\"V3Score\": 10.0}}},\n  {\"VulnerabilityID\": \"CVE-2022-42003\", \"PkgName\": \"com.fasterxml.jackson.core:jackson-databind\",\n   \"InstalledVersion\": \"2.13.2\", \"FixedVersion\": \"2.13.4.2\", \"Severity\": \"HIGH\",\n   \"CVSS\": {\"nvd\": {\"V3Score\": 7.5}}}]}\n{\"Target\": \"storefront:2.3.1 (debian 12.5)\", \"Class\": \"os-pkgs\", \"Vulnerabilities\": [\n  {\"VulnerabilityID\": \"CVE-2023-45853\", \"PkgName\": \"zlib1g\", \"Status\": \"will_not_fix\",\n   \"InstalledVersion\": \"1:1.2.13.dfsg-1\", \"Severity\": \"CRITICAL\", \"CVSS\": {\"nvd\": {\"V3Score\": 9.8}}}]}",
+    "q": "A Trivy report excerpt for the storefront:2.3.1 image. Falco saw the java process open a connection to port 1389. Which finding is the entry point and the first priority?",
+    "options": [
+      "CVE-2023-45853 in zlib1g, because it is CRITICAL without a fix",
+      "CVE-2022-42003 in jackson-databind",
+      "CVE-2021-44228 in log4j-core 2.14.1",
+      "None; port 1389 means the attack came over SSH"
+    ],
+    "answer": 2,
+    "explain": "Log4Shell (CVSS 10, in CISA KEV) is triggered through a JNDI/LDAP lookup, which shows up as an outbound connection from the java process. The zlib1g CVE affects MiniZip, which the application does not use, and Debian does not fix it; the jackson-databind findings are DoS."
+  },
+  {
+    "obj": "3.1",
+    "type": "single",
+    "q": "Why is the first Falco alert in a Log4Shell attack an OUTBOUND connection from the java process rather than an inbound request?",
+    "options": [
+      "Falco never sees inbound HTTP traffic",
+      "Log4j resolves ${jndi:ldap://…} in a logged message, so the JVM itself contacts the attacker's LDAP server and loads a class",
+      "The attacker installed kubectl first",
+      "The ingress controller redirected the request to port 1389"
+    ],
+    "answer": 1,
+    "explain": "The malicious string is in an ordinary HTTP request (e.g. User-Agent), which looks legitimate. The vulnerability is that the application, while logging it, initiates a connection to the attacker; that connection is the anomaly a runtime tool sees."
+  },
+  {
+    "obj": "3.2",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "requestReceivedTimestamp     pod-name (user.extra)        sourceIPs[0]   userAgent\n2026-10-21T01:30:41.512Z     storefront-7d9c6b5f4-x2kqp   10.244.2.17    fabric8-kubernetes-client/6.10.0\n2026-10-21T01:32:57.104Z     storefront-7d9c6b5f4-m8wzn   10.244.3.22    fabric8-kubernetes-client/6.10.0\n2026-10-21T02:15:01.912Z     storefront-7d9c6b5f4-x2kqp   10.244.2.17    curl/7.88.1\n2026-10-21T02:17:10.045Z     storefront-7d9c6b5f4-x2kqp   10.244.2.17    kubectl/v1.29.3\n2026-10-21T02:58:40.330Z     storefront-7d9c6b5f4-x2kqp   203.0.113.189  kubectl/v1.29.3\n2026-10-21T02:59:02.881Z     storefront-7d9c6b5f4-m8wzn   10.244.3.22    fabric8-kubernetes-client/6.10.0\n2026-10-21T03:04:17.020Z     storefront-7d9c6b5f4-x2kqp   203.0.113.189  kubectl/v1.29.3",
+    "q": "Requests of the shop:storefront ServiceAccount from the audit log of a similar incident, in which the attacker continued from their own machine. Which lines prove the token was taken out and used OUTSIDE the cluster?",
+    "answer": [
+      5,
+      7
+    ],
+    "explain": "user.extra says the token was issued for Pod x2kqp, whose IP is 10.244.2.17. The same token from 203.0.113.189 means the attacker uses it from their own machine. The curl and kubectl lines from the Pod's IP are abuse, but from inside the Pod; deleting the Pod invalidates the bound token in both cases."
+  },
+  {
+    "obj": "3.2",
+    "type": "single",
+    "lang": "json",
+    "snippet": "{\"verb\": \"create\",\n \"requestURI\": \"/api/v1/namespaces/kube-system/pods/node-debug-7f4c/exec?command=sh&stdin=true&tty=true\",\n \"user\": {\"username\": \"system:serviceaccount:shop:storefront\"},\n \"sourceIPs\": [\"10.244.2.17\"],\n \"objectRef\": {\"resource\": \"pods\", \"subresource\": \"exec\",\n               \"namespace\": \"kube-system\", \"name\": \"node-debug-7f4c\"},\n \"responseStatus\": {\"code\": 101},\n \"requestReceivedTimestamp\": \"2026-10-21T02:19:47.611090Z\",\n \"stageTimestamp\": \"2026-10-21T02:28:37.611090Z\"}",
+    "q": "An audit record from the compromise. What does it show?",
+    "options": [
+      "A failed exec attempt, because the code is not 200",
+      "A successful interactive exec (101 Switching Protocols) with the stolen token into the privileged Pod; the session lasted about 9 minutes",
+      "The kubelet restarted the Pod",
+      "kube-scheduler scheduled the Pod onto a node"
+    ],
+    "answer": 1,
+    "explain": "Exec upgrades to a streaming protocol, so 101 is success. The difference between requestReceivedTimestamp and stageTimestamp is the session length. Newer kubectl over WebSocket may be logged as get, so filter on the exec subresource."
+  },
+  {
+    "obj": "3.2",
+    "type": "multi",
+    "q": "With the stolen token the attacker ran list secrets in namespace shop and get on three Secrets. Which statements are true?",
+    "options": [
+      "list secrets also returns the contents (data) of all Secrets in the namespace, not just the names",
+      "All Secrets in shop must be rotated, not only those requested by name",
+      "An audit record at the Metadata level contains the Secret values",
+      "Requests with code 403 do not matter for the investigation",
+      "The authorization.k8s.io/reason annotation names the binding that allowed the request"
+    ],
+    "answer": [
+      0,
+      1,
+      4
+    ],
+    "explain": "List returns full objects, so the whole namespace leaked. The Metadata level does not record request or response bodies (it is good that Secrets are not in the log). The 403s show intent (the ClusterRoleBinding attempt, list nodes) and the scope that was NOT reached."
+  },
+  {
+    "obj": "3.2",
+    "type": "spot",
+    "lang": "yaml",
+    "snippet": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: node-debug-7f4c\n  namespace: kube-system\nspec:\n  nodeName: node01\n  hostPID: true\n  tolerations: [{operator: Exists}]\n  containers:\n    - name: debug\n      image: docker.io/library/alpine:3.20\n      command: [\"sh\", \"-c\", \"sleep 86400\"]\n      securityContext: {privileged: true}\n      volumeMounts: [{name: host, mountPath: /host}]\n  volumes:\n    - name: host\n      hostPath: {path: /}",
+    "q": "The requestObject of the attacker's Pod. Which three lines give it control over the node (container escape)?",
+    "answer": [
+      7,
+      13,
+      17
+    ],
+    "explain": "hostPID shares the node's process namespace, privileged gives all capabilities and devices without seccomp/AppArmor, and hostPath / mounts the node's entire file system (chroot /host is a root shell). nodeName only picks the node, tolerations bypass taints, and the alpine image is ordinary."
+  },
+  {
+    "obj": "3.2",
+    "type": "single",
+    "q": "For the attacker's Pod the audit log has create pods, but no create pods/binding from kube-scheduler like the other Pods. Why?",
+    "options": [
+      "The audit policy does not log kube-scheduler",
+      "The Pod had nodeName set in its spec, so the node01 kubelet runs it directly, without the scheduler",
+      "The Pod never started",
+      "Bindings are logged only for Deployments"
+    ],
+    "answer": 1,
+    "explain": "A set spec.nodeName bypasses the scheduler (and its checks, such as NoSchedule taints). Right after that the node01 kubelet patches pods/status, and Falco reports Launch Privileged Container on node01."
+  },
+  {
+    "obj": "3.3",
+    "type": "spot",
+    "lang": "yaml",
+    "snippet": "apiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRole\nmetadata:\n  name: storefront-ops\nrules:\n  - apiGroups: [\"\"]\n    resources: [\"pods\", \"pods/exec\", \"configmaps\", \"secrets\"]\n    verbs: [\"get\", \"list\", \"watch\", \"create\", \"delete\"]\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRoleBinding\nmetadata:\n  name: storefront-ops\nsubjects:\n  - {kind: ServiceAccount, name: storefront, namespace: shop}\nroleRef:\n  {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: storefront-ops}",
+    "q": "The RBAC granted to the storefront ServiceAccount. Which lines enabled reading Secrets in payments and a Pod in kube-system?",
+    "answer": [
+      6,
+      7,
+      10
+    ],
+    "explain": "resources and verbs give create pods, pods/exec and get/list secrets, and kind: ClusterRoleBinding applies them to ALL namespaces. The same ClusterRole through a RoleBinding in shop would have limited the damage to shop."
+  },
+  {
+    "obj": "3.3",
+    "type": "single",
+    "q": "Which ServiceAccount permission is, in a namespace without Pod Security restrictions, practically equivalent to root on a node?",
+    "options": [
+      "get configmaps",
+      "list namespaces",
+      "create pods",
+      "get pods/log"
+    ],
+    "answer": 2,
+    "explain": "Whoever can create a Pod can ask for privileged, hostPath / and hostPID, and therefore root on the node, unless admission (PSA, VAP, Kyverno) stops it. They can also run a Pod with any ServiceAccount of that namespace."
+  },
+  {
+    "obj": "3.3",
+    "type": "multi",
+    "q": "Which configuration gaps made the attack easier, even though they were not the entry point themselves?",
+    "options": [
+      "An automatically mounted ServiceAccount token in a publicly exposed container",
+      "No egress NetworkPolicy in namespace shop",
+      "The container runs as root with a writable root file system",
+      "The cluster uses Calico as its CNI",
+      "kube-system has no Pod Security enforce label and no admission policy against privileged/hostPath"
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "explain": "The token enabled API access, the missing egress rules the LDAP callback, C2 and the miner, root and a writable file system the kubectl download, and an unprotected kube-system the privileged Pod. Calico is just the CNI; it actually enforces NetworkPolicy, when there is one."
+  },
+  {
+    "obj": "3.4",
+    "type": "single",
+    "q": "At 02:30 the attacker is actively using the token. Evidence has been exported. What is the FIRST containment step with the biggest effect?",
+    "options": [
+      "Rotate all Secrets",
+      "Delete the storefront-ops ClusterRoleBinding",
+      "Delete all Pods in shop",
+      "Restart the API server"
+    ],
+    "answer": 1,
+    "explain": "Deleting the binding immediately removes all of the token's permissions across the cluster, and the application only loses ConfigMap reads. Rotating before access is cut does not help, because with get secrets the attacker reads the new values too; deleting Pods destroys evidence."
+  },
+  {
+    "obj": "3.4",
+    "type": "order",
+    "q": "Put the response steps for this incident in order.",
+    "options": [
+      "Rotate Secrets and node credentials",
+      "Export the audit log, Falco alerts and Pod manifests",
+      "Delete the storefront-ops ClusterRoleBinding and isolate Pods with NetworkPolicy",
+      "Rebuild node01 and roll out storefront:2.4.0 with a hardened securityContext",
+      "Cordon node01, snapshot the disk, delete node-debug-7f4c and the compromised Pod"
+    ],
+    "answer": [
+      1,
+      2,
+      4,
+      0,
+      3
+    ],
+    "explain": "Evidence first, then cutting access (RBAC and network), then removing the attacker's resources while preserving the disk, then rotation (only once the attacker cannot read new values), and finally recovery and hardening."
+  },
+  {
+    "obj": "3.4",
+    "type": "match",
+    "q": "Match each control with the attack step it would have stopped.",
+    "options": [
+      "Egress default-deny NetworkPolicy",
+      "Pod Security Admission restricted or ValidatingAdmissionPolicy",
+      "A Role with get on one ConfigMap instead of a ClusterRoleBinding",
+      "readOnlyRootFilesystem and runAsNonRoot",
+      "A Trivy gate in CI for CRITICAL findings from the KEV catalog"
+    ],
+    "targets": [
+      "Downloading and running /tmp/kubectl as root",
+      "A vulnerable image in production",
+      "The JNDI/LDAP callback to 203.0.113.189:1389",
+      "A privileged Pod with hostPath /",
+      "get secrets in payments"
+    ],
+    "answer": [
+      2,
+      3,
+      4,
+      0,
+      1
+    ],
+    "explain": "Egress rules prevent the callback, admission rejects the privileged Pod, a narrow Role prevents reading Secrets, a read-only file system without root makes dropping tools harder (except into an emptyDir), and a CI gate does not let the vulnerable image through."
+  },
+  {
+    "obj": "3.4",
+    "type": "multi",
+    "q": "Secret inventory: argocd/argocd-secret, payments/payments-db, payments/psp-webhook-secret, shop/postgres-credentials, shop/registry-pull, shop/stripe-api-key. The attacker ran list secrets in shop and get on payments/payments-db. What must you rotate?",
+    "options": [
+      "shop/postgres-credentials",
+      "shop/registry-pull",
+      "argocd/argocd-secret",
+      "payments/payments-db",
+      "shop/stripe-api-key",
+      "payments/psp-webhook-secret"
+    ],
+    "answer": [
+      0,
+      1,
+      3,
+      4
+    ],
+    "explain": "Everything in shop was returned through list, and payments-db was read directly. There are no audit log requests for argocd-secret or psp-webhook-secret; still, check the Pod tokens on node01, because the attacker had root there."
+  }
+]

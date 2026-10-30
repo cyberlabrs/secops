@@ -1,0 +1,62 @@
+{
+  "code": "Detection lab",
+  "badge": "DFIR",
+  "order": 7,
+  "title": "Detekcija i odgovor na incidente (detection lab)",
+  "title_en": "Incident detection and response (detection lab)",
+  "subtitle_en": "Phase 4 of the plan: logs (Linux, CloudTrail, Kubernetes audit), Wazuh SIEM (rules, decoders, FIM, active response), Sigma and MITRE ATT&CK, Falco, attack simulation (Atomic Red Team) and incident response according to NIST SP 800-61r3, using a real Wazuh and real attacks in an offline lab.",
+  "subtitle": "Faza 4 plana: logovi (Linux, CloudTrail, Kubernetes audit), Wazuh SIEM (pravila, dekoderi, FIM, active response), Sigma i MITRE ATT&CK, Falco, simulacija napada (Atomic Red Team) i odgovor na incidente po NIST SP 800-61r3, kroz pravi Wazuh i stvarne napade u labu, bez interneta.",
+  "lab": {
+    "image": "kurs-detekcija-lab:1",
+    "caps": ["NET_ADMIN"],
+    "memoryMB": 2048,
+    "pids": 2048,
+    "setupTimeout": 180
+  },
+  "exam": {
+    "size": 60,
+    "minutes": 90,
+    "pass": 70,
+    "note": "Za detection lab nema zvaničnog ispita: rezultat su tvoje detekcije i runbookovi (modul „Capstone“). Ova simulacija je samoprovjera. Sljedeći korak u planu je Microsoft SC-200 (Sentinel, Defender XDR, KQL), a opcionalno CompTIA CySA+.",
+    "note_en": "There is no official exam for the detection lab: the outcome is your detections and runbooks (the \"Capstone\" module). This simulation is a self-assessment. The next step in the plan is Microsoft SC-200 (Sentinel, Defender XDR, KQL), and optionally CompTIA CySA+.",
+    "domains": [
+      { "n": 1, "name": "Logovi i telemetrija", "name_en": "Logs and telemetry", "weight": 15 },
+      { "n": 2, "name": "SIEM: Wazuh", "weight": 20 },
+      { "n": 3, "name": "Detection engineering: ATT&CK i Sigma", "name_en": "Detection engineering: ATT&CK and Sigma", "weight": 20 },
+      { "n": 4, "name": "Runtime i cloud detekcija", "name_en": "Runtime and cloud detection", "weight": 15 },
+      { "n": 5, "name": "Simulacija napada i purple teaming", "name_en": "Attack simulation and purple teaming", "weight": 10 },
+      { "n": 6, "name": "Odgovor na incidente", "name_en": "Incident response", "weight": 20 }
+    ]
+  },
+  "objectives": [
+    { "id": "1.1", "en": "Linux logs: syslog/auth.log, journald, auditd; formats, time zones, log integrity", "bs": "Linux logovi: syslog/auth.log, journald, auditd; formati, vremenske zone, integritet logova" },
+    { "id": "1.2", "en": "Cloud and Kubernetes logs: CloudTrail, Azure Activity and Entra sign-in logs, Kubernetes audit", "bs": "Cloud i Kubernetes logovi: CloudTrail, Azure Activity i Entra sign-in, Kubernetes audit" },
+    { "id": "1.3", "en": "Collection and normalization: agents, syslog forwarding, schemas (ECS, OCSF), retention", "bs": "Prikupljanje i normalizacija: agenti, syslog forwarding, šeme (ECS, OCSF), retencija" },
+    { "id": "2.1", "en": "Wazuh architecture: agent, manager, indexer, dashboard; ruleset, alert levels, alerts.json", "bs": "Arhitektura Wazuha: agent, manager, indexer, dashboard; ruleset, nivoi alarma, alerts.json" },
+    { "id": "2.2", "en": "Wazuh decoders and rules: custom decoders, rule correlation (frequency, if_matched_sid), wazuh-logtest", "bs": "Wazuh dekoderi i pravila: vlastiti dekoderi, korelacija (frequency, if_matched_sid), wazuh-logtest" },
+    { "id": "2.3", "en": "File integrity monitoring, configuration assessment (SCA), vulnerability detection", "bs": "Praćenje integriteta fajlova (FIM), procjena konfiguracije (SCA), otkrivanje ranjivosti" },
+    { "id": "2.4", "en": "Active response: automatic containment and its risks", "bs": "Active response: automatsko obuzdavanje i njegovi rizici" },
+    { "id": "3.1", "en": "MITRE ATT&CK: mapping detections, coverage, ATT&CK Navigator layers", "bs": "MITRE ATT&CK: mapiranje detekcija, pokrivenost, ATT&CK Navigator slojevi" },
+    { "id": "3.2", "en": "Sigma rules: logsource, detection, modifiers, conditions; conversion to SIEM queries with pipelines", "bs": "Sigma pravila: logsource, detection, modifikatori, uslovi; konverzija u SIEM upite uz pipeline" },
+    { "id": "3.3", "en": "Detection lifecycle: testing, false positives, tuning, detection as code, pyramid of pain", "bs": "Životni ciklus detekcije: testiranje, lažni pozitivi, podešavanje, detection as code, piramida bola" },
+    { "id": "4.1", "en": "Runtime detection with Falco: rules, macros, lists, exceptions, outputs", "bs": "Runtime detekcija sa Falcom: pravila, makroi, liste, izuzeci, izlazi" },
+    { "id": "4.2", "en": "Investigating AWS activity from CloudTrail: compromised credentials, persistence, defense evasion", "bs": "Istraga AWS aktivnosti iz CloudTraila: kompromitovani kredencijali, perzistencija, izbjegavanje odbrane" },
+    { "id": "4.3", "en": "Investigating Kubernetes audit logs: token abuse, exec, privileged workloads, secrets access", "bs": "Istraga Kubernetes audit logova: zloupotreba tokena, exec, privilegovana opterećenja, pristup tajnama" },
+    { "id": "5.1", "en": "Adversary emulation: Atomic Red Team, Stratus Red Team, MITRE Caldera; purple teaming", "bs": "Emulacija napadača: Atomic Red Team, Stratus Red Team, MITRE Caldera; purple teaming" },
+    { "id": "5.2", "en": "Validating detections and gap analysis", "bs": "Validacija detekcija i analiza praznina" },
+    { "id": "6.1", "en": "Incident response frameworks: NIST SP 800-61r3 and CSF 2.0, roles, playbooks vs runbooks", "bs": "Okviri za odgovor na incidente: NIST SP 800-61r3 i CSF 2.0, uloge, playbook i runbook" },
+    { "id": "6.2", "en": "Triage and evidence collection: order of volatility, chain of custody, Linux live response", "bs": "Trijaža i prikupljanje dokaza: redoslijed volatilnosti, lanac nadzora, Linux live response" },
+    { "id": "6.3", "en": "Containment, eradication and recovery for hosts, containers and cloud accounts", "bs": "Obuzdavanje, iskorjenjivanje i oporavak za hostove, kontejnere i cloud naloge" },
+    { "id": "6.4", "en": "Runbooks for common incidents: leaked keys/tokens, cryptominers, exposed storage; post-incident review", "bs": "Runbookovi za česte incidente: procurjeli ključevi/tokeni, kriptomineri, izložen storage; analiza nakon incidenta" }
+  ],
+  "sources": [
+    { "title": "Wazuh dokumentacija", "title_en": "Wazuh documentation", "url": "https://documentation.wazuh.com/current/" },
+    { "title": "SigmaHQ: specifikacija i pravila", "title_en": "SigmaHQ: specification and rules", "url": "https://sigmahq.io/docs/" },
+    { "title": "MITRE ATT&CK", "title_en": "MITRE ATT&CK", "url": "https://attack.mitre.org" },
+    { "title": "Falco dokumentacija", "title_en": "Falco documentation", "url": "https://falco.org/docs/" },
+    { "title": "NIST SP 800-61r3", "title_en": "NIST SP 800-61r3", "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final" },
+    { "title": "Atomic Red Team", "title_en": "Atomic Red Team", "url": "https://github.com/redcanaryco/atomic-red-team" },
+    { "title": "AWS CloudTrail record contents", "title_en": "AWS CloudTrail record contents", "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html" },
+    { "title": "Kubernetes Auditing", "title_en": "Kubernetes Auditing", "url": "https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/" }
+  ]
+}

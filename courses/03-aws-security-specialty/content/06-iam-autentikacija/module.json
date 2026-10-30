@@ -1,0 +1,11 @@
+{
+  "title": "IAM: autentikacija i privremeni kredencijali",
+  "summary": "IAM Identity Center sa vanjskim IdP-om (SAML, SCIM), Cognito user pools i identity pools, MFA i passkeys, STS API-ji i confused deputy, S3 presigned URL, Directory Service i troubleshooting autentikacije.",
+  "minutes": 100,
+  "domain": 4,
+  "objectives": [
+    "4.1"
+  ],
+  "title_en": "IAM: authentication and temporary credentials",
+  "summary_en": "IAM Identity Center with an external IdP (SAML, SCIM), Cognito user pools and identity pools, MFA and passkeys, STS APIs and the confused deputy problem, S3 presigned URLs, Directory Service, and troubleshooting authentication."
+}

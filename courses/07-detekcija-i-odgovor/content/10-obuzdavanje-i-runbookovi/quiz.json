@@ -1,0 +1,249 @@
+[
+  {
+    "obj": "6.3",
+    "q": "Izolacija EC2 instance: tim je zamijenio sve security grupe izolacionom grupom, ali napadačeva reverzna konekcija i dalje radi. Zašto i šta dalje?",
+    "options": [
+      "Izolaciona grupa nije sačuvana; treba ponoviti",
+      "Security grupe ne važe za izlazni saobraćaj",
+      "Security grupe prate konekcije, pa postojeće praćene konekcije ostaju; dodaje se NACL deny na subnetu",
+      "Treba restartovati instancu da grupa počne važiti"
+    ],
+    "answer": 2,
+    "explain": "Promjena security grupe blokira samo novi saobraćaj; praćene konekcije se ne prekidaju. NACL nije stateful i prekida ih. Restart bi uništio volatilne dokaze."
+  },
+  {
+    "obj": "6.3",
+    "q": "Napadač je koristio privremene kredencijale preuzete rolom (STS). Kako ih poništavaš?",
+    "options": [
+      "aws iam delete-access-key za privremeni ključ",
+      "Revoke active sessions na roli: inline politika koja odbija zahtjeve sa tokenima izdatim prije tog trenutka (aws:TokenIssueTime)",
+      "Brisanjem CloudTrail trailova",
+      "Privremeni kredencijali se ne mogu poništiti; čeka se da isteknu"
+    ],
+    "answer": 1,
+    "explain": "Privremeni kredencijali ne mogu se obrisati, ali se mogu učiniti beskorisnim politikom zasnovanom na aws:TokenIssueTime. Ako napadač može ponovo preuzeti rolu, prvo obuzdaj izvor (ključ, nalog)."
+  },
+  {
+    "obj": "6.3",
+    "q": "Kompromitovan pod je dio Deploymenta iza Servicea. Želiš ga izolovati, zadržati za forenziku i da servis i dalje radi. Šta radiš?",
+    "options": [
+      "Promijeniš labele poda (ukloniš app, dodaš quarantine=true) i primijeniš deny-all NetworkPolicy za quarantine podove",
+      "kubectl delete pod; ReplicaSet napravi novi",
+      "Skaliraš Deployment na nulu",
+      "kubectl drain čvora odmah"
+    ],
+    "answer": 0,
+    "explain": "Bez labele koju koristi selector, pod izlazi iz ReplicaSeta i Servicea, a ReplicaSet pravi zamjenu. NetworkPolicy ga mrežno izoluje. Brisanje ili drain uništavaju dokaze, a skaliranje prekida servis."
+  },
+  {
+    "obj": "6.3",
+    "q": "Na Linux hostu primjenjuješ izolaciju sa iptables. Koji redoslijed ne prekida tvoju SSH sesiju sa IR stanice?",
+    "options": [
+      "Prvo politike DROP, pa pravila za IR adresu",
+      "Samo iptables -F",
+      "Prvo politika DROP za OUTPUT, pa INPUT",
+      "Sačuvati pravila (iptables-save), dodati ACCEPT za lo i IR adresu, pa tek onda postaviti politike na DROP"
+    ],
+    "answer": 3,
+    "explain": "Pravila koja dozvoljavaju IR moraju postojati prije nego što politika postane DROP, inače i tvoja sesija pada. iptables -F briše pravila i ne izoluje ništa."
+  },
+  {
+    "obj": "6.3",
+    "q": "Sumnjiv proces treba zaustaviti, ali forenzika još nije prikupila njegovu memoriju i /proc podatke. Šta koristiš?",
+    "options": [
+      "kill -9",
+      "kill -STOP (SIGSTOP), pa SIGKILL nakon prikupljanja",
+      "reboot",
+      "rm binarnog fajla"
+    ],
+    "answer": 1,
+    "explain": "SIGSTOP zamrzava proces bez gubitka memorije i otvorenih fajlova, pa se /proc/<pid>/ i dalje može čitati. SIGKILL i reboot su konačni."
+  },
+  {
+    "obj": "6.3",
+    "q": "Napadač je imao root na hostu nekoliko dana. Tim je obrisao njegov nalog i cron. Šta je ispravna procjena?",
+    "options": [
+      "Iskorjenjivanje je završeno",
+      "Dovoljno je promijeniti root lozinku",
+      "Dovoljno je pokrenuti antivirus",
+      "Ne može se biti siguran da je sva perzistencija nađena; host treba ponovo izgraditi iz poznato dobre slike, zakrpiti ulaz i rotirati kredencijale"
+    ],
+    "answer": 3,
+    "explain": "Uz root pristup moguće su izmjene binarnih fajlova, rootkit i druga perzistencija. Za ozbiljne incidente rebuild je pouzdaniji od čišćenja, uz zakrpu ulazne tačke."
+  },
+  {
+    "obj": "6.3",
+    "q": "Napadač je imao tri pristupa: dva IAM access keya i SSH na jedan EC2. Tim je otkrio sva tri. Kako obuzdavaš?",
+    "options": [
+      "Sve tri tačke u istom potezu, nakon prikupljanja volatilnih dokaza",
+      "Prvo jedan ključ, pa posmatraš šta napadač radi sa ostalim",
+      "Samo SSH, jer je ključeve teže zloupotrijebiti",
+      "Čekaš kraj radnog vremena"
+    ],
+    "answer": 0,
+    "explain": "Postepeno obuzdavanje upozorava napadača, koji preostale pristupe može iskoristiti za brisanje tragova ili ubrzan napad. Posmatranje napadača je posebna strategija koja traži dogovor sa pravnom službom."
+  },
+  {
+    "obj": "6.3",
+    "q": "Kompromitovan je Entra ID korisnik. Koja kombinacija ga najbrže obuzdava?",
+    "options": [
+      "Samo reset lozinke",
+      "Brisanje korisnika",
+      "Onemogućiti nalog, opozvati sesije (revokeSignInSessions), resetovati lozinku i pregledati MFA metode",
+      "Promjena NSG-a na VM-ovima"
+    ],
+    "answer": 2,
+    "explain": "Reset lozinke ne poništava postojeće tokene, pa se sesije opozivaju posebno. Napadač je mogao dodati svoju MFA metodu. Brisanje uništava kontekst za istragu."
+  },
+  {
+    "obj": "6.4",
+    "q": "Gitleaks je našao AWS access key u javnom GitHub repou. Šta je prvi korak runbooka?",
+    "options": [
+      "Prepisati git istoriju",
+      "Deaktivirati ključ (aws iam update-access-key --status Inactive)",
+      "Pretražiti CloudTrail",
+      "Obavijestiti autora commita"
+    ],
+    "answer": 1,
+    "explain": "Opoziv je uvijek prvi: ključ iz javnog repoa može biti iskorišten za nekoliko minuta. Istraga, rotacija i čišćenje dolaze poslije."
+  },
+  {
+    "obj": "6.4",
+    "q": "Ključ je deaktiviran. CloudTrail pokazuje da je napadač njime pozvao CreateUser i CreateAccessKey. Šta to znači za runbook?",
+    "options": [
+      "Ništa, ključ je deaktiviran",
+      "Treba samo obrisati originalni ključ",
+      "Treba ugasiti CloudTrail da se spriječi dalje bilježenje",
+      "Napadač ima perzistenciju: novi korisnik i ključ moraju se deaktivirati i ukloniti, a svi Create/Attach/Put događaji pregledati"
+    ],
+    "answer": 3,
+    "explain": "Napadač je napravio vlastiti pristup nezavisan od procurjelog ključa. Iskorjenjivanje u cloudu uvijek uključuje pregled IAM izmjena tokom incidenta."
+  },
+  {
+    "obj": "6.4",
+    "q": "Javno izložen S3 bucket: data eventi i server access logovi nisu bili uključeni. Šta se odgovara na pitanje da li je neko preuzeo podatke?",
+    "options": [
+      "Da nije, jer nema zapisa",
+      "Da jeste, uvijek",
+      "Da se ne može utvrditi, i to se tako prijavljuje; uključivanje logovanja ide u akcije poslije incidenta",
+      "Da treba pogledati CloudTrail management evente za GetObject"
+    ],
+    "answer": 2,
+    "explain": "GetObject je data event i ne bilježi se bez posebnog uključivanja. Odsustvo dokaza nije dokaz odsustva pristupa; pravna služba i regulator moraju dobiti tačnu informaciju."
+  },
+  {
+    "obj": "6.4",
+    "q": "Koja je prva tehnička mjera u runbooku za javno izložen bucket?",
+    "options": [
+      "Brisanje bucketa",
+      "Uključiti S3 Block Public Access za bucket i provjeriti da get-bucket-policy-status vraća IsPublic false",
+      "Šifrovanje objekata novim KMS ključem",
+      "Pokretanje Macie skeniranja"
+    ],
+    "answer": 1,
+    "explain": "Block Public Access odmah zatvara javni pristup bez gubitka podataka i stanja. Brisanje uništava dokaze, a Macie i šifrovanje dolaze kasnije."
+  },
+  {
+    "obj": "6.4",
+    "q": "Falco javlja proces sa stratum+tcp u komandnoj liniji u podu, a CPU čvora je na 100%. Kriptominer je obuzdan karantinom. Koji korak je ključan da se incident ne ponovi?",
+    "options": [
+      "Pronaći ulaznu tačku (ranjiva aplikacija, izložen API, token, zlonamjerna slika) i ukloniti sve što je napadač kreirao u klasteru",
+      "Restart poda",
+      "Ograničiti CPU poda",
+      "Ugasiti Falco pravilo"
+    ],
+    "answer": 0,
+    "explain": "Kriptominer je posljedica izvršavanja koda. Bez zatvaranja ulaza i uklanjanja napadačevih objekata (Deploymenti, CronJobovi, DaemonSeti), napad se vraća."
+  },
+  {
+    "obj": "6.4",
+    "q": "Dežurni nije mogao izvesti korak runbooka jer nije imao IAM rolu koju runbook pretpostavlja. Kako to treba tretirati?",
+    "options": [
+      "Kao nalog za analizu nakon incidenta: ispraviti preduslove runbooka i testirati ga na vježbi",
+      "Kao grešku dežurnog",
+      "Nije bitno, korak je kasnije izveden",
+      "Ukloniti korak iz runbooka"
+    ],
+    "answer": 0,
+    "explain": "Runbook koji dežurni ne može izvesti je neispravan. Blameless analiza traži uzrok u sistemu (preduslovi, pristup), a ispravka se provjerava testom."
+  },
+  {
+    "obj": "6.4",
+    "q": "Koja stavka u izvještaju nakon incidenta je dobro napisana akcija?",
+    "options": [
+      "„Bolje pratiti SSH.“",
+      "„Marko treba biti pažljiviji.“",
+      "„Razmotriti MFA.“",
+      "„Korelacija Wazuh 5763 + 5715 na nivo 12 sa pagerom; vlasnik: tim za detekcije; rok 2026-10-18; tiket SEC-431.“"
+    ],
+    "answer": 3,
+    "explain": "Akcija mora biti konkretna, imati vlasnika, rok i tiket da bi se pratila. Okrivljavanje pojedinca i neodređene formulacije ne mijenjaju ništa."
+  },
+  {
+    "obj": "6.4",
+    "q": "MTTC u izvještaju o incidentu je 41 minut. Šta ta metrika mjeri?",
+    "options": [
+      "Vrijeme od prvog traga napada do alarma",
+      "Vrijeme od alarma do preuzimanja od analitičara",
+      "Vrijeme od proglašenja incidenta do obuzdavanja",
+      "Vrijeme do potpunog oporavka"
+    ],
+    "answer": 2,
+    "explain": "MTTD mjeri detekciju, MTTA preuzimanje alarma, MTTC obuzdavanje, a MTTR oporavak."
+  },
+  {
+    "obj": "6.3",
+    "type": "order",
+    "q": "Poredaj korake odgovora na kompromitovanu EC2 instancu, od prvog.",
+    "options": [
+      "Ponovo izgraditi instancu iz zakrpljene slike i pojačati monitoring",
+      "Zamijeniti security grupe izolacionom i dodati NACL deny",
+      "Uključiti termination protection, tagovati i napraviti EBS snapshot",
+      "Ukloniti perzistenciju u IAM-u i zakrpiti ulaznu tačku"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "Prvo zaštita dokaza (termination protection, snapshot), zatim obuzdavanje, pa iskorjenjivanje (perzistencija i ulaz), i na kraju oporavak iz čiste slike uz pojačan monitoring."
+  },
+  {
+    "obj": "6.4",
+    "type": "match",
+    "q": "Upari incident sa prvom mjerom iz runbooka.",
+    "options": [
+      "Procurjeli AWS access key",
+      "Javno izložen S3 bucket",
+      "Kriptominer u Kubernetes podu",
+      "Kompromitovan GitLab personal access token"
+    ],
+    "targets": [
+      "Opozvati token u GitLabu",
+      "Karantin labela i deny-all NetworkPolicy, nakon prikupljanja dokaza",
+      "S3 Block Public Access za bucket",
+      "Deaktivirati ključ u IAM-u",
+      "Prepisati git istoriju"
+    ],
+    "answer": [
+      3,
+      2,
+      1,
+      0
+    ],
+    "explain": "Za ključeve i tokene prvi je opoziv, za storage zatvaranje javnog pristupa, a za kriptominer izolacija poda. Prepisivanje istorije je kasniji i često nepotreban korak."
+  },
+  {
+    "type": "spot",
+    "obj": "6.4",
+    "q": "Runbook treba odmah da zaustavi napadača, ali bez nepovratnih koraka koji ruše servise ili uništavaju dokaze prije istrage. Označi redove koji krše taj princip.",
+    "snippet": "#!/usr/bin/env bash\n# Runbook: procurjeli AWS access key\nset -euo pipefail\nK=AKIAEXAMPLEKEY123456; U=ci-deployer\n\n# 1. obuzdavanje\naws iam delete-access-key --user-name \"$U\" --access-key-id \"$K\"\n\n# 2. istraga: šta je ključ radio\njq -r --arg k \"$K\" '.Records[] | select(.userIdentity.accessKeyId==$k)\n  | [.eventTime, .eventName, .sourceIPAddress] | @tsv' cloudtrail.json\n\n# 3. resursi koje je napadač pokrenuo\naws ec2 terminate-instances --instance-ids $(cat attacker_instances.txt)\n\n# 4. perzistencija: politike korisnika\naws iam list-attached-user-policies --user-name \"$U\"",
+    "lang": "bash",
+    "answer": [
+      6,
+      13
+    ],
+    "explain": "Obuzdavanje je deaktivacija: aws iam update-access-key --status Inactive odmah zaustavlja napadača, a ključ se briše tek kad se servisi prebace na novi kredencijal ili OIDC rolu. Brisanje je nepovratno i ruši legitimne servise koji još koriste ključ. terminate-instances uništava diskove instanci koje je napadač pokrenuo, a sa njima i dokaze; prvo snapshot volumena i izolacija (security grupa ili stop), pa tek onda gašenje. jq istraga i pregled politika su ispravni koraci."
+  }
+]

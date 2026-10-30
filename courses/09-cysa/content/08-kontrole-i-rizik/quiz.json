@@ -1,0 +1,292 @@
+[
+  {
+    "obj": "2.4",
+    "q": "EDR je otkrio ransomware ponašanje i SOAR playbook je automatski izolovao laptop od mreže u roku od 20 sekundi. Koja je PRIMARNA funkcija ove kontrole?",
+    "options": [
+      "Responsive",
+      "Preventative",
+      "Corrective",
+      "Detective"
+    ],
+    "answer": 0,
+    "explain": "Automatska izolacija nakon otkrivanja obuzdava incident koji je u toku, što je responsive funkcija. Detekcija je bila prethodni korak, a corrective bi bio reimage i vraćanje podataka."
+  },
+  {
+    "obj": "2.4",
+    "q": "Nakon incidenta, tim je reimageovao server, vratio podatke iz nepromjenljivog backupa i ispravio pogrešno firewall pravilo koje je omogućilo upad. Koja funkcija kontrole je ovo?",
+    "options": [
+      "Responsive",
+      "Corrective",
+      "Detective",
+      "Preventative"
+    ],
+    "answer": 1,
+    "explain": "Vraćanje sistema u ispravno stanje i otklanjanje uzroka nakon incidenta je corrective. Responsive je obuzdavanje dok incident traje."
+  },
+  {
+    "obj": "2.4",
+    "q": "Kompanija uvodi obaveznu godišnju security awareness obuku i politiku prihvatljive upotrebe. Koji je TIP ovih kontrola prema CySA+ kategorizaciji?",
+    "options": [
+      "Technical",
+      "Physical",
+      "Administrative",
+      "Responsive"
+    ],
+    "answer": 2,
+    "explain": "Politike, procedure i obuka su administrative kontrole. Responsive nije tip nego funkcija kontrole."
+  },
+  {
+    "obj": "2.4",
+    "q": "Nakon implementacije WAF-a, segmentacije i MFA, i dalje postoji mogućnost da napadač iskoristi zero-day u web aplikaciji. Kako se zove taj preostali rizik?",
+    "options": [
+      "Inherent risk",
+      "Risk appetite",
+      "Risk transfer",
+      "Residual risk"
+    ],
+    "answer": 3,
+    "explain": "Rizik koji ostaje nakon primjene kontrola je residual risk. Inherent je rizik prije kontrola, appetite je koliko rizika organizacija želi prihvatiti, a transfer je strategija."
+  },
+  {
+    "obj": "2.4",
+    "q": "Uprava je odlučila da kupi polisu cyber osiguranja koja pokriva troškove incidenta sa ransomwareom. Koja strategija upravljanja rizikom je ovo?",
+    "options": [
+      "Transfer",
+      "Avoid",
+      "Accept",
+      "Mitigate"
+    ],
+    "answer": 0,
+    "explain": "Osiguranje prenosi finansijske posljedice na treću stranu, pa je to transfer. Odgovornost prema klijentima i regulatorima ostaje na organizaciji."
+  },
+  {
+    "obj": "2.4",
+    "q": "Zastarjeli FTP server koji niko više ne koristi ima tri kritične ranjivosti bez zakrpe. Šta je BEST strategija?",
+    "options": [
+      "Mitigate: postaviti WAF ispred FTP servera",
+      "Avoid: ugasiti servis i ukloniti ga",
+      "Transfer: proširiti polisu osiguranja",
+      "Accept: dokumentovati izuzetak na godinu dana"
+    ],
+    "answer": 1,
+    "explain": "Ako servis nema poslovnu svrhu, ukidanje aktivnosti (avoid) potpuno uklanja rizik i najjeftinije je. WAF ne štiti FTP, a prihvatanje rizika za nepotreban servis nema opravdanje."
+  },
+  {
+    "obj": "2.4",
+    "q": "Izjava uprave „Prihvatamo umjeren rizik radi bržeg izlaska na tržište, ali nemamo tolerancije za kompromitaciju kartičnih podataka“ PRIMARNO opisuje šta?",
+    "options": [
+      "Residual risk",
+      "Inherent risk",
+      "Risk appetite",
+      "Service-level agreement"
+    ],
+    "answer": 2,
+    "explain": "Strateška izjava o tome koliko i kakav rizik organizacija želi prihvatiti je risk appetite. Ona kasnije određuje pragove za exceptions i SLO-ove."
+  },
+  {
+    "obj": "2.4",
+    "q": "Politika upravljanja ranjivostima kaže: „95% kritičnih nalaza na sistemima izloženim internetu mora biti ispravljeno za 7 dana.“ Kako se zove ovaj interni cilj?",
+    "options": [
+      "Service-level agreement (SLA)",
+      "Service-level indicator (SLI)",
+      "Risk register",
+      "Service-level objective (SLO)"
+    ],
+    "answer": 3,
+    "explain": "Interni ciljani nivo koji organizacija postavlja sama sebi je SLO. SLA je ugovorna obaveza prema drugoj strani, a SLI je sama izmjerena vrijednost."
+  },
+  {
+    "obj": "2.4",
+    "q": "Tim želi da pronađe SQL injection i hardkodovane tajne u izvornom kodu pri svakom pull requestu, prije nego što se aplikacija pokrene. Koja tehnika je BEST?",
+    "options": [
+      "SAST",
+      "DAST",
+      "SCA",
+      "BAS"
+    ],
+    "answer": 0,
+    "explain": "SAST analizira izvorni kod bez izvršavanja i daje tačnu liniju problema, pa je pogodan za PR i CI. DAST testira pokrenutu aplikaciju, SCA zavisnosti, a BAS provjerava detekciju."
+  },
+  {
+    "obj": "2.4",
+    "q": "Sigurnosni tim testira aplikaciju u staging okruženju šaljući zahtjeve spolja, bez pristupa izvornom kodu, i pronalazi nedostajuća sigurnosna zaglavlja i reflected XSS. Koja tehnika je korištena?",
+    "options": [
+      "SAST",
+      "DAST",
+      "SCA",
+      "SAMM"
+    ],
+    "answer": 1,
+    "explain": "Testiranje pokrenute aplikacije spolja (black-box) je DAST, tipično ZAP ili Burp. SAMM je model zrelosti, ne tehnika testiranja."
+  },
+  {
+    "obj": "2.4",
+    "q": "CISO želi procijeniti zrelost procesa sigurnog razvoja u pet poslovnih funkcija (Governance, Design, Implementation, Verification, Operations) i napraviti plan unapređenja. Koji okvir je BEST?",
+    "options": [
+      "CVSS 4.0",
+      "PCI DSS",
+      "OWASP SAMM",
+      "OWASP Top 10"
+    ],
+    "answer": 2,
+    "explain": "OWASP SAMM je model zrelosti sa pet poslovnih funkcija i 15 praksi, svaka sa nivoima 1–3. CVSS ocjenjuje ranjivosti, PCI DSS je standard za kartične podatke, a Top 10 je lista rizika."
+  },
+  {
+    "obj": "2.4",
+    "q": "Objavljen je novi kritičan CVE u popularnoj Java biblioteci. Šta organizaciji NAJBRŽE omogućava da utvrdi koje aplikacije sadrže ranjivu verziju?",
+    "options": [
+      "Pokretanje DAST skena na svim aplikacijama",
+      "Slanje upitnika svim razvojnim timovima",
+      "Pregled risk registra",
+      "Pretraga postojećih SBOM-ova svih aplikacija"
+    ],
+    "answer": 3,
+    "explain": "SBOM je mašinski čitljiv popis komponenti, pa se jednom pretragom vidi gdje je ranjiva verzija. DAST ne vidi verzije biblioteka, a upitnici su spori i nepouzdani."
+  },
+  {
+    "obj": "2.4",
+    "q": "Koja DVA koraka su BEST za upravljanje rizikom novog SaaS dobavljača koji će obrađivati podatke klijenata? Izaberi DVA.",
+    "options": [
+      "Pregledati SOC 2 Type II izvještaj i sigurnosni upitnik dobavljača prije potpisivanja",
+      "Pokrenuti intrusive Nessus sken na infrastrukturu dobavljača bez odobrenja",
+      "Prenijeti svu odgovornost za podatke na dobavljača ugovorom",
+      "Ugovorom definisati rok obavještavanja o incidentu i pravo na audit"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "Vendor assessment i ugovorne odredbe su ključne kontrole rizika trećih strana. Skeniranje tuđe infrastrukture bez odobrenja je neovlašteno, a odgovornost za podatke klijenata se ne može potpuno prenijeti."
+  },
+  {
+    "obj": "2.4",
+    "q": "Ograda oko data centra, kartični čitači na vratima i sistem za gašenje požara su primjeri kojeg TIPA kontrola?",
+    "options": [
+      "Physical",
+      "Administrative",
+      "Technical",
+      "Detective"
+    ],
+    "answer": 0,
+    "explain": "Kontrole fizičkog pristupa i okruženja su physical. Detective je funkcija, ne tip."
+  },
+  {
+    "obj": "2.4",
+    "q": "Vlasnik sistema ne može patchovati kritičnu ranjivost 6 mjeseci jer vendor mora certifikovati zakrpu. Uveo je segmentaciju, a CISO je potpisao izuzetak sa rokom i mjesečnim pregledom. Koja strategija upravljanja rizikom se primjenjuje na PREOSTALI rizik?",
+    "options": [
+      "Avoid",
+      "Accept",
+      "Transfer",
+      "Ignore"
+    ],
+    "answer": 1,
+    "explain": "Segmentacija smanjuje rizik (mitigate), a ono što ostaje formalno se prihvata kroz dokumentovani izuzetak (accept). Ignorisanje nije strategija jer nema odluke ni dokumentacije."
+  },
+  {
+    "obj": "2.4",
+    "q": "Analiza pokazuje da 80% nalaza u aplikaciji potiče iz tranzitivnih npm zavisnosti. Koji alat ili tehnika NAJBOLJE pokriva ovaj rizik u CI pipelineu?",
+    "options": [
+      "DAST",
+      "Physical security audit",
+      "Software composition analysis (SCA)",
+      "Risk appetite statement"
+    ],
+    "answer": 2,
+    "explain": "SCA (osv-scanner, Trivy, Dependabot) identifikuje open-source komponente uključujući tranzitivne zavisnosti i povezuje ih sa poznatim ranjivostima i licencama."
+  },
+  {
+    "obj": "2.4",
+    "q": "Koje DVIJE izjave o residual riziku su TAČNE? Izaberi DVA.",
+    "options": [
+      "Residual risk se pravilnom primjenom kontrola uvijek može svesti na nulu",
+      "Residual risk je rizik koji ostaje nakon primjene kontrola",
+      "Ako je residual risk iznad risk appetita, potrebne su dodatne mjere ili druga strategija",
+      "Residual risk je uvijek veći od inherent rizika"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Residual risk ostaje nakon kontrola i poredi se sa risk appetitom. Nikad nije nula, a kontrole ga čine manjim od inherent rizika, ne većim."
+  },
+  {
+    "obj": "2.4",
+    "q": "Proizvođač uz SBOM objavljuje dokument koji kaže da je ranjiva komponenta prisutna, ali ranjiva funkcija nije dostupna u njihovom proizvodu (`not_affected`). Kako se zove ovaj dokument?",
+    "options": [
+      "SAMM assessment",
+      "SOC 2 Type I",
+      "CVSS-BTE",
+      "VEX (Vulnerability Exploitability eXchange)"
+    ],
+    "answer": 3,
+    "explain": "VEX dopunjuje SBOM izjavom o stvarnoj pogođenosti proizvoda (not_affected, affected, fixed, under_investigation) i smanjuje broj nalaza koji ne zahtijevaju akciju."
+  },
+  {
+    "obj": "2.4",
+    "q": "Po kom kriteriju se SLA razlikuje od SLO-a?",
+    "options": [
+      "SLA je ugovorna obaveza prema drugoj strani sa posljedicama, SLO je interni cilj",
+      "SLA se mjeri u danima, SLO u procentima",
+      "SLA važi samo za cloud, SLO samo za on-prem",
+      "SLA definiše risk appetite, SLO residual risk"
+    ],
+    "answer": 0,
+    "explain": "SLA je dogovor (često ugovor) sa posljedicama ako se ne ispuni, a SLO interni cilj koji tim prati kroz SLI metrike. Oba se mogu izražavati u danima ili procentima."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Upari svaku kontrolu sa njenom PRIMARNOM funkcijom.",
+    "options": [
+      "MFA obavezan za VPN pristup",
+      "Sigma pravilo koje alarmira na sumnjiv PowerShell",
+      "SOAR playbook onemogućava kompromitovan nalog i poništava sesije",
+      "Vraćanje baze iz backupa nakon ransomwarea",
+      "Kvartalni pregled logova pristupa privilegovanih naloga",
+      "Patch koji zatvara ranjivost prije nego što je iskorištena"
+    ],
+    "targets": [
+      "Preventative",
+      "Detective",
+      "Responsive",
+      "Corrective"
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "MFA i patch prije eksploatacije sprečavaju napad (preventative). Sigma pravilo i pregled logova otkrivaju (detective). SOAR onemogućavanje naloga obuzdava incident u toku (responsive). Restore iz backupa je oporavak (corrective)."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Upari svaku odluku sa strategijom upravljanja rizikom.",
+    "options": [
+      "Primjena zakrpe i WAF pravila",
+      "Kupovina cyber osiguranja",
+      "Gašenje nekorištenog Telnet servisa",
+      "Potpisan izuzetak za Low nalaz na izolovanom sistemu",
+      "Odustajanje od integracije sa dobavljačem koji ne prolazi procjenu sigurnosti",
+      "Ugovor sa MSSP-om koji preuzima troškove ako ne ispuni SLA"
+    ],
+    "targets": [
+      "Accept",
+      "Transfer",
+      "Avoid",
+      "Mitigate"
+    ],
+    "answer": [
+      3,
+      1,
+      2,
+      0,
+      2,
+      1
+    ],
+    "explain": "Zakrpa i WAF smanjuju rizik (mitigate). Osiguranje i ugovorno prebacivanje troškova na MSSP su transfer. Gašenje servisa i odustajanje od dobavljača su avoid. Potpisan izuzetak je accept."
+  }
+]

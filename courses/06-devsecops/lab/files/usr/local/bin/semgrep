@@ -1,0 +1,5 @@
+#!/bin/sh
+# lab radi bez mreže: bez metrika i provjere verzije; registry pravila (p/...) nisu dostupna,
+# koristi lokalna pravila iz /opt/kurs/semgrep-rules ili vlastita
+export SEMGREP_ENABLE_VERSION_CHECK=0 SEMGREP_SEND_METRICS=off
+exec /opt/semgrep/bin/semgrep "$@"

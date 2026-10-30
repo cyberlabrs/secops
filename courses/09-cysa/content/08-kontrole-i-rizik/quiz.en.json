@@ -1,0 +1,292 @@
+[
+  {
+    "obj": "2.4",
+    "q": "EDR detected ransomware behavior and a SOAR playbook automatically isolated the laptop from the network within 20 seconds. What is the PRIMARY function of this control?",
+    "options": [
+      "Responsive",
+      "Preventative",
+      "Corrective",
+      "Detective"
+    ],
+    "answer": 0,
+    "explain": "Automatic isolation after detection contains an ongoing incident, which is the responsive function. Detection was the previous step, and corrective would be reimaging and restoring data."
+  },
+  {
+    "obj": "2.4",
+    "q": "After an incident, the team reimaged the server, restored data from an immutable backup, and fixed the incorrect firewall rule that allowed the intrusion. What control function is this?",
+    "options": [
+      "Responsive",
+      "Corrective",
+      "Detective",
+      "Preventative"
+    ],
+    "answer": 1,
+    "explain": "Restoring the system to a correct state and eliminating the cause after an incident is corrective. Responsive is containment while the incident is ongoing."
+  },
+  {
+    "obj": "2.4",
+    "q": "A company introduces mandatory annual security awareness training and an acceptable use policy. What is the TYPE of these controls according to the CySA+ categorization?",
+    "options": [
+      "Technical",
+      "Physical",
+      "Administrative",
+      "Responsive"
+    ],
+    "answer": 2,
+    "explain": "Policies, procedures, and training are administrative controls. Responsive is not a type but a control function."
+  },
+  {
+    "obj": "2.4",
+    "q": "After implementing a WAF, segmentation, and MFA, there is still a possibility that an attacker exploits a zero-day in the web application. What is this remaining risk called?",
+    "options": [
+      "Inherent risk",
+      "Risk appetite",
+      "Risk transfer",
+      "Residual risk"
+    ],
+    "answer": 3,
+    "explain": "The risk that remains after controls are applied is residual risk. Inherent is the risk before controls, appetite is how much risk the organization is willing to accept, and transfer is a strategy."
+  },
+  {
+    "obj": "2.4",
+    "q": "Management decided to buy a cyber insurance policy that covers the costs of a ransomware incident. Which risk management strategy is this?",
+    "options": [
+      "Transfer",
+      "Avoid",
+      "Accept",
+      "Mitigate"
+    ],
+    "answer": 0,
+    "explain": "Insurance shifts the financial consequences to a third party, so it's transfer. Accountability to customers and regulators stays with the organization."
+  },
+  {
+    "obj": "2.4",
+    "q": "A legacy FTP server that nobody uses anymore has three critical vulnerabilities with no patch. What is the BEST strategy?",
+    "options": [
+      "Mitigate: place a WAF in front of the FTP server",
+      "Avoid: shut down the service and remove it",
+      "Transfer: extend the insurance policy",
+      "Accept: document an exception for one year"
+    ],
+    "answer": 1,
+    "explain": "If the service has no business purpose, eliminating the activity (avoid) removes the risk completely and is the cheapest option. A WAF doesn't protect FTP, and accepting risk for an unnecessary service has no justification."
+  },
+  {
+    "obj": "2.4",
+    "q": "The management statement \"We accept moderate risk for faster time to market, but we have zero tolerance for compromise of card data\" PRIMARILY describes what?",
+    "options": [
+      "Residual risk",
+      "Inherent risk",
+      "Risk appetite",
+      "Service-level agreement"
+    ],
+    "answer": 2,
+    "explain": "A strategic statement about how much and what kind of risk the organization is willing to accept is risk appetite. It later determines the thresholds for exceptions and SLOs."
+  },
+  {
+    "obj": "2.4",
+    "q": "The vulnerability management policy states: \"95% of critical findings on internet-facing systems must be remediated within 7 days.\" What is this internal target called?",
+    "options": [
+      "Service-level agreement (SLA)",
+      "Service-level indicator (SLI)",
+      "Risk register",
+      "Service-level objective (SLO)"
+    ],
+    "answer": 3,
+    "explain": "An internal target level the organization sets for itself is an SLO. An SLA is a contractual obligation to another party, and an SLI is the measured value itself."
+  },
+  {
+    "obj": "2.4",
+    "q": "A team wants to find SQL injection and hardcoded secrets in source code on every pull request, before the application is run. Which technique is BEST?",
+    "options": [
+      "SAST",
+      "DAST",
+      "SCA",
+      "BAS"
+    ],
+    "answer": 0,
+    "explain": "SAST analyzes source code without executing it and gives the exact line of the problem, so it is suited to PRs and CI. DAST tests the running application, SCA the dependencies, and BAS verifies detection."
+  },
+  {
+    "obj": "2.4",
+    "q": "A security team tests an application in a staging environment by sending requests from the outside, without access to the source code, and finds missing security headers and reflected XSS. Which technique was used?",
+    "options": [
+      "SAST",
+      "DAST",
+      "SCA",
+      "SAMM"
+    ],
+    "answer": 1,
+    "explain": "Testing the running application from the outside (black-box) is DAST, typically ZAP or Burp. SAMM is a maturity model, not a testing technique."
+  },
+  {
+    "obj": "2.4",
+    "q": "The CISO wants to assess the maturity of the secure development process across five business functions (Governance, Design, Implementation, Verification, Operations) and create an improvement plan. Which framework is BEST?",
+    "options": [
+      "CVSS 4.0",
+      "PCI DSS",
+      "OWASP SAMM",
+      "OWASP Top 10"
+    ],
+    "answer": 2,
+    "explain": "OWASP SAMM is a maturity model with five business functions and 15 practices, each with levels 1–3. CVSS scores vulnerabilities, PCI DSS is a standard for card data, and the Top 10 is a list of risks."
+  },
+  {
+    "obj": "2.4",
+    "q": "A new critical CVE has been published in a popular Java library. What allows the organization to MOST QUICKLY determine which applications contain the vulnerable version?",
+    "options": [
+      "Running a DAST scan on all applications",
+      "Sending a questionnaire to all development teams",
+      "Reviewing the risk register",
+      "Searching the existing SBOMs of all applications"
+    ],
+    "answer": 3,
+    "explain": "An SBOM is a machine-readable inventory of components, so a single search shows where the vulnerable version is. DAST doesn't see library versions, and questionnaires are slow and unreliable."
+  },
+  {
+    "obj": "2.4",
+    "q": "Which TWO steps are BEST for managing the risk of a new SaaS vendor that will process customer data? Select TWO.",
+    "options": [
+      "Review the vendor's SOC 2 Type II report and security questionnaire before signing",
+      "Run an intrusive Nessus scan against the vendor's infrastructure without approval",
+      "Transfer all accountability for the data to the vendor by contract",
+      "Define the incident notification deadline and the right to audit in the contract"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "Vendor assessment and contract clauses are key third-party risk controls. Scanning someone else's infrastructure without approval is unauthorized, and accountability for customer data cannot be fully transferred."
+  },
+  {
+    "obj": "2.4",
+    "q": "A fence around the data center, badge readers on the doors, and a fire suppression system are examples of which TYPE of control?",
+    "options": [
+      "Physical",
+      "Administrative",
+      "Technical",
+      "Detective"
+    ],
+    "answer": 0,
+    "explain": "Controls over physical access and the environment are physical. Detective is a function, not a type."
+  },
+  {
+    "obj": "2.4",
+    "q": "A system owner cannot patch a critical vulnerability for 6 months because the vendor must certify the patch. They introduced segmentation, and the CISO signed an exception with a deadline and monthly review. Which risk management strategy is applied to the REMAINING risk?",
+    "options": [
+      "Avoid",
+      "Accept",
+      "Transfer",
+      "Ignore"
+    ],
+    "answer": 1,
+    "explain": "Segmentation reduces the risk (mitigate), and what remains is formally accepted through a documented exception (accept). Ignoring is not a strategy because there is no decision or documentation."
+  },
+  {
+    "obj": "2.4",
+    "q": "Analysis shows that 80% of the findings in an application come from transitive npm dependencies. Which tool or technique BEST covers this risk in the CI pipeline?",
+    "options": [
+      "DAST",
+      "Physical security audit",
+      "Software composition analysis (SCA)",
+      "Risk appetite statement"
+    ],
+    "answer": 2,
+    "explain": "SCA (osv-scanner, Trivy, Dependabot) identifies open-source components, including transitive dependencies, and links them to known vulnerabilities and licenses."
+  },
+  {
+    "obj": "2.4",
+    "q": "Which TWO statements about residual risk are CORRECT? Select TWO.",
+    "options": [
+      "With proper application of controls, residual risk can always be reduced to zero",
+      "Residual risk is the risk that remains after controls are applied",
+      "If residual risk is above the risk appetite, additional measures or a different strategy are needed",
+      "Residual risk is always greater than inherent risk"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Residual risk remains after controls and is compared with the risk appetite. It is never zero, and controls make it smaller than inherent risk, not larger."
+  },
+  {
+    "obj": "2.4",
+    "q": "Along with the SBOM, a vendor publishes a document stating that the vulnerable component is present, but the vulnerable function is not reachable in their product (`not_affected`). What is this document called?",
+    "options": [
+      "SAMM assessment",
+      "SOC 2 Type I",
+      "CVSS-BTE",
+      "VEX (Vulnerability Exploitability eXchange)"
+    ],
+    "answer": 3,
+    "explain": "VEX complements the SBOM with a statement about whether the product is actually affected (not_affected, affected, fixed, under_investigation) and reduces the number of findings that require no action."
+  },
+  {
+    "obj": "2.4",
+    "q": "By which criterion does an SLA differ from an SLO?",
+    "options": [
+      "An SLA is a contractual obligation to another party with consequences, an SLO is an internal target",
+      "An SLA is measured in days, an SLO in percentages",
+      "An SLA applies only to cloud, an SLO only to on-prem",
+      "An SLA defines the risk appetite, an SLO the residual risk"
+    ],
+    "answer": 0,
+    "explain": "An SLA is an agreement (often a contract) with consequences if it isn't met, and an SLO is an internal target the team tracks through SLI metrics. Both can be expressed in days or percentages."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Match each control with its PRIMARY function.",
+    "options": [
+      "MFA required for VPN access",
+      "Sigma rule that alerts on suspicious PowerShell",
+      "SOAR playbook disables a compromised account and revokes sessions",
+      "Restoring a database from backup after ransomware",
+      "Quarterly review of privileged account access logs",
+      "A patch that closes a vulnerability before it is exploited"
+    ],
+    "targets": [
+      "Preventative",
+      "Detective",
+      "Responsive",
+      "Corrective"
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "MFA and a patch before exploitation prevent the attack (preventative). The Sigma rule and log review detect (detective). SOAR disabling the account contains an ongoing incident (responsive). Restore from backup is recovery (corrective)."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Match each decision with the risk management strategy.",
+    "options": [
+      "Applying a patch and a WAF rule",
+      "Buying cyber insurance",
+      "Shutting down an unused Telnet service",
+      "Signed exception for a Low finding on an isolated system",
+      "Dropping an integration with a vendor that fails the security assessment",
+      "Contract with an MSSP that covers the costs if it fails to meet the SLA"
+    ],
+    "targets": [
+      "Accept",
+      "Transfer",
+      "Avoid",
+      "Mitigate"
+    ],
+    "answer": [
+      3,
+      1,
+      2,
+      0,
+      2,
+      1
+    ],
+    "explain": "A patch and WAF reduce the risk (mitigate). Insurance and contractually shifting costs to an MSSP are transfer. Shutting down a service and dropping a vendor are avoid. A signed exception is accept."
+  }
+]

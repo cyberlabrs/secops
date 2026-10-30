@@ -1,0 +1,145 @@
+[
+  {
+    "obj": "1.2",
+    "q": "Imate Microsoft Sentinel workspace. SOC analitičari trebaju dodjeljivati i zatvarati incidente i ručno pokretati postojeće playbooke, ali ne smiju mijenjati analytics pravila ni playbooke. Koje DVIJE uloge treba dodijeliti, po principu najmanjih privilegija? (Izaberi DVA.)",
+    "options": ["Microsoft Sentinel Contributor", "Microsoft Sentinel Responder", "Logic App Contributor", "Microsoft Sentinel Playbook Operator"],
+    "answer": [1, 3],
+    "explain": "Responder daje sve što Reader plus upravljanje incidentima, a Playbook Operator daje pregled i ručno pokretanje playbooka. Contributor bi dozvolio izmjenu pravila, a Logic App Contributor izmjenu playbooka."
+  },
+  {
+    "obj": "1.2",
+    "q": "Security engineer ima ulogu Microsoft Sentinel Contributor na resource groupi workspacea. Treba napraviti novi playbook za izolaciju uređaja, ali ne može da ga sačuva. Koju ulogu treba dodati?",
+    "options": ["Microsoft Sentinel Automation Contributor", "Logic App Contributor", "Microsoft Sentinel Playbook Operator", "Log Analytics Contributor"],
+    "answer": 1,
+    "explain": "Playbooki su Azure Logic Apps, poseban resurs; pravljenje i izmjena traže Logic App Contributor. Playbook Operator samo pokreće playbooke, a Automation Contributor je uloga za Sentinel servisni nalog, ne za korisnike."
+  },
+  {
+    "obj": "1.2",
+    "q": "Napravili ste automation rule koji treba da pokrene playbook iz resource groupe RG-Playbooks. Pravilo se izvršava, ali playbook se ne pokreće. Šta treba uraditi?",
+    "options": ["Dodijeliti Microsoft Sentinel servisu dozvole na RG-Playbooks u Sentinel postavkama (Playbook permissions).", "Dodijeliti analitičaru ulogu Microsoft Sentinel Playbook Operator.", "Premjestiti playbook u resource groupu workspacea.", "Promijeniti trigger playbooka sa Incident na Alert."],
+    "answer": 0,
+    "explain": "Automation rules pokreću playbooke preko posebnog Sentinel servisnog naloga, kojem treba eksplicitno dati dozvole na resource groupu playbooka (za to je potreban Owner ili pravo dodjele uloga). Uloga analitičara ne utiče na automatsko pokretanje, a premještanje nije potrebno."
+  },
+  {
+    "obj": "1.2",
+    "q": "Tim koji razvija aplikaciju treba u Sentinel workspaceu vidjeti samo logove svojih virtuelnih mašina, bez pristupa ostalim podacima u workspaceu. Šta treba koristiti?",
+    "options": ["Microsoft Sentinel Reader na workspaceu", "Poseban workspace samo za tim", "Resource-context RBAC", "Microsoft Sentinel Responder na resource groupi VM-ova"],
+    "answer": 2,
+    "explain": "Resource-context RBAC daje pristup logovima onih resursa kojima korisnik ima pristup u Azureu, bez pristupa cijelom workspaceu. Sentinel Reader na workspaceu otkriva sve podatke, a poseban workspace dodaje troškove i komplikuje korelaciju."
+  },
+  {
+    "obj": "1.2",
+    "q": "Korisnik mora kreirati i upravljati zakazanim KQL jobovima u Microsoft Sentinel data lakeu. Koja uloga to omogućava uz NAJMANJE privilegija?",
+    "options": ["Global Administrator", "Security Reader", "Microsoft Sentinel Contributor", "Security Operator"],
+    "answer": 3,
+    "explain": "Za kreiranje i upravljanje jobovima u data lakeu potrebna je Entra uloga Security Operator, Security Administrator ili Global Administrator; najmanje privilegovana je Security Operator. Security Reader daje samo čitanje, a data lake jobovi ne koriste Azure ulogu Sentinel Contributor."
+  },
+  {
+    "obj": "1.2",
+    "q": "Logovi web proxyja moraju se čuvati 7 godina zbog regulative. Rijetko se pretražuju (samo pri forenzici) i ne koriste se u analytics pravilima. Kako ih čuvati NAJJEFTINIJE?",
+    "options": ["Analytics tier sa analytics retencijom 2 godine i total retencijom 7 godina.", "Data lake tier sa retencijom 7 godina.", "Analytics tier sa 90 dana i povremeni data export u storage account.", "XDR default tier sa produženom retencijom."],
+    "answer": 1,
+    "explain": "Data lake tier ima minimalan trošak unosa i jeftino skladištenje do 12 godina, a podaci se pretražuju KQL jobovima ili data lake exploration upitima. Analytics tier plaća standardan unos i nepotreban je bez real-time detekcija. XDR tier je samo za Defender XDR tabele."
+  },
+  {
+    "obj": "1.2",
+    "q": "Firewall logovi se moraju analizirati analytics pravilima u realnom vremenu, a zatim čuvati ukupno 3 godine. Kako podesiti tabelu?",
+    "options": ["Analytics tier: analytics retencija 90 dana, total retencija 3 godine.", "Data lake tier: retencija 3 godine.", "Analytics tier: analytics retencija 3 godine, total retencija 3 godine.", "Data lake tier sa summary rule koja kopira sve redove u analytics tier."],
+    "answer": 0,
+    "explain": "Analytics tier omogućava analytics pravila, a total retencija čuva starije podatke u data lakeu jeftinije. Analytics retencija od 3 godine nije moguća (maksimum je 2 godine) i bila bi skupa. Data lake tier ne podržava real-time analytics pravila."
+  },
+  {
+    "obj": "1.2",
+    "q": "Imate Sentinel povezan sa Defender portalom. Tim za hunting treba DeviceProcessEvents podatke u advanced huntingu za posljednjih 60 dana uz NAJMANJI trošak. Šta treba uraditi?",
+    "options": ["U Microsoft Defender XDR postavkama povećati retenciju na 60 dana.", "Postaviti tabelu u Data lake tier sa retencijom 60 dana.", "U Microsoft Sentinel > Configuration > Tables postaviti analytics retenciju za DeviceProcessEvents na 60 dana.", "Napraviti KQL job koji svakog dana kopira podatke u custom tabelu."],
+    "answer": 2,
+    "explain": "Podizanjem analytics retencije XDR tabele iznad 30 dana tabela se uvodi u Sentinel workspace; do 90 dana nema troška skladištenja, plaća se unos. Data lake–only podaci nisu dostupni u advanced huntingu, a Defender XDR nema sopstvenu postavku za produženje preko 30 dana."
+  },
+  {
+    "obj": "1.2",
+    "q": "Administrator je greškom smanjio total retenciju tabele sa 2 godine na 90 dana. Šta se dešava sa podacima starijim od 90 dana?",
+    "options": ["Odmah se brišu i ne mogu se vratiti.", "Premještaju se u XDR default tier.", "Ostaju dostupni samo preko restore operacije.", "Brišu se tek nakon 30 dana, pa se promjena može vratiti bez gubitka podataka."],
+    "answer": 3,
+    "explain": "Pri skraćivanju total retencije Microsoft čeka 30 dana prije brisanja, upravo da bi se greška mogla ispraviti. Promjena analytics retencije, za razliku od toga, važi odmah."
+  },
+  {
+    "obj": "1.2",
+    "q": "Koje DVIJE funkcije prestaju da rade za tabelu kada se ona prebaci iz Analytics tiera u Data lake tier? (Izaberi DVA.)",
+    "options": ["Analytics pravila nad tom tabelom", "KQL jobovi nad tom tabelom", "Advanced hunting upiti nad tom tabelom", "Search jobovi nad tom tabelom"],
+    "answer": [0, 2],
+    "explain": "Prelaskom u data lake tier prestaju alarmiranje, analytics pravila, custom detekcije i advanced hunting za tu tabelu. KQL jobovi i search jobovi rade nad data lake podacima."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Poredaj korake za prebacivanje tabele u Data lake tier sa retencijom od 5 godina u Defender portalu.",
+    "options": ["Izabrati Data Lake tier i postaviti Retention na 5 godina.", "Otvoriti Microsoft Sentinel > Configuration > Tables i izabrati workspace.", "Pročitati upozorenja o funkcijama koje prestaju raditi i izabrati Save.", "Izabrati tabelu i u bočnom panelu Manage table."],
+    "answer": [1, 3, 0, 2],
+    "explain": "Tabelama se upravlja na stranici Tables (uz izbor workspacea), zatim se tabela otvara sa Manage table, bira tier i retencija, i na kraju se potvrđuju upozorenja i čuva izmjena."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Upari zahtjev sa ugrađenom ulogom koja ga ispunjava uz NAJMANJE privilegija.",
+    "options": ["Pregled incidenata, podataka i workbooka bez ikakvih izmjena.", "Instalacija rješenja iz Content huba i izmjena analytics pravila.", "Omogućiti Sentinelu da doda playbook u automation rule.", "Kreiranje i izmjena workbooka za korisnika sa Sentinel Reader ulogom."],
+    "targets": ["Microsoft Sentinel Automation Contributor", "Workbook Contributor", "Microsoft Sentinel Reader", "Microsoft Sentinel Contributor", "Owner"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Reader samo gleda. Contributor upravlja sadržajem i Content hubom. Automation Contributor je namijenjen Sentinel servisu za playbooke u automation rules. Workbook Contributor uz Sentinel Reader dozvoljava pravljenje workbooka bez ostalih prava. Owner je previše."
+  },
+  {
+    "obj": "1.2",
+    "q": "Trebate u Microsoft Sentinel napraviti dashboard neuspjelih Microsoft Entra prijava uz NAJMANJE napora. Šta treba uraditi prvo?",
+    "options": ["Instalirati Microsoft Entra ID rješenje iz Content huba i sačuvati workbook šablon.", "Napraviti novi workbook od nule sa upitom nad SigninLogs.", "Napraviti Power BI izvještaj povezan na workspace.", "Pin-ovati rezultat upita iz advanced huntinga na Defender dashboard."],
+    "answer": 0,
+    "explain": "Šabloni workbooka dolaze sa rješenjima iz Content huba; Microsoft Entra rješenje sadrži gotove workbooke za prijave i audit. Pravljenje od nule ili Power BI traže više rada."
+  },
+  {
+    "obj": "1.2",
+    "q": "Sačuvali ste workbook iz šablona. Gdje se čuva i šta sadrži?",
+    "options": ["U Log Analytics tabeli Workbooks_CL; sadrži rezultate upita.", "Kao Azure resurs u izabranoj resource groupi; sadrži samo JSON definiciju, bez podataka.", "U Content hubu kao nova verzija šablona.", "U Defender portalu, bez Azure resursa; sadrži snimak podataka."],
+    "answer": 1,
+    "explain": "Workbook je Azure resurs u resource groupi (obično workspacea) i čuva samo JSON definiciju; podaci se čitaju upitima pri otvaranju. Zato se pristupom upravlja preko Azure RBAC (Workbook Reader/Contributor)."
+  },
+  {
+    "obj": "1.2",
+    "q": "Pravite workbook i želite da korisnik izborom vremenskog perioda na vrhu workbooka mijenja sve grafikone. Kako dopuniti upit?\n\nSecurityEvent\n| where TimeGenerated ???\n| summarize count() by bin(TimeGenerated, 1h)",
+    "options": ["> ago(TimeRange)", "== TimeRange", "{TimeRange}", "between ($TimeRange)"],
+    "answer": 2,
+    "explain": "Workbook parametar tipa time range ubacuje se u upit kao {TimeRange}, što se pri izvršavanju zamjenjuje odgovarajućim uslovom vremena. Ostali oblici nisu sintaksa workbook parametara."
+  },
+  {
+    "obj": "1.2",
+    "q": "Menadžment traži PDF izvještaj iz Sentinel workbooka. Radite u Defender portalu. Šta treba uraditi?",
+    "options": ["Izabrati Export > PDF u Defender portalu.", "Napraviti playbook koji šalje workbook emailom.", "Exportovati rezultate svakog upita u CSV i spojiti ih.", "Izabrati Open in Azure i u Azure portalu Print content > Save as PDF."],
+    "answer": 3,
+    "explain": "Print i Save as PDF su dostupni samo u Azure portalu; iz Defender portala workbook se otvara opcijom Open in Azure."
+  },
+  {
+    "obj": "1.2",
+    "q": "Želite automatski pronaći tabele za koje plaćate unos, a koje se u posljednjih 30 dana ne koriste u analytics pravilima, i dobiti prijedlog akcije. Šta treba koristiti?",
+    "options": ["SOC optimization, data value preporuke", "MITRE ATT&CK stranicu u Microsoft Sentinelu", "Table insights, kartica Volume anomaly", "Workbook Workspace Usage Report"],
+    "answer": 0,
+    "explain": "Data value preporuke SOC optimizationa analiziraju naplative tabele sa unosom u posljednjih 30 dana i predlažu uključivanje pravila ili smanjenje troška. Table insights pokazuje volumen i trošak, ali ne korištenje u detekcijama ni preporuke."
+  },
+  {
+    "obj": "1.2",
+    "q": "SOC optimization prikazuje za scenarij Human-operated ransomware nivo pokrivenosti Low. Šta to znači?",
+    "options": ["Manje od 30% potrebnih tabela prima podatke.", "Aktivno je 0–29% analytics pravila koja Microsoft preporučuje za taj scenarij.", "U posljednjih 30 dana nije bilo ransomware incidenata.", "Ransomware rizik u organizaciji je nizak."],
+    "answer": 1,
+    "explain": "Threat-based pokrivenost poredi aktivna pravila sa preporučenim: High preko 75%, Medium 30–74%, Low 0–29%. Akcija je obično Go to Content hub i uključivanje preporučenih pravila."
+  },
+  {
+    "obj": "1.2",
+    "q": "Tabela na koju se odnosila SOC optimization preporuka „tabela nije korištena 30 dana“ počela je da se koristi u novom analytics pravilu. Šta se dešava sa preporukom?",
+    "options": ["Ostaje Active dok je ručno ne označite kao Completed.", "Prelazi u Dismissed.", "Automatski se označava kao Completed jer više nije relevantna.", "Briše se iz liste bez traga."],
+    "answer": 2,
+    "explain": "Kad promjena u okruženju učini preporuku nebitnom, ona se automatski premješta na karticu Completed, a na Overview se prikazuje broj automatski završenih preporuka."
+  },
+  {
+    "obj": "1.2",
+    "q": "Organizacija koristi Microsoft Sentinel u Azure portalu. Koja tvrdnja o budućnosti tog iskustva je tačna?",
+    "options": ["Azure portal ostaje primarno mjesto, a Defender portal je opcionalan samo za E5 korisnike.", "Sentinel u Defender portalu zahtijeva Defender XDR licencu.", "Sentinel u Azure portalu dobija sve nove funkcije istovremeno sa Defender portalom.", "Nakon 31. marta 2027. Sentinel nije podržan u Azure portalu i koristi se samo u Defender portalu."],
+    "answer": 3,
+    "explain": "Microsoft je objavio da nakon 31. marta 2027. Sentinel više nije podržan u Azure portalu, a korisnici se preusmjeravaju u Defender portal. Sentinel je u Defender portalu GA i bez Defender XDR licenci, a nove funkcije stižu prvo tamo."
+  }
+]

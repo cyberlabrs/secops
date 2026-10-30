@@ -1,0 +1,17 @@
+#!/bin/bash
+# Sklapa sliku aplikacije bez Docker daemona: bazna slika + sloj sa kodom (/app), pa push u registry.
+# U pravom pipelineu ovo radi BuildKit (docker buildx), Buildah ili Kaniko.
+# Upotreba: kurs-build <bazna-slika> <odredište> [direktorij-sa-kodom] [korisnik]
+#   kurs-build 127.0.0.1:5000/python:3.13-slim 127.0.0.1:5000/kurs-shop:1.1 /root/kurs-shop 65532
+set -e
+[ $# -ge 2 ] || { sed -n '2,5p' "$0"; exit 2; }
+base=$1; dst=$2; src=${3:-$PWD}; user=${4:-}
+t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
+mkdir -p "$t/root/app"
+tar -C "$src" --exclude=.git --exclude=.gitlab-ci-local --exclude='*.sarif' --exclude=__pycache__ -cf - . | tar -C "$t/root/app" -xf -
+tar -C "$t/root" --owner=0 --group=0 -cf "$t/layer.tar" app
+crane append --insecure -b "$base" -f "$t/layer.tar" -t "$dst" >/dev/null 2>"$t/log" || { cat "$t/log"; exit 1; }
+args=(--workdir /app --entrypoint python3 --cmd app.py --label "org.opencontainers.image.source=https://gitlab.kurs-shop.ba/shop/kurs-shop")
+[ -n "$user" ] && args+=(--user "$user")
+crane mutate --insecure "${args[@]}" "$dst" >/dev/null 2>"$t/log" || { cat "$t/log"; exit 1; }
+echo "${dst%:*}@$(crane digest --insecure "$dst")"

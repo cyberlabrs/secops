@@ -1,0 +1,305 @@
+[
+  {
+    "obj": "4.1",
+    "q": "The CISO requests a monthly report on the vulnerability management program for management. What is MOST appropriate to include?",
+    "options": [
+      "A complete export of all scanner findings with plugin IDs",
+      "A risk scorecard by business unit with the trend of open critical findings and SLA compliance",
+      "A list of all CVEs with CVSS vectors for every host",
+      "Raw nmap output for all subnets"
+    ],
+    "answer": 1,
+    "explain": "Management needs a concise view of risk, the trend, and compliance with deadlines, not technical details. Detailed lists are for administrators and system owners."
+  },
+  {
+    "obj": "4.1",
+    "q": "A critical vulnerability was found on a system that controls a production line. The vendor contract prohibits installing patches the vendor has not certified, and the system must not stop. What is the BEST response?",
+    "options": [
+      "Install the patch overnight without notifying the vendor",
+      "Ignore the finding because the contract doesn't allow it to be fixed",
+      "Shut down the system until a patch is available",
+      "Apply compensating controls (segmentation, strict ACLs, monitoring) and document an exception until the vendor certifies the patch"
+    ],
+    "answer": 3,
+    "explain": "A contractual/proprietary inhibitor prevents patching, so the risk is reduced with compensating controls and a formal exception with a deadline. An unauthorized change breaches the contract, ignoring it leaves the risk, and shutting down interrupts the business."
+  },
+  {
+    "obj": "4.1",
+    "q": "The patch for a vulnerable library requires the application team to first move to a newer Java version, which is planned for next quarter. How is this recorded in the action plan?",
+    "options": [
+      "As a dependency, with an interim mitigation and a deadline",
+      "As a false positive",
+      "As a closed finding",
+      "As a legal hold"
+    ],
+    "answer": 0,
+    "explain": "Remediation depends on other work (the Java upgrade), which is a dependency in the action plan. The finding stays open with an interim mitigation and deadline tracking."
+  },
+  {
+    "obj": "4.1",
+    "q": "A system owner missed the 7-day SLA for a critical vulnerability on the KEV list and isn't responding to the ticket. What should the VM analyst do?",
+    "options": [
+      "Log in to the server and install the patch themselves",
+      "Close the ticket as accepted risk",
+      "Escalate along the defined escalation path (manager, then risk owner/CISO)",
+      "Remove the server from the scan scope"
+    ],
+    "answer": 2,
+    "explain": "The action plan provides for escalation when a deadline is missed. The analyst has no authority to change other people's systems or to accept the risk on their own; removing it from scanning hides the problem."
+  },
+  {
+    "obj": "4.1",
+    "q": "The security team wants to disable TLS 1.0 on an internal portal, but this would stop old handheld scanners in the warehouse from working. Which inhibitor to remediation is this?",
+    "options": [
+      "Patch availability",
+      "Contractual agreements",
+      "Degrading functionality",
+      "Organizational governance"
+    ],
+    "answer": 2,
+    "explain": "The fix exists, but it would break the functionality of dependent devices: degrading functionality. The solution is a device replacement plan, an exception with a deadline, and compensating controls."
+  },
+  {
+    "obj": "4.1",
+    "q": "Management asks whether the organization's exposure to vulnerabilities has been decreasing over the past six months. Which metric BEST answers this?",
+    "options": [
+      "The trend of open critical and high findings over time (new vs closed)",
+      "The number of scanners in the organization",
+      "The total number of CVEs published in the NVD",
+      "The number of ports open on one server today"
+    ],
+    "answer": 0,
+    "explain": "The question \"is it decreasing\" calls for a trend over time. The number of scanners and the global CVE count don't measure the organization's exposure, and a single data point doesn't show movement."
+  },
+  {
+    "obj": "4.1",
+    "q": "A finding on a Windows Server 2012 R2 system cannot be remediated because Microsoft no longer releases patches for that version without an ESU agreement. Which inhibitor is PRIMARY?",
+    "options": [
+      "Business process interruption",
+      "Degrading functionality",
+      "Organizational governance",
+      "Legacy systems"
+    ],
+    "answer": 3,
+    "explain": "An out-of-support system is a legacy inhibitor. Measures: isolation, enhanced monitoring, virtual patching, and a migration plan."
+  },
+  {
+    "obj": "4.2",
+    "q": "A journalist calls a SOC analyst and asks whether the company has been hit by the ransomware being discussed on forums. What should the analyst do?",
+    "options": [
+      "Confirm the incident to avoid speculation",
+      "Not comment and forward the inquiry to the PR team according to the communication plan",
+      "Deny the incident while the investigation is ongoing",
+      "Send the journalist the technical report"
+    ],
+    "answer": 1,
+    "explain": "External statements are made by PR (together with the legal team) according to the plan. The analyst neither confirms nor denies; this prevents inaccurate or legally damaging statements."
+  },
+  {
+    "obj": "4.2",
+    "q": "An incident affected the personal data of EU citizens. What is the obligation under GDPR for notifying the supervisory authority?",
+    "options": [
+      "Without undue delay and, where feasible, no later than 72 hours after becoming aware of the breach",
+      "Within 24 hours of the start of the attack",
+      "Within 30 days of closing the incident",
+      "Only if the incident was reported to law enforcement"
+    ],
+    "answer": 0,
+    "explain": "GDPR Article 33 requires notifying the supervisory authority within 72 hours of becoming aware. (NIS2 additionally requires an early warning within 24 h for significant incidents.) The decision and communication are led by the legal team."
+  },
+  {
+    "obj": "4.2",
+    "q": "There is evidence that the attacker has access to corporate email and Teams. How should the IR team coordinate the response?",
+    "options": [
+      "Through a Teams channel named \"ransomware-incident\"",
+      "Through a pre-arranged out-of-band channel, with a need-to-know list of participants",
+      "Via email marked \"confidential\"",
+      "On the public status page"
+    ],
+    "answer": 1,
+    "explain": "Operational security awareness: compromised channels are not used, and the circle of people is limited. A descriptive channel name and email would reveal to the attacker that they have been detected."
+  },
+  {
+    "obj": "4.2",
+    "q": "The SOC lead notices that analysts close 85% of the alerts from one rule as benign. Which metric describes this and what is the next step?",
+    "options": [
+      "Low MTTD; more analysts per shift",
+      "High phishing click rate; awareness training",
+      "High true-positive rate; increase the rule's severity",
+      "High false-positive rate; rule tuning (exclusions, thresholds, enrichment)"
+    ],
+    "answer": 3,
+    "explain": "The share of false alerts is the false-positive rate. Noisy rules cause alert fatigue, so the rule is tuned. The other metrics measure other things."
+  },
+  {
+    "obj": "4.2",
+    "q": "Management wants to know how long attackers remain undetected in the network on average. Which metric measures this?",
+    "options": [
+      "Mean time to close",
+      "Alert volume",
+      "Mean time to detect (MTTD)",
+      "Mean time to remediate"
+    ],
+    "answer": 2,
+    "explain": "MTTD measures the time from the start of the compromise to detection (close to dwell time). Mean time to close and to remediate measure later phases, and alert volume is the number of alerts."
+  },
+  {
+    "obj": "4.2",
+    "q": "The IR lead has 10 minutes to explain an ongoing incident to management. What should be prepared?",
+    "options": [
+      "A complete timeline with all Sysmon events",
+      "A list of all IoCs and hashes",
+      "An ATT&CK Navigator layer with all techniques",
+      "An executive summary: business impact, current status, risk, and decisions needed, without technical jargon"
+    ],
+    "answer": 3,
+    "explain": "Management needs a one-page summary with impact and decisions. The timeline, IoCs, and ATT&CK mapping are appendices for technical teams."
+  },
+  {
+    "obj": "4.2",
+    "q": "An incident is in its third day and the night shift is taking over. What BEST ensures that nothing is lost?",
+    "options": [
+      "Have the new shift read all SIEM alerts from the beginning",
+      "An informal verbal agreement in the hallway",
+      "A written, structured handover (open items, owners, actions in progress, pending decisions) with a short verbal walkthrough",
+      "Close the incident and open a new one for the new shift"
+    ],
+    "answer": 2,
+    "explain": "A shift/incident handover must be documented and structured, with a clear owner for each item. An informal handover loses information, and a new ticket breaks the history."
+  },
+  {
+    "obj": "4.2",
+    "q": "After a major incident, the team organizes a meeting with all participants to determine what worked, what didn't, and what to change in the plan, without looking for someone to blame. What is this activity called?",
+    "options": [
+      "Tabletop exercise",
+      "Lessons learned (blameless post-incident review)",
+      "Incident declaration",
+      "Shift handover"
+    ],
+    "answer": 1,
+    "explain": "Lessons learned is a post-incident activity; the results go into the after action report and update the plan and playbooks. A tabletop is an exercise done in advance, and declaration is the start of the incident."
+  },
+  {
+    "obj": "4.2",
+    "q": "The SOC receives a generic vendor report about a new ransomware campaign. What should the internal threat intelligence report add to be MOST useful?",
+    "options": [
+      "An assessment of our environment's exposure (versions, assets), our detection coverage for the campaign's TTPs, and specific recommendations",
+      "A translation of the vendor report into the local language",
+      "A list of every ransomware group ever recorded",
+      "The ransom amount the group usually demands"
+    ],
+    "answer": 0,
+    "explain": "An internal TI report is tailored to the organization and its environment: what the threat means for us, whether we are exposed, and whether we detect it (ATT&CK mapping). Generic content doesn't help decision-making."
+  },
+  {
+    "obj": "4.1",
+    "q": "Which TWO items are inhibitors to remediation according to the CS0-004 objectives? Select TWO.",
+    "options": [
+      "Business process interruption",
+      "Mean time to detect",
+      "Patch availability",
+      "Chain of custody"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Business process interruption and patch unavailability are listed inhibitors (along with contractual agreements, governance, degrading functionality, legacy, and proprietary systems). MTTD is a metric, and chain of custody is an evidence term."
+  },
+  {
+    "obj": "4.2",
+    "q": "Which TWO metrics BEST show the effectiveness of a phishing awareness program over the year? Select TWO.",
+    "options": [
+      "Alert volume in the SIEM",
+      "Click rate in simulated phishing campaigns",
+      "Mean time to remediate vulnerabilities",
+      "The rate at which employees report suspicious messages"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "A falling click rate and a rising report rate across several campaigns show a change in behavior. Alert volume and vulnerability remediation don't measure awareness."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Match each requirement with the metric.",
+    "options": [
+      "How quickly the SOC starts containing an attack after an alert",
+      "How many alerts the SIEM generates per day",
+      "What share of a rule's alerts are false",
+      "How long an attacker stays undetected",
+      "How long a ticket takes on average from opening to closing"
+    ],
+    "targets": [
+      "Mean time to detect",
+      "Mean time to respond",
+      "Mean time to close",
+      "Alert volume",
+      "False-positive rate"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "Speed of reaction after an alert = MTTR (respond). Number of alerts = alert volume. Share of false alerts = FP rate. Time undetected = MTTD. From opening to closing a ticket = mean time to close."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Match each stakeholder with their role during an incident.",
+    "options": [
+      "Statement to the media",
+      "Assessment of legal notification obligations and legal hold",
+      "Notification to the data protection supervisory authority",
+      "Investigation of the criminal offense of extortion",
+      "Notification to affected service users"
+    ],
+    "targets": [
+      "Legal team",
+      "Public relations",
+      "Regulatory reporting agencies",
+      "Law enforcement",
+      "Customers"
+    ],
+    "answer": [
+      1,
+      0,
+      2,
+      3,
+      4
+    ],
+    "explain": "PR makes statements to the media, the legal team assesses obligations and puts a legal hold in place, the regulator receives mandatory notifications, law enforcement investigates criminal offenses, and customers receive an aligned notification when they are affected."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match each situation with the inhibitor to remediation.",
+    "options": [
+      "The CAB meets once a month and there is no emergency process",
+      "The vendor has not yet released a patch",
+      "An ERP restart in the middle of year-end closing",
+      "A closed SCADA device that the customer may not modify",
+      "The maintenance contract becomes void if unapproved software is installed"
+    ],
+    "targets": [
+      "Contractual agreements",
+      "Organizational governance",
+      "Business process interruption",
+      "Proprietary systems",
+      "Patch availability"
+    ],
+    "answer": [
+      1,
+      4,
+      2,
+      3,
+      0
+    ],
+    "explain": "A slow approval process is governance; no patch = patch availability; interrupting a key process = business process interruption; a closed vendor system = proprietary; a contractual restriction = contractual agreements."
+  }
+]

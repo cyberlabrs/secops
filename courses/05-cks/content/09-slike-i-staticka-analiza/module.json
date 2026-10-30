@@ -1,0 +1,12 @@
+{
+  "title": "Minimalne slike i statička analiza",
+  "summary": "Kako napraviti minimalnu i bezbjednu sliku kontejnera (distroless, multi-stage, non-root, pinovani digest) i kako statičkom analizom (kubesec, kube-linter, trivy config, hadolint i ručni pregled) naći opasne postavke u manifestima i Dockerfileovima.",
+  "minutes": 90,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.4"
+  ],
+  "title_en": "Minimal images and static analysis",
+  "summary_en": "How to build a minimal, secure container image (distroless, multi-stage, non-root, pinned digest) and how to use static analysis (kubesec, kube-linter, trivy config, hadolint and manual review) to find dangerous settings in manifests and Dockerfiles."
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Sigurnosna arhitektura",
+  "summary": "Sigurnosne implikacije arhitekturnih modela (cloud, serverless, IaC, OT, air-gap, mikroservisi) i upravljanje arhitekturom: zone, Zero Trust, siguran udaljeni pristup, SSE, servisni nalozi i failure modes.",
+  "minutes": 100,
+  "domain": 3,
+  "objectives": [
+    "3.1",
+    "3.2"
+  ],
+  "title_en": "Security architecture",
+  "summary_en": "Security implications of architecture models (cloud, serverless, IaC, OT, air-gap, microservices) and architecture management: zones, Zero Trust, secure remote access, SSE, service accounts, and failure modes."
+}

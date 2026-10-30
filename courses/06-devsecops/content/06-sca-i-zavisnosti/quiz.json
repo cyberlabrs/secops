@@ -1,0 +1,254 @@
+[
+  {
+    "obj": "3.2",
+    "q": "osv-scanner job u pipelineu je zelen, ali u logu nema nijednog skeniranog lockfajla, a exit code je 128. Job ima `allow_failure: exit_codes: [128]`. Šta je problem?",
+    "options": [
+      "Nema ranjivosti, pa je 128 očekivan uspjeh",
+      "Offline baza je zastarjela",
+      "Job ne skenira ništa (pogrešna putanja ili nema lockfajla), a pipeline to tretira kao prolaz",
+      "osv-scanner ne podržava requirements.txt"
+    ],
+    "answer": 2,
+    "explain": "Exit 128 znači da nije nađen nijedan paket; job koji ga dozvoljava daje lažan osjećaj sigurnosti. Bez ranjivosti exit je 0, zastarjela baza i dalje nalazi pakete, a requirements.txt je podržan."
+  },
+  {
+    "obj": "3.2",
+    "q": "Trivy nad `kurs-shop` prijavljuje ranjivosti samo u flask, werkzeug, jinja2, requests, PyYAML i gunicorn, a nijednu u itsdangerous ili MarkupSafe, iako ih aplikacija koristi. Zašto?",
+    "options": [
+      "itsdangerous i MarkupSafe nemaju poznatih ranjivosti ni u jednoj verziji",
+      "requirements.txt je ručno pisan i navodi samo direktne zavisnosti; Trivy iz njega ne razrješava tranzitivne",
+      "Trivy ne skenira Python bez --include-dev-deps",
+      "Treba dodati --scanners license"
+    ],
+    "answer": 1,
+    "explain": "Trivy iz requirements.txt čita samo ono što piše (direktne, pinovane zavisnosti). Potpun lockfajl (pip-compile ili pip freeze) daje i tranzitivne. --include-dev-deps je za npm/yarn/gradle, a license skener ne traži ranjivosti."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tim ima 69 nalaza SCA-a i kapacitet za 10 popravki ove sedmice. Koji nalaz ide PRVI?",
+    "options": [
+      "CVE sa CVSS 9.8, EPSS 0.004, biblioteka se koristi samo u testovima",
+      "CVE sa CVSS 6.5 koji je u CISA KEV katalogu, u servisu izloženom internetu",
+      "CVE sa CVSS 8.1 bez dostupne popravke",
+      "CVE sa CVSS 7.5 u frontend dev zavisnosti"
+    ],
+    "answer": 1,
+    "explain": "KEV znači dokazanu eksploataciju u stvarnim napadima, a izloženost internetu znači da je meta dostupna; to je najjači signal bez obzira na niži CVSS. Visok CVSS uz nizak EPSS u testnom kodu, nalaz bez popravke i dev zavisnost su niži prioritet."
+  },
+  {
+    "obj": "3.2",
+    "q": "Menadžer pita šta znači EPSS 0.02 i percentil 0.88 za CVE u vašoj biblioteci. Koji odgovor je tačan?",
+    "options": [
+      "Procijenjena vjerovatnoća aktivnosti eksploatacije u narednih 30 dana je 2%, a skor je veći ili jednak skoru 88% svih CVE-ova",
+      "CVE ima ozbiljnost 2 od 10 i niži je od 88% CVE-ova",
+      "2% sistema na internetu je već kompromitovano preko ovog CVE-a",
+      "CVE je u KEV-u 2% vremena, a 88% vendora ga je zakrpilo"
+    ],
+    "answer": 0,
+    "explain": "EPSS daje vjerovatnoću eksploatacije u narednih 30 dana i percentil u odnosu na sve CVE-ove; 2% zvuči malo, ali je viši od 88% ostalih. EPSS ne mjeri ozbiljnost (to je CVSS), ne broji kompromitovane sisteme i nema veze sa KEV statusom."
+  },
+  {
+    "obj": "3.2",
+    "q": "Moraš privremeno prihvatiti CVE-2020-14343 u PyYAML-u dok ne završi migracija. Koji unos u osv-scanner.toml je ispravan i u skladu sa dobrom praksom?",
+    "options": [
+      "[[IgnoredVulns]] id = \"CVE-2020-14343\"",
+      "[[PackageOverrides]] name = \"pyyaml\" ignore = true",
+      "[IgnoredVulns] CVE-2020-14343 = \"2026-11-30\"",
+      "[[IgnoredVulns]] sa id = \"GHSA-8q59-q68h-6hv4\", ignoreUntil = 2026-11-30 i reason sa tiketom i odobrenjem"
+    ],
+    "answer": 3,
+    "explain": "IgnoredVulns sa rokom i razlogom je uzak, privremen i dokumentovan izuzetak; ignorisanje radi i preko aliasa (GHSA/PYSEC/CVE). Unos bez roka je trajno prihvatanje, PackageOverrides ignore gasi sve nalaze i licence za paket, a treća opcija nije ispravna sintaksa."
+  },
+  {
+    "obj": "3.2",
+    "q": "U `jinja2 3.1.2` je objavljen nov CVE. U repou kurs-shop nije bilo commita tri sedmice, a SCA job radi samo na merge request pipelineima. Kada će tim saznati za nalaz?",
+    "options": [
+      "Odmah, osv-scanner šalje obavještenja",
+      "Tek pri sljedećem MR-u; zato SCA treba pokretati i u zakazanom (noćnom) pipelineu",
+      "Nikad, jer se lockfajl nije promijenio",
+      "Pri sljedećem pokretanju Renovate-a, koji automatski pokreće osv-scanner"
+    ],
+    "answer": 1,
+    "explain": "Nove ranjivosti nastaju u bazi, ne u tvom kodu; skener ih vidi tek kad se ponovo pokrene. Zakazani pipeline (rules: $CI_PIPELINE_SOURCE == \"schedule\") to rješava. osv-scanner CLI ne šalje obavještenja, a Renovate ne pokreće osv-scanner."
+  },
+  {
+    "obj": "3.2",
+    "q": "Werkzeug 2.2.2 ima CVE-2024-34069 (ranjivost debuggera). Kolega kaže da je nebitan jer produkcija ne koristi debugger. Šta u kurs-shop mijenja tu procjenu?",
+    "options": [
+      "Ništa, debugger je uvijek isključen u Werkzeugu",
+      "To što je Werkzeug tranzitivna zavisnost Flaska",
+      "app.py pokreće aplikaciju sa debug=True, pa je ranjiv kod zaista dostupan",
+      "To što je CVSS ovog CVE-a viši od 7"
+    ],
+    "answer": 2,
+    "explain": "Kontekst (reachability) je ključan: debug=True uključuje upravo komponentu u kojoj je ranjivost. Činjenica da je paket tranzitivan ili visok CVSS ne govore je li ranjiv kod dostupan, a debugger nije uvijek isključen."
+  },
+  {
+    "obj": "3.3",
+    "q": "CI job instalira interne pakete komandom `pip install --extra-index-url https://pypi.kurs-shop.ba/simple -r requirements.txt`. Na javnom PyPI-ju se pojavio paket `kurs-shop-utils` verzije 99.0.0. Šta se dešava i kako to spriječiti?",
+    "options": [
+      "pip uvijek prednost daje --extra-index-url, pa nema rizika",
+      "pip bira najveću verziju sa oba indexa i instalira javni paket; koristi samo --index-url prema internom proxyju koji interna imena ne traži na javnom PyPI-ju",
+      "pip prijavljuje konflikt i staje; dovoljno je dodati --no-deps",
+      "Rizik postoji samo za npm, ne za pip"
+    ],
+    "answer": 1,
+    "explain": "Ovo je dependency confusion: pip pretražuje sve indexe ravnopravno i uzima najveću verziju. Jedan --index-url prema proxyju (uz hash provjere) zatvara napad. pip ne daje prednost extra indexu, ne javlja konflikt, a napad postoji u pip, npm i drugim ekosistemima."
+  },
+  {
+    "obj": "3.3",
+    "q": "Pipeline koristi `npm install` u frontend/ jobu i povremeno dobija drugačije verzije tranzitivnih paketa nego developeri lokalno. Šta je ispravna izmjena?",
+    "options": [
+      "npm ci, koji instalira tačno ono što je u package-lock.json i pada ako se lock i package.json ne slažu",
+      "npm install --save-exact",
+      "npm update prije builda",
+      "Brisanje package-lock.json iz gita da se izbjegnu konflikti"
+    ],
+    "answer": 0,
+    "explain": "npm ci je namijenjen CI-ju: reproducibilna instalacija iz lockfajla. --save-exact utiče na upis u package.json pri dodavanju paketa, npm update namjerno mijenja verzije, a brisanje lockfajla uklanja i reproducibilnost i SCA ulaz."
+  },
+  {
+    "obj": "3.3",
+    "q": "Nakon incidenta sa zaraženom verzijom popularnog npm paketa (uklonjena sa registrija nakon 6 sati), tim želi da Renovate ne predlaže verzije u prvim danima nakon objave. Koja opcija to radi?",
+    "options": [
+      "prConcurrentLimit: 1",
+      "rangeStrategy: pin",
+      "minimumReleaseAge: \"3 days\"",
+      "lockFileMaintenance: { enabled: true }"
+    ],
+    "answer": 2,
+    "explain": "minimumReleaseAge odlaže prijedlog dok verzija ne bude stara zadani period, pa zlonamjerne verzije koje se brzo uklone ne stignu u MR. prConcurrentLimit ograničava broj MR-ova, pin mijenja način zapisa verzija, a lockFileMaintenance osvježava lock i može upravo povući najnovije verzije."
+  },
+  {
+    "obj": "3.3",
+    "q": "Firma koristi samo self-managed GitLab i želi automatske MR-ove za ažuriranje pip i npm zavisnosti. Šta je prirodan izbor?",
+    "options": [
+      "Dependabot sa .github/dependabot.yml u repou",
+      "GitLab dependency scanning šablon",
+      "osv-scanner fix u svakom MR pipelineu",
+      "Renovate pokrenut kao zakazani GitLab CI job sa RENOVATE_PLATFORM=gitlab i project access tokenom"
+    ],
+    "answer": 3,
+    "explain": "Renovate podržava GitLab i može se pokretati kao CI job. Dependabot je ugrađen u GitHub, osv-scanner fix samo predlaže izmjene (eksperimentalno, npm/Maven) i ne otvara MR-ove, a dependency scanning prijavljuje ranjivosti, ne ažurira zavisnosti."
+  },
+  {
+    "obj": "3.3",
+    "q": "Developer u MR-u dodaje zavisnost `python-dateutils` umjesto uobičajenog `python-dateutil`. SCA ne prijavljuje ništa. Šta je najvjerovatniji rizik i kontrola koja ga hvata?",
+    "options": [
+      "Nema rizika jer SCA nije ništa našao",
+      "License conflict; hvata ga Trivy --scanners license",
+      "Dependency confusion; hvata ga --extra-index-url",
+      "Typosquatting; hvata ga review novih zavisnosti i provjera MAL- zapisa u OSV bazi"
+    ],
+    "answer": 3,
+    "explain": "Ime koje liči na popularan paket je klasičan typosquatting; zlonamjeran paket često nema CVE, pa ga klasični SCA ne vidi. Review dodavanja zavisnosti i OSV MAL- zapisi su odbrana. License skener i --extra-index-url (koji je zapravo uzrok confusion napada) ne pomažu."
+  },
+  {
+    "obj": "3.3",
+    "q": "Koja kombinacija u `.gitlab-ci.yml` najbolje sprječava da se izmjena u tuđem dijeljenom šablonu ili slici tiho pojavi u tvom pipelineu?",
+    "options": [
+      "include sa ref na tag ili commit SHA i image pinovana na @sha256 digest",
+      "include sa ref: main i image: python:latest",
+      "workflow:rules sa $CI_COMMIT_BRANCH == \"main\"",
+      "allow_failure: false na svim jobovima"
+    ],
+    "answer": 0,
+    "explain": "Pinovanje na nepromjenljive reference (SHA, digest) znači da promjena izvora ne ulazi bez tvog commita; Renovate može otvarati MR-ove za nove digestove. ref: main i :latest se pomjeraju, workflow:rules bira kada se pipeline pokreće, a allow_failure ne utiče na sadržaj."
+  },
+  {
+    "obj": "3.4",
+    "q": "`trivy fs --scanners license .` nad kurs-shop repoom ne prijavljuje nijednu licencu za Python i npm pakete, iako su navedeni u requirements.txt i package-lock.json. Zašto?",
+    "options": [
+      "Trivy licence prepoznaje samo za OS pakete",
+      "Treba dodati --license-confidence-level 0.5",
+      "Trivy čita licence iz instaliranih paketa (site-packages METADATA, node_modules), a ovi fajlovi ne sadrže podatke o licencama",
+      "license skener radi samo sa --format spdx-json"
+    ],
+    "answer": 2,
+    "explain": "requirements.txt i lockfajl nemaju polje licence; Trivy ih čita iz instaliranih paketa ili iz slike, pa se licence provjeravaju nakon instalacije ili nad slikom. Trivy radi i za jezičke pakete, prag pouzdanosti utiče na klasifikaciju teksta, a format izlaza nema veze sa detekcijom."
+  },
+  {
+    "obj": "3.4",
+    "q": "Firma razvija SaaS aplikaciju koju korisnici koriste samo preko weba; kod se nikad ne distribuira. Koja licenca zavisnosti traži najviše pažnje?",
+    "options": [
+      "MIT",
+      "AGPL-3.0",
+      "Apache-2.0",
+      "BSD-3-Clause"
+    ],
+    "answer": 1,
+    "explain": "AGPL-3.0 proširuje copyleft na korisnike koji koriste softver preko mreže, pa SaaS bez distribucije nije izuzet. MIT, Apache-2.0 i BSD-3-Clause su permisivne i traže uglavnom zadržavanje copyright napomena."
+  },
+  {
+    "obj": "3.4",
+    "q": "Pravna služba je odlučila: AGPL-3.0 i SSPL-1.0 su zabranjeni, GPL zahtijeva odobrenje. Kako to najdirektnije pretvoriti u Trivy gate u release pipelineu?",
+    "options": [
+      "U trivy.yaml staviti AGPL-3.0 i SSPL-1.0 pod license.forbidden (CRITICAL), GPL pod restricted (HIGH) i pokrenuti trivy image --scanners license --severity CRITICAL --exit-code 1",
+      "--ignored-licenses AGPL-3.0,SSPL-1.0",
+      "osv-scanner --licenses=\"AGPL-3.0,SSPL-1.0\"",
+      "Dodati AGPL-3.0 u .trivyignore.yaml pod licenses"
+    ],
+    "answer": 0,
+    "explain": "Trivy kategorije se preslikavaju u ozbiljnost (forbidden = CRITICAL, restricted = HIGH), pa gate radi isto kao za ranjivosti. --ignored-licenses i .trivyignore.yaml uklanjaju licence iz rezultata (suprotno od cilja), a osv-scanner --licenses je allowlist dozvoljenih licenci, ne lista zabranjenih."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Poredaj korake trijaže SCA nalaza po politici tima, od prvog ka posljednjem.",
+    "options": [
+      "Za ostale nalaze provjeriti EPSS i CVSS i dodijeliti P2/P3 rok",
+      "Pokrenuti scan nad potpunim lockfajlovima i spojiti alias ID-jeve (GHSA/PYSEC/CVE)",
+      "Ukrstiti CVE-ove sa KEV katalogom; pogoci postaju P1",
+      "Za nalaze bez popravke ili nedostupnog koda upisati izuzetak sa rokom (ignoreUntil / expired_at) ili VEX izjavu",
+      "Provjeriti kontekst: da li je ranjiv kod dostupan (npr. debug=True, izloženost servisa)"
+    ],
+    "answer": [
+      1,
+      2,
+      4,
+      0,
+      3
+    ],
+    "explain": "Prvo pouzdan ulaz (potpun lockfajl, deduplikovani ID-jevi), pa KEV kao najjači signal, pa kontekst koji može podići ili spustiti prioritet, pa EPSS/CVSS za ostatak, a izuzeci sa rokom dolaze tek kad je odluka donesena."
+  },
+  {
+    "obj": "3.3",
+    "type": "match",
+    "q": "Upari kontrolu sa prijetnjom koju prvenstveno sprječava.",
+    "options": [
+      "Jedan --index-url prema internom proxyju",
+      "npm ci --ignore-scripts",
+      "minimumReleaseAge / cooldown na botu za ažuriranja",
+      "pip install --require-hashes",
+      "image pinovana na @sha256 digest"
+    ],
+    "targets": [
+      "Tag bazne slike je pomjeren na drugačiji sadržaj",
+      "Javni paket istog imena kao interni sa većom verzijom",
+      "postinstall skripta zlonamjernog paketa krade tokene sa runnera",
+      "Zaražena nova verzija popularnog paketa, uklonjena nakon nekoliko sati",
+      "Podmetnut fajl iste verzije paketa na mirroru",
+      "GPL komponenta u zatvorenom proizvodu"
+    ],
+    "answer": [
+      1,
+      2,
+      3,
+      4,
+      0
+    ],
+    "explain": "Jedan index zatvara dependency confusion, --ignore-scripts install skripte, čekanje na verziju brzo uklonjene zlonamjerne releaseove, hash provjera podmetnut fajl iste verzije, a digest pomjeren tag. GPL problem rješava provjera licenci, koja nije ponuđena."
+  },
+  {
+    "obj": "3.2",
+    "q": "osv-scanner u labu ispisuje `GHSA-8q59-q68h-6hv4 and 2 aliases have been filtered out because: Ne koristimo full_load...`. Šta to govori?",
+    "options": [
+      "Ranjivost je ispravljena u novoj verziji PyYAML-a",
+      "osv-scanner je našao tri različite ranjivosti i sve ignorisao",
+      "Offline baza nema podatke o tom CVE-u",
+      "Unos u osv-scanner.toml je ignorisao nalaz zajedno sa njegovim aliasima (PYSEC i CVE ID) i u log upisao razlog"
+    ],
+    "answer": 3,
+    "explain": "Ista ranjivost ima više ID-jeva iz različitih baza; izuzetak po jednom ID-ju pokriva sve aliase, a reason se ispisuje u logu joba radi traga. Nalaz nije ispravljen, nisu tri različite ranjivosti, a baza ga očigledno sadrži."
+  }
+]

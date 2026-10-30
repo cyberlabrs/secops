@@ -1,0 +1,12 @@
+{
+  "title": "Odgovor na incidente: plan, automatizacija, forenzika i oporavak",
+  "summary": "Kako pripremiti i testirati plan odgovora na incidente u AWS-u (runbooki, Systems Manager, IR role, Shield Advanced, FIS, Resilience Hub), automatizovati remedijaciju i forenziku i odgovoriti na kompromitovane ključeve i EC2 instance, od prikupljanja artefakata do root cause analize sa Amazon Detective.",
+  "minutes": 110,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.2"
+  ],
+  "title_en": "Incident response: plan, automation, forensics, and recovery",
+  "summary_en": "How to prepare and test an incident response plan in AWS (runbooks, Systems Manager, IR roles, Shield Advanced, FIS, Resilience Hub), automate remediation and forensics, and respond to compromised keys and EC2 instances, from evidence collection to root cause analysis with Amazon Detective."
+}

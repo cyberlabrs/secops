@@ -1,0 +1,352 @@
+[
+  {
+    "obj": "4.1",
+    "q": "A DevSecOps team wants to know if someone pulls code from a private repository and tries to use the credentials in it. They plant a fake AWS access key with no permissions in the repository, with a CloudTrail alert on any use of it. What is this technique called?",
+    "options": [
+      "Honeypot",
+      "Canary account",
+      "Honeytoken",
+      "Honeyfile"
+    ],
+    "answer": 2,
+    "explain": "A honeytoken is a fake piece of data or credential whose every use signals a compromise. A honeyfile is an entire fake file, a canary account is a fake user account, and a honeypot is a fake system."
+  },
+  {
+    "obj": "4.1",
+    "q": "A company must stop known exploit attempts against its data center in real time, before they reach the servers. Which solution BEST meets the requirement?",
+    "options": [
+      "A NIDS connected to a SPAN port",
+      "A HIDS on every server",
+      "A SIEM with correlation rules",
+      "A NIPS placed inline"
+    ],
+    "answer": 3,
+    "explain": "Only an inline device can block traffic before it reaches the target, and that's a NIPS. A NIDS on a SPAN port and a SIEM only detect and alert, and a HIDS works only on the host itself."
+  },
+  {
+    "obj": "4.1",
+    "q": "Most employees work from home and don't use a VPN for internet access. Policy requires blocking malicious and gambling sites on company laptops wherever they are. What is the BEST solution?",
+    "options": [
+      "An agent-based content filter on the laptops",
+      "A centralized web proxy in the data center",
+      "Rules on the perimeter firewall",
+      "DLP on the email gateway"
+    ],
+    "answer": 0,
+    "explain": "An agent on the device filters traffic wherever the device is. A centralized proxy and a perimeter firewall only see traffic that passes through the corporate network, and email DLP doesn't filter web categories."
+  },
+  {
+    "obj": "4.1",
+    "q": "A SOC analyst suspects a laptop in accounting is infected with ransomware. She wants to cut it off from the network remotely right away and then review the tree of processes that ran. Which tool makes this possible?",
+    "options": [
+      "Antivirus with up-to-date signatures",
+      "EDR",
+      "A NetFlow collector",
+      "A UTM appliance"
+    ],
+    "answer": 1,
+    "explain": "EDR collects endpoint telemetry (processes, connections) and enables response such as host isolation. Traditional antivirus lacks those investigation and response capabilities, NetFlow provides only network metadata, and a UTM is a network device."
+  },
+  {
+    "obj": "4.1",
+    "q": "The network team wants every device plugged into an office switch port to prove its identity with a certificate before getting network access. What should be implemented?",
+    "options": [
+      "Captive portal",
+      "Port mirroring",
+      "MAC filtering on the AP",
+      "802.1X with a RADIUS server"
+    ],
+    "answer": 3,
+    "explain": "802.1X is port-based NAC: the supplicant authenticates (e.g., with an EAP-TLS certificate) through the authenticator (switch) against the RADIUS server. A captive portal is a web sign-in for guests, port mirroring copies traffic, and a MAC address is easily spoofed."
+  },
+  {
+    "obj": "4.1",
+    "q": "GitHub secret scanning reported a valid production API key in a commit pushed to a public repository two hours ago. What should be done FIRST?",
+    "options": [
+      "Rewrite git history to remove the commit",
+      "Revoke and rotate the key",
+      "Make the repository private",
+      "Add a pre-commit hook for gitleaks"
+    ],
+    "answer": 1,
+    "explain": "The key should be considered compromised because it may have been copied, so the first step is revocation and rotation. Cleaning the history, hiding the repository, and a pre-commit hook are useful, but they don't undo a key that has already leaked."
+  },
+  {
+    "obj": "4.1",
+    "q": "Attackers are sending fake invoices from an @firma.ba address. The domain's DNS has an SPF record ending in ~all and a DMARC record with p=none. Which TWO changes MOST reduce the success of spoofing? Choose TWO.",
+    "options": [
+      "Add a BIMI record with the logo",
+      "Change the DMARC policy to p=reject after analyzing the reports",
+      "Increase the TTL of all DNS records",
+      "Change the SPF qualifier to -all"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "DMARC p=reject tells recipients to reject messages that fail the check, and SPF -all produces a hard fail instead of a soft fail. BIMI only displays a logo (and requires DMARC enforcement), and TTL doesn't affect mail authentication."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match each DNS TXT record with its email security mechanism.",
+    "options": [
+      "_dmarc.firma.ba  \"v=DMARC1; p=quarantine; rua=mailto:dmarc@firma.ba\"",
+      "firma.ba  \"v=spf1 include:spf.protection.outlook.com -all\"",
+      "s1._domainkey.firma.ba  \"v=DKIM1; k=rsa; p=MIIBIjANBg...\"",
+      "default._bimi.firma.ba  \"v=BIMI1; l=https://firma.ba/logo.svg\""
+    ],
+    "targets": [
+      "SPF",
+      "DKIM",
+      "DMARC",
+      "BIMI"
+    ],
+    "answer": [
+      2,
+      0,
+      1,
+      3
+    ],
+    "explain": "DMARC always lives on the _dmarc subdomain and carries the policy (p=) and the reporting address (rua=). SPF is on the domain itself and lists the allowed senders. The DKIM public key is at selector._domainkey. BIMI is at default._bimi and points to the logo."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match each scenario with the BEST control.",
+    "options": [
+      "A kiosk in the lobby may run only the visitor sign-in application.",
+      "An old web application must be protected from SQL injection, and the code can't be changed.",
+      "A laptop without the latest patches must automatically end up in a remediation VLAN.",
+      "A compromised Apache process must not read files outside /var/www even when it runs as root.",
+      "Every login attempt on the svc-backup-admin account, which nobody uses, must trigger an alert."
+    ],
+    "targets": [
+      "SELinux",
+      "Block list",
+      "Canary account",
+      "Web application firewall",
+      "UTM",
+      "NAC posture assessment",
+      "Application allow list"
+    ],
+    "answer": [
+      6,
+      3,
+      5,
+      0,
+      2
+    ],
+    "explain": "A fixed-purpose kiosk = allow list. SQLi without changing code = WAF. A non-compliant device to quarantine = NAC posture. Restricting a process even when it's root = SELinux (MAC). An account nobody uses, as bait = canary account. UTM and block list aren't the best choice here."
+  },
+  {
+    "obj": "4.2",
+    "q": "A company sold old servers at auction, and the buyer found customer data on the disks. Which phase of the asset lifecycle failed?",
+    "options": [
+      "Disposal/decommissioning",
+      "Acquisition/procurement",
+      "Assignment/accounting",
+      "Planning/scoping"
+    ],
+    "answer": 0,
+    "explain": "Sanitizing or destroying media (with a certificate of destruction) is part of the disposal/decommissioning phase. The other phases deal with procurement, ownership records, and planning, not retiring equipment."
+  },
+  {
+    "obj": "4.2",
+    "q": "A scanner found a critical vulnerability on an EC2 instance, but nobody knows which team the instance belongs to, so the patch has been waiting for weeks. Which practice would BEST prevent this problem?",
+    "options": [
+      "More frequent vulnerability scanning",
+      "Launching a bug bounty program",
+      "Mandatory tagging of resources with an owner and recording them in the inventory",
+      "Switching to agentless scanning"
+    ],
+    "answer": 2,
+    "explain": "Assignment/accounting means every asset has a clear owner responsible for patching. More frequent or different scanning doesn't answer who fixes it, and a bug bounty is a channel for external vulnerability reports."
+  },
+  {
+    "obj": "4.3",
+    "type": "order",
+    "q": "Order the steps of the vulnerability management process.",
+    "options": [
+      "Remediation (applying a patch or compensating control)",
+      "Reporting (a report to management)",
+      "Identification (scanning, CSPM, code review)",
+      "Verification (rescanning)",
+      "Prioritization (CVSS, exposure, asset criticality)"
+    ],
+    "answer": [
+      2,
+      4,
+      0,
+      3,
+      1
+    ],
+    "explain": "First vulnerabilities are found, then you assess what's most urgent, they're fixed, the fix is confirmed by a rescan, and finally the results are reported. Then the cycle repeats."
+  },
+  {
+    "obj": "4.3",
+    "q": "A scanner reported two vulnerabilities with the same CVSS score of 8.1. The first is on an internal test server, and the second is on a public VPN gateway and is in the CISA KEV catalog of actively exploited vulnerabilities. What is the BEST approach?",
+    "options": [
+      "Fix the VPN gateway first because it's internet-facing and actively exploited",
+      "Fix both at the same time because they have the same score",
+      "Fix the test server first because it's less risky for production",
+      "Wait for the next regular patch cycle for both"
+    ],
+    "answer": 0,
+    "explain": "CVSS is only the starting point; internet exposure and proven active exploitation raise the priority. The same score doesn't mean the same risk, and waiting for a regular cycle for an actively exploited vulnerability on the perimeter is unacceptable."
+  },
+  {
+    "obj": "4.3",
+    "q": "An organization uses AWS and Azure and wants to continuously detect publicly accessible storage buckets, security groups open to 0.0.0.0/0, and root accounts without MFA. Which tool is MOST appropriate?",
+    "options": [
+      "IPAM",
+      "A network-based vulnerability scanner",
+      "A SAST tool in the CI pipeline",
+      "CSPM"
+    ],
+    "answer": 3,
+    "explain": "CSPM continuously checks cloud configuration against best practices and standards. IPAM manages the address space, a network scanner looks for service vulnerabilities, and SAST analyzes source code."
+  },
+  {
+    "obj": "4.3",
+    "q": "An admin applied a patch for a critical vulnerability on the web servers. What is the BEST next step?",
+    "options": [
+      "Close the ticket and send a report",
+      "Rescan the servers to confirm the vulnerability has been removed",
+      "Add an exception in the scanner",
+      "Start a new penetration test of the entire network"
+    ],
+    "answer": 1,
+    "explain": "Verification (rescan) confirms the vulnerability is actually gone before closing and reporting. An exception is used when a patch can NOT be applied, and a full pentest is too broad to confirm one patch."
+  },
+  {
+    "obj": "4.3",
+    "q": "A researcher found a vulnerability on a company's website, but doesn't know whom to report it to or whether they'll be sued for doing so. What should the company publish to solve this?",
+    "options": [
+      "The results of the latest internal scan",
+      "An internal vulnerability report",
+      "A responsible disclosure policy with a contact (e.g., security.txt)",
+      "A list of CVEs it has already fixed"
+    ],
+    "answer": 2,
+    "explain": "A responsible disclosure policy says how and to whom to report, what's allowed, and that the researcher won't be prosecuted if they follow the rules; security.txt provides the contact. Internal reports and CVE lists don't provide a reporting channel."
+  },
+  {
+    "obj": "4.4",
+    "q": "An analyst wants to determine which internal host sent an unusually large amount of data to an unknown IP address last night. Packet contents weren't saved. Which data source is MOST useful?",
+    "options": [
+      "NetFlow records",
+      "SNMP traps from switches",
+      "Vulnerability scanner results",
+      "A SCAP compliance report"
+    ],
+    "answer": 0,
+    "explain": "NetFlow/IPFIX records flow metadata: source, destination, ports, time, and byte counts, which is exactly what's needed to detect exfiltration. SNMP traps report device state, and the scanner and SCAP deal with vulnerabilities and configuration."
+  },
+  {
+    "obj": "4.4",
+    "q": "The SOC team receives several thousand SIEM alerts a day. Most are false, so analysts start ignoring the important ones too. What is the BEST solution?",
+    "options": [
+      "Disable the SIEM rules that fire most often",
+      "Hire more analysts",
+      "Reduce log retention",
+      "Do alert tuning: adjust thresholds, exclude known legitimate activity, and add context"
+    ],
+    "answer": 3,
+    "explain": "Alert tuning reduces false positives and alert fatigue while keeping real detections. Disabling rules entirely creates blind spots, more people don't fix the cause, and retention doesn't affect the number of alerts."
+  },
+  {
+    "obj": "4.4",
+    "q": "An audit found that network devices send monitoring data with the community string \"public\" in cleartext. What should be recommended?",
+    "options": [
+      "Move syslog from UDP to TCP",
+      "Switch to SNMPv3 with authentication and encryption",
+      "Change the community string to a more complex value and keep SNMPv2c",
+      "Replace SNMP with NetFlow"
+    ],
+    "answer": 1,
+    "explain": "SNMPv3 introduces authentication and encryption; v1/v2c send the community string in cleartext, so even a more complex string doesn't help against eavesdropping. syslog and NetFlow serve other purposes and don't replace device management."
+  },
+  {
+    "obj": "4.4",
+    "q": "A team wants a new NIDS sensor to see all traffic passing through the core switch without placing the device inline. What should be configured on the switch?",
+    "options": [
+      "802.1X",
+      "VLAN trunking",
+      "Port mirroring (SPAN)",
+      "Rate limiting"
+    ],
+    "answer": 2,
+    "explain": "Port mirroring copies traffic from selected ports to the sensor's port, so the NIDS passively analyzes the copy. 802.1X is port authentication, trunking carries multiple VLANs, and rate limiting restricts requests."
+  },
+  {
+    "obj": "4.2",
+    "q": "A company is retiring 40 laptops that contained customer data. What is MOST important to do before the devices leave the company?",
+    "options": [
+      "Reinstall the operating system",
+      "Sanitize or physically destroy the disks and get a certificate of destruction, then update the inventory",
+      "Delete the user accounts",
+      "Give them to employees for home use"
+    ],
+    "answer": 1,
+    "explain": "The disposal/decommissioning phase requires sanitization (e.g., cryptographic erase or media destruction) with proof and an updated inventory. Reinstalling the OS doesn't reliably erase data from the disk."
+  },
+  {
+    "obj": "4.2",
+    "q": "Order the phases of the asset management lifecycle from first to last.",
+    "type": "order",
+    "options": [
+      "Monitoring/asset tracking",
+      "Acquisition/procurement",
+      "Disposal/decommissioning",
+      "Planning/scoping",
+      "Assignment/accounting"
+    ],
+    "answer": [
+      3,
+      1,
+      4,
+      0,
+      2
+    ],
+    "explain": "First you plan what's needed, then procure it, assign it to an owner and record it, monitor it during use, and finally retire it securely."
+  },
+  {
+    "obj": "4.2",
+    "q": "When procuring a new SaaS tool, which step contributes MOST to security in the acquisition/procurement phase?",
+    "options": [
+      "Choosing the cheapest offer",
+      "A security assessment of the vendor and contractual requirements (e.g., SSO, logs, data location) before purchase",
+      "Installing antivirus",
+      "Buying it on an employee's personal account for speed"
+    ],
+    "answer": 1,
+    "explain": "Security requirements are easiest to set before the contract is signed. Buying outside the process creates shadow IT and assets nobody tracks."
+  },
+  {
+    "obj": "4.1",
+    "type": "spot",
+    "q": "Rule-based firewall rules are processed top-down and the first match wins. Click the rules that violate the requirements in the comment.",
+    "lang": "text",
+    "snippet": "# Requirements: HTTPS from the internet to web (10.0.1.10); SSH to web only from admin net 10.0.9.0/24;\n#               database (10.0.2.20:5432) only from the web server; internal DNS (10.0.0.2) for 10.0.0.0/16\n#   ACTION  PROTO  SOURCE         DEST         PORT\n1   ALLOW   TCP    any            10.0.1.10    443\n2   ALLOW   TCP    any            10.0.1.10    22\n3   ALLOW   TCP    10.0.9.0/24    10.0.1.10    22\n4   ALLOW   TCP    10.0.1.10      10.0.2.20    5432\n5   ALLOW   TCP    10.0.0.0/16    10.0.2.20    5432\n6   ALLOW   UDP    10.0.0.0/16    10.0.0.2     53\n7   DENY    ANY    any            any          any",
+    "answer": [
+      4,
+      7
+    ],
+    "explain": "Rule 2 allows SSH to the web server from any address, which makes rule 3 (admin network only) pointless; delete rule 2. Rule 5 allows database access from all of 10.0.0.0/16, but the requirement says only from the web server, which rule 4 already covers; delete rule 5. Rules 1, 3, 4 and 6 match the requirements, and rule 7 is the implicit deny written out explicitly."
+  },
+  {
+    "obj": "4.1",
+    "q": "A user reported this message. Based on the headers, which statement is true?",
+    "lang": "text",
+    "snippet": "Return-Path: <billing@paypa1-secure.com>\nReceived: from mail.paypa1-secure.com (unknown [185.234.72.19])\n        by mx1.firma.rs with ESMTPS id 4F2A1; Tue, 27 Oct 2026 08:14:52 +0200\nAuthentication-Results: mx1.firma.rs;\n        spf=pass smtp.mailfrom=paypa1-secure.com;\n        dkim=none;\n        dmarc=fail (p=REJECT) header.from=paypal.com\nFrom: \"PayPal Service\" <service@paypal.com>\nReply-To: <support@paypa1-secure.com>\nTo: <ana.markovic@firma.rs>\nSubject: Urgent: your account has been limited\nMessage-ID: <20261027061450.4F2A1@paypa1-secure.com>",
+    "options": [
+      "The message is legitimate because SPF passes",
+      "The From address is spoofed: the message comes from a lookalike domain (paypa1-secure.com), SPF passes only for that domain, and DMARC fails because it is not aligned with the domain in the From header",
+      "The DKIM signature proves that paypal.com signed the message",
+      "The message was modified in transit, which is why DKIM fails"
+    ],
+    "answer": 1,
+    "explain": "SPF checks the envelope-from (Return-Path), which is the attacker's typosquatting domain paypa1-secure.com, so of course it passes. There is no DKIM signature (dkim=none), so nothing was signed or could be shown as modified. DMARC requires SPF or DKIM to pass ALIGNED with the From domain paypal.com, which is not the case here, so it fails; under the p=reject policy the message should have been rejected. A Reply-To pointing to the fake domain is another phishing sign."
+  }
+]

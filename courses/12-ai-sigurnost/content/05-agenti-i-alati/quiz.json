@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "2.3",
+    "q": "Agent za korisničku podršku čita dolazne mejlove i ima alate get_order, reply_to_ticket i send_email(to, body). Pri reviewu dizajna pitaš šta je najgori ishod ako model posluša instrukcije iz mejla. Koja izmjena najviše smanjuje taj rizik?",
+    "options": [
+      "Zamijeniti send_email alatom reply_to_ticket(ticket_id, body) kod kojeg primaoca određuje kod iz tiketa, a ne model",
+      "Dodati u sistemski prompt rečenicu da agent nikad ne šalje mejl van firme",
+      "Prebaciti agenta na veći model koji bolje prati instrukcije",
+      "Logovati sve poslane mejlove i jednom sedmično ih pregledati"
+    ],
+    "answer": 0,
+    "explain": "Parametar koji određuje štetu (primalac) izvodi deterministički kod iz konteksta, pa ni potpuno preuzet model ne može poslati podatke proizvoljnoj adresi. Prompt nije sigurnosna granica, veći model ne garantuje otpornost na indirektni prompt injection, a sedmični pregled je samo naknadna detekcija."
+  },
+  {
+    "obj": "2.3",
+    "q": "Alat za čitanje kalendara u internom asistentu koristi servisni nalog sa pristupom kalendarima svih zaposlenih. Kojem korijenu rizika LLM06 Excessive Agency ovo pripada i šta je ispravna kontrola?",
+    "options": [
+      "Excessive functionality; ukloniti alat za kalendar",
+      "Excessive autonomy; tražiti odobrenje za svako čitanje kalendara",
+      "Excessive permissions; alat treba da radi sa delegiranim tokenom prijavljenog korisnika i najužim scopeom",
+      "Misinformation; dodati provjeru činjenica u odgovor"
+    ],
+    "answer": 2,
+    "explain": "Alat je potreban, ali ima više dozvola nego zadatak traži: to je excessive permissions. Delegirani token korisnika ograničava agenta na ono što korisnik smije. Odobrenje za svako čitanje izaziva approval fatigue, a misinformation je drugi rizik (LLM09)."
+  },
+  {
+    "obj": "2.3",
+    "q": "Tim pravi gateway koji validira pozive alata JSON Schemom sa additionalProperties: false. Developer predlaže da to bude dovoljno i za kontrolu pristupa, jer šema provjerava da je order_id oblika ORD-[0-9]{8}. Šta je problem?",
+    "options": [
+      "JSON Schema ne podržava regularne izraze",
+      "Šema provjerava oblik argumenta, a ne da li konkretni korisnik smije pristupiti toj narudžbi; autorizacija mora postojati u kodu ili nizvodnom sistemu",
+      "additionalProperties: false treba ukloniti jer blokira legitimne pozive",
+      "Validaciju treba raditi u sistemskom promptu, ne u gatewayu"
+    ],
+    "answer": 1,
+    "explain": "Validacija i autorizacija su različite kontrole. Ispravno formatiran ID tuđe narudžbe prolazi šemu; tek provjera prava (complete mediation) sprječava pristup. JSON Schema podržava pattern, stroga šema je poželjna, a prompt nije mjesto za provođenje politike."
+  },
+  {
+    "obj": "2.3",
+    "q": "Agent za finansije traži odobrenje čovjeka prije plaćanja. Dijalog prikazuje tekst koji je napisao model: „Plaćam fakturu dobavljaču prema dogovoru.“ Šta je glavni nedostatak ovakvog odobrenja?",
+    "options": [
+      "Odobrenje bi trebalo tražiti i za svako čitanje faktura",
+      "Odobrenje treba da daje sam model drugim pozivom",
+      "Plaćanja nikad ne smiju biti automatizovana",
+      "Čovjek odobrava sažetak modela umjesto stvarnih argumenata poziva (IBAN, iznos), pa kompromitovan model može prikazati umirujući opis za drugu akciju"
+    ],
+    "answer": 3,
+    "explain": "Odobrenje mora prikazati podatke izvedene iz stvarnog poziva i biti vezano za njih (npr. hash argumenata). Sažetak modela je nepovjerljiv izlaz i iskorištava povjerenje čovjeka (ASI09). Odobravanje čitanja vodi u approval fatigue, a model ne može odobriti sopstvenu akciju."
+  },
+  {
+    "obj": "2.3",
+    "q": "Nakon uvođenja odobrenja za svaki poziv alata, analitika pokazuje da korisnici odobravaju 99,7 % zahtjeva u prosjeku za manje od sekunde. Koji je najbolji sljedeći korak?",
+    "options": [
+      "Klasifikovati alate po riziku: čitanje u okviru prava korisnika prolazi automatski uz log, a odobrenje ostaje za pisanje, slanje, plaćanje i brisanje",
+      "Ukinuti odobrenja jer ih korisnici ionako ne čitaju",
+      "Dodati obavezno čekanje od 10 sekundi prije dugmeta „Odobri“",
+      "Zahtijevati odobrenje dva puta za svaki poziv"
+    ],
+    "answer": 0,
+    "explain": "Ovo je approval fatigue: previše odobrenja čini svako pojedinačno bezvrijednim. Odobrenje treba rezervisati za akcije visokog uticaja da bi ga ljudi čitali. Ukidanje uklanja kontrolu, a vještačko čekanje ili dvostruko odobrenje samo pojačavaju zamor."
+  },
+  {
+    "obj": "2.3",
+    "q": "Agent za analizu podataka generiše i izvršava Python kod. Koja konfiguracija izvršnog okruženja najbolje odgovara riziku ASI05 Unexpected Code Execution?",
+    "options": [
+      "Izvršavanje na hostu aplikacije, ali pod posebnim Linux korisnikom",
+      "Efemeran kontejner bez mreže, bez tajni i Docker socketa, sa limitima CPU-a, memorije i vremena, uništen poslije zadatka",
+      "Kontejner sa pristupom internetu da bi agent mogao instalirati pakete po potrebi",
+      "Statička analiza generisanog koda regularnim izrazima prije izvršavanja na hostu"
+    ],
+    "answer": 1,
+    "explain": "Kod koji piše model tretira se kao kod nepoznatog autora: izolacija, bez mreže i tajni, sa limitima i bez perzistencije. Poseban korisnik na hostu i dalje vidi host, internet omogućava eksfiltraciju, a regex filteri se lako zaobilaze i nisu granica izolacije."
+  },
+  {
+    "obj": "2.3",
+    "q": "Asistent pamti „korisne činjenice“ iz razgovora i dokumenata u dugoročnu memoriju koju koriste sve buduće sesije istog tima. Koji skup kontrola najdirektnije adresira ASI06 Memory and Context Poisoning?",
+    "options": [
+      "Šifrovanje memorije u mirovanju",
+      "Veći kontekstni prozor da memorija ne bude potrebna",
+      "Upis u memoriju kao akcija pod kontrolom gatewaya, porijeklo i nivo povjerenja svakog zapisa, odvajanje po korisniku i istek zapisa",
+      "Svakodnevno brisanje cijele memorije"
+    ],
+    "answer": 2,
+    "explain": "Trovanje memorije je problem integriteta: sadržaj iz nepovjerljivog izvora postaje trajna „činjenica“. Kontrola upisa, porijeklo, izolacija i istek ograničavaju to. Šifrovanje štiti povjerljivost, ne integritet; veći kontekst ne rješava problem, a dnevno brisanje uništava funkciju."
+  },
+  {
+    "obj": "2.3",
+    "q": "Udaljeni MCP server prima access token od MCP klijenta i isti token, bez izmjene, šalje nizvodnom SaaS API-ju. Token je izdat za SaaS API, ne za MCP server. Šta kažu sigurnosne preporuke MCP specifikacije?",
+    "options": [
+      "To je preporučen obrazac jer smanjuje broj tokena",
+      "Dozvoljeno je ako se koristi TLS",
+      "Dozvoljeno je samo za stdio transport",
+      "To je token passthrough, koji je zabranjen: server ne smije prihvatiti token koji nije izdat za njega i za nizvodni API koristi zaseban token"
+    ],
+    "answer": 3,
+    "explain": "MCP serveri MUST NOT prihvatiti tokene koji nisu izdati za njih (provjera audiencea). Passthrough zaobilazi kontrole nizvodnog API-ja, kvari audit i otvara confused deputy. TLS štiti transport, ne semantiku tokena, a stdio ne koristi OAuth na taj način."
+  },
+  {
+    "obj": "2.3",
+    "q": "MCP klijent koji radi na serveru u cloudu tokom OAuth otkrivanja dohvata URL-ove koje mu navede MCP server. Koja kontrola iz MCP preporuka najdirektnije sprječava zloupotrebu ovog ponašanja?",
+    "options": [
+      "Zahtijevati HTTPS, blokirati privatne, loopback i link-local opsege (uključujući 169.254.169.254), provjeravati redirecte i koristiti egress proxy",
+      "Povećati timeout HTTP zahtjeva",
+      "Keširati metadata dokumente 24 sata",
+      "Prebaciti sve servere na stdio transport"
+    ],
+    "answer": 0,
+    "explain": "Ovo je SSRF scenarij: zlonamjeran server navodi klijenta na interne adrese i metadata servis. Preporuke traže HTTPS, blokadu privatnih opsega, validaciju redirecta i egress proxy. Timeout i keš ne mijenjaju odredište, a udaljeni serveri ne mogu preći na stdio."
+  },
+  {
+    "obj": "2.3",
+    "q": "IDE nudi instalaciju lokalnog MCP servera jednim klikom iz konfiguracije sa weba. Šta specifikacija traži od MCP klijenta prije pokretanja?",
+    "options": [
+      "Ništa, jer lokalni serveri nisu izloženi mreži",
+      "Samo provjeru da je komanda kraća od 200 znakova",
+      "Prikaz tačne i pune komande koja će se izvršiti, jasno upozorenje i izričitu saglasnost korisnika, uz preporuku sandboxa sa minimalnim privilegijama",
+      "Automatsko pokretanje pod root korisnikom da bi server imao potrebne dozvole"
+    ],
+    "answer": 2,
+    "explain": "Lokalni server je kod koji se izvršava sa pravima korisnika. Specifikacija traži prikaz pune komande bez skraćivanja i izričitu saglasnost, a preporučuje sandbox i ograničen pristup fajlovima i mreži. Root je suprotno najmanjim privilegijama."
+  },
+  {
+    "obj": "2.3",
+    "q": "Odobreni MCP server je u novoj verziji promijenio opise svojih alata. Klijenti se automatski ažuriraju. Koja kontrola bi ovo uočila prije nego što model pročita nove opise?",
+    "options": [
+      "Rate limit na MCP serveru",
+      "Pinovanje verzije servera i hasha liste alata u centralnoj allowlisti, uz blokadu i alarm pri promjeni",
+      "Oslanjanje na readOnlyHint anotacije koje server objavljuje",
+      "Šifrovanje veze između klijenta i servera"
+    ],
+    "answer": 1,
+    "explain": "Opisi alata dolaze sa servera i model ih čita, pa su nepovjerljiv sadržaj i dio lanca snabdijevanja (ASI04). Pinovanje i hash opisa traže ponovni review pri promjeni. Anotacije su nagovještaji koje klijent tretira kao nepouzdane, a rate limit i TLS ne vide promjenu sadržaja."
+  },
+  {
+    "obj": "2.3",
+    "q": "Pri prvoj konekciji MCP klijent traži sve scopeove iz scopes_supported, uključujući admin:*. Šta MCP preporuke za scope minimization savjetuju?",
+    "options": [
+      "Uvijek tražiti sve scopeove da korisnik ne mora ponovo davati saglasnost",
+      "Koristiti jedan omnibus scope radi jednostavnijeg audita",
+      "Izbaciti OAuth i koristiti statički API ključ",
+      "Početi sa minimalnim scopeom za nisko-rizične operacije i podizati ga postepeno (step-up) kad privilegovana operacija to zatraži"
+    ],
+    "answer": 3,
+    "explain": "Progresivni model najmanjih privilegija smanjuje štetu od ukradenog tokena i čini audit jasnijim. Omnibus i wildcard scopeovi su navedeni kao česte greške, a statički ključ uklanja vezu sa korisnikom i istek."
+  },
+  {
+    "obj": "2.3",
+    "q": "Planer-agent delegira zadatke izvršiocima preko internog reda poruka. Izvršilac prihvata svaku poruku iz reda kao naredbu. Koja kontrola adresira ASI07 Insecure Inter-Agent Communication?",
+    "options": [
+      "Autentifikacija pošiljaoca (mTLS ili potpisani tokeni), šema poruke i provjera ovlašćenja na strani izvršioca",
+      "Duži sistemski prompt izvršioca",
+      "Veći red poruka da se ništa ne izgubi",
+      "Isti servisni nalog za sve agente radi lakše administracije"
+    ],
+    "answer": 0,
+    "explain": "Poruke između agenata su ulaz kao i svaki drugi: treba znati ko ih šalje, da li su ispravnog oblika i da li pošiljalac smije tražiti tu akciju. Dijeljeni servisni nalog briše razliku između agenata (ASI03), a prompt i veličina reda nisu kontrole integriteta."
+  },
+  {
+    "obj": "2.4",
+    "q": "Agent za istraživanje je zbog greške u logici ušao u petlju i preko noći napravio 40.000 poziva modela. Svaki zahtjev je imao max_tokens 1000. Koja kontrola je nedostajala?",
+    "options": [
+      "Manji max_tokens po zahtjevu",
+      "Keširanje odgovora modela",
+      "Budžet na nivou sesije agenta (maksimalan broj koraka, poziva alata, trošak i vrijeme) i tvrdi limit potrošnje kod providera",
+      "Veći kontekstni prozor"
+    ],
+    "answer": 2,
+    "explain": "max_tokens ograničava pojedinačni odgovor, ali ne broj koraka; hiljade malih koraka i dalje prave veliki račun. Budžet po sesiji prekida petlju, a limit kod providera štiti i kad orkestrator pogriješi. Keš i kontekst ne zaustavljaju petlju."
+  },
+  {
+    "obj": "2.4",
+    "q": "Javni chatbot je pod opterećenjem: mali broj ključeva šalje maksimalno duge ulaze i traži maksimalno duge odgovore, pa latencija raste za sve. Kako se ovo zove u OWASP i ATLAS terminologiji?",
+    "options": [
+      "LLM01 Prompt Injection, AML.T0051",
+      "LLM10 Unbounded Consumption; u ATLAS-u Denial of AI Service (AML.T0029) i Cost Harvesting (AML.T0034)",
+      "LLM04 Data and Model Poisoning, AML.T0020",
+      "LLM07 System Prompt Leakage, AML.T0057"
+    ],
+    "answer": 1,
+    "explain": "Resursno zahtjevni upiti koji degradiraju servis i podižu trošak su LLM10:2025. ATLAS ih pokriva kroz Denial of AI Service i Cost Harvesting. Ostali parovi opisuju manipulaciju instrukcijama, trovanje podataka i curenje podataka."
+  },
+  {
+    "obj": "2.4",
+    "q": "Koji skup kontrola je najprikladniji za javni LLM API kao odbrana od neograničene potrošnje?",
+    "options": [
+      "Samo WAF ispred API-ja",
+      "Samo mjesečni pregled računa od providera",
+      "Neograničen pristup za plaćene korisnike i strog limit za besplatne",
+      "Limit dužine ulaza i max_tokens, rate limit i dnevna kvota tokena po ključu, timeout, red čekanja sa gornjom granicom, budžet sa upozorenjem i tvrdim limitom"
+    ],
+    "answer": 3,
+    "explain": "Neograničena potrošnja se kontroliše po slojevima: zahtjev, korisnik, infrastruktura i organizacija. WAF ne razumije cijenu inferencije, mjesečni pregled je prekasno, a „neograničen“ pristup za bilo koga je upravo uslov za Denial of Wallet."
+  },
+  {
+    "obj": "2.4",
+    "q": "Monitoring pokazuje da jedan API ključ tri dana šalje veliki broj raznovrsnih upita ravnomjernim ritmom i bilježi sve odgovore, unutar dozvoljenog rate limita. Šta je razumna reakcija?",
+    "options": [
+      "Ignorisati jer je unutar limita",
+      "Tretirati kao mogući pokušaj kopiranja modela kroz API: alarm, provjera vlasnika ključa i uslova korištenja, po potrebi smanjenje kvote ili blokada",
+      "Odmah obrisati model i trenirati novi",
+      "Ukinuti rate limit da bi se lakše vidjelo ponašanje"
+    ],
+    "answer": 1,
+    "explain": "OWASP LLM10 navodi i zloupotrebu API-ja za repliciranje modela. Rate limit nije jedina kontrola; obrasci sistematskog preuzimanja su signal za istragu. Brisanje modela je nesrazmjerno, a ukidanje limita povećava štetu."
+  },
+  {
+    "obj": "2.4",
+    "q": "Aplikacija je dostigla dnevni budžet tokena. Šta je ispravno ponašanje?",
+    "options": [
+      "Predvidivo odbijanje: HTTP 429 sa Retry-After i poruka korisniku, eventualno manji model ili keširani odgovori; izuzeci samo kroz konfiguraciju sa vlasnikom i rokom",
+      "Automatski udvostručiti budžet da korisnici ne primijete",
+      "Nastaviti bez limita za korisnike sa VIP oznakom u promptu",
+      "Vratiti HTTP 500 bez objašnjenja"
+    ],
+    "answer": 0,
+    "explain": "Graciozna degradacija čuva dostupnost i trošak pod kontrolom. Automatsko povećanje poništava budžet, oznaka u promptu nije autorizacija (model je može „vidjeti“ iz bilo kog teksta), a 500 bez objašnjenja otežava i korisnicima i podršci."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Upari rizik iz OWASP Top 10 za agentne aplikacije sa kontrolom koja ga najdirektnije ublažava.",
+    "options": [
+      "ASI03 Identity and Privilege Abuse",
+      "ASI05 Unexpected Code Execution",
+      "ASI08 Cascading Failures",
+      "ASI10 Rogue Agents",
+      "ASI04 Agentic Supply Chain Vulnerabilities"
+    ],
+    "targets": [
+      "Efemeran sandbox bez mreže i tajni",
+      "Allowlista i pinovanje MCP servera i opisa alata",
+      "Nadzor ponašanja, inventar agenata i kill switch",
+      "Delegirani kratkotrajni tokeni i presjek prava korisnika i agenta",
+      "Circuit breaker i limiti između povezanih agenata i alata"
+    ],
+    "answer": [3, 0, 4, 2, 1],
+    "explain": "Zloupotreba identiteta se ublažava uskim delegiranim tokenima, izvršavanje koda sandboxom, kaskadni otkazi prekidačima i limitima, odmetnuti agenti nadzorom i mogućnošću gašenja, a lanac snabdijevanja allowlistom i pinovanjem komponenti."
+  },
+  {
+    "obj": "2.3",
+    "type": "order",
+    "q": "Poredaj korake koje policy gateway izvršava nad prijedlogom poziva alata, od prvog do posljednjeg.",
+    "options": [
+      "Izvršiti alat sa tokenom koji dodaje gateway i zapisati rezultat u log",
+      "Validirati argumente strogom JSON Schemom",
+      "Provjeriti da li je alat na allowlisti za tog agenta (default: deny)",
+      "Za alat visokog rizika sačekati odobrenje čovjeka vezano za hash argumenata",
+      "Provjeriti autorizaciju korisnika nad resursom i naplatiti budžet poziva"
+    ],
+    "answer": [2, 1, 4, 3, 0],
+    "explain": "Prvo se odbacuje sve što nije dozvoljeno, zatim se provjerava oblik argumenata, pa pravo korisnika nad konkretnim resursom i budžet. Odobrenje čovjeka dolazi kad je poziv tehnički ispravan i dozvoljen, a izvršenje sa kredencijalom koji model nikad ne vidi je posljednje, uz logovanje."
+  },
+  {
+    "obj": "2.3",
+    "type": "spot",
+    "q": "Politika policy gatewaya za agenta podrške koji čita tikete i e-poštu kupaca (nepovjerljiv sadržaj). Pravilo organizacije: default deny i odobrenje čovjeka za visokorizične akcije. Označi redove koji krše pravilo ili daju agentu prevelika ovlašćenja.",
+    "snippet": "# tool-policy.yaml - agent \"podrska\" (čita tikete i e-poštu kupaca)\nagent: podrska\ndefault: allow\ntools:\n  get_order:\n    risk: low\n    schema: schemas/get_order.json\n  reply_to_ticket:\n    risk: medium\n    schema: schemas/reply_to_ticket.json\n  issue_refund:\n    risk: high\n    schema: schemas/issue_refund.json\n    require_approval: false\n    max_amount_eur: 200\n  run_shell: { risk: high, command: [\"/bin/bash\", \"-c\"], schema: null }",
+    "lang": "yaml",
+    "answer": [2, 13, 15],
+    "explain": "Red 3: default: allow znači da se izvršava svaki alat koji model predloži, i onaj koji nije na listi; mora biti default: deny (allowlista). Red 14: povrat novca je visokorizična akcija, a agent čita sadržaj koji piše napadač, pa bez require_approval: true jedna ubačena instrukcija vodi do isplate; limit iznosa sam nije dovoljan. Red 16: alat run_shell daje agentu proizvoljno izvršavanje komandi bez šeme (Excessive Agency, LLM06); agentu podrške takav alat ne treba, umjesto otvorenog alata koriste se uski alati sa šemom. Alati za čitanje narudžbe i odgovor na tiket imaju šemu i odgovarajući nivo rizika."
+  }
+]

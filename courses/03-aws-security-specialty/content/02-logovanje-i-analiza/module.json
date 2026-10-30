@@ -1,0 +1,11 @@
+{
+  "title": "Logovanje i analiza logova: CloudTrail, CloudWatch Logs, Security Lake",
+  "summary": "Kako izabrati i konfigurisati izvore logova (CloudTrail, VPC i Transit Gateway flow logs, Route 53 Resolver, ELB, CloudFront, S3, WAF), centralizovati ih u Log Archive nalog i Security Lake (OCSF) i analizirati ih pomoću CloudWatch Logs Insights, Athena, OpenSearch, Lambda i Managed Grafana.",
+  "minutes": 110,
+  "domain": 1,
+  "objectives": [
+    "1.2"
+  ],
+  "title_en": "Logging and log analysis: CloudTrail, CloudWatch Logs, Security Lake",
+  "summary_en": "How to choose and configure log sources (CloudTrail, VPC and Transit Gateway flow logs, Route 53 Resolver, ELB, CloudFront, S3, WAF), centralize them in a Log Archive account and Security Lake (OCSF), and analyze them with CloudWatch Logs Insights, Athena, OpenSearch, Lambda, and Managed Grafana."
+}

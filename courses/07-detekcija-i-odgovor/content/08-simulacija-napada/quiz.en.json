@@ -1,0 +1,216 @@
+[
+  {
+    "obj": "5.1",
+    "q": "A team wants to check every week that the Wazuh and Sigma rules for individual Linux techniques still work after a ruleset update. Which approach fits best?",
+    "options": [
+      "An annual red team engagement",
+      "Small, repeatable Atomic Red Team tests per technique, with the test GUID in the test log",
+      "A web application penetration test",
+      "Manually reading all rules after the update"
+    ],
+    "answer": 1,
+    "explain": "Atomic tests are small and repeatable, so they are ideal for regression testing of individual rules. Red teams and pentests have a different goal and are rarely repeated, and reading the rules doesn't prove that the log arrives and the alert is raised."
+  },
+  {
+    "obj": "5.1",
+    "q": "You need to validate the detection for disabling CloudTrail (T1562.008) in AWS. Which tool is built specifically for such cloud techniques, and in which environment is it used?",
+    "options": [
+      "Caldera with a Sandcat agent on a production EC2 instance",
+      "An Atomic Red Team test in the production account, with the SOC notified",
+      "Stratus Red Team in a separate, isolated sandbox AWS account",
+      "Falco event-generator on a Kubernetes node"
+    ],
+    "answer": 2,
+    "explain": "Stratus Red Team focuses on cloud and Kubernetes techniques and has a warmup/detonate/revert/cleanup lifecycle. Cloud tests are run in an isolated account, not in production. The event-generator produces syscall events for Falco."
+  },
+  {
+    "obj": "5.1",
+    "q": "In Caldera, what is an \"adversary\"?",
+    "options": [
+      "A profile that groups abilities to represent the TTPs of some threat",
+      "A program on the target that beacons to the server",
+      "A single implementation of one ATT&CK technique",
+      "The logic that determines the order of execution"
+    ],
+    "answer": 0,
+    "explain": "An agent is the program on the target, an ability is a technique implementation, the planner determines the order, and an adversary is a profile made up of abilities. An operation runs an adversary profile against a group of agents."
+  },
+  {
+    "obj": "5.1",
+    "q": "An analyst sees Wazuh alert 5902 at 09:12 on a host where a purple team test was scheduled that day. What allows them to quickly and reliably determine that the alert resulted from the test?",
+    "options": [
+      "The alert level of 8",
+      "The fact that the test was scheduled for that day",
+      "The absence of other alerts on the host",
+      "A test log with the exact time, host, user, technique and GUID, plus a recognizable test account prefix"
+    ],
+    "answer": 3,
+    "explain": "Only a precise test trail lets you link the alert to the test rather than to a real attack that happened to coincide. A scheduled day or the alert level is not proof."
+  },
+  {
+    "obj": "5.1",
+    "q": "What is the most important difference between a purple team and a classic red team?",
+    "options": [
+      "A purple team uses only automated tools",
+      "In a purple team, red and blue work together openly, technique by technique, with the goal of improving detection",
+      "A purple team is done only in the cloud",
+      "A purple team doesn't map techniques to ATT&CK"
+    ],
+    "answer": 1,
+    "explain": "Purple team is a way of working: the offensive side executes a technique, the defense immediately checks what it saw, and together they fix the gaps. A red team tests the organization as a whole, often without the SOC's knowledge."
+  },
+  {
+    "obj": "5.1",
+    "q": "Before running an Atomic test in a lab shared by three teams, what is mandatory?",
+    "options": [
+      "Read the test (commands, prerequisites, cleanup), have approval and a scope, and agree on who verifies cleanup",
+      "Shut down Wazuh so the test doesn't create noise",
+      "Run all Linux tests at once to save time",
+      "Use real user accounts so the test is realistic"
+    ],
+    "answer": 0,
+    "explain": "Some tests modify the system or download files. Rules of engagement require approval, a scope, fake data and cleanup verification. Shutting down the SIEM defeats the purpose of the test."
+  },
+  {
+    "obj": "5.1",
+    "q": "Why would a team choose Caldera instead of individual Atomic tests?",
+    "options": [
+      "Caldera doesn't require any software on the target",
+      "Caldera works only on logs, without execution",
+      "It wants to test a chain of techniques (execution, discovery, persistence), because some detections correlate multiple events",
+      "Caldera automatically writes Sigma rules"
+    ],
+    "answer": 2,
+    "explain": "Caldera runs operations as chains of abilities through agents, which is useful for correlation detections. The cost is complexity: a server, agents, and removing them after the test."
+  },
+  {
+    "obj": "5.2",
+    "q": "Purple team test for T1552.001: /var/log/audit/audit.log contains a record of a credentials file being read, but there is no alert in the SIEM. How do you classify the result and where is the fix?",
+    "options": [
+      "No telemetry; an auditd watch needs to be added",
+      "Detection; nothing needs to change",
+      "Response; the runbook needs updating",
+      "Telemetry without an alert; first confirm the log reaches the SIEM, then add or fix the rule"
+    ],
+    "answer": 3,
+    "explain": "The record exists, so host visibility is not the problem. The chain broke later: either the log doesn't reach the SIEM or there is no matching rule. That's a gap in logic or collection, not in the sensor."
+  },
+  {
+    "obj": "5.2",
+    "q": "A new Wazuh rule passes wazuh-logtest against a sample from the repo. What does this test NOT prove?",
+    "options": [
+      "That the rule fires on that sample",
+      "That a log in the same format will appear in production and will reach the manager",
+      "That the rule syntax is correct",
+      "That the rule produces the expected level"
+    ],
+    "answer": 1,
+    "explain": "A unit test proves the rule's logic against a known sample. The sensor, the production format and collection are verified only by an in-environment test."
+  },
+  {
+    "obj": "5.2",
+    "q": "A rule for a critical technique hasn't fired in six months. What is the correct conclusion?",
+    "options": [
+      "You don't know until you test it: there may have been no attack, but the source may also have stopped sending logs or an exception may be too broad",
+      "The environment is secure",
+      "The rule should be deleted because it is useless",
+      "Its level should be raised"
+    ],
+    "answer": 0,
+    "explain": "A silent rule is a candidate for a periodic test. Failures such as a broken source or an overly broad exception produce no error, so they only show up through testing or source health monitoring."
+  },
+  {
+    "obj": "5.2",
+    "q": "A team presents gap analysis results in ATT&CK Navigator. What is most useful to record for a technique that is \"covered\"?",
+    "options": [
+      "Just the green color",
+      "The number of rules in the SIEM",
+      "The test score, the date of the last validation, and a comment on which procedure the rule actually catches",
+      "The name of the emulation tool"
+    ],
+    "answer": 2,
+    "explain": "Color without context falsely suggests complete coverage. The score, the test date and a description of what the rule actually catches make it possible to compare layers before and after a cycle."
+  },
+  {
+    "obj": "5.2",
+    "q": "Which metric best shows the progress of a detection program?",
+    "options": [
+      "The total number of rules in the SIEM",
+      "The number of alerts per day",
+      "The number of emulation tools in use",
+      "The percentage of priority techniques with a validated detection, and the age of the last validation"
+    ],
+    "answer": 3,
+    "explain": "The number of rules or alerts says nothing about whether relevant techniques are visible. Validated coverage of priority techniques and the freshness of tests are a measurable result."
+  },
+  {
+    "obj": "5.2",
+    "q": "To test the new-account detection, you use logger -p auth.info -t useradd \"new user: name=purple_x ...\" instead of a real useradd. What does such a test verify?",
+    "options": [
+      "Log collection and the SIEM rule, but not whether the real tool or sensor produces such a record",
+      "The whole chain, including the sensor",
+      "Nothing, because synthetic logs don't pass through rsyslog",
+      "Only the rule syntax"
+    ],
+    "answer": 0,
+    "explain": "A synthetic log passes through rsyslog, collection and rules, but doesn't confirm that real activity produces the same record. The report should state that the test was synthetic."
+  },
+  {
+    "obj": "5.2",
+    "q": "When selecting techniques for gap analysis, where should the team start?",
+    "options": [
+      "From the first column of the ATT&CK matrix, in order",
+      "From techniques for which rules already exist",
+      "From techniques relevant to the organization's threat profile: previous incidents, threat intel, groups targeting the sector",
+      "From techniques with the most Atomic tests"
+    ],
+    "answer": 2,
+    "explain": "Limited resources go to techniques that are likely in your environment. The number of available tests or existing rules is not a measure of risk."
+  },
+  {
+    "obj": "5.2",
+    "q": "The detections repo has tests/positive and tests/negative samples for each rule. What are the negative samples for?",
+    "options": [
+      "So the rule fires on them too",
+      "To prove the rule doesn't fire on legitimate activity, so a change that increases false positives breaks the build",
+      "To replace the positive tests",
+      "To automatically generate exceptions from them"
+    ],
+    "answer": 1,
+    "explain": "Positive samples guard against misses, negative samples against noise. Both run in CI on every rule change."
+  },
+  {
+    "obj": "5.1",
+    "type": "order",
+    "q": "Order the steps of one purple team cycle for a single technique, starting with the first.",
+    "options": [
+      "Repeat the same test after the fix",
+      "Write down the hypothesis: expected log source, rule, level and ATT&CK tag",
+      "Run the test and record the exact time and parameters",
+      "Check the telemetry, its arrival in the SIEM, and the alert",
+      "Select a technique from the threat profile"
+    ],
+    "answer": [4, 1, 2, 3, 0],
+    "explain": "Technique selection, hypothesis, execution with a log, observation, and after the fix a retest. The gap is closed only when the retest passes."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Match the purple team test finding with the score on the scale from the lesson.",
+    "options": [
+      "There is no record of the event anywhere",
+      "The log is in the SIEM, but there is no alert",
+      "An alert was raised, but without an ATT&CK tag and with too low a level",
+      "An alert of the correct level with an ATT&CK tag and context"
+    ],
+    "targets": [
+      "4 Response",
+      "3 Detection",
+      "2 Alert",
+      "1 Telemetry",
+      "0 No telemetry"
+    ],
+    "answer": [4, 3, 2, 1],
+    "explain": "No record is 0, a log without an alert is 1, an alert with insufficient context is 2, and a complete alert is 3. Score 4 also requires proof that the alert was triaged per the runbook."
+  }
+]

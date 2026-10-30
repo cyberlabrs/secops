@@ -1,0 +1,11 @@
+{
+  "title": "IAM: autorizacija i evaluacija politika",
+  "summary": "Kompletna logika evaluacije politika (explicit deny, RCP, SCP, resource-based, identity-based, permission boundary, session policy, cross-account), condition keys, ABAC vs RBAC, trust policy, IAM Roles Anywhere, Verified Permissions, Policy Simulator i IAM Access Analyzer.",
+  "minutes": 140,
+  "domain": 4,
+  "objectives": [
+    "4.2"
+  ],
+  "title_en": "IAM: authorization and policy evaluation",
+  "summary_en": "The complete policy evaluation logic (explicit deny, RCP, SCP, resource-based, identity-based, permissions boundary, session policy, cross-account), condition keys, ABAC vs RBAC, trust policies, IAM Roles Anywhere, Verified Permissions, Policy Simulator, and IAM Access Analyzer."
+}

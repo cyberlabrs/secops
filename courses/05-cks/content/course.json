@@ -1,0 +1,220 @@
+{
+  "code": "CKS",
+  "badge": "CKS",
+  "order": 5,
+  "title": "Certified Kubernetes Security Specialist (CKS)",
+  "subtitle": "Trening za CKS (Kubernetes v1.35): hardening klastera i čvorova, AppArmor i seccomp, Pod Security, gVisor, supply chain (Trivy, SBOM, cosign), audit logovi i Falco, na pravom kubeadm klasteru bez interneta.",
+  "lab": {
+    "image": "kurs-cks-lab:1",
+    "nodes": [
+      "controlplane",
+      "node01"
+    ],
+    "setupTimeout": 480
+  },
+  "exam": {
+    "size": 60,
+    "minutes": 90,
+    "pass": 67,
+    "note": "Pravi CKS ispit je praktičan (15–20 zadataka u terminalu za 2 sata, prolaz 67%; uslov je položen CKA). Ova simulacija provjerava teoriju; praktični dio je modul „Probni ispit“.",
+    "domains": [
+      {
+        "n": 1,
+        "name": "Cluster Setup",
+        "weight": 15
+      },
+      {
+        "n": 2,
+        "name": "Cluster Hardening",
+        "weight": 15
+      },
+      {
+        "n": 3,
+        "name": "System Hardening",
+        "weight": 10
+      },
+      {
+        "n": 4,
+        "name": "Minimize Microservice Vulnerabilities",
+        "weight": 20
+      },
+      {
+        "n": 5,
+        "name": "Supply Chain Security",
+        "weight": 20
+      },
+      {
+        "n": 6,
+        "name": "Monitoring, Logging and Runtime Security",
+        "weight": 20
+      }
+    ],
+    "note_en": "The real CKS exam is hands-on (15–20 terminal tasks in 2 hours, 67% to pass; a valid CKA is a prerequisite). This simulation tests theory; the practical part is the “Practice exam” module."
+  },
+  "objectives": [
+    {
+      "id": "1.1",
+      "en": "Use Network security policies to restrict cluster level access",
+      "bs": "NetworkPolicy za ograničavanje pristupa"
+    },
+    {
+      "id": "1.2",
+      "en": "Use CIS benchmark to review the security configuration of Kubernetes components",
+      "bs": "CIS benchmark (kube-bench) za komponente klastera"
+    },
+    {
+      "id": "1.3",
+      "en": "Properly set up Ingress with TLS",
+      "bs": "Ingress sa TLS-om"
+    },
+    {
+      "id": "1.4",
+      "en": "Protect node metadata and endpoints",
+      "bs": "Zaštita metadata servisa i endpointa čvora"
+    },
+    {
+      "id": "1.5",
+      "en": "Verify platform binaries before deploying",
+      "bs": "Provjera binarnih fajlova platforme"
+    },
+    {
+      "id": "2.1",
+      "en": "Use Role Based Access Controls to minimize exposure",
+      "bs": "RBAC za minimalnu izloženost"
+    },
+    {
+      "id": "2.2",
+      "en": "Exercise caution in using service accounts",
+      "bs": "Oprez sa ServiceAccountima"
+    },
+    {
+      "id": "2.3",
+      "en": "Restrict access to Kubernetes API",
+      "bs": "Ograničavanje pristupa Kubernetes API-ju"
+    },
+    {
+      "id": "2.4",
+      "en": "Upgrade Kubernetes to avoid vulnerabilities",
+      "bs": "Nadogradnja Kubernetesa zbog ranjivosti"
+    },
+    {
+      "id": "3.1",
+      "en": "Minimize host OS footprint (reduce attack surface)",
+      "bs": "Smanjenje površine napada host OS-a"
+    },
+    {
+      "id": "3.2",
+      "en": "Using least-privilege identity and access management",
+      "bs": "Least privilege za identitete i pristup"
+    },
+    {
+      "id": "3.3",
+      "en": "Minimize external access to the network",
+      "bs": "Smanjenje spoljnog pristupa mreži"
+    },
+    {
+      "id": "3.4",
+      "en": "Appropriately use kernel hardening tools such as AppArmor, seccomp",
+      "bs": "AppArmor i seccomp"
+    },
+    {
+      "id": "4.1",
+      "en": "Use appropriate pod security standards",
+      "bs": "Pod Security Standards"
+    },
+    {
+      "id": "4.2",
+      "en": "Manage Kubernetes secrets",
+      "bs": "Upravljanje Secretima"
+    },
+    {
+      "id": "4.3",
+      "en": "Understand and implement isolation techniques (multi-tenancy, sandboxed containers, etc.)",
+      "bs": "Izolacija: multi-tenancy, sandbox kontejneri"
+    },
+    {
+      "id": "4.4",
+      "en": "Implement Pod-to-Pod encryption (Cilium, Istio)",
+      "bs": "Enkripcija saobraćaja između Podova"
+    },
+    {
+      "id": "5.1",
+      "en": "Minimize base image footprint",
+      "bs": "Minimalne bazne slike"
+    },
+    {
+      "id": "5.2",
+      "en": "Understand your supply chain (e.g. SBOM, CI/CD, artifact repositories)",
+      "bs": "Lanac snabdijevanja: SBOM, CI/CD, repozitoriji"
+    },
+    {
+      "id": "5.3",
+      "en": "Secure your supply chain (permitted registries, sign and validate artifacts, etc.)",
+      "bs": "Zaštita lanca snabdijevanja: dozvoljeni registriji, potpisivanje"
+    },
+    {
+      "id": "5.4",
+      "en": "Perform static analysis of user workloads and container images (e.g. Kubesec, KubeLinter)",
+      "bs": "Statička analiza manifesta i slika"
+    },
+    {
+      "id": "6.1",
+      "en": "Perform behavioral analytics to detect malicious activities",
+      "bs": "Analiza ponašanja za otkrivanje napada"
+    },
+    {
+      "id": "6.2",
+      "en": "Detect threats within physical infrastructure, apps, networks, data, users and workloads",
+      "bs": "Otkrivanje prijetnji"
+    },
+    {
+      "id": "6.3",
+      "en": "Investigate and identify phases of attack and bad actors within the environment",
+      "bs": "Istraga faza napada"
+    },
+    {
+      "id": "6.4",
+      "en": "Ensure immutability of containers at runtime",
+      "bs": "Nepromjenljivost kontejnera u radu"
+    },
+    {
+      "id": "6.5",
+      "en": "Use Kubernetes audit logs to monitor access",
+      "bs": "Audit logovi"
+    }
+  ],
+  "sources": [
+    {
+      "title": "CKS: zvanična stranica ispita (Linux Foundation)",
+      "url": "https://training.linuxfoundation.org/certification/certified-kubernetes-security-specialist/",
+      "title_en": "CKS: official exam page (Linux Foundation)"
+    },
+    {
+      "title": "CNCF kurikulum",
+      "url": "https://github.com/cncf/curriculum",
+      "title_en": "CNCF curriculum"
+    },
+    {
+      "title": "Kubernetes dokumentacija: Security",
+      "url": "https://kubernetes.io/docs/concepts/security/",
+      "title_en": "Kubernetes documentation: Security"
+    },
+    {
+      "title": "Killercoda: Killer Shell CKS scenariji",
+      "url": "https://killercoda.com/killer-shell-cks",
+      "title_en": "Killercoda: Killer Shell CKS scenarios"
+    },
+    {
+      "title": "Falco dokumentacija",
+      "url": "https://falco.org/docs/",
+      "title_en": "Falco documentation"
+    },
+    {
+      "title": "Trivy dokumentacija",
+      "url": "https://trivy.dev/",
+      "title_en": "Trivy documentation"
+    }
+  ],
+  "title_en": "Certified Kubernetes Security Specialist (CKS)",
+  "subtitle_en": "CKS training (Kubernetes v1.35): cluster and node hardening, AppArmor and seccomp, Pod Security, gVisor, supply chain (Trivy, SBOM, cosign), audit logs and Falco, on a real kubeadm cluster with no internet access."
+}

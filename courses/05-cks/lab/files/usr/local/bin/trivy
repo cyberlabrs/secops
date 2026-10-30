@@ -1,0 +1,15 @@
+#!/bin/bash
+# Trivy u labu radi bez interneta: baza ranjivosti je u slici (raspakuje se pri prvom pokretanju),
+# a slike dolaze iz lokalnih registry mirrora (/etc/trivy/trivy.yaml).
+# Skeniraju se OS paketi (Java baza ranjivosti nije u slici); za jezičke pakete zadaj --pkg-types.
+export TRIVY_CONFIG=${TRIVY_CONFIG:-/etc/trivy/trivy.yaml}
+export TRIVY_SKIP_DB_UPDATE=${TRIVY_SKIP_DB_UPDATE:-true}
+export TRIVY_SKIP_JAVA_DB_UPDATE=${TRIVY_SKIP_JAVA_DB_UPDATE:-true}
+export TRIVY_SKIP_VERSION_CHECK=true
+export TRIVY_DISABLE_TELEMETRY=true
+export TRIVY_PKG_TYPES=${TRIVY_PKG_TYPES:-os}
+export TRIVY_CACHE_DIR=${TRIVY_CACHE_DIR:-/root/.cache/trivy}
+if [ ! -f "$TRIVY_CACHE_DIR/db/trivy.db" ] && [ -f /opt/trivy-db.tar.zst ]; then
+  mkdir -p "$TRIVY_CACHE_DIR" && zstd -dcq /opt/trivy-db.tar.zst | tar -x -C "$TRIVY_CACHE_DIR"
+fi
+exec /usr/local/bin/trivy.bin "$@"

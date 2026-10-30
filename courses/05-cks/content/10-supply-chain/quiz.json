@@ -1,0 +1,231 @@
+[
+  {
+    "obj": "5.2",
+    "q": "Zadatak: napravi SBOM za sliku nginx:1.27 u formatu CycloneDX i sačuvaj ga u /opt/kurs/nginx.cdx.json. Koja komanda to radi?",
+    "options": [
+      "trivy image --format cyclonedx --output /opt/kurs/nginx.cdx.json nginx:1.27",
+      "trivy image --format json --output /opt/kurs/nginx.cdx.json nginx:1.27",
+      "trivy sbom --format cyclonedx nginx:1.27 > /opt/kurs/nginx.cdx.json",
+      "syft nginx:1.27 -o spdx-json=/opt/kurs/nginx.cdx.json"
+    ],
+    "answer": 0,
+    "explain": "--format cyclonedx daje CycloneDX SBOM, a --output ga upisuje u fajl. --format json je Trivyjev izvještaj o ranjivostima, trivy sbom skenira postojeći SBOM fajl, a syft sa spdx-json pravi SPDX, ne CycloneDX."
+  },
+  {
+    "obj": "5.2",
+    "q": "Dobavljač ti je poslao SBOM fajl vendor-app.spdx.json, ali ne i samu sliku. Treba da utvrdiš ima li komponenti sa CRITICAL ranjivostima. Šta pokrećeš?",
+    "options": [
+      "trivy image --input vendor-app.spdx.json --severity CRITICAL",
+      "trivy sbom --severity CRITICAL vendor-app.spdx.json",
+      "syft scan vendor-app.spdx.json --severity CRITICAL",
+      "trivy fs --format spdx-json vendor-app.spdx.json"
+    ],
+    "answer": 1,
+    "explain": "trivy sbom čita SBOM (SPDX ili CycloneDX) i traži ranjivosti u navedenim paketima bez slike. trivy image --input očekuje tar arhivu slike, syft pravi SBOM i ne skenira ranjivosti, a trivy fs skenira direktorij."
+  },
+  {
+    "obj": "5.2",
+    "q": "Pokrećeš trivy image --severity CRITICAL nginx:1.19 i dobiješ 11 nalaza. Sa --ignore-unfixed broj padne na 7. Šta to znači?",
+    "options": [
+      "Četiri ranjivosti su lažno pozitivne i mogu se zanemariti",
+      "Četiri ranjivosti su već zakrpljene u slici",
+      "Za četiri ranjivosti distribucija još nema ispravljenu verziju paketa",
+      "Četiri ranjivosti su u aplikacijskim zavisnostima, a ne u OS paketima"
+    ],
+    "answer": 2,
+    "explain": "--ignore-unfixed sakriva nalaze bez Fixed Version, tj. one za koje ne postoji zakrpa koju bi mogao instalirati. One i dalje postoje u slici; nisu lažno pozitivne niti zakrpljene."
+  },
+  {
+    "obj": "5.2",
+    "q": "Zadatak: obriši sve Podove u namespaceu prod čije slike imaju CRITICAL ranjivosti. Kojom komandom najbrže dobiješ spisak Pod → slike?",
+    "options": [
+      "kubectl -n prod describe pods | grep -i severity",
+      "trivy k8s --namespace prod --report summary pods",
+      "crictl images --digests na controlplane čvoru",
+      "kubectl -n prod get pods -o custom-columns='POD:.metadata.name,IMAGES:.spec.containers[*].image'"
+    ],
+    "answer": 3,
+    "explain": "custom-columns ispisuje ime Poda i slike iz spec-a, pa onda svaku sliku skeniraš trivy image. describe ne zna za ranjivosti, crictl images na controlplaneu ne pokazuje Podove sa node01, a trivy k8s ne daje mapu kakvu zadatak traži."
+  },
+  {
+    "obj": "5.2",
+    "q": "Obrisao si Pod web-7d9c5-abcde jer slika nginx:1.19 ima CRITICAL ranjivosti. Nakon nekoliko sekundi kubectl -n prod get pods pokazuje novi Pod web-7d9c5-xyz12 sa istom slikom. Zašto?",
+    "options": [
+      "Pod pripada Deploymentu, pa ReplicaSet pravi zamjenu; treba ukloniti ili skalirati Deployment",
+      "kubelet ponovo pokreće obrisane Podove zbog restartPolicy: Always",
+      "Pod je static Pod i mora se ukloniti iz /etc/kubernetes/manifests",
+      "Brisanje nije uspjelo jer nedostaje --force --grace-period=0"
+    ],
+    "answer": 0,
+    "explain": "Sufiks -7d9c5-xxxxx je tipičan za Pod iz ReplicaSeta; kontroler održava broj replika. restartPolicy restartuje kontejnere u istom Podu, static Pod bi imao sufiks sa imenom čvora, a brisanje je očito uspjelo."
+  },
+  {
+    "obj": "5.2",
+    "q": "U istrazi incidenta treba da utvrdiš koji tačno sadržaj slike je radio u Podu api-0, iako je tag app:1.4 u međuvremenu ponovo objavljen. Šta gledaš?",
+    "options": [
+      "kubectl get pod api-0 -o jsonpath='{.spec.containers[*].image}'",
+      "kubectl get pod api-0 -o jsonpath='{.status.containerStatuses[*].imageID}'",
+      "Anotaciju kubectl.kubernetes.io/last-applied-configuration",
+      "trivy image app:1.4"
+    ],
+    "answer": 1,
+    "explain": "status.containerStatuses[].imageID sadrži digest (sha256) slike koja je stvarno povučena. spec i last-applied pokazuju tag koji je u međuvremenu promijenjen, a trivy bi skenirao novu sliku pod tim tagom."
+  },
+  {
+    "obj": "5.2",
+    "q": "Napad na Codecov 2021. godine je izmijenio skriptu koju su CI pipelinei preuzimali i izvršavali. Koja mjera bi najdirektnije spriječila štetu?",
+    "options": [
+      "Skeniranje finalne slike Trivyjem prije deploya",
+      "ValidatingAdmissionPolicy koja dozvoljava samo privatni registry",
+      "Provjera hasha ili potpisa preuzete skripte prije izvršavanja i minimalne tajne u CI okruženju",
+      "readOnlyRootFilesystem u Podovima aplikacije"
+    ],
+    "answer": 2,
+    "explain": "Šteta je nastala u CI fazi: izmijenjena skripta je slala environment varijable sa tajnama. Provjera integriteta preuzetog alata i manje tajni u pipelineu adresiraju upravo to; skeniranje slike i kontrole u klasteru dolaze tek poslije."
+  },
+  {
+    "obj": "5.3",
+    "q": "Primijenio si ValidatingAdmissionPolicy allowed-registries koja dozvoljava samo slike iz registry.internal:5000/. kubectl run test --image=nginx:1.27 i dalje uspijeva. kubectl get validatingadmissionpolicy pokazuje politiku. Šta je najvjerovatniji uzrok?",
+    "options": [
+      "failurePolicy je Ignore",
+      "API server treba restart da bi učitao politiku",
+      "Treba dodati ValidatingAdmissionPolicy u --enable-admission-plugins",
+      "Ne postoji ValidatingAdmissionPolicyBinding koji veže politiku"
+    ],
+    "answer": 3,
+    "explain": "Politika bez Bindinga se ne primjenjuje ni na šta. Plugin je uključen podrazumijevano i restart nije potreban; failurePolicy utiče samo na greške pri izvršavanju izraza, a ne na to da li je izraz false."
+  },
+  {
+    "obj": "5.3",
+    "q": "Validacija u ValidatingAdmissionPolicy glasi: object.spec.containers.all(c, c.image.startsWith('registry.internal:5000/')) && object.spec.initContainers.all(c, c.image.startsWith('registry.internal:5000/')). failurePolicy je Fail. Pod bez initContainers sa slikom registry.internal:5000/nginx:1.27 je odbijen. Zašto?",
+    "options": [
+      "Izraz pristupa polju initContainers koje ne postoji; treba !has(object.spec.initContainers) || …",
+      "startsWith ne podržava dvotačku u stringu",
+      "Treba koristiti oldObject umjesto object kod CREATE",
+      "all() vraća false za praznu listu"
+    ],
+    "answer": 0,
+    "explain": "Kad polje ne postoji, pristup njemu daje grešku izvršavanja, a failurePolicy: Fail tada odbija zahtjev. Zaštita sa has() rješava problem. oldObject je null kod CREATE, a all() nad praznom listom vraća true."
+  },
+  {
+    "obj": "5.3",
+    "q": "Zadatak traži da ImagePolicyWebhook odbija Podove kada backend servis nije dostupan. Koje podešavanje u AdmissionConfiguration to postiže?",
+    "options": [
+      "denyTTL: 0",
+      "defaultAllow: false",
+      "retryBackoff: 0",
+      "failurePolicy: Fail"
+    ],
+    "answer": 1,
+    "explain": "defaultAllow određuje odluku kada backend ne odgovori; false znači fail-closed. denyTTL i retryBackoff se tiču keširanja i ponovnih pokušaja, a failurePolicy je polje webhook i ValidatingAdmissionPolicy objekata, ne imagePolicy konfiguracije."
+  },
+  {
+    "obj": "5.3",
+    "q": "Dodao si u kube-apiserver.yaml flagove --enable-admission-plugins=NodeRestriction,ImagePolicyWebhook i --admission-control-config-file=/etc/kubernetes/admission/admission-config.yaml. Fajl postoji na čvoru, ali API server se ne podiže, a crictl logs pokazuje 'no such file or directory'. Šta nedostaje?",
+    "options": [
+      "Flag --runtime-config=imagepolicy.k8s.io/v1alpha1=true",
+      "systemctl restart kube-apiserver",
+      "hostPath volumen i volumeMount za /etc/kubernetes/admission u manifestu",
+      "Oznaka admission=enabled na Node objektu controlplane"
+    ],
+    "answer": 2,
+    "explain": "API server radi u kontejneru static Poda i vidi samo montirane putanje sa hosta. Bez volumena fajl ne postoji unutar kontejnera. kube-apiserver nije systemd servis u kubeadm klasteru, a oznaka na čvoru nema veze."
+  },
+  {
+    "obj": "5.3",
+    "q": "U kubeconfigu za ImagePolicyWebhook backend, šta predstavlja sekcija users?",
+    "options": [
+      "Korisnike klastera kojima je dozvoljeno da pokreću Podove",
+      "ServiceAccount pod kojim backend čita Podove iz API-ja",
+      "Listu registrija čije slike su dozvoljene",
+      "Kredencijale (klijentski sertifikat i ključ) kojima se API server predstavlja backendu"
+    ],
+    "answer": 3,
+    "explain": "U ovom kubeconfigu clusters opisuje udaljeni servis (server URL i CA), a users kredencijale samog API servera prema tom servisu. Dozvoljene registrije određuje logika backenda, ne kubeconfig."
+  },
+  {
+    "obj": "5.3",
+    "q": "Imaš cosign.key i cosign.pub. Koja komanda provjerava da je slika registry.internal:5000/app:1.0 potpisana tim parom ključeva?",
+    "options": [
+      "cosign verify --key cosign.pub registry.internal:5000/app:1.0",
+      "cosign verify --key cosign.key registry.internal:5000/app:1.0",
+      "cosign sign --verify --key cosign.pub registry.internal:5000/app:1.0",
+      "cosign verify-blob --key cosign.pub registry.internal:5000/app:1.0"
+    ],
+    "answer": 0,
+    "explain": "Provjera ide javnim ključem: cosign verify --key cosign.pub. Privatni ključ služi samo za potpisivanje, sign nema --verify, a verify-blob provjerava potpis običnog fajla, ne slike u registriju."
+  },
+  {
+    "obj": "5.3",
+    "q": "Slika app:1.0 je potpisana cosignom. Kasnije je neko ponovo pushovao drugačiju sliku pod istim tagom. Šta vraća cosign verify --key cosign.pub app:1.0?",
+    "options": [
+      "Uspjeh, jer je potpis vezan za tag",
+      "Grešku no matching signatures, jer je potpis vezan za digest stare slike",
+      "Uspjeh sa upozorenjem da se tag promijenio",
+      "Grešku da javni ključ više nije važeći"
+    ],
+    "answer": 1,
+    "explain": "cosign potpisuje digest. Tag se razriješi u novi digest za koji potpis ne postoji, pa provjera pada. Ključ je i dalje važeći; problem je sadržaj slike."
+  },
+  {
+    "obj": "5.3",
+    "q": "Kod keyless potpisivanja cosignom nema privatnog ključa. Šta onda zadaješ pri cosign verify?",
+    "options": [
+      "--key https://rekor.sigstore.dev",
+      "--certificate-chain sa root CA Fulcia i ništa drugo",
+      "--certificate-identity i --certificate-oidc-issuer",
+      "--insecure-ignore-tlog=true"
+    ],
+    "answer": 2,
+    "explain": "Keyless potpis veže kratkotrajni Fulcio sertifikat za OIDC identitet, pa provjera traži očekivani identitet i izdavača tokena. Rekor nije ključ, a ignorisanje transparency loga slabi provjeru umjesto da je omogući."
+  },
+  {
+    "obj": "5.3",
+    "q": "Koje DVIJE mjere sprečavaju da u namespaceu prod pokrene Pod sa slikom iz docker.io? (Izaberi DVA.)",
+    "options": [
+      "ValidatingAdmissionPolicy sa CEL izrazom koji provjerava prefiks slike, uz Binding na namespace prod",
+      "imagePullPolicy: Always u svim Podovima",
+      "ImagePolicyWebhook čiji backend odbija slike van internog registrija",
+      "trivy image --exit-code 1 u CI pipelineu",
+      "NetworkPolicy koja blokira egress Podova prema internetu"
+    ],
+    "answer": [0, 2],
+    "explain": "Oba mehanizma rade u admission fazi i odbijaju Pod prije nego što nastane. imagePullPolicy samo forsira ponovno povlačenje, Trivy u CI ne kontroliše šta se pokreće u klasteru, a NetworkPolicy ne utiče na to odakle kubelet/containerd povlači sliku."
+  },
+  {
+    "obj": "5.3",
+    "type": "order",
+    "q": "Poredaj korake uključivanja ImagePolicyWebhooka na controlplane čvoru.",
+    "options": [
+      "Dodaj ImagePolicyWebhook u --enable-admission-plugins i postavi --admission-control-config-file",
+      "Napiši AdmissionConfiguration sa imagePolicy (kubeConfigFile, defaultAllow) u /etc/kubernetes/admission/",
+      "Provjeri da se kube-apiserver ponovo podigao (crictl ps, kubectl get nodes) i testiraj Pod sa nedozvoljenom slikom",
+      "Pripremi kubeconfig za backend (server, CA, klijentski sertifikat) u istom direktoriju",
+      "Dodaj hostPath volumen i volumeMount za /etc/kubernetes/admission u kube-apiserver.yaml"
+    ],
+    "answer": [3, 1, 4, 0, 2],
+    "explain": "Prvo pripremiš fajlove (kubeconfig na koji AdmissionConfiguration upućuje), zatim manifest: volumeni i flagovi (redoslijed te dvije izmjene u istom fajlu nije bitan, ali sve mora biti spremno prije snimanja), pa provjera. Ako snimiš manifest prije nego što fajlovi postoje, API server ne starta."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Upari alat ili format sa njegovom ulogom u lancu snabdijevanja.",
+    "options": [
+      "syft",
+      "CycloneDX",
+      "cosign",
+      "Rekor",
+      "SLSA provenance"
+    ],
+    "targets": [
+      "Javni transparency log u koji se upisuju potpisi",
+      "Zapis o tome kako i gdje je artefakt izgrađen",
+      "Alat koji generiše SBOM iz slike ili direktorija",
+      "Potpisivanje i provjera potpisa OCI slika",
+      "OWASP format SBOM-a orijentisan na sigurnost",
+      "Skener konfiguracije Kubernetes manifesta"
+    ],
+    "answer": [2, 4, 3, 0, 1],
+    "explain": "syft pravi SBOM, CycloneDX je OWASP-ov SBOM format, cosign potpisuje slike, Rekor je Sigstore transparency log, a provenance opisuje kako je artefakt nastao. Skener manifesta (npr. kubesec) je distraktor."
+  }
+]

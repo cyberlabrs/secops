@@ -1,0 +1,13 @@
+{
+  "title": "Sigurnost objekata i životni ciklus sistema",
+  "summary": "Dizajn lokacije i objekta (slojevi, CPTED), kontrole za IDF, data centre, skladišta medija i dokaza, HVAC, požar i napajanje, te upravljanje životnim ciklusom sistema od zahtjeva do sigurnog povlačenja uz kontinuirani security review.",
+  "minutes": 60,
+  "domain": 3,
+  "objectives": [
+    "3.8",
+    "3.9",
+    "3.10"
+  ],
+  "title_en": "Site and Facility Security and the System Life Cycle",
+  "summary_en": "Site and facility design (layers, CPTED), controls for wiring closets/IDFs, data centers, media and evidence storage, HVAC, fire and power, and system life cycle management from requirements to secure decommissioning with continuous security review."
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Ograničavanje pristupa API-ju i nadogradnja",
+  "summary": "Zatvaranje kapija API servera (anonimni pristup, Node,RBAC, NodeRestriction, izlaganje mreži, kubeconfig i CSR) i nadogradnja klastera zbog ranjivosti uz version skew pravila.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.3",
+    "2.4"
+  ],
+  "title_en": "Restricting API access and upgrades",
+  "summary_en": "Closing the API server's gates (anonymous access, Node,RBAC, NodeRestriction, network exposure, kubeconfig and CSRs) and upgrading the cluster to fix vulnerabilities while respecting version skew rules."
+}

@@ -1,0 +1,6 @@
+#!/bin/bash
+# Pokreće Falco nad snimkom sistemskih poziva (.scap) sa zadatim pravilima.
+# Upotreba: falco-replay <snimak.scap> <pravila.yaml> [dodatne falco opcije]
+[ -f "$1" ] && [ -f "$2" ] || { echo "upotreba: falco-replay <snimak.scap> <pravila.yaml>"; exit 2; }
+t=$1; r=$2; shift 2
+exec falco -o engine.kind=replay -o engine.replay.capture_file="$t" -r "$r" "$@" 2>/dev/null

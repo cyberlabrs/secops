@@ -1,0 +1,11 @@
+{
+  "title": "Unos podataka: konektori, AMA, DCR i tabele",
+  "summary": "Izbor konektora i unos podataka u Sentinel: Windows Security Events via AMA i DCR (event setovi, XPath), WEF i tabela WindowsEvent, Syslog i CEF via AMA preko Linux forwardera, Azure Activity preko Azure Policy i diagnostic settings, threat indicators (TAXII, upload API, MDTI), custom _CL tabele i DCR transformacije u KQL-u.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.3"
+  ],
+  "title_en": "Data ingestion: connectors, AMA, DCR and tables",
+  "summary_en": "Choosing connectors and ingesting data into Sentinel: Windows Security Events via AMA and DCR (event sets, XPath), WEF and the WindowsEvent table, Syslog and CEF via AMA through a Linux forwarder, Azure Activity via Azure Policy and diagnostic settings, threat indicators (TAXII, upload API, MDTI), custom _CL tables and DCR transformations in KQL."
+}

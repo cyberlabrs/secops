@@ -1,0 +1,256 @@
+[
+  {
+    "obj": "2.2",
+    "q": "You have Microsoft Defender for Endpoint. Device WS-17 is onboarded and has an active C2 connection. You need to prevent further network communication from the device, while an analyst can still start a live response session on it. What should you do?",
+    "options": [
+      "Run Restrict app execution.",
+      "Run Isolate device from the device page.",
+      "Run Contain device from the device page.",
+      "Disable the network adapter via an Intune policy."
+    ],
+    "answer": 1,
+    "explain": "Isolate device cuts network communication but keeps the connection to the Defender for Endpoint service, so monitoring and live response keep working. Contain device is used for unmanaged devices (the other devices block it), Restrict app execution does not cut the network, and disabling the adapter also cuts the connection to the service."
+  },
+  {
+    "obj": "2.2",
+    "q": "An unmanaged (non-onboarded) device on the network is scanning and attacking other devices. You need to prevent onboarded devices from communicating with it. What should you do?",
+    "options": [
+      "Run Isolate device for that device.",
+      "Start a live response session and run the isolate command.",
+      "Run Contain device for that device.",
+      "Add the device's IP as an Allow indicator."
+    ],
+    "answer": 2,
+    "explain": "Contain device applies a policy on all onboarded devices, which block inbound and outbound traffic to the contained device, so it works even when the device has no agent. Isolate and live response require an onboarded device, and an Allow indicator does the opposite."
+  },
+  {
+    "obj": "2.2",
+    "q": "Finance users must keep Outlook and Microsoft Teams while their compromised laptop is isolated. What should you use?",
+    "options": [
+      "Selective isolation.",
+      "Restrict app execution.",
+      "Contain user.",
+      "Full isolation with the device removed from the device group."
+    ],
+    "answer": 0,
+    "explain": "Selective isolation lets Outlook and Teams (and defined process and destination exclusions) stay available while other network communication is blocked. Restrict app execution does not isolate the network, and contain user blocks the user on other devices."
+  },
+  {
+    "obj": "2.2",
+    "q": "An unknown tool was run on a Windows server, and isolation would interrupt a critical business process. You need to prevent any program not signed by Microsoft from running. What should you do?",
+    "options": [
+      "Run antivirus scan (full).",
+      "Collect investigation package.",
+      "Add Indicator with the Block action for the tool's hash.",
+      "Restrict app execution."
+    ],
+    "answer": 3,
+    "explain": "Restrict app execution applies a code integrity policy that allows only files signed with a Microsoft certificate. An indicator blocks only one known hash, and a scan or investigation package does not prevent execution."
+  },
+  {
+    "obj": "2.2",
+    "q": "You need to determine which auto-start entries and scheduled tasks the attacker left on 25 devices, with the LEAST interactive work. What should you do?",
+    "options": [
+      "Open live response on each device and run persistence.",
+      "Run Collect investigation package for the devices and review the Autoruns and Scheduled tasks folders.",
+      "Run a full antivirus scan on all devices.",
+      "Export the device timeline for each device for the last 30 days."
+    ],
+    "answer": 1,
+    "explain": "An investigation package is collected without an interactive session and contains Autoruns (ASEP registry keys) and Scheduled tasks. Live response is interactive and limited to one session per device, a scan does not produce a list of persistence, and a timeline export covers at most 7 days."
+  },
+  {
+    "obj": "2.2",
+    "q": "You collected an investigation package. You need to verify whether each item was collected successfully and which commands failed. Which file do you open?",
+    "options": [
+      "SystemInformation.txt",
+      "MpCmdRunLog.txt",
+      "CollectionSummaryReport.xls",
+      "ActiveNetConnections.txt"
+    ],
+    "answer": 2,
+    "explain": "CollectionSummaryReport.xls contains the list of collected items, the command, the execution status and the error code. The other files are specific data (system, Defender AV log, network connections)."
+  },
+  {
+    "obj": "2.2",
+    "q": "In a live response session an analyst types run Collect.ps1 and gets an error that the script does not exist, even though the file is on their computer. What should be done?",
+    "options": [
+      "Turn on Live Response for Servers.",
+      "Copy the script directly from their computer with the putfile command.",
+      "Run the script with the getfile command.",
+      "Upload the script to the live response library, then run it with the run command."
+    ],
+    "answer": 3,
+    "explain": "run and putfile work only with files from the live response library (uploaded from the session or via the Library management page). getfile downloads a file from the device, and the server setting has nothing to do with this error."
+  },
+  {
+    "obj": "2.2",
+    "q": "An organization uses internal unsigned PowerShell scripts to collect evidence through live response. The scripts are in the library but do not run. What should you turn on in Advanced features?",
+    "options": [
+      "Live Response unsigned script execution.",
+      "Live Response for Servers.",
+      "Automated investigation.",
+      "Allow or block file."
+    ],
+    "answer": 0,
+    "explain": "The signature check applies to PowerShell scripts; unsigned ones can run only once Live Response unsigned script execution is turned on (at higher risk). The other settings do not affect script signing."
+  },
+  {
+    "obj": "2.2",
+    "q": "Two analysts try to open a live response session on the same device at the same time. The second one gets an error. What is the reason?",
+    "options": [
+      "A user can have at most one session.",
+      "The tenant has reached the limit of 5 sessions.",
+      "A device can be in only one live response session at a time.",
+      "The second analyst does not have permission for basic commands."
+    ],
+    "answer": 2,
+    "explain": "A device can be in only one session at a time. A user can have up to five concurrent sessions, and the tenant up to 50. A missing permission would show up even when no session is open."
+  },
+  {
+    "obj": "2.2",
+    "q": "In a live response session you need to download a 2 GB file and meanwhile continue with other commands. Which command do you use?",
+    "options": [
+      "getfile \"C:\\Temp\\dump.bin\" &",
+      "putfile dump.bin",
+      "fileinfo \"C:\\Temp\\dump.bin\" -output json",
+      "collect \"C:\\Temp\\dump.bin\""
+    ],
+    "answer": 0,
+    "explain": "getfile with & at the end runs the download in the background (up to 3 GB), and fg <command ID> brings it back to the foreground. putfile places a file on the device, fileinfo only gives information, and collect builds a forensic package on macOS/Linux."
+  },
+  {
+    "obj": "2.2",
+    "q": "An analyst ran remediate on the wrong file in live response. On the Windows device you need to restore the entity. Which command?",
+    "options": [
+      "release",
+      "status",
+      "analyze",
+      "undo"
+    ],
+    "answer": 3,
+    "explain": "undo restores an entity that was remediated (Windows). release returns a device from isolation (macOS), status shows the state of a command, and analyze gives an incrimination engine verdict."
+  },
+  {
+    "obj": "2.2",
+    "q": "The forensics team asks for an export of all events from the device timeline for a 14-day period. What is true?",
+    "options": [
+      "Timeline export supports at most 30 days in one file.",
+      "Timeline export supports at most 7 days per export, so you need two exports or an advanced hunting query.",
+      "The timeline cannot be exported; you must use an investigation package.",
+      "Export is possible only for flagged events."
+    ],
+    "answer": 1,
+    "explain": "A detailed timeline export covers the current day or a range of up to 7 days. For 14 days you need two exports or a query in advanced hunting. Flagged events can be filtered, but the export is not limited to them."
+  },
+  {
+    "obj": "2.2",
+    "q": "During an investigation in the device timeline you marked ten key events and want a report that contains only them. What do you do?",
+    "options": [
+      "Turn on the Flagged events filter and export the timeline.",
+      "Run Hunt for related events for each event.",
+      "Switch the filter to Techniques.",
+      "Create a custom detection rule."
+    ],
+    "answer": 0,
+    "explain": "Flag events is meant exactly for singling out important events; the Flagged events filter shows only them and they can be exported. The Techniques filter shows MITRE techniques, and hunting and custom detections do not produce a report."
+  },
+  {
+    "obj": "2.2",
+    "q": "A malicious file was detected on one device, and the file page shows it exists on 40 more devices. You need to remove the existing copies and prevent future execution in the organization. Which TWO actions should you perform? (Choose TWO.)",
+    "options": [
+      "Stop and Quarantine File from the file page.",
+      "A live response session and remediate on each device.",
+      "Add Indicator with the Block and remediate action for the file hash.",
+      "Run antivirus scan on the first device.",
+      "Deep analysis of the file."
+    ],
+    "answer": [0, 2],
+    "explain": "Stop and Quarantine File stops the processes and quarantines the file on all devices where it was seen, and an indicator with blocking prevents it from running again. Live response on 40 devices is too much work, scanning one device does not handle the others, and Deep analysis only produces a report."
+  },
+  {
+    "obj": "2.2",
+    "q": "Automated investigation marked three files in an incident as Malicious with the status Pending approval. Where can you approve the remediation? (Choose TWO.)",
+    "options": [
+      "In the Evidence and Response tab on the incident page.",
+      "In the Advanced features settings.",
+      "In the Action center, Pending tab.",
+      "In the device timeline, Techniques filter.",
+      "In the Microsoft Purview portal."
+    ],
+    "answer": [0, 2],
+    "explain": "Actions waiting for approval are approved in the incident's Evidence and Response tab or in Action center > Pending. Advanced features is configuration, the timeline is an event view, and Purview does not have these actions."
+  },
+  {
+    "obj": "2.2",
+    "q": "In the incident queue you see an incident with the Attack Disruption tag. Where do you check whether the user containment is still active or has already been lifted?",
+    "options": [
+      "In the device timeline of the affected device.",
+      "In the incident's Activities tab, Policy status column.",
+      "In advanced hunting, the DeviceInfo table.",
+      "In the Microsoft Entra admin center, Sign-in logs."
+    ],
+    "answer": 1,
+    "explain": "The Policy status column in the Activities tab (filter Performed by: AttackDisruption) shows the current state of the policy: Active, Inactive, Not applicable or No status. The Action center records past actions, and the other options do not show the containment state."
+  },
+  {
+    "obj": "2.2",
+    "q": "Attack disruption disabled the CFO's account and they cannot work. What should you do FIRST?",
+    "options": [
+      "Immediately select Enable user from the Action center.",
+      "Add the user to the attack disruption exclusions.",
+      "Investigate the incident and eliminate the threat (password reset, session revocation, removing persistence), and only then enable the account.",
+      "Turn off automatic attack disruption for the tenant."
+    ],
+    "answer": 2,
+    "explain": "Disruption stops the attacker but does not remove them. Restoring assets before investigation and remediation gives the attacker access back. Exclusions and turning off the feature do not resolve the current incident and reduce protection."
+  },
+  {
+    "obj": "2.2",
+    "q": "You need a KQL query that gives an overview of all automatic attack disruption actions in the organization for the last 30 days. Which table do you use?",
+    "options": [
+      "DeviceProcessEvents",
+      "AlertEvidence",
+      "IdentityLogonEvents",
+      "DisruptionAndResponseEvents"
+    ],
+    "answer": 3,
+    "explain": "DisruptionAndResponseEvents gives a consolidated view of automatic actions (the same data as the Activities tab, but for the whole organization). DeviceEvents with ActionType ContainedDevice/ContainedUser records only blocked attempts, not the actions themselves."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Order the steps for responding to an alert on an onboarded device with an active C2 connection, from first to last.",
+    "options": [
+      "Release from isolation and a full antivirus scan.",
+      "Isolate device.",
+      "Review the device timeline and process tree around the alert time.",
+      "Collect investigation package and live response (persistence, getfile, remediate).",
+      "Classify and close the incident."
+    ],
+    "answer": [2, 1, 3, 0, 4],
+    "explain": "First you quickly understand what happened (timeline), then you isolate the device so the attacker loses control. While it is isolated, evidence is collected and persistence removed (live response works during isolation too). Only after cleanup is the device returned to the network and scanned, and the incident is classified at the end."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Match the analyst's requirement with the Defender for Endpoint action that BEST meets it.",
+    "options": [
+      "An unmanaged device is attacking other devices on the network.",
+      "You need the state of 30 devices (processes, services, SMB sessions) without interactive work.",
+      "You need to download one specific file and run a script on the device.",
+      "Only Microsoft-signed programs may run on the server.",
+      "You need a report on a suspicious file's behavior in a sandbox."
+    ],
+    "targets": [
+      "Live response",
+      "Collect investigation package",
+      "Deep analysis",
+      "Contain device",
+      "Restrict app execution",
+      "Run antivirus scan"
+    ],
+    "answer": [3, 1, 0, 4, 2],
+    "explain": "An unmanaged device is contained with Contain device, the state of many devices without interaction comes from an investigation package, a single file and a script are live response, only Microsoft-signed programs is Restrict app execution, and a sandbox report is Deep analysis. Antivirus scan does not match any requirement."
+  }
+]

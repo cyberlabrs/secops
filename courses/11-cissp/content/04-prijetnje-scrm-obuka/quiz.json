@@ -1,0 +1,300 @@
+[
+  {
+    "obj": "1.10",
+    "q": "Razvojni tim pita KADA je modelovanje prijetnji za novu aplikaciju NAJISPLATIVIJE.",
+    "options": [
+      "Nakon penetracionog testa prije produkcije",
+      "Tokom faze dizajna, uz ponavljanje pri značajnim promjenama arhitekture",
+      "Nakon prvog incidenta u produkciji",
+      "Tokom godišnjeg audita"
+    ],
+    "answer": 1,
+    "explain": "Ispravke u dizajnu su višestruko jeftinije od ispravki u produkciji. Threat model je živ dokument i ažurira se pri promjenama."
+  },
+  {
+    "obj": "1.10",
+    "q": "U STRIDE modelu, napadač mijenja iznos transakcije u HTTP zahtjevu između klijenta i servera. Koja kategorija prijetnje je u pitanju?",
+    "options": [
+      "Spoofing",
+      "Repudiation",
+      "Tampering",
+      "Elevation of privilege"
+    ],
+    "answer": 2,
+    "explain": "Neovlašćena izmjena podataka je Tampering i narušava integritet. Kontrole su provjera na serveru, potpisi poruka i zaštita kanala."
+  },
+  {
+    "obj": "1.10",
+    "q": "Korisnik tvrdi da nikada nije obrisao zapise iz sistema, a aplikacija ne vodi audit log. Koja STRIDE kategorija opisuje ovu slabost?",
+    "options": [
+      "Repudiation",
+      "Information disclosure",
+      "Denial of service",
+      "Tampering"
+    ],
+    "answer": 0,
+    "explain": "Repudiation je mogućnost poricanja radnje zbog nedostatka dokaza; kontrole su audit log otporan na izmjene i digitalni potpisi."
+  },
+  {
+    "obj": "1.10",
+    "q": "Organizacija traži metodologiju modelovanja prijetnji koja polazi od poslovnih ciljeva i kroz sedam faza vodi do simulacije napada i analize rizika. Koja je NAJPRIKLADNIJA?",
+    "options": [
+      "STRIDE",
+      "DREAD",
+      "LINDDUN",
+      "PASTA"
+    ],
+    "answer": 3,
+    "explain": "PASTA (Process for Attack Simulation and Threat Analysis) je risk-centric metodologija sa sedam faza, od poslovnih ciljeva do analize rizika i uticaja."
+  },
+  {
+    "obj": "1.10",
+    "q": "Tim za zaštitu podataka želi sistematski identifikovati prijetnje privatnosti, kao što su povezivanje i identifikacija pojedinaca, u novoj aplikaciji. Koja metodologija je NAJBOLJA?",
+    "options": [
+      "LINDDUN",
+      "Cyber Kill Chain",
+      "DREAD",
+      "VAST"
+    ],
+    "answer": 0,
+    "explain": "LINDDUN je specijalizovan za privatnosne prijetnje: Linking, Identifying, Non-repudiation, Detecting, Data disclosure, Unawareness, Non-compliance."
+  },
+  {
+    "obj": "1.10",
+    "q": "Na kojim mjestima u dijagramu toka podataka (DFD) se tipično pojavljuje NAJVIŠE prijetnji?",
+    "options": [
+      "Unutar jednog procesa koji nema ulaze",
+      "U skladištima podataka koja se nikada ne čitaju",
+      "Na granicama povjerenja, gdje podaci prelaze između zona različitog nivoa povjerenja",
+      "U eksternim entitetima koji ne komuniciraju sa sistemom"
+    ],
+    "answer": 2,
+    "explain": "Granice povjerenja (internet/DMZ, korisnik/servis, tenant/provajder) su mjesta gdje treba autentifikovati, autorizovati i validirati, pa se tu koncentrišu prijetnje."
+  },
+  {
+    "obj": "1.10",
+    "q": "SOC želi procijeniti pokrivenost svojih detekcija u odnosu na stvarne tehnike koje koriste grupe napadača aktivne u njihovom sektoru. Koji resurs je NAJKORISNIJI?",
+    "options": [
+      "CVSS kalkulator",
+      "DREAD bodovanje",
+      "STRIDE-per-element",
+      "MITRE ATT&CK"
+    ],
+    "answer": 3,
+    "explain": "ATT&CK je baza znanja taktika, tehnika i procedura iz stvarnih napada, pogodna za attacker-centric modelovanje i mapiranje pokrivenosti detekcija."
+  },
+  {
+    "obj": "1.10",
+    "q": "Koja je glavna slabost DREAD modela zbog koje se danas rjeđe koristi?",
+    "options": [
+      "Ne može se primijeniti na web aplikacije",
+      "Ocjene su subjektivne i različiti procjenitelji daju vrlo različite rezultate",
+      "Pokriva samo prijetnje dostupnosti",
+      "Zahtijeva preciznu kvantitativnu procjenu ALE"
+    ],
+    "answer": 1,
+    "explain": "DREAD rangira prijetnje kroz pet subjektivnih ocjena, posebno Discoverability, pa su rezultati nekonzistentni. Microsoft ga je zato napustio."
+  },
+  {
+    "obj": "1.11",
+    "q": "Napadači su kompromitovali build sistem proizvođača softvera i ubacili backdoor u legitimno potpisano ažuriranje koje su instalirale hiljade kupaca. Koji rizik lanca snabdijevanja je u pitanju?",
+    "options": [
+      "Counterfeit",
+      "Reputacioni rizik",
+      "Product tampering",
+      "Rizik koncentracije"
+    ],
+    "answer": 2,
+    "explain": "Neovlašćena izmjena proizvoda tokom proizvodnje ili isporuke je tampering. Potpis je bio validan jer je izmjena nastala prije potpisivanja, zato su važni integritet build procesa i provenance (SLSA)."
+  },
+  {
+    "obj": "1.11",
+    "q": "Objavljena je kritična ranjivost u široko korištenoj open-source biblioteci. Šta bi organizaciji NAJVIŠE pomoglo da za kratko vrijeme utvrdi koji njeni i kupljeni proizvodi su pogođeni?",
+    "options": [
+      "Ažurni SBOM-ovi za interne aplikacije i SBOM-ovi koje dobavljači isporučuju uz proizvode",
+      "Godišnji penetracioni test",
+      "SOC 2 izvještaji dobavljača",
+      "Cyber osiguranje"
+    ],
+    "answer": 0,
+    "explain": "SBOM daje popis komponenti i verzija, pa se pogođeni sistemi brzo identifikuju. VEX dodatno pokazuje da li je ranjivost u konkretnom proizvodu iskoristiva."
+  },
+  {
+    "obj": "1.11",
+    "q": "Koja hardverska mitigacija koristi neizbježne varijacije u proizvodnji čipa da bi stvorila jedinstven identitet i ključ bez njihovog trajnog čuvanja u memoriji?",
+    "options": [
+      "Silicon root of trust",
+      "Physically Unclonable Function (PUF)",
+      "Hardware Security Module",
+      "Secure enclave sa fiksnim ključem u flash memoriji"
+    ],
+    "answer": 1,
+    "explain": "PUF izvodi jedinstven odgovor iz fizičkih svojstava čipa, što otežava kloniranje i krivotvorenje. Root of trust je nepromjenjiv početni kod i ključ koji verifikuje firmware."
+  },
+  {
+    "obj": "1.11",
+    "q": "Kako silicon root of trust PRVENSTVENO ublažava rizik implantata i izmijenjenog firmwarea?",
+    "options": [
+      "Šifruje sav mrežni saobraćaj uređaja",
+      "Zamjenjuje potrebu za procjenom dobavljača",
+      "Sprječava fizičku krađu uređaja",
+      "Nepromjenjiv kod i ključ u hardveru verifikuju potpis firmwarea pri pokretanju, čime počinje lanac povjerenja (secure i measured boot)"
+    ],
+    "answer": 3,
+    "explain": "Root of trust je pouzdano polazište lanca verifikacije: izmijenjen firmware ne prolazi provjeru potpisa, a mjerenja omogućavaju attestation."
+  },
+  {
+    "obj": "1.11",
+    "q": "Organizacija uvodi novog kritičnog dobavljača koji će imati privilegovan pristup produkcionom okruženju. Šta je NAJBOLJE uraditi PRIJE potpisivanja ugovora?",
+    "options": [
+      "Procijeniti sigurnosnu poziciju dobavljača srazmjerno riziku i ugraditi minimalne sigurnosne zahtjeve, SLA, pravo na audit i obavezu prijave incidenta u ugovor",
+      "Potpisati ugovor i zatim zatražiti upitnik o sigurnosti",
+      "Osloniti se na reputaciju dobavljača na tržištu",
+      "Zahtijevati da dobavljač kupi cyber osiguranje, čime se rizik eliminiše"
+    ],
+    "answer": 0,
+    "explain": "Uticaj na dobavljača je najveći prije potpisivanja. Due diligence i ugovorni zahtjevi (uključujući flow-down na podugovarače) su osnovne SCRM mitigacije."
+  },
+  {
+    "obj": "1.11",
+    "q": "Istraživački novinari otkrivaju da glavni dobavljač organizacije koristi prinudni rad u proizvodnji. Koji rizik lanca snabdijevanja je PRVENSTVENO materijalizovan?",
+    "options": [
+      "Product tampering",
+      "Implant",
+      "Reputacioni rizik",
+      "Counterfeit"
+    ],
+    "answer": 2,
+    "explain": "Postupci dobavljača mogu naštetiti ugledu kupca. Outline iz 2027. eksplicitno dodaje reputacioni rizik među rizike nabavke."
+  },
+  {
+    "obj": "1.11",
+    "q": "Mrežni uređaji kupljeni od neovlašćenog preprodavca po neuobičajeno niskoj cijeni pokazuju neobične serijske brojeve i firmware koji se ne može verifikovati. Koja je NAJBOLJA preventivna mjera za buduće nabavke?",
+    "options": [
+      "Pojačati nadzor mrežnog saobraćaja",
+      "Nabavljati isključivo preko ovlašćenih distributera i verifikovati porijeklo i potpis firmwarea pri prijemu",
+      "Instalirati antivirus na mrežne uređaje",
+      "Ugovoriti duži garantni rok"
+    ],
+    "answer": 1,
+    "explain": "Rizik krivotvorina se najefikasnije sprječava kontrolisanim kanalima nabavke i provjerom autentičnosti pri prijemu. Nadzor je detektivna mjera."
+  },
+  {
+    "obj": "1.11",
+    "q": "Kako organizacija treba da odredi dubinu procjene za svakog od svojih 400 dobavljača?",
+    "options": [
+      "Primijeniti identičnu detaljnu procjenu na sve dobavljače",
+      "Procjenjivati samo dobavljače sa najvećim ugovorima",
+      "Procjenjivati samo dobavljače koji su imali incident",
+      "Kategorizovati dobavljače po kritičnosti i pristupu podacima (tiering) i prilagoditi dubinu i učestalost procjene riziku"
+    ],
+    "answer": 3,
+    "explain": "Pristup zasnovan na riziku troši resurse tamo gdje je rizik najveći: kritični dobavljači dobijaju detaljnu procjenu i kontinuiran monitoring, a niskorizični osnovnu provjeru."
+  },
+  {
+    "obj": "1.12",
+    "q": "Koja razlika između awareness, training i education je TAČNA?",
+    "options": [
+      "Awareness mijenja pažnju i ponašanje svih zaposlenih, training razvija vještine za određene uloge, a education gradi dubinsko razumijevanje za donošenje odluka",
+      "Awareness je obavezna samo za IT, training za sve zaposlene",
+      "Education je kratkoročna obuka za alat, a training dugoročni akademski program",
+      "Ne postoji razlika; to su sinonimi"
+    ],
+    "answer": 0,
+    "explain": "Awareness odgovara na „šta“, training na „kako“, a education na „zašto“."
+  },
+  {
+    "obj": "1.12",
+    "q": "CISO treba upravi dokazati da je program svijesti stvarno smanjio rizik. Koja metrika je NAJBOLJI dokaz?",
+    "options": [
+      "100% zaposlenih završilo je godišnji online kurs",
+      "Visoka ocjena zadovoljstva polaznika u anketi",
+      "Broj poslanih newslettera",
+      "Pad stope klika i rast stope prijave u phishing simulacijama kroz vrijeme, uz manje stvarnih incidenata uzrokovanih ljudskom greškom"
+    ],
+    "answer": 3,
+    "explain": "Procenat završene obuke i zadovoljstvo mjere aktivnost i reakciju. Promjena ponašanja i smanjenje incidenata (Kirkpatrick nivoi 3 i 4) dokazuju efikasnost."
+  },
+  {
+    "obj": "1.12",
+    "q": "Sigurnosni tim od pet ljudi ne može pratiti 40 razvojnih timova. Koja metoda NAJBOLJE skalira sigurnosnu kulturu u razvoju?",
+    "options": [
+      "Godišnje predavanje za sve developere",
+      "Program security championa u razvojnim timovima, uz dodatnu obuku i formalno odobreno vrijeme",
+      "Strože disciplinske mjere za sigurnosne greške u kodu",
+      "Zabrana objave koda bez odobrenja sigurnosnog tima"
+    ],
+    "answer": 1,
+    "explain": "Security champions su lokalni ambasadori koji prenose znanje i rano uključuju sigurnost, čime se skalira mali sigurnosni tim."
+  },
+  {
+    "obj": "1.12",
+    "q": "Nakon phishing simulacije, rukovodilac predlaže javno objavljivanje imena zaposlenih koji su kliknuli na link. Šta CISSP treba da preporuči?",
+    "options": [
+      "Podržati prijedlog, jer javna sramota odvraća",
+      "Ukinuti simulacije jer izazivaju nezadovoljstvo",
+      "Odbiti javno izlaganje; koristiti trenutnu edukaciju i ciljanu obuku i graditi kulturu u kojoj se sumnjive poruke prijavljuju bez straha",
+      "Otpustiti zaposlene koji su kliknuli dva puta"
+    ],
+    "answer": 2,
+    "explain": "Cilj programa je promjena ponašanja i kultura prijavljivanja. Javno sramoćenje smanjuje povjerenje i spremnost na prijavu incidenata."
+  },
+  {
+    "obj": "1.12",
+    "q": "Pojavili su se slučajevi u kojima napadači koriste AI-generisan glas direktora da bi naložili hitne uplate. Šta je NAJBOLJI odgovor programa svijesti?",
+    "options": [
+      "Sačekati sljedeći godišnji ciklus revizije sadržaja",
+      "Zabraniti telefonske pozive u finansijskoj službi",
+      "Uvesti alat za detekciju deepfakea i ne mijenjati obuku",
+      "Odmah ažurirati sadržaj, ciljano obučiti finansijsku službu i asistente uprave i uvesti proceduru verifikacije povratnim pozivom na poznat broj"
+    ],
+    "answer": 3,
+    "explain": "Sadržaj se preispituje periodično, ali i ad hoc kada se pojavi nova prijetnja. Obuka rizičnih grupa uz proceduralnu kontrolu (out-of-band verifikacija) je najefikasnija."
+  },
+  {
+    "obj": "1.12",
+    "q": "Program obuke ima slab odziv jer rukovodioci odjeljenja ne daju zaposlenima vrijeme za obuku. Šta je NAJBOLJI korak prema outlineu iz 2027.?",
+    "options": [
+      "Angažovati stakeholdere: obezbijediti podršku uprave, uključiti rukovodioce i HR, prilagoditi sadržaj potrebama odjeljenja i redovno izvještavati o rezultatima",
+      "Produžiti trajanje obuke da bi se nadoknadilo propušteno",
+      "Prebaciti obuku na vikend",
+      "Prestati mjeriti odziv"
+    ],
+    "answer": 0,
+    "explain": "Outline 2027. eksplicitno dodaje stakeholder engagement: bez podrške uprave i rukovodilaca program nema vremena ni autoriteta."
+  },
+  {
+    "obj": "1.12",
+    "type": "match",
+    "q": "Upari aktivnost sa nivoem programa.",
+    "options": [
+      "Posteri i kratki video o prijavi sumnjivih mailova za sve zaposlene",
+      "Magistarski studij iz informacione sigurnosti za člana sigurnosnog tima",
+      "Radionica o sigurnom kodiranju i OWASP Top 10 za developere",
+      "Mjesečni newsletter o aktuelnim prevarama"
+    ],
+    "targets": [
+      "Training",
+      "Awareness",
+      "Education"
+    ],
+    "answer": [1, 2, 0, 1],
+    "explain": "Posteri i newsletteri podižu svijest svih zaposlenih, radionica razvija vještinu za ulogu (training), a akademski program je education."
+  },
+  {
+    "obj": "1.10",
+    "type": "order",
+    "q": "Poredaj faze PASTA metodologije od prve do posljednje.",
+    "options": [
+      "Dekompozicija aplikacije",
+      "Analiza ranjivosti i slabosti",
+      "Definisanje poslovnih ciljeva",
+      "Modelovanje i simulacija napada",
+      "Definisanje tehničkog obima",
+      "Analiza rizika i uticaja",
+      "Analiza prijetnji"
+    ],
+    "answer": [2, 4, 0, 6, 1, 3, 5],
+    "explain": "PASTA: 1) poslovni ciljevi, 2) tehnički obim, 3) dekompozicija aplikacije, 4) analiza prijetnji, 5) analiza ranjivosti, 6) modelovanje napada, 7) analiza rizika i uticaja."
+  }
+]

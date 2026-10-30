@@ -1,0 +1,237 @@
+[
+  {
+    "obj": "3.1",
+    "q": "A rule fires when CloudTrail records StopLogging or DeleteTrail. Which ATT&CK ID is correct in version 20?",
+    "options": [
+      "T1685.002 Disable or Modify Cloud Log",
+      "T1562.008 Disable or Modify Cloud Logs",
+      "T1070.002 Clear Linux or Mac System Logs",
+      "T1530 Data from Cloud Storage"
+    ],
+    "answer": 0,
+    "explain": "In v19, T1562.008 was revoked and replaced by T1685.002 in the new Defense Impairment tactic. T1070.002 refers to Linux/macOS logs, and T1530 to reading data from storage."
+  },
+  {
+    "obj": "3.1",
+    "q": "What happened to the Defense Evasion tactic in ATT&CK v19?",
+    "options": [
+      "It was renamed to Evasion with no other changes",
+      "It was split into Stealth (TA0005) and Defense Impairment (TA0112)",
+      "It was merged with Persistence",
+      "It was moved to the Mobile matrix"
+    ],
+    "answer": 1,
+    "explain": "v19 split Defense Evasion: Stealth keeps the ID TA0005, and techniques that disable defenses moved to the new Defense Impairment tactic (TA0112). Enterprise now has 15 tactics."
+  },
+  {
+    "obj": "3.1",
+    "q": "A Wazuh rule catches 'Failed password' for existing users and does not distinguish spraying from guessing, but it only counts attempts from one IP against one account. Which mapping is the most precise?",
+    "options": [
+      "T1021.004 SSH as the only technique",
+      "T1078 Valid Accounts",
+      "T1110.001 Password Guessing",
+      "T1110.004 Credential Stuffing"
+    ],
+    "answer": 2,
+    "explain": "Many passwords against one account from one address is Password Guessing. Valid Accounts would only be a successful login, SSH is a channel (lateral movement), and credential stuffing uses leaked username/password pairs."
+  },
+  {
+    "obj": "3.1",
+    "q": "A rule fires on a Kubernetes audit event create on pods/exec. An analyst proposes also mapping it to Discovery because 'the attacker will surely do reconnaissance'. What is correct?",
+    "options": [
+      "Map it to all tactics the attacker might use afterwards",
+      "Map it only to Discovery",
+      "Don't map it, because K8s is not in ATT&CK",
+      "Map it to what the rule actually sees: T1609 Container Administration Command (Execution)"
+    ],
+    "answer": 3,
+    "explain": "You map the behavior the rule sees. What the attacker might do afterwards requires its own detection. Containers is a platform in the Enterprise matrix."
+  },
+  {
+    "obj": "3.1",
+    "q": "Since ATT&CK v18, techniques have detection strategies and analytics. What does the Linux analytic for T1110.001 provide?",
+    "options": [
+      "The platform, the data component (e.g. DC0002 User Account Authentication) and the log source to watch",
+      "A ready-made Wazuh XML rule",
+      "A list of attacker IP addresses",
+      "A coverage score"
+    ],
+    "answer": 0,
+    "explain": "An analytic is a platform-specific description of detection logic with references to data components and log sources. You write the rule for a specific tool yourself."
+  },
+  {
+    "obj": "3.1",
+    "q": "In a Navigator layer file, technique T1078 has no tactic field. How will Navigator display the score?",
+    "options": [
+      "It will discard the technique",
+      "It will apply the annotation under every tactic the technique belongs to",
+      "It will display it only under Initial Access",
+      "It will show a format error"
+    ],
+    "answer": 1,
+    "explain": "The tactic field is optional; without it the annotation is applied to all of the technique's tactics. T1078 belongs to Initial Access, Persistence, Privilege Escalation and Stealth."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which versions.layer value corresponds to the current Navigator layer format specification?",
+    "options": [
+      "\"5.3.2\"",
+      "\"20\"",
+      "\"4.5\"",
+      "\"2.1\""
+    ],
+    "answer": 2,
+    "explain": "The format specification is version 4.5 and requires navigator version 4.9.0 or later. 20 is the ATT&CK version (the versions.attack field), and 5.3.2 is the Navigator application version."
+  },
+  {
+    "obj": "3.1",
+    "q": "You are merging coverage from Wazuh rules (an old ruleset with T1562.001) and SigmaHQ rules (T1685). Navigator for v20 does not display some of the Wazuh techniques. What is the first step?",
+    "options": [
+      "Delete the Wazuh rules with old IDs",
+      "Switch Navigator to ATT&CK v8",
+      "Color the techniques manually",
+      "Normalize revoked IDs to the new ones (T1562.001 -> T1685) before merging"
+    ],
+    "answer": 3,
+    "explain": "Revoked objects in ATT&CK point to their replacement. Without normalization, the same detection looks like two, and new techniques look uncovered."
+  },
+  {
+    "obj": "3.1",
+    "q": "Management asks for a single number: 'what percentage of ATT&CK do we cover'. Why is that a bad KPI?",
+    "options": [
+      "Because most techniques are not relevant to your platforms, and the existence of a rule does not mean a tested, sustainable detection",
+      "Because Navigator cannot compute percentages",
+      "Because ATT&CK forbids such use",
+      "Because the percentage always comes out as 100%"
+    ],
+    "answer": 0,
+    "explain": "Coverage has levels (telemetry, rule, tested, sustainable), and techniques are not equal in size or relevance. It is better to track 10-20 relevant techniques with their maturity level."
+  },
+  {
+    "obj": "3.1",
+    "q": "What does the command sigma analyze attack count out.json /opt/sigma-rules/rules/cloud/aws do?",
+    "options": [
+      "Runs the rules against CloudTrail logs",
+      "Builds a Navigator layer in which the score is the number of rules per technique",
+      "Converts the rules to Splunk",
+      "Checks the rule syntax"
+    ],
+    "answer": 1,
+    "explain": "analyze attack reads ATT&CK tags from rules and writes a layer; the count function gives the number of rules, max the highest level, and level the sum of levels. Running rules against logs is done by e.g. Zircolite."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have a layer of techniques used by TeamTNT (G0139) and a layer of your own coverage. What does the operation 'actor minus coverage' give you?",
+    "options": [
+      "Techniques you cover that the actor does not use",
+      "All techniques in the matrix",
+      "Techniques the actor uses for which you have no detection: backlog candidates",
+      "A list of the actor's IOCs"
+    ],
+    "answer": 2,
+    "explain": "The difference gives the gaps relevant to a specific threat. Navigator does this through 'create layer from other layers', and the same can be done with jq and comm."
+  },
+  {
+    "obj": "3.1",
+    "q": "A new local user was added via useradd on a server, visible in auth.log. Which technique?",
+    "options": [
+      "T1548.003 Sudo and Sudo Caching",
+      "T1078.003 Local Accounts (Initial Access)",
+      "T1098.004 SSH Authorized Keys",
+      "T1136.001 Local Account (Persistence)"
+    ],
+    "answer": 3,
+    "explain": "Creating a local account is Create Account: Local Account. T1078.003 is the use of an existing local account, and authorized_keys and sudo are other techniques."
+  },
+  {
+    "obj": "3.1",
+    "q": "A Wazuh alert has rule.mitre.id = [\"T1685.002\"], but tactic and technique are empty. What does that mean?",
+    "options": [
+      "Wazuh's internal ATT&CK database does not know the newer ID, so there is no name enrichment; the detection works",
+      "The alert was not written to alerts.json",
+      "The ID does not exist in ATT&CK",
+      "The rule is wrong and does not fire"
+    ],
+    "answer": 0,
+    "explain": "Wazuh adds tactic and technique names from its own copy of the ATT&CK database, which may lag behind the current version. The ID is correct; only the enrichment is missing."
+  },
+  {
+    "obj": "3.1",
+    "q": "Why does T1053.003 Cron in a layer need a tactic field when you map the rule 'new crontab for www-data'?",
+    "options": [
+      "Because Cron has no tactic",
+      "Because the technique is at the same time Execution, Persistence and Privilege Escalation, and your rule primarily sees Persistence",
+      "Because without tactic the layer is not valid",
+      "Because Cron belongs only to the Mobile matrix"
+    ],
+    "answer": 1,
+    "explain": "Techniques with several tactics are colored everywhere without a tactic field. Specifying the tactic shows more accurately what the rule sees in context."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which combination of Sigma tags is correct for a rule about disabling CloudTrail in SigmaHQ style?",
+    "options": [
+      "mitre.t1685.002",
+      "attack.TA0112 and attack.T1685.002",
+      "attack.defense-impairment and attack.t1685.002",
+      "attack.defense_evasion and attack.t1562_008"
+    ],
+    "answer": 2,
+    "explain": "Sigma tags are lowercase, the tactic is written by name with a hyphen, the technique by ID with a dot for the sub-technique. SigmaHQ already uses the new v19+ tactics."
+  },
+  {
+    "obj": "3.1",
+    "q": "What is the first coverage level to check before writing a rule for a technique?",
+    "options": [
+      "Whether a Navigator layer exists",
+      "Whether the technique has sub-techniques",
+      "Whether the technique has a group",
+      "Whether you collect the telemetry (log source / data component) in which the technique would be visible"
+    ],
+    "answer": 3,
+    "explain": "Without telemetry a rule cannot fire. ATT&CK analytics list data components and log sources, so compare them with what you actually collect."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Match the detection from the lab with the ATT&CK technique (v20).",
+    "options": [
+      "Modification of ~/.ssh/authorized_keys (FIM)",
+      "A Kubernetes service account performs list on secrets",
+      "CloudTrail CreateAccessKey for another IAM user",
+      "The same IP tries one password against many users"
+    ],
+    "targets": [
+      "T1110.003 Password Spraying",
+      "T1098.001 Additional Cloud Credentials",
+      "T1098.004 SSH Authorized Keys",
+      "T1552.007 Container API",
+      "T1611 Escape to Host"
+    ],
+    "answer": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "authorized_keys is T1098.004, reading secrets through the K8s API is T1552.007, a new key for another user is T1098.001, and one password against many accounts is spraying. Escape to Host is a distractor."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Order the coverage levels of a technique from the weakest evidence to the strongest.",
+    "options": [
+      "The rule is tested by simulating the technique",
+      "A rule with an ATT&CK tag exists",
+      "The rule is in production with acceptable noise, an owner and a runbook",
+      "Telemetry for the technique is collected"
+    ],
+    "answer": [
+      3,
+      1,
+      0,
+      2
+    ],
+    "explain": "Without telemetry there is nothing; then the rule exists, then it is tested, and only at the end is it sustainable in production."
+  }
+]

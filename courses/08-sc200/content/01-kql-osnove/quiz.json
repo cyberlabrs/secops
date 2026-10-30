@@ -1,0 +1,283 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Analitičar u Microsoft Defender portalu treba pronaći koji je proces na radnim stanicama sa Microsoft Defender for Endpoint pokrenuo powershell.exe sa parametrom -EncodedCommand. Koju tabelu treba koristiti?",
+    "options": [
+      "DeviceEvents",
+      "SecurityEvent",
+      "DeviceProcessEvents",
+      "DeviceImageLoadEvents"
+    ],
+    "answer": 2,
+    "explain": "Pokretanje procesa sa komandnom linijom i roditeljskim procesom (InitiatingProcess*) na uređajima sa MDE je u DeviceProcessEvents. SecurityEvent (4688) je za servere koji šalju Windows Security log preko AMA, DeviceImageLoadEvents je učitavanje DLL-ova, a DeviceEvents sadrži razne druge događaje (ASR, USB, exploit zaštita)."
+  },
+  {
+    "obj": "3.1",
+    "q": "Trebate utvrditi koji su korisnici kliknuli na zlonamjerni URL iz phishing kampanje koji je prošao kroz Safe Links. Koju tabelu treba koristiti u advanced huntingu?",
+    "options": [
+      "UrlClickEvents",
+      "EmailUrlInfo",
+      "DeviceNetworkEvents",
+      "CloudAppEvents"
+    ],
+    "answer": 0,
+    "explain": "UrlClickEvents bilježi klikove na URL-ove zaštićene sa Safe Links (Defender for Office 365). EmailUrlInfo govori koji mailovi SADRŽE URL, ali ne i ko je kliknuo. DeviceNetworkEvents bi pokazao konekcije sa uređaja, ali ne povezuje klik sa mailom."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imate upit:\n\nSecurityEvent\n| where EventID == 4625\n| summarize count() by Account\n| where ??? > 20\n\nKoji naziv kolone treba upisati umjesto ??? da upit radi?",
+    "options": [
+      "count",
+      "Count",
+      "count()",
+      "count_"
+    ],
+    "answer": 3,
+    "explain": "Kada agregacija count() nema alias, KQL kolonu naziva count_. Bolja praksa je dati ime: summarize Neuspjelih = count() by Account."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koji uslov vraća true za vrijednost FileName = \"mimikatz.exe\"?",
+    "options": [
+      "FileName has \"katz\"",
+      "FileName contains \"katz\"",
+      "FileName == \"MIMIKATZ.EXE\"",
+      "FileName has_cs \"Mimikatz\""
+    ],
+    "answer": 1,
+    "explain": "contains traži podniz bez obzira na velika i mala slova, pa nalazi \"katz\". has traži cijeli term (termi su mimikatz i exe), pa \"katz\" nije pogodak. == je case-sensitive, a has_cs \"Mimikatz\" ne odgovara malim slovima u vrijednosti."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imate Microsoft Sentinel workspace povezan sa Defender portalom. Trebate grafikon broja neuspjelih Windows prijava po satu za posljednjih 7 dana. Kako dopuniti upit?\n\nSecurityEvent\n| where TimeGenerated > ago(7d) and EventID == 4625\n| [1]\n| [2]",
+    "options": [
+      "[1] summarize count() by bin(TimeGenerated, 1h)  [2] render timechart",
+      "[1] summarize count() by bin(TimeGenerated, 7d)  [2] render timechart",
+      "[1] top 168 by TimeGenerated  [2] render columnchart",
+      "[1] summarize count() by TimeGenerated  [2] render piechart"
+    ],
+    "answer": 0,
+    "explain": "bin(TimeGenerated, 1h) grupiše događaje u satne korake, a render timechart crta vrijednost kroz vrijeme. Korak od 7 dana daje jedan stubac, top samo uzima redove bez brojanja, a grupisanje po neobrađenom TimeGenerated pravi grupu po svakom trenutku."
+  },
+  {
+    "obj": "3.1",
+    "q": "Hunting upit u Defender portalu treba da pregleda podatke iz DeviceNetworkEvents stare 75 dana. Workspace je povezan, a tabela ima podrazumijevana podešavanja. Šta je NAJJEDNOSTAVNIJE rješenje za buduće istrage?",
+    "options": [
+      "Povećati Data retention u Settings > Endpoints > Advanced features.",
+      "Pokretati upit sa time pickerom postavljenim na Custom range od 90 dana.",
+      "Koristiti search operator umjesto where, jer search pretražuje arhivu.",
+      "U Microsoft Sentinel > Configuration > Tables povećati analytics retenciju za DeviceNetworkEvents iznad 30 dana."
+    ],
+    "answer": 3,
+    "explain": "Native Defender XDR podaci su u advanced huntingu dostupni 30 dana. Da bi bili duže dostupni, tabela se uvodi u Sentinel workspace podizanjem analytics retencije (do 90 dana bez dodatnih troškova skladištenja, uz troškove unosa). Time picker ne može tražiti podatke kojih nema, a search ne pretražuje arhivu."
+  },
+  {
+    "obj": "3.1",
+    "q": "Upit u advanced huntingu vraća poruku da su rezultati djelimični. Upit vraća oko 40.000 redova sa velikim brojem kolona, uključujući AdditionalFields. Koji je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Prekoračeno je ograničenje od 10.000 redova.",
+      "Prekoračen je timeout od 2 minuta.",
+      "Prekoračeno je ograničenje veličine rezultata od 64 MB.",
+      "Tenant je potrošio 100% CPU kvote."
+    ],
+    "answer": 2,
+    "explain": "Ograničenje redova je 100.000, pa 40.000 redova nije problem. Postoji i limit ukupne veličine rezultata od 64 MB, na koji utiču broj kolona i dužina polja; tada portal vraća koliko stane i javlja djelimičan rezultat. Rješenje je project samo potrebnih kolona. Timeout je 10 minuta, a potrošena CPU kvota blokira upit, ne vraća djelimičan rezultat."
+  },
+  {
+    "obj": "3.1",
+    "q": "Trebate pronaći IP adrese sa kojih je u posljednja 24 sata bilo neuspjelih prijava na više od 15 RAZLIČITIH naloga (password spray). Šta treba upisati?\n\nSecurityEvent\n| where TimeGenerated > ago(1d) and EventID == 4625\n| summarize Naloga = ??? by IpAddress\n| where Naloga > 15",
+    "options": [
+      "count()",
+      "dcount(Account)",
+      "make_list(Account)",
+      "countif(Account != \"\")"
+    ],
+    "answer": 1,
+    "explain": "dcount(Account) broji različite naloge po IP adresi, što je obilježje password spraya. count() broji sve pokušaje (i 16 pokušaja na isti nalog bi prošlo), make_list vraća niz, a ne broj, a countif broji redove sa nepraznim nalogom."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imate upit:\n\nDeviceProcessEvents\n| where Timestamp > ago(1d)\n| project Timestamp, DeviceName, FileName\n| where AccountName == \"svc_backup\"\n\nŠta se dešava kada se upit izvrši?",
+    "options": [
+      "Vraća procese koje je pokrenuo svc_backup.",
+      "Vraća sve procese, a uslov na AccountName se ignoriše.",
+      "Vraća prazan rezultat bez greške.",
+      "Upit javlja grešku jer kolona AccountName ne postoji nakon project."
+    ],
+    "answer": 3,
+    "explain": "project zadržava samo navedene kolone, pa AccountName posle njega ne postoji i upit pada sa greškom o nepoznatoj koloni. Filter treba staviti prije project ili dodati AccountName u project."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Poredaj operatore efikasnog hunting upita od prvog do posljednjeg.",
+    "options": [
+      "| summarize Puta = count() by DeviceName, FileName",
+      "| where FileName in~ (\"powershell.exe\", \"pwsh.exe\")",
+      "| render columnchart",
+      "DeviceProcessEvents",
+      "| where Timestamp > ago(7d)"
+    ],
+    "answer": [
+      3,
+      4,
+      1,
+      0,
+      2
+    ],
+    "explain": "Upit počinje tabelom, zatim ide vremenski filter (podaci su particionisani po vremenu), pa ostali filteri, agregacija i na kraju render, koji uvijek mora biti posljednji."
+  },
+  {
+    "obj": "3.1",
+    "q": "Upit pretražuje komandne linije sa where ProcessCommandLine contains \"Invoke-Mimikatz\" nad 30 dana podataka i često prekoračuje CPU kvotu. Koje DVIJE izmjene smanjuju potrošnju resursa bez gubitka relevantnih rezultata? (Izaberi DVA.)",
+    "options": [
+      "Zamijeniti contains sa has, jer se traži cijeli term.",
+      "Dodati extend Cmd = tolower(ProcessCommandLine) i filtrirati po Cmd.",
+      "Dodati vremenski filter na Timestamp kao prvi operator nakon tabele.",
+      "Zamijeniti upit sa search \"Invoke-Mimikatz\"."
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "has koristi indeks terma i brži je od contains kada tražiš cijelu riječ, a rani vremenski filter odbacuje većinu podataka. Izračunata kolona sa tolower se ne može filtrirati preko indeksa i troši CPU, a search bez navedenih tabela pretražuje cijelu šemu."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koliko kolona ima rezultat sljedećeg upita?\n\nStormEvents\n| summarize Steta = sum(DamageProperty), Dogadjaja = count() by State, EventType",
+    "options": [
+      "2",
+      "3",
+      "4",
+      "Sve kolone tabele StormEvents plus 2 nove"
+    ],
+    "answer": 2,
+    "explain": "Rezultat summarize sadrži samo kolone iz by (State, EventType) i agregacije (Steta, Dogadjaja), dakle 4 kolone. Ostale kolone tabele nestaju."
+  },
+  {
+    "obj": "3.1",
+    "q": "Istražujete sumnju da je napadač dodao nalog u grupu Domain Admins u on-premises Active Directoryju koji nadgleda Microsoft Defender for Identity. Koju tabelu treba koristiti?",
+    "options": [
+      "AuditLogs",
+      "IdentityDirectoryEvents",
+      "IdentityLogonEvents",
+      "DeviceRegistryEvents"
+    ],
+    "answer": 1,
+    "explain": "Promjene u AD-u (članstvo u grupama, promjene lozinki, atributa) koje vidi Defender for Identity su u IdentityDirectoryEvents. AuditLogs je za promjene u Microsoft Entra ID, a IdentityLogonEvents su prijave."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Upari pitanje iz istrage sa NAJPRIKLADNIJOM tabelom.",
+    "options": [
+      "Ko je u Azure portalu obrisao Key Vault?",
+      "Koji mailovi su nosili prilog sa datim SHA256?",
+      "Ko je u Microsoft Entra promijenio vlasnika aplikacije?",
+      "Koji uređaj se spojio na IP adresu C2 servera?",
+      "Koji Linux serveri šalju sshd poruke o neuspjelim prijavama?"
+    ],
+    "targets": [
+      "Syslog",
+      "AzureActivity",
+      "DeviceNetworkEvents",
+      "EmailAttachmentInfo",
+      "AuditLogs",
+      "SigninLogs"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      2,
+      0
+    ],
+    "explain": "Operacije nad Azure resursima su u AzureActivity, prilozi u EmailAttachmentInfo, promjene objekata u Entra ID u AuditLogs, konekcije sa uređaja u DeviceNetworkEvents, a Linux sshd poruke stižu u Syslog. SigninLogs su prijave korisnika, ne promjene objekata."
+  },
+  {
+    "obj": "3.1",
+    "q": "Trebate pronaći procese pokrenute iz Microsoft Office aplikacija bez obzira na to kako je ime fajla napisano (velika/mala slova). Koji uslov je ispravan?",
+    "options": [
+      "where InitiatingProcessFileName in~ (\"winword.exe\", \"excel.exe\")",
+      "where InitiatingProcessFileName in (\"winword.exe\", \"excel.exe\")",
+      "where InitiatingProcessFileName == \"winword.exe\" or \"excel.exe\"",
+      "where InitiatingProcessFileName has_all (\"winword.exe\", \"excel.exe\")"
+    ],
+    "answer": 0,
+    "explain": "in~ poredi sa listom vrijednosti bez obzira na velika i mala slova. in je case-sensitive, izraz sa or \"excel.exe\" nije ispravan KQL uslov, a has_all traži da vrijednost sadrži sve terme istovremeno."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imate upit:\n\nSecurityEvent\n| where TimeGenerated > ago(1d)\n| where EventID == 4625\n| summarize C = count() by Account, bin(TimeGenerated, 1h)\n| where C > 50\n| summarize Sati = count() by Account\n\nŠta predstavlja kolona Sati?",
+    "options": [
+      "Broj sati u kojima je nalog imao više od 50 neuspjelih prijava.",
+      "Ukupan broj neuspjelih prijava naloga u posljednja 24 sata.",
+      "Broj sati od prve do posljednje neuspjele prijave naloga.",
+      "Broj naloga sa više od 50 neuspjelih prijava po satu."
+    ],
+    "answer": 0,
+    "explain": "Prvi summarize pravi red po nalogu i satu, where zadržava samo nalog-sate sa više od 50 neuspjeha, a drugi summarize broji te redove po nalogu. Dakle, Sati je broj sati sa više od 50 neuspjelih prijava."
+  },
+  {
+    "obj": "3.1",
+    "q": "Napisali ste upit u advanced huntingu sa filterom where Timestamp > ago(3d), a time range birač iznad editora je postavljen na 30 dana. Koji period upit pretražuje?",
+    "options": [
+      "30 dana, jer birač ima prednost.",
+      "3 dana, jer filter u upitu ima prednost.",
+      "Presjek: 3 dana, ali samo ako je birač postavljen na Custom.",
+      "Upit javlja grešku zbog konflikta vremenskih opsega."
+    ],
+    "answer": 1,
+    "explain": "Kada upit sadrži sopstveni vremenski filter, on se primjenjuje, a birač prikazuje da je vrijeme postavljeno u upitu. Zato je dobra praksa da filter vremena uvijek bude u samom upitu."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koje DVIJE tvrdnje o vremenu u advanced huntingu su tačne? (Izaberi DVA.)",
+    "options": [
+      "Svi podaci su pohranjeni u UTC i upite treba pisati u UTC.",
+      "Defender XDR tabele koriste kolonu Timestamp, a Sentinel tabele TimeGenerated.",
+      "Funkcija now() vraća lokalno vrijeme podešeno u portalu.",
+      "Rupe u summarize ... by bin() se automatski popunjavaju nulama."
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explain": "Advanced hunting radi u UTC, a portal samo prikazuje rezultate u izabranoj zoni. Native XDR tabele imaju Timestamp, a Sentinel tabele TimeGenerated. now() je UTC, a summarize ne pravi redove za intervale bez podataka (za to služi make-series)."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imate tabelu AzureFirewall. Trebate pronaći izvorne IP adrese koje su pokušale konekcije na više od 20 različitih odredišnih portova i bile blokirane, sortirane od najvećeg broja portova. Koji upit to radi?",
+    "options": [
+      "AzureFirewall | where Action == \"Deny\" | top 20 by DestinationPort | sort by SourceIp",
+      "AzureFirewall | where Action == \"Deny\" | summarize Portova = count() by SourceIp, DestinationPort | where Portova > 20",
+      "AzureFirewall | summarize Portova = dcount(DestinationPort) by SourceIp | where Portova > 20 | where Action == \"Deny\"",
+      "AzureFirewall | where Action == \"Deny\" | summarize Portova = dcount(DestinationPort) by SourceIp | where Portova > 20 | sort by Portova desc"
+    ],
+    "answer": 3,
+    "explain": "Treba prvo filtrirati blokirane konekcije, zatim brojati različite portove po izvoru (dcount), filtrirati grupe i sortirati. Treći upit filtrira Action nakon summarize, kada ta kolona više ne postoji. Drugi broji pokušaje po paru izvor-port, a ne broj portova."
+  },
+  {
+    "obj": "3.1",
+    "q": "Želite da upit iz advanced huntinga koji pronalazi sumnjive procese pokrenute iz Office aplikacija automatski stvara alarme svakih sat vremena. Šta treba uraditi?",
+    "options": [
+      "Sačuvati upit kao shared query i podesiti mu raspored.",
+      "Napraviti workbook sa tim upitom i uključiti auto refresh na 1 sat.",
+      "Iz advanced huntinga izabrati Create detection rule i definisati frekvenciju i entitete.",
+      "Dodati upit u Microsoft Sentinel > Threat management > Hunting i označiti ga kao bookmark."
+    ],
+    "answer": 2,
+    "explain": "Hunting upit se pretvara u custom detection rule (Create detection rule), koji se izvršava po rasporedu i pravi alarme. Shared query nema raspored, workbook samo prikazuje podatke, a hunting upiti i bookmarks ne prave alarme automatski."
+  },
+  {
+    "type": "spot",
+    "obj": "3.1",
+    "q": "Upit u advanced huntingu vraća semantičku grešku (kolona se ne može razriješiti). Klikni red koji je uzrok.",
+    "snippet": "DeviceLogonEvents\n| where Timestamp > ago(1d)\n| where ActionType == \"LogonFailed\"\n| summarize Failures = count() by DeviceName, bin(Timestamp, 1h)\n| where Failures > 50\n| project Timestamp, DeviceName, AccountName, Failures\n| sort by Failures desc",
+    "lang": "kql",
+    "answer": [
+      5
+    ],
+    "explain": "Poslije summarize ostaju samo kolone iz by dijela (DeviceName i Timestamp kao bin) i agregat Failures. AccountName više ne postoji, pa project pada. Ispravka: dodaj AccountName u by (summarize Failures = count() by DeviceName, AccountName, bin(Timestamp, 1h)) ili je ukloni iz project."
+  }
+]

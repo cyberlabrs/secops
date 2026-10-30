@@ -1,0 +1,254 @@
+[
+  {
+    "obj": "2.4",
+    "q": "Napisao si politiku `path \"secret/kurs-shop/ci/*\" { capabilities = [\"read\"] }` i dao je tokenu. `vault kv get -mount=secret kurs-shop/ci/registry` vraća 403 permission denied. Šta je uzrok?",
+    "options": [
+      "Token nema politiku default, pa ne može čitati KV",
+      "KV v2 podatke čita sa putanje secret/data/kurs-shop/ci/registry, a politika ne pokriva tu putanju",
+      "Capability read nije dovoljan za KV v2; potreban je i list",
+      "Dev server ne primjenjuje politike na tokene napravljene root tokenom"
+    ],
+    "answer": 1,
+    "explain": "KV v2 ispod CLI-ja koristi API putanje secret/data/... (podaci) i secret/metadata/... (lista). Politika mora pominjati secret/data/kurs-shop/ci/*. list je potreban samo za listanje, a dev server politike primjenjuje normalno."
+  },
+  {
+    "obj": "2.4",
+    "q": "Konfigurišeš JWT ulogu za GitLab deploy job. Koja kombinacija sprječava da developer iz feature grane izmijeni .gitlab-ci.yml i pročita produkcijske tajne?",
+    "options": [
+      "bound_claims sa project_path i ref_protected: \"true\", plus bound_audiences sa Vault URL-om",
+      "Samo bound_audiences: \"https://vault.kurs-shop.ba\"",
+      "user_claim: \"user_email\" i token_ttl: 10m",
+      "bound_claims sa namespace_path: \"shop\""
+    ],
+    "answer": 0,
+    "explain": "project_path ograničava ulogu na jedan projekat, a ref_protected na zaštićene grane na koje developer ne može direktno pushati. bound_audiences samo potvrđuje da je token namijenjen Vaultu, user_claim služi za imenovanje entiteta, a namespace_path dozvoljava svaki projekat u grupi i svaku granu."
+  },
+  {
+    "obj": "2.4",
+    "q": "Stari pipeline koristi `vault write auth/jwt/login role=ci jwt=$CI_JOB_JWT_V2`. Nakon nadogradnje GitLaba login pada jer je varijabla prazna. Kako se ispravno dobija token?",
+    "options": [
+      "Uključiti CI_JOB_JWT u postavkama projekta pod CI/CD > Token Access",
+      "Koristiti $CI_JOB_TOKEN kao jwt parametar",
+      "Dodati u job id_tokens: VAULT_ID_TOKEN: aud: https://vault.kurs-shop.ba i koristiti $VAULT_ID_TOKEN",
+      "Napraviti personal access token i staviti ga u masked varijablu"
+    ],
+    "answer": 2,
+    "explain": "CI_JOB_JWT i CI_JOB_JWT_V2 su uklonjeni; ID token se traži ključem id_tokens sa obaveznim aud. CI_JOB_TOKEN nije JWT za Vault nego token za GitLab API, a PAT u varijabli je upravo statična tajna koju želimo izbjeći."
+  },
+  {
+    "obj": "2.4",
+    "q": "U jobu koristiš `secrets: DB_PASSWORD: vault: kurs-shop/prod/db/password@secret` sa token: $VAULT_ID_TOKEN. Skripta `psql` javlja da je lozinka pogrešna, a `echo ${#DB_PASSWORD}` daje dužinu putanje poput /builds/...tmp/DB_PASSWORD. Šta nedostaje?",
+    "options": [
+      "VAULT_AUTH_PATH: jwt",
+      "file: false ispod DB_PASSWORD",
+      "engine: name: kv-v2",
+      "Varijabla VAULT_NAMESPACE"
+    ],
+    "answer": 1,
+    "explain": "Po defaultu GitLab tajnu iz Vaulta upisuje u privremeni fajl i u varijablu stavlja putanju do njega. file: false stavlja vrijednost direktno u varijablu. kv-v2 je već default engine, jwt je default auth putanja, a namespace je potreban samo za HCP/Enterprise namespaceove."
+  },
+  {
+    "obj": "2.4",
+    "q": "Stari cron server na on-prem mašini treba čitati jednu tajnu iz Vaulta. Nema Kubernetes, nema oblak, nema OIDC identitet. Koja auth metoda je najprikladnija?",
+    "options": [
+      "JWT auth sa GitLab ID tokenom",
+      "Kubernetes auth",
+      "Userpass sa lozinkom u crontab fajlu",
+      "AppRole sa role_id u konfiguraciji i secret_id dostavljenim kroz response wrapping"
+    ],
+    "answer": 3,
+    "explain": "AppRole je napravljen za mašine bez platformskog identiteta; role_id nije tajna, a secret_id se dostavlja odvojeno i kratko živi. JWT i Kubernetes auth traže identitet koji ovaj server nema, a userpass sa lozinkom u fajlu je statična tajna namijenjena ljudima."
+  },
+  {
+    "obj": "2.4",
+    "q": "Deploy alat preda aplikaciji wrapping token za AppRole secret_id. Aplikacija pozove `vault unwrap` i dobije grešku da token ne postoji, iako TTL od 120 s nije istekao. Šta to najvjerovatnije znači?",
+    "options": [
+      "Neko je već raspakovao token, pa je secret_id možda presretnut; treba istražiti i opozvati ga",
+      "Aplikacija mora koristiti vault write auth/approle/login umjesto unwrap",
+      "secret_id_num_uses je postavljen na 1",
+      "Wrapping token radi samo uz root token"
+    ],
+    "answer": 0,
+    "explain": "Wrapping token je jednokratan; ako unwrap pada prije isteka, neko drugi ga je već iskoristio. To je upravo detekcija presretanja koju response wrapping daje. secret_id_num_uses se odnosi na login, ne na unwrap, a unwrap ne traži root."
+  },
+  {
+    "obj": "2.4",
+    "q": "Prije nego što politiku kurs-shop-ci daš pipelineu, želiš provjeriti da token sa njom NE može čitati secret/data/kurs-shop/prod/app. Koja komanda to najdirektnije pokazuje?",
+    "options": [
+      "vault policy read kurs-shop-ci",
+      "vault token lookup <token>",
+      "vault token capabilities <token> secret/data/kurs-shop/prod/app",
+      "vault kv metadata get -mount=secret kurs-shop/prod/app"
+    ],
+    "answer": 2,
+    "explain": "token capabilities izračuna stvarne dozvole tokena na putanji (npr. deny) uzimajući u obzir sve politike, glob i deny pravila. policy read samo ispisuje tekst, token lookup pokazuje imena politika i TTL, a metadata get radi pod tvojim tokenom."
+  },
+  {
+    "obj": "2.4",
+    "q": "Nalaz pentesta: produkcijska aplikacija koristi istu PostgreSQL lozinku kao i CI testovi i tri developera; lozinka nije mijenjana dvije godine. Šta najviše smanjuje rizik uz najmanje promjena u aplikaciji?",
+    "options": [
+      "Prebaciti lozinku u KV v2 i postaviti max-versions=10",
+      "Database secrets engine sa ulogom po klijentu i default_ttl od nekoliko sati, uz Vault Agent koji renderuje kredencijale u fajl",
+      "Lozinku staviti u masked i protected GitLab varijablu",
+      "Šifrovati lozinku Transit engineom i šifrat čuvati u repou"
+    ],
+    "answer": 1,
+    "explain": "Dinamičke tajne daju jedinstven, kratkotrajan kredencijal po klijentu i audit zna tačno ko je šta koristio; Agent renderuje fajl pa se aplikacija gotovo ne mijenja. KV i masked varijabla i dalje čuvaju jednu dijeljenu statičnu lozinku, a šifrat u repou ne rješava dijeljenje ni rotaciju."
+  },
+  {
+    "obj": "2.4",
+    "q": "Runner na kojem je radio deploy job je kompromitovan. Job je čitao dinamičke DB kredencijale iz database/creds/kurs-shop-app. Šta je najbrža ciljana reakcija u Vaultu?",
+    "options": [
+      "vault secrets disable database",
+      "vault kv destroy -mount=secret -versions=1 kurs-shop/prod/db",
+      "vault write -force database/rotate-root/kurs-shop-db",
+      "vault lease revoke -prefix database/creds/kurs-shop-app"
+    ],
+    "answer": 3,
+    "explain": "revoke -prefix opoziva sve lease-ove te uloge i Vault briše pripadajuće DB korisnike. Gašenje enginea ruši sve aplikacije, KV destroy nema veze sa dinamičkim kredencijalima, a rotate-root mijenja samo Vaultovu admin lozinku, ne već izdate korisnike."
+  },
+  {
+    "obj": "2.4",
+    "q": "Nakon konfigurisanja database enginea odmah pokrećeš `vault write -force database/rotate-root/kurs-shop-db`. Zašto?",
+    "options": [
+      "Da lozinku admin korisnika koju si unio u config zna samo Vault, pa više ne postoji kopija u istoriji shella ili tiketu",
+      "Da Vault napravi prvog dinamičkog korisnika",
+      "Da obnovi lease svih izdatih kredencijala",
+      "Bez toga allowed_roles ne stupa na snagu"
+    ],
+    "answer": 0,
+    "explain": "rotate-root mijenja lozinku korisnika kojim se Vault spaja na bazu; nakon toga je ne zna niko osim Vaulta. Ne pravi dinamičke korisnike, ne dira lease-ove i nema veze sa allowed_roles."
+  },
+  {
+    "obj": "2.4",
+    "q": "Kratki CI job traje 2 minute i treba token samo da pročita dvije tajne. Želiš da token ne opterećuje Vault storage i da ga je nemoguće obnoviti. Šta postavljaš na JWT ulozi?",
+    "options": [
+      "token_period=24h",
+      "token_type=batch sa kratkim token_ttl",
+      "token_no_default_policy=true",
+      "token_num_uses=0"
+    ],
+    "answer": 1,
+    "explain": "Batch tokeni se ne upisuju u storage i ne mogu se obnavljati, idealni su za kratke, masovne jobove. Periodični token se obnavlja unedogled (suprotno od cilja), no_default_policy samo uklanja default politiku, a num_uses=0 znači neograničen broj upotreba."
+  },
+  {
+    "obj": "2.4",
+    "q": "Kolega predlaže da se za Vault login iz GitLaba koristi AppRole: role_id i secret_id bi bili masked varijable u projektu. Koji je glavni problem?",
+    "options": [
+      "AppRole ne radi sa GitLab runnerima",
+      "AppRole ne podržava politike sa deny",
+      "Masked varijable ne mogu sadržavati UUID",
+      "secret_id u CI/CD varijabli je opet statična dugovječna tajna dostupna maintainerima, a pristup se ne veže za granu ili projekat kao kod ID tokena"
+    ],
+    "answer": 3,
+    "explain": "Time se samo premješta statična tajna u GitLab. JWT sa id_tokens nema tajne za čuvanje, a bound_claims vežu pristup za projekat i zaštićenu granu. AppRole tehnički radi u CI-ju i podržava sve politike; masked varijable mogu sadržavati UUID."
+  },
+  {
+    "obj": "2.4",
+    "q": "Tim pokreće aplikaciju na Kubernetesu i želi da Vault dinamički DB kredencijali stižu u Pod, da se lease automatski obnavlja i da tajna ne završi u etcd-u. Šta je najbolji izbor?",
+    "options": [
+      "External Secrets Operator koji pravi Kubernetes Secret",
+      "Vault Agent Injector koji renderuje kredencijale u fajl na tmpfs volumenu Poda",
+      "ConfigMap koji CI job puni iz Vaulta pri svakom deployu",
+      "Tajna upisana kao ENV u Dockerfileu tokom builda"
+    ],
+    "answer": 1,
+    "explain": "Vault Agent u sidecaru se sam autentifikuje, obnavlja lease i renderuje tajnu u memorijski volumen, bez Kubernetes Secreta. ESO pravi Secret objekat u etcd-u, ConfigMap nije namijenjen tajnama, a ENV u slici je antipattern sa kojim i počinjemo."
+  },
+  {
+    "obj": "2.4",
+    "q": "Na KV v2 je pogrešnom komandom prepisana tajna kurs-shop/prod/app (sada je verzija 4 neispravna). Kako najbrže vratiš prethodnu vrijednost?",
+    "options": [
+      "vault kv undelete -mount=secret -versions=4 kurs-shop/prod/app",
+      "vault kv destroy -mount=secret -versions=4 kurs-shop/prod/app",
+      "vault kv rollback -mount=secret -version=3 kurs-shop/prod/app",
+      "Nije moguće; KV čuva samo zadnju verziju"
+    ],
+    "answer": 2,
+    "explain": "rollback upisuje sadržaj verzije 3 kao novu verziju 5. undelete vraća soft-obrisanu verziju (verzija 4 nije obrisana), destroy trajno briše verziju 4 ali ne vraća 3 kao aktuelnu, a KV v2 čuva više verzija (to je razlika u odnosu na KV v1)."
+  },
+  {
+    "obj": "2.4",
+    "q": "Za JWT ulogu `vault write auth/jwt/role/deploy role_type=jwt bound_claims=project_path=shop/kurs-shop ...` vraća grešku oko bound_claims. Kako se uloga ispravno upisuje?",
+    "options": [
+      "Kao JSON preko stdin-a (vault write auth/jwt/role/deploy - <<EOF ... EOF) jer je bound_claims mapa",
+      "Sa bound_claims_type=string",
+      "Dodavanjem -force",
+      "Postavljanjem bound_subject umjesto bound_claims"
+    ],
+    "answer": 0,
+    "explain": "bound_claims je mapa i ne može se zadati kao jednostavan key=value parametar na CLI-ju; uloga se piše kao JSON. bound_claims_type bira string ili glob poređenje, ne format unosa; -force je za pisanje bez podataka, a bound_subject veže samo sub claim."
+  },
+  {
+    "obj": "2.4",
+    "type": "order",
+    "q": "Poredaj korake postavljanja Vault pristupa za GitLab deploy job bez statičnih tajni.",
+    "options": [
+      "U .gitlab-ci.yml dodati id_tokens sa aud i login vault write auth/jwt/login role=kurs-shop-deploy",
+      "vault auth enable jwt",
+      "vault write auth/jwt/config oidc_discovery_url=... bound_issuer=...",
+      "Napraviti JWT ulogu sa bound_audiences, bound_claims i token_policies=kurs-shop-deploy",
+      "Obrisati stare tajne iz GitLab CI/CD varijabli"
+    ],
+    "answer": [
+      1,
+      2,
+      3,
+      0,
+      4
+    ],
+    "explain": "Auth metoda se prvo uključi, pa konfiguriše (kako Vault provjerava potpis GitLab tokena), pa se pravi uloga sa ograničenjima. Tek tada job može raditi login preko ID tokena, a stare statične varijable se brišu tek kad novi put radi."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Upari Vault mehanizam sa situacijom u kojoj ga koristiš.",
+    "options": [
+      "KV v2",
+      "Database secrets engine",
+      "Response wrapping",
+      "Batch token",
+      "Audit device"
+    ],
+    "targets": [
+      "Treba dokazati ko je čitao tajnu prije incidenta",
+      "Slack webhook i API ključ treće strane koje Vault ne može sam praviti",
+      "Kratak CI job, puno paralelnih izvršavanja, bez obnove tokena",
+      "Jedinstveni PostgreSQL korisnik po klijentu koji nestaje nakon sat vremena",
+      "Bezbjedna dostava AppRole secret_id preko posrednika",
+      "Šifrovanje podataka aplikacije bez čuvanja podataka u Vaultu"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      2,
+      0
+    ],
+    "explain": "KV je za statične tajne trećih strana, database engine za dinamičke DB korisnike, wrapping za jednokratnu dostavu secret_id, batch token za kratke jobove, audit za odgovor na pitanje ko je čitao. Šifrovanje bez čuvanja je Transit, koji ovdje nije ponuđen."
+  },
+  {
+    "obj": "2.4",
+    "q": "Kolega je za lab pokrenuo `vault server -dev` na dijeljenoj VM i tamo upisao prave produkcijske tajne „privremeno“. Šta je NAJVEĆI problem?",
+    "options": [
+      "Dev server ne podržava KV v2",
+      "Dev server ne podržava politike",
+      "Dev server čuva podatke samo u memoriji, radi bez TLS-a, automatski je unsealed i ima poznat root token",
+      "Dev server ne može praviti dinamičke tajne"
+    ],
+    "answer": 2,
+    "explain": "Dev mod je namijenjen učenju: bez TLS-a i sa root tokenom ispisanim u logu, a podaci nestaju restartom. KV v2 je u dev modu montiran na secret/, politike rade, a dinamički engineovi se mogu uključiti."
+  },
+  {
+    "type": "spot",
+    "obj": "2.4",
+    "q": "Aplikacija sa ovom politikom dobija 403 za vault kv get secret/kurs-shop/prod/db, a politika uz to daje više nego što aplikaciji treba. Označi problematične redove.",
+    "snippet": "# kurs-shop-prod-app: aplikacija samo čita svoje tajne (KV v2 na secret/)\npath \"secret/kurs-shop/prod/*\" {\n  capabilities = [\"read\"]\n}\n\npath \"secret/metadata/kurs-shop/prod/*\" {\n  capabilities = [\"list\", \"delete\"]\n}\n\npath \"database/creds/kurs-shop-ro\" {\n  capabilities = [\"read\"]\n}",
+    "lang": "hcl",
+    "answer": [
+      1,
+      6
+    ],
+    "explain": "Kod KV v2 čitanje ide preko API putanje secret/data/..., pa putanja bez data/ ne pokriva kv get i odatle 403; ispravno je path \"secret/data/kurs-shop/prod/*\". delete na metadata putanji trajno briše sve verzije i metapodatke tajne, što aplikaciji koja samo čita nikad ne treba; ostavi samo list. Pravilo za database/creds/kurs-shop-ro je ispravno: read-only dinamički kredencijali."
+  }
+]

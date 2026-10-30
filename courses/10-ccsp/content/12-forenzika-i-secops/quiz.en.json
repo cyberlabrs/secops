@@ -1,0 +1,304 @@
+[
+  {
+    "obj": "5.4",
+    "q": "An organization uses IaaS. An EDR alert shows that a web server is compromised, and the instance is in an auto scaling group that terminates unhealthy instances. What should the incident response team do FIRST?",
+    "options": [
+      "Immediately shut down the instance to stop further damage.",
+      "Delete the instance and launch a new one from a verified template.",
+      "Detach the instance from the auto scaling group and isolate it at the network level, then collect memory and a disk snapshot.",
+      "Request a physical copy of the host's disk from the provider."
+    ],
+    "answer": 2,
+    "explain": "First, auto scaling must be prevented from destroying the evidence and the damage stopped by isolation, then memory and disk are taken according to the order of volatility. Shutting down and deleting destroy volatile evidence, and because of multitenancy the CSP does not provide the host's physical disk."
+  },
+  {
+    "obj": "5.4",
+    "q": "Which activity BEST proves that a disk snapshot handed over to the legal department has not been modified since acquisition?",
+    "options": [
+      "A cryptographic hash computed at acquisition and recorded in the chain of custody, recomputed at handover.",
+      "Encrypting the snapshot with the forensic team's key.",
+      "Storing the snapshot in the same account where the incident occurred.",
+      "A written statement from the administrator that no one opened the snapshot."
+    ],
+    "answer": 0,
+    "explain": "Integrity is proven by comparing hash values recorded in the chain of custody. Encryption protects confidentiality but does not prove the evidence is unchanged; storing it in the compromised account is bad practice, and a statement without technical proof is weak."
+  },
+  {
+    "obj": "5.4",
+    "q": "A company uses a SaaS CRM. The legal department requests forensic data on access to certain records that is not available in the application's audit log. What is the BEST source of a solution?",
+    "options": [
+      "Run a forensic tool on the SaaS provider's servers.",
+      "Gain access to the provider's logs through a penetration test.",
+      "Reconstruct the access from local proxy logs as the only evidence.",
+      "Rely on the contractual provisions on cooperation in investigations and request the data from the provider through the agreed procedure."
+    ],
+    "answer": 3,
+    "explain": "In SaaS the customer has no access to the infrastructure, so forensics depends on the contract (log availability, retention, cooperation). Accessing the provider's servers or testing without authorization is not permitted, and proxy logs are a useful supplement but do not see activity inside the application."
+  },
+  {
+    "obj": "5.4",
+    "q": "What is MOST important for the forensic readiness of a cloud environment?",
+    "options": [
+      "Buying the latest memory analysis tool.",
+      "Logs enabled in advance and stored centrally and immutably, a defined retention period, and contracted CSP cooperation.",
+      "Training all developers to use forensic tools.",
+      "Monthly penetration tests."
+    ],
+    "answer": 1,
+    "explain": "Forensic readiness means that evidence is available when needed: logs enabled, protected from deletion, retained long enough, and the CSP's contractual obligations clear. Tools and training without data don't help, and a pentest is not forensic preparation."
+  },
+  {
+    "obj": "5.4",
+    "q": "An investigator copies logs to a portable drive, analyzes them at home, and returns them the next day, but does not record this anywhere. Which evidence management principle is MOST violated?",
+    "options": [
+      "Order of volatility",
+      "Data minimization",
+      "Least functionality",
+      "Chain of custody"
+    ],
+    "answer": 3,
+    "explain": "The chain of custody requires an unbroken record of who had the evidence, when, and where. An unrecorded transfer outside the controlled environment creates a gap that the opposing party can use to challenge the authenticity of the evidence."
+  },
+  {
+    "obj": "5.4",
+    "q": "According to the order of volatility, which of the following sources should be collected FIRST from a compromised cloud instance?",
+    "options": [
+      "Snapshot of the root volume",
+      "Contents of RAM and active network connections",
+      "Control plane logs in the central log account",
+      "Nightly backup of the instance"
+    ],
+    "answer": 1,
+    "explain": "Memory and connection state disappear on shutdown or restart. The disk, central logs, and backup are more persistent and can be taken later."
+  },
+  {
+    "obj": "5.4",
+    "q": "An organization anticipates a lawsuit from a former employee. The retention policy automatically deletes e-mails older than 90 days. What should be done?",
+    "options": [
+      "Apply a legal hold to the relevant mailboxes and data, which suspends automatic deletion.",
+      "Keep the retention policy because it is documented and approved.",
+      "Export all e-mails of the entire company to a local disk.",
+      "Wait for a court order before taking any action."
+    ],
+    "answer": 0,
+    "explain": "When litigation is reasonably anticipated, a duty to preserve arises, so a legal hold is applied in a targeted way. Continued deletion can be treated as destruction of evidence (spoliation), a mass export violates minimization, and waiting for an order is too late."
+  },
+  {
+    "obj": "5.5",
+    "q": "A cloud provider notifies a customer that an incident in its infrastructure may have exposed the personal data of the customer's EU clients. Who is responsible for notifying the supervisory authority under GDPR?",
+    "options": [
+      "The cloud provider, because the incident occurred there.",
+      "No one, until forensics confirms exfiltration.",
+      "The customer as controller, with the provider, as processor, obliged to notify it without undue delay.",
+      "The provider's national CERT."
+    ],
+    "answer": 2,
+    "explain": "Under GDPR, the controller notifies the supervisory authority of the breach (Art. 33), and the processor must notify the controller without undue delay. The 72-hour deadline runs from the controller becoming aware, not from the end of the forensic investigation."
+  },
+  {
+    "obj": "5.5",
+    "q": "During a serious incident, a journalist calls a SOC engineer and asks for a comment. What should the engineer do?",
+    "options": [
+      "Give a short technical statement to reassure the public.",
+      "Refer the journalist to the authorized person per the communication plan and make no statement.",
+      "Confirm the incident but give no details.",
+      "Deny that the incident happened until the investigation is complete."
+    ],
+    "answer": 1,
+    "explain": "Public communication goes only through authorized persons (PR, legal), so the message is unified and legally reviewed. Any statement by an individual, even a confirmation, can harm the investigation and the company's legal position."
+  },
+  {
+    "obj": "5.5",
+    "q": "An attacker has compromised the company's e-mail tenant. How should the IR team communicate during the incident?",
+    "options": [
+      "Through the same e-mail system, but with encrypted messages.",
+      "Through public social networks for speed.",
+      "Through the collaboration channel in the same compromised tenant.",
+      "Through a pre-prepared out-of-band channel that does not depend on the compromised environment."
+    ],
+    "answer": 3,
+    "explain": "If the communication platform is compromised, the attacker can read the response plans. The communication plan therefore provides for an alternative (out-of-band) channel. Encryption doesn't help if the attacker controls the account."
+  },
+  {
+    "obj": "5.5",
+    "q": "A company discovered that a compromised OAuth token allows access to the API of a business partner it is integrated with. What is the BEST next communication step?",
+    "options": [
+      "Immediately notify the partner via the agreed security contact and share the relevant indicators of compromise.",
+      "Do not notify the partner until the internal investigation is complete.",
+      "Publish the indicators publicly on a blog.",
+      "Notify only the regulator, who will then notify the partner."
+    ],
+    "answer": 0,
+    "explain": "The partner is directly at risk, so it should be notified quickly, through the agreed channel and based on the contract/NDA, with IoCs so it can revoke the token and check its logs. Waiting allows spread, and public disclosure is not appropriate."
+  },
+  {
+    "obj": "5.5",
+    "q": "An organization has cyber insurance. During an incident, the IR manager wants to engage an external IR firm immediately. What is important to check FIRST?",
+    "options": [
+      "Whether the external firm has the lowest daily rate.",
+      "Whether the firm has an office in the same city.",
+      "The policy terms: the obligation and deadline to notify the insurer and whether the insurer must approve the choice of IR firm.",
+      "Whether the incident has already been reported in the media."
+    ],
+    "answer": 2,
+    "explain": "Policies often require prompt notification and the use of approved (panel) vendors. Failure to comply can lead to loss of coverage. The insurer is a stakeholder that must be in the communication plan."
+  },
+  {
+    "obj": "5.5",
+    "q": "A government authority requested customer data from a cloud provider with a prohibition on notifying the customer. What can the customer BEST do to manage this risk?",
+    "options": [
+      "Demand that the provider violate the prohibition and notify it.",
+      "Regulate in advance by contract how the provider handles government requests (transparency within the limits of the law, challenging overly broad requests) and encrypt data with keys under its own control.",
+      "Move all data to another region of the same provider.",
+      "Nothing, because this is exclusively the provider's risk."
+    ],
+    "answer": 1,
+    "explain": "The provider may be legally prevented from notifying the customer. The customer manages the risk in advance: through contractual provisions on handling government requests and technical controls such as keys under its control. Changing regions with the same provider does not change jurisdiction over the provider."
+  },
+  {
+    "obj": "5.6",
+    "q": "A small company without a security team wants 24/7 monitoring of its cloud environment. Which model is MOST appropriate and what must remain with the company?",
+    "options": [
+      "An outsourced SOC (MSSP/MDR); accountability for risk and decisions remains with the company, with a clear SLA and escalation rules.",
+      "An internal SOC with three shifts; responsibility is shared with the CSP.",
+      "An outsourced SOC; responsibility for incidents passes to the MSSP.",
+      "No SOC, because the CSP monitors the entire environment under the shared responsibility model."
+    ],
+    "answer": 0,
+    "explain": "For a small company, an MSSP/MDR provides 24/7 coverage, but accountability cannot be outsourced. The CSP monitors its own infrastructure, not the customer's configuration and identities."
+  },
+  {
+    "obj": "5.6",
+    "q": "The security team wants to detect an attacker moving laterally within the environment, with the FEWEST false positives. Which control is BEST?",
+    "options": [
+      "Signature-based IDS at the perimeter",
+      "Anomaly-based IDS with a low threshold",
+      "Honeytokens (fake credentials and resources) whose every use generates an alert",
+      "Additional WAF rules"
+    ],
+    "answer": 2,
+    "explain": "Legitimate users don't use decoys, so any access to a honeytoken is a high-confidence alert. An anomaly IDS with a low threshold creates many false positives, and a perimeter IDS and WAF don't see internal movement."
+  },
+  {
+    "obj": "5.6",
+    "q": "A new rule set needs to be introduced into an inline IPS protecting a production application. Which approach BEST balances security and availability?",
+    "options": [
+      "Enable all rules immediately in block mode.",
+      "Don't introduce new rules because the IPS threatens availability.",
+      "Introduce the rules only in the test environment and never in production.",
+      "First run the rules in detection (alert-only) mode, analyze false positives, then switch them to block mode in a controlled way through change management."
+    ],
+    "answer": 3,
+    "explain": "An inline IPS can block legitimate traffic. Gradual introduction through detection mode and change management reduces the risk of an outage while still introducing the protection."
+  },
+  {
+    "obj": "5.6",
+    "q": "An attacker with a compromised administrator account in the production account is trying to erase traces. Which logging architecture BEST protects the evidence?",
+    "options": [
+      "Logs are stored locally on each instance.",
+      "Logs are sent to a separate log archive account with restricted access, into immutable (WORM) storage, with integrity validation.",
+      "Logs are stored in a bucket in the production account with versioning enabled.",
+      "Logs are deleted after 7 days to reduce exposure."
+    ],
+    "answer": 1,
+    "explain": "Separation into a dedicated account and WORM prevent the administrator of the compromised account from deleting logs. Versioning in the same account can be disabled by the admin, and local logs disappear with the instance."
+  },
+  {
+    "obj": "5.6",
+    "q": "The SOC receives thousands of alerts daily and analysts are missing real incidents. Which measure helps the MOST?",
+    "options": [
+      "Hire more Tier 1 analysts without other changes.",
+      "Disable all low-severity alerts.",
+      "Tune detections to use cases and context, introduce correlation, enrichment, and SOAR automation of triage, with AI assistance supervised by analysts.",
+      "Move all logs to cheaper storage."
+    ],
+    "answer": 2,
+    "explain": "Alert fatigue is solved by detection quality, correlation, and automation, and AI helps by grouping and summarizing with a human making the decision. Blindly disabling alerts creates blind spots, and just more people doesn't scale."
+  },
+  {
+    "obj": "5.6",
+    "q": "An organization wants to test the security of its IaaS environment at a public provider. What should be done FIRST?",
+    "options": [
+      "Run a DoS test to check resilience.",
+      "Also test the provider's services to see whether the infrastructure is secure.",
+      "Engage a tester and start immediately, because the environment is owned by the organization.",
+      "Review the provider's penetration testing policy and the contract, define the scope, and obtain written authorization."
+    ],
+    "answer": 3,
+    "explain": "A pentest in the cloud must respect the CSP's policy (e.g., the prohibition of DoS tests and testing the provider's infrastructure) and have rules of engagement. Without that, the contract is breached and other tenants risk being affected."
+  },
+  {
+    "obj": "5.6",
+    "q": "A scanner reported 4,000 vulnerabilities in the cloud environment. How is remediation BEST prioritized?",
+    "options": [
+      "By CVSS base score, from highest to lowest, without other context.",
+      "By a combination of severity, exposure (publicly reachable), evidence of active exploitation (e.g., KEV, EPSS), and resource criticality.",
+      "Alphabetically by resource name.",
+      "The easiest to patch first."
+    ],
+    "answer": 1,
+    "explain": "CVSS measures severity, while priority should reflect risk: likelihood of exploitation and business impact. A publicly exposed system with an actively exploited vulnerability comes before a high-scoring internal vulnerability."
+  },
+  {
+    "obj": "5.6",
+    "q": "What is the BEST distinction between a vulnerability assessment and a penetration test?",
+    "options": [
+      "A vulnerability assessment identifies and ranks known weaknesses, while a pentest tries to exploit them and show the real impact.",
+      "A vulnerability assessment is always manual, and a pentest always automated.",
+      "A pentest is done continuously, and a vulnerability assessment once a year.",
+      "There is no difference between them except in price."
+    ],
+    "answer": 0,
+    "explain": "A vulnerability assessment is broad and mostly automated; a pentest is narrow, deep, and proves exploitability. The assessment is more frequent, the pentest periodic."
+  },
+  {
+    "obj": "5.4",
+    "type": "order",
+    "q": "Order the phases of the forensic process for a compromised cloud instance, from first to last.",
+    "options": [
+      "Analysis and building a timeline on the copy",
+      "Identification of potential evidence (account, region, resources, logs)",
+      "Report with a documented, repeatable method",
+      "Acquisition: memory dump and disk snapshot, log export",
+      "Preservation: hash, WORM storage in the forensic account, entry in the chain of custody"
+    ],
+    "answer": [1, 3, 4, 0, 2],
+    "explain": "Per ISO/IEC 27037, evidence is first identified, then acquired and preserved (hash, WORM, chain of custody). Analysis is done on the copy (ISO/IEC 27042), and the report comes last."
+  },
+  {
+    "obj": "5.6",
+    "type": "match",
+    "q": "Match the description with the security control or tool.",
+    "options": [
+      "Detects an attack and only generates an alert, without blocking.",
+      "A decoy that legitimate users don't use; any access is suspicious.",
+      "Correlates logs from multiple sources and generates alerts for analysts.",
+      "Automates response through playbooks (isolation, ticket, enrichment).",
+      "Stateful traffic filtering at the instance or network interface level."
+    ],
+    "targets": [
+      "SOAR",
+      "IPS",
+      "Network security group",
+      "IDS",
+      "Honeypot",
+      "SIEM"
+    ],
+    "answer": [3, 4, 5, 0, 2],
+    "explain": "An IDS only alerts (an IPS blocks), a honeypot is a decoy, a SIEM correlates logs, SOAR automates response, and an NSG is a stateful filter at the instance or interface level. The IPS is a distractor here."
+  },
+  {
+    "obj": "5.6",
+    "q": "The SOC received an alert about unusual costs. Based on these events, which conclusion and first step are MOST appropriate?",
+    "snippet": "# CloudTrail Event history (90 days, independent of trails)\neventTime             eventName        user               sourceIP       region          detail\n2026-10-24T02:11:05Z  ConsoleLogin     IAMUser/dev-jovan  185.220.101.7  eu-central-1    MFAUsed=No\n2026-10-24T02:12:47Z  CreateAccessKey  IAMUser/dev-jovan  185.220.101.7  eu-central-1    for=dev-jovan\n2026-10-24T02:13:30Z  CreateUser       IAMUser/dev-jovan  185.220.101.7  us-east-1       userName=backup-svc2\n2026-10-24T02:14:02Z  StopLogging      IAMUser/dev-jovan  185.220.101.7  eu-central-1    trail=org-trail\n2026-10-24T02:16:30Z  RunInstances     IAMUser/dev-jovan  185.220.101.7  ap-southeast-1  40 x p4d.24xlarge",
+    "lang": "log",
+    "options": [
+      "Compromised dev-jovan account: the attacker created persistent access (a key, a new user), stopped logging and launched instances (likely cryptomining); disable the keys and sessions, remove backup-svc2, re-enable the trail and preserve evidence",
+      "Immediately delete the dev-jovan account and all instances in ap-southeast-1 to stop the cost, then close the incident",
+      "Ask the provider for a forensic image of the hypervisor before taking any other action",
+      "False positive: StopLogging is routine maintenance and the developer is testing GPU instances"
+    ],
+    "answer": 0,
+    "explain": "A login without MFA from an unknown address, immediately followed by CreateAccessKey and CreateUser (persistence), StopLogging (defense evasion) and 40 GPU instances in an unusual region is the typical pattern of compromised credentials and cryptomining. First contain (disable keys, revoke sessions, remove the new user, re-enable logging) and preserve evidence (disk snapshots, log export) before cleanup. Deleting without preservation destroys evidence and misses the second persistence account, the CSP does not provide hypervisor forensics in the IaaS model, and StopLogging from a developer account at 2 a.m. is not routine."
+  }
+]

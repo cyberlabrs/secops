@@ -1,0 +1,189 @@
+{
+  "code": "SCS-C03",
+  "badge": "SCS-C03",
+  "order": 3,
+  "title": "AWS Certified Security – Specialty",
+  "subtitle": "Trening za AWS SCS-C03: lekcije po zvaničnim zadacima ispita, scenarijska pitanja kao na AWS ispitu (uključujući ordering i matching), simulacija ispita od 65 pitanja i labovi sa realističnim AWS logovima, politikama i IaC alatima.",
+  "exam": {
+    "size": 65,
+    "minutes": 170,
+    "pass": 750,
+    "scaleMin": 100,
+    "scaleMax": 1000,
+    "domains": [
+      {
+        "n": 1,
+        "name": "Detection",
+        "weight": 16
+      },
+      {
+        "n": 2,
+        "name": "Incident Response",
+        "weight": 14
+      },
+      {
+        "n": 3,
+        "name": "Infrastructure Security",
+        "weight": 18
+      },
+      {
+        "n": 4,
+        "name": "Identity and Access Management",
+        "weight": 20
+      },
+      {
+        "n": 5,
+        "name": "Data Protection",
+        "weight": 18
+      },
+      {
+        "n": 6,
+        "name": "Security Foundations and Governance",
+        "weight": 14
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "1.1",
+      "en": "Monitoring and alerting for an account or organization",
+      "bs": "Monitoring i alarmiranje za nalog ili organizaciju"
+    },
+    {
+      "id": "1.2",
+      "en": "Logging solutions",
+      "bs": "Rješenja za logovanje"
+    },
+    {
+      "id": "1.3",
+      "en": "Troubleshoot monitoring, logging and alerting",
+      "bs": "Rješavanje problema sa monitoringom, logovima i alarmima"
+    },
+    {
+      "id": "2.1",
+      "en": "Design and test an incident response plan",
+      "bs": "Plan odgovora na incidente i njegovo testiranje"
+    },
+    {
+      "id": "2.2",
+      "en": "Respond to security events",
+      "bs": "Odgovor na sigurnosne događaje"
+    },
+    {
+      "id": "3.1",
+      "en": "Network edge security controls",
+      "bs": "Kontrole na rubu mreže (CloudFront, WAF, Shield)"
+    },
+    {
+      "id": "3.2",
+      "en": "Compute workload security controls",
+      "bs": "Sigurnost compute radnih opterećenja i GenAI aplikacija"
+    },
+    {
+      "id": "3.3",
+      "en": "Network security controls",
+      "bs": "Mrežne kontrole i segmentacija"
+    },
+    {
+      "id": "4.1",
+      "en": "Authentication strategies",
+      "bs": "Strategije autentikacije"
+    },
+    {
+      "id": "4.2",
+      "en": "Authorization strategies",
+      "bs": "Strategije autorizacije i IAM politike"
+    },
+    {
+      "id": "5.1",
+      "en": "Data in transit",
+      "bs": "Zaštita podataka u prenosu"
+    },
+    {
+      "id": "5.2",
+      "en": "Data at rest",
+      "bs": "Zaštita podataka u mirovanju, integritet, backup"
+    },
+    {
+      "id": "5.3",
+      "en": "Secrets, credentials and key material",
+      "bs": "Tajne, kredencijali, ključevi i certifikati"
+    },
+    {
+      "id": "6.1",
+      "en": "Central account deployment and management",
+      "bs": "Centralno upravljanje nalozima (Organizations, Control Tower)"
+    },
+    {
+      "id": "6.2",
+      "en": "Secure and consistent deployment",
+      "bs": "Sigurno i konzistentno deployovanje (IaC, tagovi, Firewall Manager)"
+    },
+    {
+      "id": "6.3",
+      "en": "Compliance evaluation",
+      "bs": "Procjena usklađenosti (Config, Audit Manager, Artifact)"
+    }
+  ],
+  "lab": {
+    "image": "kurs-aws-lab:1",
+    "caps": []
+  },
+  "sources": {
+    "checked": "oktobar 2026.",
+    "items": [
+      {
+        "name": "AWS Certified Security – Specialty (SCS-C03) exam guide",
+        "url": "https://docs.aws.amazon.com/aws-certification/latest/examguides/security-specialty-03.html",
+        "note": "aktivan od 2. decembra 2025; SCS-C02 povučen 1. decembra 2025",
+        "note_en": "active since December 2, 2025; SCS-C02 retired December 1, 2025"
+      },
+      {
+        "name": "AWS Security Reference Architecture (SRA)",
+        "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/security-reference-architecture/welcome.html"
+      },
+      {
+        "name": "IAM: logika evaluacije politika",
+        "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
+        "name_en": "IAM: policy evaluation logic"
+      },
+      {
+        "name": "AWS Organizations: SCP i RCP",
+        "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_authorization_policies.html",
+        "name_en": "AWS Organizations: SCPs and RCPs"
+      },
+      {
+        "name": "AWS KMS Developer Guide",
+        "url": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+      },
+      {
+        "name": "AWS Security Incident Response Guide",
+        "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-security-incident-response-guide/welcome.html"
+      },
+      {
+        "name": "CloudTrail record contents",
+        "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html"
+      },
+      {
+        "name": "VPC Flow Logs zapisi",
+        "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html",
+        "name_en": "VPC Flow Logs records"
+      },
+      {
+        "name": "Checkov",
+        "url": "https://www.checkov.io"
+      },
+      {
+        "name": "gitleaks",
+        "url": "https://github.com/gitleaks/gitleaks"
+      },
+      {
+        "name": "OWASP Top 10 for LLM Applications",
+        "url": "https://genai.owasp.org/llm-top-10/"
+      }
+    ],
+    "checked_en": "October 2026"
+  },
+  "title_en": "AWS Certified Security – Specialty",
+  "subtitle_en": "Training for AWS SCS-C03: lessons mapped to the official exam tasks, scenario questions in the AWS exam style (including ordering and matching), a 65-question exam simulation, and labs with realistic AWS logs, policies, and IaC tools."
+}

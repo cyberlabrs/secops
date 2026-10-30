@@ -1,0 +1,244 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Fabrika koristi stari SCADA server koji proizvođač više ne podržava i koji se ne može patchovati. Sigurnosni tim ga premješta u izolovan VLAN sa strogim ACL pravilima i pojačanim nadzorom. Koji tip kontrole je ovo NAJPRECIZNIJE?",
+    "options": [
+      "Corrective",
+      "Deterrent",
+      "Compensating",
+      "Directive"
+    ],
+    "answer": 2,
+    "explain": "Primarna kontrola (patchovanje) nije izvodljiva, pa se uvodi zamjenska mjera koja pokriva isti rizik: to je compensating kontrola. Corrective bi bila ispravka štete nakon incidenta, a deterrent samo obeshrabruje."
+  },
+  {
+    "obj": "1.1",
+    "q": "Web aplikacija u AWS-u je zaštićena WAF-om, Security Grupama, enkripcijom podataka preko KMS-a, kontejnerima bez root korisnika i SIEM alarmima. Arhitekt kaže da nijedna od ovih mjera sama nije dovoljna, ali zajedno značajno otežavaju napad. Koji koncept opisuje?",
+    "options": [
+      "Defense in depth",
+      "Zero Trust",
+      "Separation of duties",
+      "Non-repudiation"
+    ],
+    "answer": 0,
+    "explain": "Defense in depth je slojevita odbrana: ako jedan sloj (npr. WAF) bude zaobiđen, sljedeći (segmentacija, enkripcija, detekcija) i dalje štiti ili otkriva napad. Zero Trust se fokusira na provjeru svakog zahtjeva, a separation of duties na podjelu odgovornosti među ljudima."
+  },
+  {
+    "obj": "1.1",
+    "q": "DevOps tim objavljuje binarni fajl za preuzimanje i želi da korisnici mogu provjeriti da fajl nije izmijenjen tokom prenosa. Koji koncept iz CIA trijade se ovdje PRVENSTVENO štiti i kojom mjerom?",
+    "options": [
+      "Confidentiality, enkripcijom fajla AES-256",
+      "Availability, objavom na CDN-u",
+      "Confidentiality, prenosom preko VPN-a",
+      "Integrity, objavom SHA-256 hash vrijednosti fajla"
+    ],
+    "answer": 3,
+    "explain": "Provjera da podaci nisu izmijenjeni je integrity, a postiže se hashom (ili digitalnim potpisom). Enkripcija i VPN štite povjerljivost, CDN dostupnost."
+  },
+  {
+    "obj": "1.1",
+    "q": "Dva mikroservisa razmjenjuju poruke zaštićene HMAC-om sa dijeljenim tajnim ključem. Revizor tvrdi da ovo ne daje non-repudiation. Zašto je revizor u pravu?",
+    "options": [
+      "HMAC ne štiti integritet poruke",
+      "Obje strane posjeduju isti ključ, pa je svaka mogla napraviti poruku",
+      "HMAC koristi zastarjele hash algoritme",
+      "Non-repudiation zahtijeva enkripciju cijelog kanala TLS-om"
+    ],
+    "answer": 1,
+    "explain": "Neporecivost zahtijeva da samo jedna strana može napraviti dokaz, što daje digitalni potpis privatnim ključem. Kod HMAC-a ključ dijele obje strane. HMAC i dalje štiti integritet, a TLS sam po sebi ne daje neporecivost."
+  },
+  {
+    "obj": "1.1",
+    "q": "U Zero Trust arhitekturi, koja komponenta donosi konačnu odluku da li se zahtjev korisnika za pristup aplikaciji dozvoljava, na osnovu politika, identiteta i stanja uređaja?",
+    "options": [
+      "Policy Enforcement Point",
+      "Implicit trust zone",
+      "Policy Engine",
+      "Subject/system"
+    ],
+    "answer": 2,
+    "explain": "Policy Engine odlučuje. Policy Administrator tu odluku izvršava (uspostavlja ili prekida sesiju), a Policy Enforcement Point je tačka u data plane-u kroz koju saobraćaj prolazi i gdje se odluka sprovodi."
+  },
+  {
+    "obj": "1.1",
+    "q": "Neko je obrisao produkcioni RDS snapshot. Menadžer pita: „Ko je to uradio i kada?“. Koji element AAA okvira omogućava odgovor?",
+    "options": [
+      "Accounting",
+      "Authentication",
+      "Authorization",
+      "Identification"
+    ],
+    "answer": 0,
+    "explain": "Accounting bilježi akcije korisnika (npr. CloudTrail događaj DeleteDBSnapshot sa identitetom i vremenom). Authentication potvrđuje identitet, a authorization određuje šta je dozvoljeno, ali nijedno ne čuva trag akcije."
+  },
+  {
+    "obj": "1.1",
+    "q": "Sigurnosni tim lično održava obuku o phishingu za sve nove zaposlene i jednom mjesečno ručno pregleda listu aktivnih naloga. U koju kategoriju kontrola spadaju ove aktivnosti?",
+    "options": [
+      "Technical",
+      "Physical",
+      "Managerial",
+      "Operational"
+    ],
+    "answer": 3,
+    "explain": "Kontrole koje svakodnevno sprovode ljudi (obuka, ručni pregledi, čuvari) su operational. Managerial su odluke i dokumenti na nivou upravljanja (politika koja nalaže obuku, procjena rizika), a technical sprovodi sistem."
+  },
+  {
+    "obj": "1.1",
+    "q": "Inženjer je u tri godine promijenio četiri tima i zadržao prava iz svakog. Sada ima admin pristup produkciji koji mu ne treba. Koji princip je narušen i kako se problem NAJBOLJE rješava?",
+    "options": [
+      "Defense in depth, uvođenjem dodatnog firewalla",
+      "Least privilege, redovnim pregledom i oduzimanjem prava (access review)",
+      "Non-repudiation, uvođenjem digitalnih potpisa",
+      "Availability, dodavanjem redundantnih naloga"
+    ],
+    "answer": 1,
+    "explain": "Nagomilavanje prava (privilege creep) krši least privilege. Rješenje je periodični access review i oduzimanje prava pri promjeni uloge. Ostale opcije ne utiču na višak prava."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari svaku kontrolu sa njenim PRIMARNIM tipom.",
+    "options": [
+      "Security Group dozvoljava samo port 443",
+      "GuardDuty alarm na neuobičajen API poziv",
+      "Restore baze iz backupa nakon ransomwarea",
+      "Login banner „Neovlašten pristup se krivično goni“",
+      "Politika prihvatljive upotrebe (AUP) koju zaposleni potpisuju",
+      "Izolacija nepatchovanog uređaja u zaseban VLAN jer patch ne postoji"
+    ],
+    "targets": [
+      "Directive",
+      "Preventive",
+      "Compensating",
+      "Deterrent",
+      "Detective",
+      "Corrective"
+    ],
+    "answer": [
+      1,
+      4,
+      5,
+      3,
+      0,
+      2
+    ],
+    "explain": "Security Group blokira saobraćaj (preventive). Alarm otkriva (detective). Restore vraća stanje nakon incidenta (corrective). Banner obeshrabruje (deterrent). AUP govori ljudima šta da rade (directive). Izolacija zamjenjuje nemogući patch (compensating)."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari svaku kontrolu sa njenom KATEGORIJOM.",
+    "options": [
+      "Ograda i rampa oko data centra",
+      "Godišnja procjena rizika koju odobrava uprava",
+      "Čuvar koji provjerava identifikacione kartice",
+      "Enkripcija EBS volumena preko KMS-a",
+      "Sistem za gašenje požara u server sali"
+    ],
+    "targets": [
+      "Technical",
+      "Managerial",
+      "Operational",
+      "Physical"
+    ],
+    "answer": [
+      3,
+      1,
+      2,
+      0,
+      3
+    ],
+    "explain": "Ograda i gašenje požara su physical/environmental. Procjena rizika je managerial (upravljanje rizikom). Čuvar je operational jer kontrolu sprovodi čovjek. Enkripcija je technical."
+  },
+  {
+    "obj": "1.2",
+    "q": "Tim planira nadogradnju verzije PostgreSQL-a u produkciji. CAB odbija zahtjev jer u njemu nedostaje jedan ključni element za slučaj da nadogradnja ne uspije. Šta NAJVJEROVATNIJE nedostaje?",
+    "options": [
+      "Spisak stakeholdera",
+      "Standardna operativna procedura",
+      "Ažuriran mrežni dijagram",
+      "Backout plan"
+    ],
+    "answer": 3,
+    "explain": "Backout plan unaprijed opisuje kako se promjena poništava ako ne uspije. Bez njega neuspjela promjena može izazvati dug zastoj. Ostale stavke su korisne, ali ne odgovaraju na pitanje „šta ako ne uspije“."
+  },
+  {
+    "obj": "1.2",
+    "q": "Migracija baze je već izmijenila šemu i upisala nove podatke kada je uočen bug u aplikaciji. Vraćanje na staru verziju bi izgubilo podatke, pa tim odmah pušta ispravku kroz pipeline. Kako se zove ovaj pristup?",
+    "options": [
+      "Backout planning",
+      "Maintenance window",
+      "Fail forward",
+      "Impact analysis"
+    ],
+    "answer": 2,
+    "explain": "Fail forward znači rješavanje problema novom ispravkom umjesto vraćanja na prethodno stanje, tipično kad je rollback nemoguć ili rizičniji. Backout bi bio vraćanje nazad."
+  },
+  {
+    "obj": "1.2",
+    "q": "Nakon odobrene nadogradnje agenta za nadzor, novi binarni fajl ne može da se pokrene na serverima, iako je prošao testove u labu. Na produkcionim serverima je aktivan application control. Koja tehnička implikacija je NAJVJEROVATNIJE previđena?",
+    "options": [
+      "Ažuriranje allow liste za novu verziju aplikacije",
+      "Ažuriranje mrežnog dijagrama",
+      "Obavještavanje stakeholdera",
+      "Restart aplikacije"
+    ],
+    "answer": 0,
+    "explain": "Application allow lista često dozvoljava fajlove po hashu ili potpisu, pa nova verzija biva blokirana. Ažuriranje allow/deny lista mora biti dio promjene. Dijagram i obavještenja ne bi spriječili blokadu."
+  },
+  {
+    "obj": "1.2",
+    "q": "Prije nego što CAB odobri promjenu TLS konfiguracije na load balanceru, koje DVIJE stavke bi trebalo da budu priložene uz zahtjev? Izaberi DVA.",
+    "options": [
+      "Spisak svih otvorenih portova u kompaniji",
+      "Analiza uticaja (koji klijenti i legacy sistemi mogu prestati raditi)",
+      "Lessons learned izvještaj",
+      "Rezultati testiranja u staging okruženju"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "CAB odlučuje na osnovu impact analysis i test results. Isključivanje starijih TLS verzija može prekinuti legacy klijente, što analiza uticaja treba da otkrije. Lessons learned dolazi nakon incidenta, a spisak svih portova nije relevantan."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Upari svaku situaciju iz procesa promjene sa odgovarajućim pojmom.",
+    "options": [
+      "Svaka promjena ima imenovanu osobu odgovornu za izvođenje i rezultat",
+      "Korisnici i tim podrške su unaprijed obaviješteni o promjeni",
+      "Promjena se izvodi u nedjelju od 02:00 do 04:00 kad je saobraćaj najmanji",
+      "Rutinska rotacija certifikata se radi po dokumentovanim koracima iz runbooka",
+      "Admin ne smije usput mijenjati ništa van odobrenog opsega promjene",
+      "Izmjena jednog DNS zapisa je srušila tri servisa koji su ga koristili",
+      "Terraform kod je u git-u pa se vidi ko je promijenio pravilo i može se vratiti",
+      "Nakon dodavanja novog VPC-a ažurirana je mapa mreže",
+      "Zakrpa kernela zahtijeva reboot, pa se planira kratak prekid usluge"
+    ],
+    "targets": [
+      "Version control",
+      "Ownership",
+      "Downtime",
+      "Stakeholders",
+      "Dependencies",
+      "Maintenance window",
+      "Restricted activities",
+      "Standard operating procedures (SOPs)",
+      "Updating diagrams"
+    ],
+    "answer": [
+      1,
+      3,
+      5,
+      7,
+      6,
+      4,
+      0,
+      8,
+      2
+    ],
+    "explain": "Odgovorna osoba je ownership, obaviješteni pogođeni su stakeholders, dogovoreni period niskog uticaja je maintenance window, dokumentovani rutinski koraci su SOP, zabrana izmjena van opsega su restricted activities, lanac kvarova pokazuje dependencies, istorija i povratak su version control, ažurirana mapa je updating diagrams, a planirani prekid zbog reboota je downtime."
+  }
+]

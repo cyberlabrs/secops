@@ -1,0 +1,11 @@
+{
+  "title": "Indikatori zlonamjerne aktivnosti",
+  "title_en": "Indicators of Malicious Activity",
+  "summary": "Prepoznavanje indikatora iz logova i pcap-a: rogue uređaji, enumeracija, beaconing i DNS tunneling, LOLBins i sumnjivi procesi, eksfiltracija, cloud i identitetski indikatori (impossible travel, kompromitovan ključ), typosquatting i BEC.",
+  "summary_en": "Recognizing indicators in logs and pcaps: rogue devices, enumeration, beaconing and DNS tunneling, LOLBins and suspicious processes, exfiltration, cloud and identity indicators (impossible travel, compromised key), typosquatting and BEC.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.2"
+  ]
+}

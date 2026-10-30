@@ -1,0 +1,58 @@
+{
+  "code": "Scenariji",
+  "badge": "IR",
+  "order": 13,
+  "title": "Scenariji incidenata: od alarma do izvještaja",
+  "title_en": "Incident scenarios: from alert to report",
+  "subtitle": "Četiri realna incidenta koja povezuju gradivo više kurseva: phishing i kompromitovan nalog, procurjela tajna i zloupotreba AWS-a, napad na Kubernetes i incident sa AI agentom. U svakom pratiš napadača kroz logove, KQL, CloudTrail, audit logove i alarme, praviš vremensku liniju, obuzdavaš i pišeš izvještaj.",
+  "subtitle_en": "Four realistic incidents that connect material from several courses: phishing and a compromised account, a leaked secret and AWS abuse, an attack on Kubernetes and an AI agent incident. In each one you follow the attacker through logs, KQL, CloudTrail, audit logs and alerts, build a timeline, contain the threat and write the report.",
+  "lab": {
+    "image": "kurs-scenariji-lab:1",
+    "caps": ["NET_ADMIN"],
+    "memoryMB": 2048,
+    "pids": 2048,
+    "setupTimeout": 180
+  },
+  "exam": {
+    "size": 40,
+    "minutes": 60,
+    "pass": 70,
+    "note": "Za scenarije nema zvaničnog ispita. Simulacija provjerava da li umiješ da povežeš dokaze iz različitih izvora; pravi rezultat su riješeni labovi i izvještaji.",
+    "note_en": "There is no official exam for the scenarios. The simulation checks whether you can connect evidence from different sources; the real outcome is the solved labs and reports.",
+    "domains": [
+      { "n": 1, "name": "Phishing, kompromitovan nalog i lateralno kretanje", "name_en": "Phishing, a compromised account and lateral movement", "weight": 25 },
+      { "n": 2, "name": "Procurjela tajna i zloupotreba AWS-a", "name_en": "A leaked secret and AWS abuse", "weight": 25 },
+      { "n": 3, "name": "Kompromitacija Kubernetes klastera", "name_en": "Kubernetes cluster compromise", "weight": 25 },
+      { "n": 4, "name": "Incident sa AI agentom", "name_en": "An AI agent incident", "weight": 25 }
+    ]
+  },
+  "objectives": [
+    { "id": "1.1", "en": "Phishing analysis: email headers, SPF/DKIM/DMARC, URLs and attachments as IOCs", "bs": "Analiza phishinga: zaglavlja poruke, SPF/DKIM/DMARC, URL-ovi i prilozi kao IOC-ovi" },
+    { "id": "1.2", "en": "Sign-in investigation in KQL: impossible travel, MFA fatigue, suspicious IP addresses and session theft", "bs": "Istraga prijava u KQL-u: nemoguće putovanje, MFA umor, sumnjive IP adrese i krađa sesije" },
+    { "id": "1.3", "en": "Lateral movement and persistence on a Linux host: auth.log, Wazuh alerts, authorized_keys, cron", "bs": "Lateralno kretanje i perzistencija na Linux hostu: auth.log, Wazuh alarmi, authorized_keys, cron" },
+    { "id": "1.4", "en": "Containing the account and host, timeline and incident report", "bs": "Obuzdavanje naloga i hosta, vremenska linija i izvještaj o incidentu" },
+    { "id": "2.1", "en": "Finding the source of the leak: git history, gitleaks, CI logs", "bs": "Pronalazak izvora curenja: git istorija, gitleaks, CI logovi" },
+    { "id": "2.2", "en": "CloudTrail investigation: enumeration, privilege escalation, persistence", "bs": "Istraga CloudTraila: enumeracija, eskalacija privilegija, perzistencija" },
+    { "id": "2.3", "en": "Damage assessment: access to S3 data, scope and impact", "bs": "Procjena štete: pristup S3 podacima, obim i uticaj" },
+    { "id": "2.4", "en": "Containment and eradication in AWS, and a detection (Sigma) for the future", "bs": "Obuzdavanje i iskorjenjivanje u AWS-u i detekcija (Sigma) za ubuduće" },
+    { "id": "3.1", "en": "Runtime alerts (Falco) and the entry point: a vulnerable image or application", "bs": "Runtime alarmi (Falco) i ulazna tačka: ranjiva slika ili aplikacija" },
+    { "id": "3.2", "en": "Kubernetes audit log: ServiceAccount token abuse, exec, privileged Pods", "bs": "Kubernetes audit log: zloupotreba ServiceAccount tokena, exec, privilegovani podovi" },
+    { "id": "3.3", "en": "The RBAC and configuration that made the attack possible", "bs": "RBAC i konfiguracija koja je omogućila napad" },
+    { "id": "3.4", "en": "Containment (NetworkPolicy, isolation, rotation), hardening and report", "bs": "Obuzdavanje (NetworkPolicy, izolacija, rotacija), hardening i izvještaj" },
+    { "id": "4.1", "en": "Indirect prompt injection in a RAG source", "bs": "Indirektni prompt injection u RAG izvoru" },
+    { "id": "4.2", "en": "Analyzing the agent's tool calls and data leakage", "bs": "Analiza poziva alata agenta i curenja podataka" },
+    { "id": "4.3", "en": "Controls: tool guard, least privilege, human approval", "bs": "Kontrole: čuvar alata, najmanje privilegije, ljudsko odobrenje" },
+    { "id": "4.4", "en": "Containment, report and mapping to OWASP LLM Top 10 and MITRE ATLAS", "bs": "Obuzdavanje, izvještaj i mapiranje na OWASP LLM Top 10 i MITRE ATLAS" }
+  ],
+  "sources": [
+    { "title": "NIST SP 800-61r3: Incident Response Recommendations", "title_en": "NIST SP 800-61r3: Incident Response Recommendations", "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final" },
+    { "title": "MITRE ATT&CK", "title_en": "MITRE ATT&CK", "url": "https://attack.mitre.org" },
+    { "title": "MITRE ATLAS", "title_en": "MITRE ATLAS", "url": "https://atlas.mitre.org" },
+    { "title": "OWASP Top 10 za LLM aplikacije", "title_en": "OWASP Top 10 for LLM Applications", "url": "https://genai.owasp.org/llm-top-10/" },
+    { "title": "Microsoft Entra sign-in logovi", "title_en": "Microsoft Entra sign-in logs", "url": "https://learn.microsoft.com/en-us/entra/identity/monitoring-health/concept-sign-ins" },
+    { "title": "AWS CloudTrail record contents", "title_en": "AWS CloudTrail record contents", "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html" },
+    { "title": "AWS Customer Playbook Framework", "title_en": "AWS Customer Playbook Framework", "url": "https://github.com/aws-samples/aws-customer-playbook-framework" },
+    { "title": "Kubernetes Auditing", "title_en": "Kubernetes Auditing", "url": "https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/" },
+    { "title": "Falco dokumentacija", "title_en": "Falco documentation", "url": "https://falco.org/docs/" }
+  ]
+}

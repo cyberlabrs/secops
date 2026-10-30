@@ -1,0 +1,3 @@
+#!/bin/bash
+# Zircolite: izvršava Sigma pravila nad logovima (JSON, auditd, Sysmon za Linux…), bez SIEM-a.
+exec /opt/zircolite/venv/bin/python /opt/zircolite/zircolite.py "$@"

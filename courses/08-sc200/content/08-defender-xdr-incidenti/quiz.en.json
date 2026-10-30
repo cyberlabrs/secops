@@ -1,0 +1,255 @@
+[
+  {
+    "obj": "2.1",
+    "q": "You have Microsoft 365 E5 with Defender for Office 365 Plan 2. A phishing message was delivered to 300 mailboxes before the URL was declared malicious. You need to remove the messages from all mailboxes, with the ability to restore them if the decision turns out to be wrong. What should you do?",
+    "options": [
+      "In Explorer, filter by URL and choose Take action > Soft delete.",
+      "In Explorer, filter by URL and choose Take action > Hard delete.",
+      "Add the URL to the Tenant Allow/Block List and wait for ZAP.",
+      "Run New-ComplianceSearchAction -Purge -PurgeType HardDelete."
+    ],
+    "answer": 0,
+    "explain": "Soft delete moves messages to Recoverable Items\\Deletions, so the user and admin can restore them. Hard delete is not reversible for the user, the Block list prevents future deliveries but does not guarantee removal of already delivered messages, and a PowerShell purge with HardDelete is permanent and limited to 10 items per mailbox."
+  },
+  {
+    "obj": "2.1",
+    "q": "An analyst without the Search and Purge role selects messages for deletion in Explorer and clicks Add to remediation. Where does another team member approve the action?",
+    "options": [
+      "In the Microsoft Purview portal, eDiscovery > Cases.",
+      "In the Action center, Pending tab.",
+      "On the Quarantine page.",
+      "On the Submissions page."
+    ],
+    "answer": 1,
+    "explain": "Two-step remediation puts the action on hold in Action center > Pending, where a user with the Search and Purge role approves it. After approval, the action is in the History tab."
+  },
+  {
+    "obj": "2.1",
+    "q": "SOC analysts don't see Microsoft Purview Insider Risk Management alerts in the Defender portal, even though IRM policies in Purview generate alerts. What should you do FIRST?",
+    "options": [
+      "Assign the analysts the Security Administrator role in Entra ID.",
+      "Create a Sentinel analytics rule for IRM.",
+      "In the Purview IRM settings, turn on sharing data with other security solutions (data sharing).",
+      "Turn on Purview Audit (Premium)."
+    ],
+    "answer": 2,
+    "explain": "IRM alerts are shown in the Defender portal only when sharing with other security solutions is turned on in the IRM Data sharing settings. In addition, analysts need an IRM role group. Audit Premium and a Sentinel rule are not prerequisites."
+  },
+  {
+    "obj": "2.1",
+    "q": "You need an advanced hunting query over enriched events of user activities that violate Microsoft Purview policies (e.g. uploading a sensitive file to a personal cloud). Which table do you use?",
+    "options": [
+      "DeviceFileEvents",
+      "EmailAttachmentInfo",
+      "IdentityDirectoryEvents",
+      "DataSecurityEvents"
+    ],
+    "answer": 3,
+    "explain": "DataSecurityEvents contains enriched events that violate Purview policies, and DataSecurityBehaviors contains insights into suspicious behavior. The other tables are endpoint, email and AD events without Purview context."
+  },
+  {
+    "obj": "2.1",
+    "q": "After connecting Microsoft Sentinel to the Defender portal, Defender for Cloud alerts appear as duplicates. Which TWO actions should you take? (Choose TWO.)",
+    "options": [
+      "Turn off the Subscription-based Microsoft Defender for Cloud (Legacy) connector.",
+      "Turn off the Defender XDR connector in Sentinel.",
+      "Turn off analytics rules that create incidents from Defender for Cloud alerts and use the Tenant-based Microsoft Defender for Cloud connector.",
+      "Turn off Defender for Cloud plans on the subscriptions.",
+      "Create an automation rule that deletes all Defender for Cloud incidents."
+    ],
+    "answer": [0, 2],
+    "explain": "Incidents from Defender for Cloud come through the Defender XDR integration; the per-subscription legacy connector and incident creation rules create duplicates. Turning off the Defender XDR connector or the plans removes protection, and deleting incidents with an automation rule is not a solution."
+  },
+  {
+    "obj": "2.1",
+    "q": "A Defender for Cloud alert for an Azure VM is marked as Resolved in the Defender portal. What happens to the status of the same alert in Defender for Cloud?",
+    "options": [
+      "It stays Active, because the status is not synchronized.",
+      "It changes only if the alert is from Defender for Endpoint.",
+      "It is deleted from Defender for Cloud.",
+      "It changes to Resolved, because Defender for Cloud alert status is synchronized in both directions."
+    ],
+    "answer": 3,
+    "explain": "Defender for Cloud alert status is synchronized in both directions. The exception is Defender for Endpoint alerts on cloud resources, whose status is not synchronized between the two portals."
+  },
+  {
+    "obj": "2.1",
+    "q": "An OAuth app with the Full access to all mailboxes permission received consent from three users and sends mail on their behalf. You need to immediately remove the app's access for all users and prevent new consent. What should you do?",
+    "options": [
+      "Reset the passwords of the three users.",
+      "In Defender for Cloud Apps (OAuth apps or App governance), use Ban app.",
+      "Run Require user to sign in again for the three users.",
+      "Add the app's domain to the Tenant Allow/Block List."
+    ],
+    "answer": 1,
+    "explain": "Ban app revokes the app's permissions and prevents new consent. A password reset and signing in again do not revoke the OAuth grant, and the Block list is for email."
+  },
+  {
+    "obj": "2.1",
+    "q": "Defender for Cloud Apps detected that a user is mass-downloading files from SharePoint from an unknown IP address. You need to immediately terminate their active sessions, but without disabling the account. Which governance action do you choose?",
+    "options": [
+      "Suspend user.",
+      "Confirm user compromised.",
+      "Require user to sign in again.",
+      "Ban app."
+    ],
+    "answer": 2,
+    "explain": "Require user to sign in again revokes sessions and tokens, and the account stays active. Suspend user disables the account, Confirm user compromised raises user risk in ID Protection, and Ban app is for apps."
+  },
+  {
+    "obj": "2.1",
+    "q": "The investigation confirmed that a user's account is compromised. You want Entra ID Protection to treat the account as high risk (so risk-based policies react) and the model to learn from the decision. What should you do in ID Protection?",
+    "options": [
+      "Confirm user compromised.",
+      "Dismiss user risk.",
+      "Confirm sign-in safe.",
+      "Turn off the user risk policy for that user."
+    ],
+    "answer": 0,
+    "explain": "Confirm user compromised sets the state to Confirmed compromised and high risk, which gives feedback to the model. This is followed by a password reset and revoke sessions. Dismiss and Confirm safe do the opposite."
+  },
+  {
+    "obj": "2.1",
+    "q": "After the investigation, you determined that a user's risky sign-ins were travel and that the account is NOT compromised. You need to remove the risk with the LEAST privileges. Which action and which role?",
+    "options": [
+      "Reset password, User Administrator role.",
+      "Confirm user compromised, Security Administrator role.",
+      "Block user, Global Administrator role.",
+      "Dismiss user risk, Security Operator role."
+    ],
+    "answer": 3,
+    "explain": "Dismiss user risk sets the state to Dismissed and does not change the password; the least privileged role required is Security Operator. A password reset is not needed because the account is not compromised."
+  },
+  {
+    "obj": "2.1",
+    "q": "Defender for Identity generated an alert for a pass-the-hash attack. You need to see by which path an attacker can get from the compromised account to the accounts of Domain Admins members. Where do you look?",
+    "options": [
+      "Lateral movement paths on the identity page.",
+      "Effective settings on the device page.",
+      "Cloud discovery in Defender for Cloud Apps.",
+      "Audit log in the Purview portal."
+    ],
+    "answer": 0,
+    "explain": "Lateral movement paths (Defender for Identity) show the paths through which an account can reach sensitive accounts. The other options do not analyze AD paths."
+  },
+  {
+    "obj": "2.1",
+    "q": "From the Defender portal you run Disable on an on-premises AD account detected in a Defender for Identity alert. Which account performs the action in AD (the recommended setting, mandatory for sensor v3.x)?",
+    "options": [
+      "The Global Administrator who started the action.",
+      "The Microsoft Defender for Identity enterprise application in Entra ID.",
+      "The LocalSystem account of the domain controller where the MDI sensor runs.",
+      "The Directory Service Account (gMSA) for reading AD."
+    ],
+    "answer": 2,
+    "explain": "Actions in AD are performed by the MDI sensor on the domain controller under the DC's local system account (Manage action accounts > Automatically use the sensor's local system account). The enterprise application performs actions in Entra ID."
+  },
+  {
+    "obj": "2.1",
+    "q": "A Sentinel workspace is connected to the Defender portal. An analytics rule for a Palo Alto firewall generates an alert for a device on which Defender for Endpoint has an active alert. What should you do so that both alerts are in the same incident?",
+    "options": [
+      "Create an automation rule that merges incidents.",
+      "Create a Microsoft incident creation rule for Defender for Endpoint.",
+      "Create a playbook that adds the alert to the incident.",
+      "Nothing; Defender XDR correlation automatically groups Sentinel and Defender alerts into incidents."
+    ],
+    "answer": 3,
+    "explain": "In the Defender portal, Sentinel alerts enter the same correlation engine as XDR alerts and are grouped automatically. Microsoft incident creation rules are turned off during onboarding, and an automation rule or playbook is not needed."
+  },
+  {
+    "obj": "2.1",
+    "q": "In the attack story, an analyst sees a long obfuscated PowerShell command line and needs to quickly understand what it does. Which Security Copilot capability do they use?",
+    "options": [
+      "Incident report.",
+      "Script analysis.",
+      "Query assistant.",
+      "Identity summary."
+    ],
+    "answer": 1,
+    "explain": "Script analysis explains (and deobfuscates) scripts and command lines from the attack story. Incident report creates a report, query assistant generates KQL, and identity summary describes a user."
+  },
+  {
+    "obj": "2.1",
+    "q": "The SOC receives hundreds of user phishing reports daily. You need an AI agent to automatically classify them as a real threat or a false alarm and explain the decision. What should you use?",
+    "options": [
+      "The Phishing Triage Agent in Security Copilot.",
+      "Zero-hour auto purge.",
+      "Automated investigation and response without Security Copilot.",
+      "A Defender for Cloud Apps anomaly detection policy."
+    ],
+    "answer": 0,
+    "explain": "The Phishing Triage Agent classifies reported messages and gives a rationale in natural language. ZAP removes messages after a verdict change, AIR starts an investigation without an LLM rationale, and an MDCA policy has nothing to do with message reports."
+  },
+  {
+    "obj": "2.1",
+    "q": "For an incident with 40 alerts, an analyst needs recommended next steps for containment and remediation specific to that incident. Which Security Copilot capability do they use?",
+    "options": [
+      "Device summary.",
+      "File analysis.",
+      "Guided response.",
+      "Query assistant."
+    ],
+    "answer": 2,
+    "explain": "Guided response provides recommended actions for triage, containment and remediation for a specific incident. Device summary and file analysis describe individual entities, and query assistant generates KQL."
+  },
+  {
+    "obj": "2.1",
+    "q": "An announced penetration test caused an incident with accurate detections. How should you classify the incident when closing it?",
+    "options": [
+      "True positive – multi-staged attack.",
+      "False positive – not malicious.",
+      "Informational, expected activity (security testing).",
+      "Leave it without classification."
+    ],
+    "answer": 2,
+    "explain": "The detection is accurate, but the activity is expected, so it is a benign positive: Informational, expected activity (security testing). False positive means the detection wrongly saw maliciousness."
+  },
+  {
+    "obj": "2.1",
+    "q": "The SOC manager wants the investigation of three related incidents to be run as one case in the Defender portal, with tasks for three analysts, due dates and an SLA policy. The analyst who creates and assigns cases needs the LEAST privileges. What should you use and which Sentinel role should you assign?",
+    "options": [
+      "A generic case with tasks; Microsoft Sentinel Contributor.",
+      "A generic case with tasks; Microsoft Sentinel Responder.",
+      "Merge the incidents; Microsoft Sentinel Reader.",
+      "A Sentinel workbook; Microsoft Sentinel Responder."
+    ],
+    "answer": 1,
+    "explain": "A generic case brings work together with tasks, due dates and an SLA policy. Creating and managing cases requires Microsoft Sentinel Responder (URBAC Alerts (manage)); Contributor is needed only for templates, custom fields and SLA policies."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Order the steps for responding to an AiTM phishing attack in which the attacker stole a user's session and created a forwarding rule, from first to last.",
+    "options": [
+      "Remove the forwarding rule and check the user's OAuth consents.",
+      "Revoke the user's sessions (revoke sessions) and reset the password.",
+      "Remove the phishing message from all mailboxes through Explorer.",
+      "On the attack story graph, determine the scope: recipients, clicks and compromised accounts.",
+      "Classify the incident and document the findings."
+    ],
+    "answer": [3, 1, 0, 2, 4],
+    "explain": "First the scope of the attack is determined, then the attacker's access is removed (revoking sessions and resetting the password, because a stolen session stays valid even after a password change). Next, persistence is removed (rule, OAuth), then the remaining phishing is cleaned up so there are no new victims. Classification comes last."
+  },
+  {
+    "obj": "2.1",
+    "type": "match",
+    "q": "Match each scenario with the service that primarily detects it and where remediation is done.",
+    "options": [
+      "A DCSync request from a workstation to a domain controller.",
+      "Impossible travel and mass download from a SaaS application.",
+      "Suspicious access to a Key Vault from an unknown IP address in Azure.",
+      "Upload of files with card numbers to a personal Dropbox.",
+      "A leaked credentials detection for a user account."
+    ],
+    "targets": [
+      "Microsoft Entra ID Protection",
+      "Microsoft Defender for Identity",
+      "Microsoft Purview DLP",
+      "Microsoft Defender for Cloud Apps",
+      "Microsoft Defender for Cloud",
+      "Microsoft Defender for Office 365"
+    ],
+    "answer": [1, 3, 4, 2, 0],
+    "explain": "DCSync is an MDI detection (domain dominance), impossible travel and mass download in SaaS are MDCA, Key Vault is a Defender for Cloud workload protection, uploading sensitive data is Purview DLP, and leaked credentials is an Entra ID Protection detection. Defender for Office 365 matches none of the scenarios."
+  }
+]

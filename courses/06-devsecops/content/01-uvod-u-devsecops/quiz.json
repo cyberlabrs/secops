@@ -1,0 +1,213 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Tim je uveo SAST i odmah ga postavio kao blokirajući. Za sedmicu dana developeri su u većini repoa dodali allow_failure: true. Šta je trebalo uraditi drugačije?",
+    "options": [
+      "Pokrenuti alat prvo informativno, izmjeriti lažne pozitive, pa blokirati samo nove nalaze visoke ozbiljnosti uz dogovoren proces izuzetaka",
+      "Premjestiti SAST u noćni pipeline da ne smeta developerima",
+      "Zabraniti allow_failure u svim .gitlab-ci.yml fajlovima pomoću CODEOWNERS",
+      "Zamijeniti SAST DAST-om jer DAST nema lažnih pozitiva"
+    ],
+    "answer": 0,
+    "explain": "Postepeno uvođenje (informativno → blokirajuće za nove ozbiljne nalaze) uz proces izuzetaka čuva povjerenje developera. Noćni pipeline kasni sa povratnom informacijom, zabrana allow_failure ne rješava šum, a DAST ne zamjenjuje SAST i takođe ima lažne pozitive."
+  },
+  {
+    "obj": "1.1",
+    "q": "Revizor traži dokaz da organizacija prati NIST SSDF praksu za provjeru integriteta releasea. Koji artefakt iz pipelinea je najdirektniji dokaz?",
+    "options": [
+      "SARIF izvještaj Semgrepa iz MR pipelinea",
+      "Log joba sa rezultatom unit testova",
+      "cosign potpis slike i verifikacija potpisa prije deploya",
+      "Lista otvorenih nalaza u DefectDojo"
+    ],
+    "answer": 2,
+    "explain": "Provjera integriteta releasea (grupa PS, Protect the Software) se dokazuje potpisom artefakta i njegovom verifikacijom. SARIF Semgrepa je dokaz za analizu koda (PW), unit testovi nisu sigurnosna kontrola, a lista nalaza je dokaz za RV."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari aktivnost u pipelineu sa grupom praksi NIST SSDF-a koja joj najbolje odgovara.",
+    "options": [
+      "Protected branches i obavezan review za .gitlab-ci.yml",
+      "Semgrep i osv-scanner u svakom MR-u",
+      "Trijaža novog CVE-a i analiza uzroka da se klasa greške ne ponovi",
+      "Definisanje kriterija „CRITICAL ranjivost blokira release“ i obuka timova"
+    ],
+    "targets": ["RV (Respond to Vulnerabilities)", "PO (Prepare the Organization)", "PS (Protect the Software)", "PW (Produce Well-Secured Software)"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Zaštita koda od neovlaštenih izmjena je PS, analiza koda i komponenti je PW, odgovor na ranjivosti i analiza uzroka su RV, a definisanje kriterija, uloga i obuke je PO."
+  },
+  {
+    "obj": "1.1",
+    "q": "CISO želi godišnju procjenu cijelog programa sigurnosti softvera, uključujući governance, edukaciju i upravljanje incidentima, sa ciljnim profilom za sljedeću godinu. Koji okvir najbolje odgovara?",
+    "options": [
+      "OWASP DSOMM",
+      "OWASP SAMM v2",
+      "OWASP Top 10 CI/CD Security Risks",
+      "NIST SP 800-218A"
+    ],
+    "answer": 1,
+    "explain": "SAMM v2 pokriva 5 poslovnih funkcija (uključujući Governance i Operations) sa 15 praksi i 3 nivoa zrelosti, i namijenjen je procjeni programa. DSOMM je fokusiran na tehničke DevSecOps aktivnosti, Top 10 CI/CD je lista rizika, a 800-218A je SSDF profil za generativnu AI."
+  },
+  {
+    "obj": "1.1",
+    "q": "Platform tim želi konkretan plan „koje sigurnosne aktivnosti u pipelineu uvodimo sljedeće“, grupisan po oblastima kao Build and Deployment i Test and Verification. Koji model koristi?",
+    "options": [
+      "NIST SSDF",
+      "OWASP SAMM v2",
+      "STRIDE",
+      "OWASP DSOMM"
+    ],
+    "answer": 3,
+    "explain": "DSOMM ima dimenzije Build and Deployment, Culture and Organization, Implementation, Information Gathering i Test and Verification, sa konkretnim aktivnostima po nivoima. SSDF je okvir praksi bez nivoa, SAMM je organizacioni model, a STRIDE je klasifikacija prijetnji."
+  },
+  {
+    "obj": "1.1",
+    "q": "Kolega tvrdi: „Imamo shift-left: SAST, SCA i skeniranje slika u MR-u. Ne treba nam ništa poslije deploya.“ Koji scenario pokazuje da nije u pravu?",
+    "options": [
+      "Developer commituje tajnu koju pre-commit hook ne prepozna",
+      "SAST prijavi lažni pozitiv u testnom kodu",
+      "Mjesec dana nakon releasea izađe CVE za biblioteku u slici koja već radi u produkciji",
+      "Merge request ima previše nalaza pa ga reviewer odbije"
+    ],
+    "answer": 2,
+    "explain": "Novi CVE pogađa artefakte koji su već prošli sve gateove, pa treba stalno skeniranje registryja i produkcije (shift-right). Ostale opcije su problemi unutar shift-left kontrola, ne argument za kontrole poslije deploya."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koja tvrdnja o NIST SSDF-u je tačna u oktobru 2026?",
+    "options": [
+      "SSDF propisuje konkretne alate, npr. Semgrep za PW.7",
+      "Važeća konačna verzija je SP 800-218 (SSDF 1.1), a SP 800-218 Rev. 1 (SSDF 1.2) je objavljen kao nacrt u decembru 2025",
+      "SSDF ima pet grupa praksi, istih kao SAMM poslovne funkcije",
+      "SSDF je zamijenjen OWASP DSOMM-om"
+    ],
+    "answer": 1,
+    "explain": "SP 800-218 v1.1 (februar 2022) je konačna verzija, a Rev. 1 (SSDF 1.2) je nacrt iz decembra 2025. SSDF ne propisuje alate, ima četiri grupe (PO, PS, PW, RV) i nije zamijenjen nijednim OWASP modelom."
+  },
+  {
+    "obj": "1.1",
+    "q": "Uvodiš kontrole u 40 repoa koji nemaju nikakve sigurnosne provjere. Koja je razumna PRVA kontrola?",
+    "options": [
+      "DAST nad svim staging okruženjima",
+      "Kyverno admission politike za potpisane slike",
+      "SLSA L3 provenance za sve buildove",
+      "Otkrivanje tajni (gitleaks) u pipelineu i pre-commit hooku"
+    ],
+    "answer": 3,
+    "explain": "Otkrivanje tajni je jeftino, brzo, ima malo podešavanja, a šteta od procurjele tajne je velika. DAST, potpisi sa admission kontrolom i SLSA L3 traže znatno više infrastrukture i dolaze kasnije."
+  },
+  {
+    "obj": "1.2",
+    "q": "U threat modeling sesiji za kurs-shop navedeno je: „debug=True u Flasku otkriva stack trace i konfiguraciju napadaču“. U koju STRIDE kategoriju to spada?",
+    "options": [
+      "Information disclosure",
+      "Tampering",
+      "Repudiation",
+      "Spoofing"
+    ],
+    "answer": 0,
+    "explain": "Otkrivanje stack tracea i konfiguracije narušava povjerljivost, pa je to Information disclosure. (Werkzeug debugger može dati i izvršavanje koda, što bi bio Elevation of privilege, ali opisani problem je curenje informacija.)"
+  },
+  {
+    "obj": "1.2",
+    "q": "Napadač sa pravom pisanja u feature granu izmijeni Makefile koji test job poziva, pa job pošalje varijable okruženja na njegov server. Koja STRIDE kategorija i koja granica povjerenja su prekršene?",
+    "options": [
+      "Denial of service; granica između runnera i registryja",
+      "Repudiation; granica između GitLaba i Kubernetesa",
+      "Tampering koda koji pipeline izvršava, s posljedicom Information disclosure; granica između repoa i runnera koji ima tajne",
+      "Spoofing; granica između developerovog laptopa i GitLaba"
+    ],
+    "answer": 2,
+    "explain": "Izmjena fajla koji pipeline izvršava je tampering, a krađa varijabli je information disclosure. Kritična granica je između sadržaja repoa (koji može mijenjati i manje povjerljiva osoba) i runnera koji ima tajne. To je indirektni Poisoned Pipeline Execution."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Upari problem u repou kurs-shop sa kontrolom koja ga prva otkriva u pipelineu.",
+    "options": [
+      "f-string u SQL upitu u app.py",
+      "requests 2.25.1 u requirements.txt",
+      "SG sa portom 22 otvorenim za 0.0.0.0/0 u infra/main.tf",
+      "AWS ključ u starom commitu config/settings.py"
+    ],
+    "targets": ["DAST (ZAP)", "Otkrivanje tajni (gitleaks git)", "IaC skeniranje (Checkov)", "SAST (Semgrep)", "SCA (osv-scanner)"],
+    "answer": [3, 4, 2, 1],
+    "explain": "Ranjiv obrazac u kodu hvata SAST, staru verziju zavisnosti SCA, pogrešnu Terraform konfiguraciju IaC skener, a tajnu u istoriji skener tajni koji čita git istoriju. DAST je distraktor: kasno je i ne vidi Terraform ni git istoriju."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Poredaj kontrole po fazi u kojoj se prirodno izvršavaju, od najranije do najkasnije.",
+    "options": [
+      "Kyverno verifyImages u klasteru",
+      "gitleaks u pre-commit hooku",
+      "Trivy image nad izgrađenom slikom",
+      "ZAP baseline nad staging okruženjem",
+      "Semgrep u merge request pipelineu"
+    ],
+    "answer": [1, 4, 2, 3, 0],
+    "explain": "Pre-commit (tajne) → MR (SAST) → build (skeniranje slike) → staging (DAST) → deploy (admission provjera potpisa). Svaka kontrola stoji u najranijoj fazi u kojoj ima šta da provjeri."
+  },
+  {
+    "obj": "1.2",
+    "q": "Tim pita gdje staviti DAST da bi bio „što više lijevo“. Koje je najranije razumno mjesto?",
+    "options": [
+      "U pre-commit hooku, nad izvornim kodom",
+      "Nakon deploya na kratkotrajno review ili staging okruženje, u istom pipelineu",
+      "U MR pipelineu prije build joba, nad Dockerfileom",
+      "Samo jednom godišnje kao dio pentesta"
+    ],
+    "answer": 1,
+    "explain": "DAST treba aplikaciju koja radi, pa je najranije mjesto nakon deploya na review/staging okruženje. Pre-commit i MR prije builda nemaju pokrenutu aplikaciju, a godišnji pentest nije kontrola u pipelineu."
+  },
+  {
+    "obj": "1.2",
+    "q": "Želiš da SAST, SCA i IaC sken u MR-u počnu odmah, paralelno sa buildom, umjesto da čekaju da prethodni stage završi. Šta dodaješ tim jobovima?",
+    "options": [
+      "when: always",
+      "allow_failure: true",
+      "dependencies: []",
+      "needs: []"
+    ],
+    "answer": 3,
+    "explain": "needs: [] znači da job nema zavisnosti i kreće čim pipeline počne, bez obzira na stage. when: always utiče na to da li se job pokreće nakon neuspjeha, allow_failure na to da li neuspjeh blokira, a dependencies: [] samo isključuje preuzimanje artefakata."
+  },
+  {
+    "obj": "1.2",
+    "q": "Skripta za IaC gate vraća 0 (čisto), 2 (samo MEDIUM nalazi) i 1 (HIGH/CRITICAL). Želiš da MEDIUM bude žuto upozorenje, a HIGH blokira. Šta pišeš u jobu?",
+    "options": [
+      "allow_failure: true",
+      "allow_failure:\n  exit_codes: [2]",
+      "rules:\n  - when: on_failure",
+      "allow_failure:\n  exit_codes: [1]"
+    ],
+    "answer": 1,
+    "explain": "allow_failure:exit_codes: [2] dozvoljava neuspjeh samo za izlazni kod 2, pa MEDIUM daje upozorenje, a kod 1 blokira. allow_failure: true ne bi nikad blokirao, exit_codes: [1] bi propustio HIGH, a when: on_failure se odnosi na pokretanje joba, ne na rezultat."
+  },
+  {
+    "obj": "1.2",
+    "q": "Pokrećeš postojeći pipeline repoa kurs-shop lokalno u labu i želiš prvo vidjeti koji jobovi postoje i u kojim su stageovima. Koja komanda?",
+    "options": [
+      "gitlab-ci-local --list",
+      "gitlab-runner list",
+      "gitlab-ci-local test",
+      "glab ci view"
+    ],
+    "answer": 0,
+    "explain": "gitlab-ci-local --list ispisuje jobove sa stageom i when uslovom bez pokretanja. gitlab-ci-local test bi pokrenuo job test, gitlab-runner list prikazuje registrovane runnere, a glab ci view radi nad pravim GitLab serverom, koji u labu ne postoji."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Poredaj korake modelovanja prijetnji po pristupu „četiri pitanja“.",
+    "options": [
+      "Provjeriti jesu li kontrole uvedene i ponoviti kad se arhitektura promijeni",
+      "Nacrtati dijagram toka podataka sa granicama povjerenja",
+      "Odlučiti o kontrolama ili prihvatanju rizika",
+      "Proći STRIDE po svakoj granici povjerenja"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "Na čemu radimo (dijagram) → šta može poći naopako (STRIDE) → šta ćemo uraditi (kontrole) → jesmo li dobro uradili (provjera i ponavljanje)."
+  }
+]

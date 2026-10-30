@@ -1,0 +1,240 @@
+[
+  {
+    "obj": "5.1",
+    "q": "node01 is NotReady, and k describe node node01 shows Ready=Unknown: Kubelet stopped posting node status. On node01, systemctl status kubelet shows Loaded: ...; disabled and Active: inactive (dead). The task requires the node to stay healthy after a machine reboot. Which command solves this?",
+    "options": [
+      "systemctl enable --now kubelet",
+      "systemctl start kubelet",
+      "systemctl daemon-reload",
+      "kubeadm join --control-plane"
+    ],
+    "answer": 0,
+    "explain": "enable --now starts the service immediately and enables it at boot. start alone does not survive a reboot, daemon-reload only rereads the unit files, and joining again is not needed because the node is already part of the cluster."
+  },
+  {
+    "obj": "5.1",
+    "q": "On node01, journalctl -u kubelet shows: failed to load kubelet config file, path: /var/lib/kubelet/confg.yaml ... no such file or directory. The file /var/lib/kubelet/config.yaml exists and is correct. What should you do?",
+    "options": [
+      "Run kubeadm reset and join again",
+      "Copy config.yaml to /etc/kubernetes/kubelet.conf",
+      "Fix the --config path in the kubelet drop-in file (systemctl cat kubelet shows which one), then systemctl daemon-reload and systemctl restart kubelet",
+      "Fix staticPodPath in config.yaml"
+    ],
+    "answer": 2,
+    "explain": "The configuration path comes from the --config flag in the drop-in file; after changing a unit/drop-in file you need daemon-reload and then a restart. kubelet.conf is a kubeconfig (API server address and credentials), not a KubeletConfiguration, and a reset is destructive and unnecessary."
+  },
+  {
+    "obj": "5.2",
+    "q": "kubectl returns The connection to the server controlplane:6443 was refused. On controlplane, crictl ps -a shows kube-apiserver containers in the Exited state, and crictl logs of the last one says: Error: unknown flag: --etcd-server. What is the fix?",
+    "options": [
+      "Restart etcd with crictl stop",
+      "In /etc/kubernetes/manifests/kube-apiserver.yaml, correct the flag to --etcd-servers",
+      "kubectl edit pod kube-apiserver-controlplane -n kube-system and fix the flag",
+      "Run kubeadm init phase etcd local"
+    ],
+    "answer": 1,
+    "explain": "The API server does not recognize the flag; the correct name is --etcd-servers. A static Pod is changed in its manifest on disk; kubectl edit does not work anyway while the API server is down, and etcd is not the cause."
+  },
+  {
+    "obj": "5.2",
+    "q": "New Pods in all namespaces stay Pending. k describe pod shows Node: <none> and Events: <none>. The nodes are Ready and have free resources. Which component is the most likely cause?",
+    "options": [
+      "kube-controller-manager",
+      "kube-proxy",
+      "kubelet on node01",
+      "kube-scheduler"
+    ],
+    "answer": 3,
+    "explain": "Pending without a single event (neither Scheduled nor FailedScheduling) means nobody even tried to schedule the Pod, which is the job of kube-scheduler. When the scheduler runs but cannot find a node, there is a FailedScheduling event; kube-proxy and the kubelet take no part in scheduling."
+  },
+  {
+    "obj": "5.2",
+    "q": "k create deployment web --image=nginx:1.27 --replicas=3 succeeds, but k get rs,pods shows neither a ReplicaSet nor Pods. A Pod created with k run test --image=nginx:1.27 works normally. What should you check?",
+    "options": [
+      "The kube-controller-manager static Pod (manifest and logs), because the controllers create the ReplicaSet and the Pods",
+      "kube-scheduler, because it does not schedule the Deployment",
+      "CoreDNS, because the Deployment cannot resolve the image name",
+      "The ResourceQuota admission plugin in the API server"
+    ],
+    "answer": 0,
+    "explain": "The Deployment controller and the ReplicaSet controller run in kube-controller-manager. Without it, the Deployment object exists, but nobody creates the ReplicaSet. The scheduler works because the standalone Pod started, and ResourceQuota would reject the request with a message."
+  },
+  {
+    "obj": "5.2",
+    "q": "You edited /etc/kubernetes/manifests/kube-scheduler.yaml. After two minutes, crictl ps -a shows no kube-scheduler container at all, neither Running nor Exited. Where will you find the cause fastest?",
+    "options": [
+      "crictl logs of the last kube-scheduler container",
+      "k logs -n kube-system kube-scheduler-controlplane --previous",
+      "journalctl -u kubelet, because the kubelet failed to load the manifest (e.g. a YAML error)",
+      "/var/log/containers/kube-scheduler*.log"
+    ],
+    "answer": 2,
+    "explain": "If the container does not exist at all, the kubelet never even created the Pod, most often because of invalid YAML, and that is written in the kubelet log. crictl logs, k logs and /var/log/containers all require a container that has started at least once."
+  },
+  {
+    "obj": "5.1",
+    "q": "After kubeadm init and join, both nodes are NotReady. k describe node shows Ready=False: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: cni plugin not initialized. What is missing?",
+    "options": [
+      "The kube-proxy DaemonSet",
+      "A CNI plugin (e.g. apply the manifest for flannel or another CNI)",
+      "CoreDNS",
+      "The containerd service"
+    ],
+    "answer": 1,
+    "explain": "The message says directly that the CNI is not initialized: until a network plugin is installed, the kubelet reports the node as NotReady. Without containerd the message would mention the runtime, and CoreDNS and kube-proxy do not affect the Ready condition."
+  },
+  {
+    "obj": "5.2",
+    "q": "You need to add the flag --audit-log-maxage=7 to the API server in a kubeadm cluster. Which approach is correct?",
+    "options": [
+      "kubectl edit pod kube-apiserver-controlplane -n kube-system",
+      "kubectl edit cm kubeadm-config -n kube-system and wait for it to be applied",
+      "systemctl edit kube-apiserver and add the flag to ExecStart",
+      "Add the flag to /etc/kubernetes/manifests/kube-apiserver.yaml; the kubelet will recreate the static Pod"
+    ],
+    "answer": 3,
+    "explain": "In kubeadm, control plane components are static Pods that the kubelet creates from manifests on disk. A change to the mirror Pod is not applied, kube-apiserver is not a systemd service, and kubeadm-config is read only during kubeadm upgrade/init, not automatically."
+  },
+  {
+    "obj": "5.1",
+    "q": "New Pods are not scheduled on node01. k describe node node01 shows DiskPressure=True and the taint node.kubernetes.io/disk-pressure:NoSchedule. What is the correct action?",
+    "options": [
+      "Free up space on node01 (e.g. crictl rmi --prune, old logs); the kubelet will remove the condition and the taint",
+      "Remove the taint with k taint node node01 node.kubernetes.io/disk-pressure-",
+      "Add a toleration for disk-pressure to all Deployments",
+      "Restart containerd so that it deletes unused volumes"
+    ],
+    "answer": 0,
+    "explain": "The taint is the result of an actual lack of disk space: the kubelet sets it again as long as the pressure lasts. When space is freed, the condition becomes False and the taint disappears. Manually removing the taint or adding tolerations only pushes Pods onto a node without disk space."
+  },
+  {
+    "obj": "5.2",
+    "q": "The API server keeps restarting. Its log shows: grpc: addrConn.createTransport failed to connect to {Addr: \"127.0.0.1:2380\"} ... connection refused. The etcd container is running. What is the likely mistake?",
+    "options": [
+      "The etcd certificate has expired",
+      "The kubelet needs to be restarted",
+      "In kube-apiserver.yaml, --etcd-servers points to the peer port 2380 instead of the client port 2379",
+      "The API server needs --secure-port=2380"
+    ],
+    "answer": 2,
+    "explain": "Clients (the API server) connect to etcd on port 2379; 2380 is used for communication between etcd members. An expired certificate would produce an x509 error, and --secure-port is the port of the API server itself (6443)."
+  },
+  {
+    "obj": "5.1",
+    "q": "On node01, journalctl -u kubelet keeps printing: Get \"https://10.0.0.99:6443/api/v1/nodes/node01\": dial tcp 10.0.0.99:6443: connect: no route to host. The API server runs at controlplane:6443. Which file needs to be fixed?",
+    "options": [
+      "/var/lib/kubelet/config.yaml (the clusterDNS field)",
+      "/etc/kubernetes/kubelet.conf (the server: field in the kubeconfig)",
+      "/etc/kubernetes/manifests/kube-apiserver.yaml on node01",
+      "/etc/containerd/config.toml"
+    ],
+    "answer": 1,
+    "explain": "kubelet.conf is the kubelet's kubeconfig and contains the API server address. clusterDNS is the DNS address for Pods, node01 has no control plane static Pods, and containerd does not communicate with the API server."
+  },
+  {
+    "obj": "5.2",
+    "q": "kubectl does not work because the API server is down. Where on controlplane can you read its container logs? (Choose TWO.)",
+    "options": [
+      "crictl logs <id> (id from crictl ps -a | grep kube-apiserver)",
+      "journalctl -u kube-apiserver",
+      "kubectl logs -n kube-system kube-apiserver-controlplane",
+      "/var/log/pods/kube-system_kube-apiserver-controlplane_<uid>/kube-apiserver/",
+      "/etc/kubernetes/manifests/kube-apiserver.log"
+    ],
+    "answer": [0, 3],
+    "explain": "Static Pod logs are available through the container runtime (crictl logs) and as files in /var/log/pods/. kube-apiserver is not a systemd service, kubectl logs needs the API server, and the manifest directory does not contain logs."
+  },
+  {
+    "obj": "5.2",
+    "q": "k get --raw='/readyz?verbose' returns a list containing [-]etcd failed: reason withheld, while the other checks are [+]. What is the next step?",
+    "options": [
+      "Restart kube-scheduler",
+      "Delete /var/lib/etcd so that etcd initializes again",
+      "Run k get componentstatuses for details",
+      "Check the etcd static Pod: crictl ps -a | grep etcd, its logs and /etc/kubernetes/manifests/etcd.yaml"
+    ],
+    "answer": 3,
+    "explain": "The API server gets no response from etcd, so you look at the etcd container, its log and its manifest (certificate paths, data-dir, port). Deleting /var/lib/etcd destroys all cluster data, and componentstatuses is deprecated."
+  },
+  {
+    "obj": "5.1",
+    "q": "The kubelet on node01 went down 10 minutes ago. The Deployment's Pods that were on node01 are now shown as Terminating, and new replicas have been created on controlplane. What caused this?",
+    "options": [
+      "The taint node.kubernetes.io/unreachable:NoExecute and the default 300-second toleration, after which the Pods were evicted",
+      "kube-scheduler moved the Pods because node01 had DiskPressure",
+      "The kubelet deleted the Pods itself before it went down",
+      "A PodDisruptionBudget moved the Pods"
+    ],
+    "answer": 0,
+    "explain": "When a node stops reporting status, it gets a NoExecute taint, and Pods have a default toleration of 300 seconds; after that they are evicted and the ReplicaSet creates new ones. Terminating remains because the kubelet on node01 cannot confirm the deletion. The scheduler does not move Pods, and a PDB only limits voluntary evictions."
+  },
+  {
+    "obj": "5.1",
+    "q": "node01 is NotReady with the message container runtime is down. On node01, journalctl -u kubelet shows errors toward unix:///run/containerd/containerd.sock: no such file or directory. What is the first step?",
+    "options": [
+      "Change containerRuntimeEndpoint to unix:///var/run/dockershim.sock",
+      "systemctl status containerd, then systemctl enable --now containerd and restart the kubelet",
+      "crictl rmi --prune",
+      "Regenerate the kubelet certificates"
+    ],
+    "answer": 1,
+    "explain": "The socket does not exist because containerd is not running; once containerd is started (and enabled at boot), the kubelet reconnects. dockershim was removed back in v1.24, and cleaning up images or certificates has nothing to do with a missing socket."
+  },
+  {
+    "obj": "5.2",
+    "type": "order",
+    "q": "kubectl does not work after someone edited the API server manifest. Put the fix steps in order.",
+    "options": [
+      "Verify with kubectl get pods -n kube-system that the control plane is working",
+      "Find the error: crictl ps -a | grep kube-apiserver and crictl logs <id>",
+      "Fix the error in /etc/kubernetes/manifests/kube-apiserver.yaml",
+      "Make a copy of the manifest in /root/",
+      "Watch crictl ps until kube-apiserver stays Running"
+    ],
+    "answer": [1, 3, 2, 4, 0],
+    "explain": "First find out from the log what is wrong, then make a copy outside the manifest directory, fix the file, wait for the kubelet to bring up the container, and finally verify through kubectl."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Match the symptom with the component that is most likely not working.",
+    "options": [
+      "New Pods Pending, without a single event",
+      "The Deployment exists, but there is no ReplicaSet",
+      "Pods are running, but the ClusterIP Service does not forward traffic even though endpoints exist",
+      "Service names do not resolve, but IP addresses work",
+      "kubectl: connection to the server controlplane:6443 was refused"
+    ],
+    "targets": [
+      "CoreDNS",
+      "kube-apiserver",
+      "kube-scheduler",
+      "etcd members over the peer port",
+      "kube-controller-manager",
+      "kube-proxy"
+    ],
+    "answer": [2, 4, 5, 0, 1],
+    "explain": "Scheduling is the scheduler's job, the controller-manager creates the ReplicaSet, kube-proxy sets up the ClusterIP rules, CoreDNS resolves names, and the API server listens on 6443. The etcd peer port is a distractor."
+  },
+  {
+    "obj": "5.1",
+    "q": "On node01 you corrected a wrong clusterDNS value in /var/lib/kubelet/config.yaml. You changed nothing else. What do you need to do for the change to take effect?",
+    "options": [
+      "systemctl daemon-reload, without a restart",
+      "kubeadm upgrade node",
+      "systemctl restart kubelet (and check systemctl status kubelet)",
+      "Nothing, the kubelet automatically watches for changes to config.yaml"
+    ],
+    "answer": 2,
+    "explain": "The kubelet reads config.yaml at startup, so a restart is needed. daemon-reload is required only for changes to unit/drop-in files, and kubeadm upgrade node is used for version upgrades."
+  },
+  {
+    "obj": "5.2",
+    "type": "spot",
+    "q": "After manually editing /etc/kubernetes/manifests/kube-apiserver.yaml on a kubeadm cluster, the API server crashes and crictl logs shows errors connecting to etcd. Click the lines that need fixing.",
+    "lang": "yaml",
+    "snippet": "spec:\n  containers:\n  - command:\n    - kube-apiserver\n    - --advertise-address=172.18.0.2\n    - --allow-privileged=true\n    - --authorization-mode=Node,RBAC\n    - --client-ca-file=/etc/kubernetes/pki/ca.crt\n    - --etcd-cafile=/etc/kubernetes/pki/ca.crt\n    - --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt\n    - --etcd-keyfile=/etc/kubernetes/pki/apiserver-etcd-client.key\n    - --etcd-servers=https://127.0.0.1:2380\n    - --secure-port=6443\n    - --service-cluster-ip-range=10.96.0.0/12\n    - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt\n    - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key\n    image: registry.k8s.io/kube-apiserver:v1.35.0",
+    "answer": [8, 11],
+    "explain": "Line 9: etcd has its own CA; kubeadm keeps it in /etc/kubernetes/pki/etcd/ca.crt. With the cluster CA, the API server cannot verify etcd's certificate (x509: certificate signed by unknown authority). Line 12: 2380 is the etcd peer port, while clients (the API server) connect to 2379. The kubelet restarts the static pod by itself as soon as you save the fixed manifest."
+  }
+]

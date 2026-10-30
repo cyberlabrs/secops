@@ -1,0 +1,9 @@
+# Trivy u labu: slike se čitaju iz lokalnih mirrora na čvoru (bez interneta)
+image:
+  source: [remote]
+registry:
+  mirrors:
+    index.docker.io: ["127.0.0.1:5001", "127.0.0.1:5000"]
+    registry.k8s.io: ["127.0.0.1:5000", "127.0.0.1:5001"]
+    gcr.io: ["127.0.0.1:5001"]
+insecure: true

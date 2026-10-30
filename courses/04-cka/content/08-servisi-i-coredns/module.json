@@ -1,0 +1,13 @@
+{
+  "title": "Servisi, endpointi, povezanost podova i CoreDNS",
+  "summary": "Kubernetes mrežni model i CNI, tipovi servisa i EndpointSlice, kube-proxy modovi, te CoreDNS konfiguracija, DNS imena i troubleshooting razrješavanja imena.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.1",
+    "3.3",
+    "3.6"
+  ],
+  "title_en": "Services, endpoints, Pod connectivity and CoreDNS",
+  "summary_en": "The Kubernetes network model and CNI, Service types and EndpointSlices, kube-proxy modes, plus CoreDNS configuration, DNS names and name resolution troubleshooting."
+}

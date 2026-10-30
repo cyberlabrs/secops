@@ -1,0 +1,16 @@
+{
+  "title": "Upravljanje identitetom i pristupom",
+  "summary": "Životni ciklus pristupa imovini, faktori i biometrija (FAR/FRR/CER), AAA, sesije, proofing, SSO i Kerberos, JIT, FIDO2/passkeys, federacija (SAML, OAuth, OIDC, SCIM), modeli DAC/MAC/RBAC/RuBAC/ABAC/RAdAC, PDP/PEP, provisioning, revizija pristupa, PoLP i servisni nalozi.",
+  "minutes": 100,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.2",
+    "5.3",
+    "5.4",
+    "5.5",
+    "5.6"
+  ],
+  "title_en": "Identity and Access Management",
+  "summary_en": "The asset access life cycle, factors and biometrics (FAR/FRR/CER), AAA, sessions, identity proofing, SSO and Kerberos, JIT, FIDO2/passkeys, federation (SAML, OAuth, OIDC, SCIM), DAC/MAC/RBAC/RuBAC/ABAC/RAdAC models, PDP/PEP, provisioning, access review, PoLP and service accounts."
+}

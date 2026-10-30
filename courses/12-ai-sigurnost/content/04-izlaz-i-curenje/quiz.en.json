@@ -1,0 +1,255 @@
+[
+  {
+    "obj": "2.2",
+    "q": "A chat application's frontend inserts the model's answer into the page via innerHTML. The team claims this is safe because “our model generates the answer, not the user.” What is correct?",
+    "options": [
+      "It's safe, because the vendor's model filters HTML",
+      "It's safe, if the system prompt is well written",
+      "It's unsafe only for anonymous users",
+      "It's unsafe: model output is untrusted input and must be escaped or sanitized before rendering (LLM05)"
+    ],
+    "answer": 3,
+    "explain": "Model output carries the influence of everything that was in the context, and the model can also generate HTML by mistake. Without escaping/sanitization that is XSS. The prompt and vendor filters don't guarantee safe output."
+  },
+  {
+    "obj": "2.2",
+    "q": "The model returns JSON with ticket triage fields. Which schema property MOST prevents the model from adding an unexpected field that some later code uses?",
+    "options": [
+      "\"additionalProperties\": false",
+      "\"type\": \"object\"",
+      "\"$schema\" with draft 2020-12",
+      "\"description\" for every field"
+    ],
+    "answer": 0,
+    "explain": "additionalProperties: false rejects every field not defined in the schema. type: object only checks that the output is an object, $schema sets the dialect, and description has no effect on validation."
+  },
+  {
+    "obj": "2.2",
+    "q": "The vendor's API has a structured output mode that follows a schema. Should the application still validate the output with a schema?",
+    "options": [
+      "No, the vendor's mode guarantees correctness",
+      "No, validation only slows the application down",
+      "Yes: validation in your own code is your control; the vendor's mode reduces errors but doesn't replace it",
+      "Only in the development environment"
+    ],
+    "answer": 2,
+    "explain": "Structured output mode is useful, but the security control must be under your control: a change of model, configuration or vendor must not silently remove validation."
+  },
+  {
+    "obj": "2.2",
+    "q": "Model output fails schema validation. What is the best course of action?",
+    "options": [
+      "Heuristically “fix” the JSON and let unknown fields through",
+      "Reject the output, return a safe default result, possibly retry the request once with a limit, and log the validation error",
+      "Keep retrying the request until the model returns valid output, with no limit",
+      "Show the user the model's raw output"
+    ],
+    "answer": 1,
+    "explain": "A safe default preserves functionality, a retry limit prevents cost (LLM10), and the error log is a signal of possible manipulation or a change in model behavior. Fixing or showing raw output bypasses the control."
+  },
+  {
+    "obj": "2.2",
+    "q": "The schema accepts a ticket_id that matches the pattern ^TCK-[0-9]{6}$. What else must be checked before the ticket is shown to the user?",
+    "options": [
+      "Nothing, the pattern is enough",
+      "The string length",
+      "Whether the model has access to the database",
+      "Whether the ticket exists and belongs to the user (business validation and authorization)"
+    ],
+    "answer": 3,
+    "explain": "A schema checks shape, not meaning. A correctly formatted ID can belong to another user. Business validation and an authorization check in code come after the schema."
+  },
+  {
+    "obj": "2.2",
+    "q": "A chat UI renders Markdown images from any URL the model writes. Why is this a risk even when there are no tools at all?",
+    "options": [
+      "Images slow down loading",
+      "The browser automatically sends a request to the URL the model generated, so the URL can carry data from the context out without a click (AML.T0077)",
+      "Images consume tokens",
+      "Markdown images don't work in all browsers"
+    ],
+    "answer": 1,
+    "explain": "Rendering an image is an implicit outbound channel: URL parameters can carry data from the conversation. Controls: don't render external images, a domain allowlist, a proxy without parameters, and CSP img-src."
+  },
+  {
+    "obj": "2.2",
+    "q": "Which CSP directive is the most direct second layer against data exfiltration through images in a model's response?",
+    "options": [
+      "img-src restricted to your own domain and an approved CDN",
+      "frame-ancestors 'none'",
+      "base-uri 'none'",
+      "upgrade-insecure-requests"
+    ],
+    "answer": 0,
+    "explain": "img-src determines where the browser may load images from, so it blocks a request to the attacker's domain even if the renderer lets an image through. The other directives protect against other problems (framing, base tag, HTTP)."
+  },
+  {
+    "obj": "2.2",
+    "q": "A reporting assistant needs to read order data. A developer proposes that the model write SQL that runs over the application's connection. Which design is safest?",
+    "options": [
+      "The model writes SQL, but the word DROP is forbidden",
+      "The model writes SQL, and the result is checked by DLP",
+      "The model picks a query from an allowlist and fills in validated parameters; the query runs parameterized, with a read-only role, and customer_id comes from the session",
+      "The model writes SQL against a separate database with a copy of all data"
+    ],
+    "answer": 2,
+    "explain": "A query allowlist, parameterization, a read-only role and identity from the session deterministically limit what can be read. A word blocklist is easily bypassed, DLP is the last line, and a copy of all data doesn't solve access to other people's data."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Match the model output destination with the appropriate control.",
+    "options": [
+      "Display in a browser",
+      "Execution of generated Python code",
+      "A command argument on a server",
+      "A file name for writing a report"
+    ],
+    "targets": ["A fixed command as a list of arguments, no shell=True, arguments from an allowlist", "Path canonicalization and a restricted directory", "Escaping/sanitization and CSP", "An isolated sandbox without network or secrets, with resource limits", "Per-user rate limiting"],
+    "answer": [2, 3, 0, 1],
+    "explain": "A browser needs escaping and CSP, generated code a sandbox, commands a fixed argument list without a shell, and paths canonicalization and a restricted directory. Rate limiting is a distractor (LLM10)."
+  },
+  {
+    "obj": "2.2",
+    "q": "In a multi-tenant assistant, a response with customer A's data was cached by question text and returned to customer B, who asked the same question. What is the correct control?",
+    "options": [
+      "Disable the cache for everyone",
+      "Add to the prompt that it must not mix customers",
+      "Reduce the cache TTL to one minute",
+      "The cache key must include the identity/tenant and relevant permissions, not just the question text"
+    ],
+    "answer": 3,
+    "explain": "A cache is a source of leakage when the key doesn't reflect who may see the response. A key with the tenant and permissions keeps the benefit of caching without leakage. A shorter TTL only shrinks the window, and the prompt doesn't affect the cache."
+  },
+  {
+    "obj": "2.2",
+    "q": "An output DLP filter blocked a response containing a customer's account number that the user is not allowed to see. What is the most important next question in the investigation?",
+    "options": [
+      "How did that data get into the context in the first place (retrieval without ACLs, a tool that returns too much, the prompt)?",
+      "Whether the regex should be tightened",
+      "Whether the user has a premium account",
+      "How many tokens the response had"
+    ],
+    "answer": 0,
+    "explain": "DLP is the last line; a finding means the sensitive data was already in the context. The cause is usually retrieval with the service's permissions, a tool that returns whole records, or data in the prompt. The fix is at the source (minimization, ACLs)."
+  },
+  {
+    "obj": "2.2",
+    "q": "The get_customer tool returns the whole customer record to the model (address, date of birth, card number), even though the assistant only needs the order status. Which control is best?",
+    "options": [
+      "Output DLP for the card number",
+      "Have the tool return only the fields needed for the task (projection), with sensitive values masked",
+      "An instruction to the model not to mention the card number",
+      "Encrypting the tool's response"
+    ],
+    "answer": 1,
+    "explain": "What isn't in the context can't leak. Field projection at the tool level removes the risk at the source; DLP and an instruction are weaker, and encryption makes no sense because the model has to read the content."
+  },
+  {
+    "obj": "2.2",
+    "q": "The system prompt contains a database connection string so the model “knows how to access the data.” What is the right fix?",
+    "options": [
+      "Leave it, but add “never reveal the connection string”",
+      "Encode it in base64",
+      "Remove it from the prompt; the secret goes into a secrets manager and a backend tool uses it, and the model never sees it",
+      "Move it to the end of the prompt"
+    ],
+    "answer": 2,
+    "explain": "LLM07: assume the prompt will leak. Secrets must not be in the context; a backend tool uses the credential, and the model only calls the tool. An instruction or encoding doesn't protect anything, because the model still “sees” the secret."
+  },
+  {
+    "obj": "2.2",
+    "q": "Per OWASP LLM07:2025, what is the essence of the System Prompt Leakage risk?",
+    "options": [
+      "A competitor can copy the assistant's tone",
+      "The prompt consumes too many tokens",
+      "The prompt can't be versioned",
+      "Security relies on the prompt staying secret (secrets, authorization, internal data in the prompt), so a leak becomes an incident"
+    ],
+    "answer": 3,
+    "explain": "The problem isn't just that the prompt can be read, but that it contains things that must not be disclosed, or security rules that should be enforced in code. A well-designed prompt can leak without security consequences."
+  },
+  {
+    "obj": "2.2",
+    "q": "A team adds a unique meaningless string to the system prompt and checks whether it appears in responses. What is this for?",
+    "options": [
+      "Detecting system prompt leakage (a canary), with an alert and blocking of the response",
+      "Improving the model's accuracy",
+      "Encrypting the prompt",
+      "Reducing cost"
+    ],
+    "answer": 0,
+    "explain": "A canary string is a detective control: its appearance in a response or in public sources indicates the prompt has been extracted. It doesn't prevent leakage, but it provides a signal for investigation and ATLAS mapping (AML.T0056)."
+  },
+  {
+    "obj": "2.2",
+    "q": "Which of the following IS acceptable to keep in the system prompt?",
+    "options": [
+      "The payment service API key",
+      "The rule “users without the admin role must not see payroll” as the only control",
+      "The assistant's role, tone and response format",
+      "A list of internal hosts and ports"
+    ],
+    "answer": 2,
+    "explain": "Role, tone and format aren't security-sensitive; their leakage is not an incident. Keys go into a secrets manager, authorization into code, and internal network topology into backend tool configuration."
+  },
+  {
+    "obj": "2.2",
+    "q": "The assistant's full prompts and responses are sent to a central log platform that the whole IT department can access. Which combination of controls is most appropriate?",
+    "options": [
+      "Disable all assistant logs",
+      "Redact personal data and secrets before writing, a separate index with narrower access and a defined retention period",
+      "Log only to the server's local disk",
+      "Encrypt the logs with a key everyone in IT has"
+    ],
+    "answer": 1,
+    "explain": "Logs are needed for investigation and monitoring, but they are a common source of leakage. Redaction, narrower access and a retention period keep the value of logs with less risk. Disabling them kills detection, and a shared key doesn't change who has access."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Order the steps for processing a model response before showing it to the user and executing an action.",
+    "options": [
+      "Render with escaping and CSP, or execute the tool parameterized",
+      "Validate the output with a JSON Schema",
+      "DLP and canary check, with redaction and an alert on a finding",
+      "Parse the output as JSON",
+      "Business validation: does the resource exist and is the user allowed to access it"
+    ],
+    "answer": [3, 1, 4, 2, 0],
+    "explain": "First parsing, then shape validation with the schema, then business validation and authorization, then the check for sensitive data and prompt leakage, and only at the end safe display or execution."
+  },
+  {
+    "obj": "2.2",
+    "q": "An organization uses an external model vendor's API. Which LLM02 control applies to the vendor itself?",
+    "options": [
+      "Per-user rate limiting",
+      "JSON Schema validation of the output",
+      "A CSP header",
+      "Data retention, a ban on use for training and the processing location, defined in the contract and in the account settings"
+    ],
+    "answer": 3,
+    "explain": "Data sent to the vendor leaves your environment. The contract and account settings determine how long it is kept, whether it is used for training and where it is processed. The other controls protect other parts of the system."
+  },
+  {
+    "obj": "2.2",
+    "q": "An assistant writes a shell command for server diagnostics, and the application runs it via subprocess.run(cmd, shell=True). Which change is correct?",
+    "options": [
+      "The model picks a diagnostic action from an allowlist; the application runs a fixed command as a list of arguments without a shell, with validated arguments",
+      "Add a blocklist of dangerous commands",
+      "Run the command as root to avoid errors",
+      "Ask the model to check the command before execution"
+    ],
+    "answer": 0,
+    "explain": "Model output must not be a shell string. An action allowlist and fixed commands without a shell deterministically limit what is executed. A blocklist gets bypassed, root increases the damage, and the model checking itself is not a control."
+  },
+  {
+    "obj": "2.2",
+    "type": "spot",
+    "q": "System prompt of a banking assistant. Assume the prompt will leak (LLM07). Mark the lines that must not be in the prompt.",
+    "snippet": "You are the \"Bank Assistant\" for users of the mobile app.\nAnswer briefly, in the user's language, in Markdown format.\nFor account balance call the get_balance tool; never make up amounts.\nInternal API: https://core-api.int.banka.local, key: sk_live_7Hq2...9xP\nNever show VIP package interest rates to users who are not in the VIP group.\nIf the user asks about a loan, refer them to the /loans page.\nDo not give investment advice.",
+    "lang": "text",
+    "answer": [3, 4],
+    "explain": "Line 4: an internal URL and an API key in the prompt reveal infrastructure and give the attacker a usable credential as soon as the prompt leaks; the key belongs in a secrets manager and the tool uses it on the backend so the model never sees it. Line 5: an authorization rule (who may see VIP rates) expressed as an instruction can be overridden by prompt injection, and the data may already be in context; authorization is enforced in code and in retrieval. Role, tone, format, tool descriptions and general behavior rules are fine in a prompt: leaking them is awkward but not a security incident."
+  }
+]

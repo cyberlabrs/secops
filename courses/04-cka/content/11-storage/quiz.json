@@ -1,0 +1,266 @@
+[
+  {
+    "obj": "4.3",
+    "q": "Napravio si PV pv-x (500Mi, RWO, hostPath, bez storageClassName). Zatim si napravio PVC od 200Mi, RWO, bez polja storageClassName. U klasteru je local-path označena kao default klasa. PVC je postao Bound, ali za PV pvc-7c1e..., a ne za pv-x. Zašto?",
+    "options": [
+      "pv-x je prevelik za zahtjev od 200Mi, pa ga kontroler preskače",
+      "hostPath PV-ovi se ne mogu vezati za PVC, samo direktno za Pod",
+      "Izostavljen storageClassName je dobio ime default klase local-path, pa je provisioner napravio novi PV",
+      "PVC se uvijek prvo veže za dinamički PV, a statički PV-ovi se koriste samo kad provisioner padne"
+    ],
+    "answer": 2,
+    "explain": "Admission plugin DefaultStorageClass upisuje default klasu u PVC bez storageClassName, a pv-x nema klasu pa se ne slaže. Za vezivanje za pv-x treba storageClassName: \"\" (i po želji volumeName). Veći PV je dozvoljen, a hostPath PV se normalno veže."
+  },
+  {
+    "obj": "4.1",
+    "q": "Napravio si PVC data sa storageClassName: local-path. k get pvc pokazuje Pending, a k describe pvc data pokazuje event: waiting for first consumer to be created before binding. Šta je ispravan sljedeći korak?",
+    "options": [
+      "Napraviti Pod koji koristi PVC data; PVC će se tada vezati",
+      "Promijeniti volumeBindingMode klase local-path u Immediate komandom k edit sc",
+      "Ručno napraviti PV sa storageClassName: local-path",
+      "Obrisati PVC i napraviti ga ponovo sa volumeName"
+    ],
+    "answer": 0,
+    "explain": "Klasa ima WaitForFirstConsumer: provisioner čeka da scheduler izabere čvor za Pod koji koristi PVC. To nije greška. volumeBindingMode se ne može mijenjati na postojećoj klasi, a ručni PV nije potreban."
+  },
+  {
+    "obj": "4.2",
+    "q": "Deployment sa 3 replike koristi isti PVC (RWO, CSI disk u oblaku). Dva Poda na čvoru node01 rade, a Pod raspoređen na controlplane stoji u ContainerCreating sa eventom Multi-Attach error for volume. Šta je uzrok?",
+    "options": [
+      "PVC je u drugom namespace-u od trećeg Poda",
+      "ReadWriteOnce dozvoljava montiranje samo sa jednog čvora, a treći Pod je na drugom čvoru",
+      "ReadWriteOnce dozvoljava samo jedan Pod, pa su i druga dva Poda u grešci",
+      "Reclaim policy Delete ne dozvoljava dijeljenje volumena"
+    ],
+    "answer": 1,
+    "explain": "RWO je ograničenje po čvoru: više Podova na istom čvoru smije koristiti volumen, ali ne i Pod na drugom čvoru. Za više čvorova treba RWX storage ili StatefulSet sa PVC-om po replici. Ograničenje na jedan Pod je RWOP."
+  },
+  {
+    "obj": "4.2",
+    "q": "Zadatak: baza ne smije biti pokrenuta u dva Poda istovremeno, čak ni na istom čvoru. Volumen dolazi iz CSI drajvera. Koji access mode treba staviti u PVC?",
+    "options": [
+      "ReadWriteOnce",
+      "ReadOnlyMany",
+      "ReadWriteMany",
+      "ReadWriteOncePod"
+    ],
+    "answer": 3,
+    "explain": "ReadWriteOncePod (GA od v1.29, samo za CSI) garantuje da volumen koristi tačno jedan Pod u klasteru. RWO dozvoljava više Podova na istom čvoru, a ROX i RWX dozvoljavaju više čvorova."
+  },
+  {
+    "obj": "4.3",
+    "q": "PV pv-log ima reclaim policy Retain. Obrisao si PVC koji ga je koristio i napravio novi PVC sa istim zahtjevima. Novi PVC je Pending, a k get pv pokazuje pv-log u stanju Released. Šta treba uraditi?",
+    "options": [
+      "Promijeniti reclaim policy u Recycle",
+      "Restartovati kube-controller-manager",
+      "Ukloniti spec.claimRef sa PV-a, npr. k patch pv pv-log --type=json -p '[{\"op\":\"remove\",\"path\":\"/spec/claimRef\"}]'",
+      "Povećati kapacitet PV-a da bi se razlikovao od starog"
+    ],
+    "answer": 2,
+    "explain": "Released PV i dalje ima claimRef na obrisani PVC, pa se ne veže za novi. Kad se claimRef ukloni, PV postaje Available. Recycle je deprecated i ne vraća već Released PV, a restart kontrolera ne briše claimRef."
+  },
+  {
+    "obj": "4.1",
+    "q": "Klaster ima default klasu local-path. Zadatak traži da nova klasa fast postane jedina default klasa. Koji par komandi je ispravan?",
+    "options": [
+      "k annotate sc local-path storageclass.kubernetes.io/is-default-class- i k annotate sc fast storageclass.kubernetes.io/is-default-class=true --overwrite",
+      "k label sc local-path default- i k label sc fast default=true",
+      "k patch sc fast -p '{\"spec\":{\"default\":true}}' i k delete sc local-path",
+      "k annotate sc fast kubernetes.io/default-storage-class=true i k annotate sc local-path kubernetes.io/default-storage-class=false"
+    ],
+    "answer": 0,
+    "explain": "Default klasa se određuje anotacijom storageclass.kubernetes.io/is-default-class: \"true\". Sa stare klase je skidaš (ime sa crticom na kraju), na novu je dodaješ. Labela ili polje spec.default ne postoje u te svrhe, a brisanje stare klase nije traženo."
+  },
+  {
+    "obj": "4.3",
+    "q": "PVC traži 50Mi, RWO, storageClassName: manual. Jedini odgovarajući PV ima capacity 100Mi i istu klasu. Šta pokazuje kolona CAPACITY u k get pvc nakon vezivanja?",
+    "options": [
+      "50Mi, jer PVC dobija tačno ono što traži",
+      "Ništa, PVC ostaje Pending jer kapacitet mora biti identičan",
+      "50Mi, a ostatak PV-a postaje novi PV od 50Mi",
+      "100Mi, jer PVC dobija cijeli PV"
+    ],
+    "answer": 3,
+    "explain": "PV mora imati kapacitet bar onoliki koliko PVC traži, a veza je 1:1, pa PVC dobija cijeli PV i prikazuje njegov kapacitet. PV se ne dijeli i ne mora biti iste veličine."
+  },
+  {
+    "obj": "4.1",
+    "q": "k patch pvc data -p '{\"spec\":{\"resources\":{\"requests\":{\"storage\":\"5Gi\"}}}}' vraća grešku: only dynamically provisioned pvc can be resized and the storageclass that provisions the pvc must support resize. PVC je dinamički napravljen iz klase standard-csi. Šta treba promijeniti?",
+    "options": [
+      "Povećati spec.capacity.storage na PV-u",
+      "Postaviti allowVolumeExpansion: true na StorageClass standard-csi",
+      "Promijeniti volumeBindingMode u Immediate",
+      "Dodati anotaciju volume.kubernetes.io/resize=true na PVC"
+    ],
+    "answer": 1,
+    "explain": "Proširenje je dozvoljeno samo ako klasa ima allowVolumeExpansion: true. Mijenjanje kapaciteta na PV-u ne proširuje volumen i može spriječiti automatsko proširenje, a volumeBindingMode i izmišljena anotacija nemaju veze sa tim."
+  },
+  {
+    "obj": "4.3",
+    "q": "PVC data ima 2Gi, a klasa dozvoljava proširenje. Kolega pokuša da ga smanji na 1Gi. Šta se dešava?",
+    "options": [
+      "API server odbija izmjenu, jer smanjivanje PVC-a nije podržano",
+      "PVC se smanji, a podaci preko 1Gi se brišu",
+      "Pravi se novi PV od 1Gi i podaci se kopiraju",
+      "Izmjena prolazi, ali PVC ulazi u stanje Lost"
+    ],
+    "answer": 0,
+    "explain": "Kubernetes ne podržava smanjivanje PVC-a ispod trenutne veličine i validacija odbija takvu izmjenu. Pri proširenju se novi PV nikad ne pravi, nego se postojeći volumen proširuje."
+  },
+  {
+    "obj": "4.2",
+    "q": "Pod koristi hostPath /data/app sa type: DirectoryOrCreate i bio je na controlplane. Nakon brisanja Deployment ga je napravio na node01 i aplikacija ne vidi stare fajlove. Šta je uzrok?",
+    "options": [
+      "DirectoryOrCreate briše sadržaj direktorijuma pri svakom startu",
+      "hostPath zahtijeva PVC, a bez njega podaci žive samo u memoriji",
+      "hostPath čita putanju sa čvora na kojem Pod radi, pa node01 ima svoj (novi, prazan) /data/app",
+      "Reclaim policy hostPath volumena je Delete"
+    ],
+    "answer": 2,
+    "explain": "hostPath je vezan za čvor: na node01 je DirectoryOrCreate napravio prazan direktorijum. DirectoryOrCreate ne briše postojeći sadržaj, a inline hostPath volumen nema reclaim policy jer nije PV."
+  },
+  {
+    "obj": "4.2",
+    "q": "PVC ima volumeMode: Block i Bound je. Pod koji ga koristi ne prolazi, a u kontejneru stoji volumeMounts sa mountPath: /data. Šta treba promijeniti u kontejneru?",
+    "options": [
+      "Dodati readOnly: true u volumeMounts",
+      "Promijeniti mountPath u /dev/data",
+      "Dodati subPath: block",
+      "Zamijeniti volumeMounts sa volumeDevices i navesti devicePath, npr. /dev/xvda"
+    ],
+    "answer": 3,
+    "explain": "Block volumen se kontejneru daje kao sirovi uređaj kroz volumeDevices.devicePath, ne kroz volumeMounts. readOnly i subPath važe za Filesystem montiranje."
+  },
+  {
+    "obj": "4.3",
+    "q": "PVC ima storageClassName: local-path i selector.matchLabels: tier: logs. Ne postoji PV sa tom labelom. Šta će se desiti?",
+    "options": [
+      "local-path će napraviti PV i dodati mu labelu tier: logs",
+      "PVC ostaje Pending, jer PVC sa nepraznim selectorom ne može dobiti dinamički PV",
+      "Selector se ignoriše kad je navedena klasa",
+      "PVC se veže za bilo koji Available PV iste klase"
+    ],
+    "answer": 1,
+    "explain": "Dokumentacija navodi da PVC sa nepraznim selectorom ne može dobiti dinamički provisioniran PV. Selector služi za izbor među statičkim PV-ovima i ne ignoriše se."
+  },
+  {
+    "obj": "4.1",
+    "q": "U klasteru sa tri zone PVC se pravi iz klase sa volumeBindingMode: Immediate. Pod koji ga koristi ostaje Pending: volume node affinity conflict. Kakva izmjena klase sprečava ovaj problem kod novih PVC-ova?",
+    "options": [
+      "Nova klasa sa volumeBindingMode: WaitForFirstConsumer, da se volumen pravi tek kad scheduler izabere čvor",
+      "allowVolumeExpansion: true",
+      "reclaimPolicy: Retain",
+      "Dodati parameter zone: any u parameters"
+    ],
+    "answer": 0,
+    "explain": "Sa Immediate se disk pravi prije rasporeda Poda i može završiti u zoni u kojoj Pod ne može raditi. WaitForFirstConsumer odlaže provisioning do izbora čvora. Ostala polja ne utiču na topologiju, a parameters zavise od provisionera."
+  },
+  {
+    "obj": "4.3",
+    "q": "Pokreneš k delete pvc data dok Pod koji ga koristi još radi. Komanda visi, a k get pvc pokazuje Terminating. Šta je razlog?",
+    "options": [
+      "Reclaim policy je Retain, pa se PVC ne smije obrisati",
+      "PV je u stanju Failed",
+      "Finalizer kubernetes.io/pvc-protection čuva PVC dok ga koristi Pod; brisanje se završava kad se Pod obriše",
+      "PVC se može obrisati samo sa --force --grace-period=0"
+    ],
+    "answer": 2,
+    "explain": "Storage Object in Use Protection ne dozvoljava brisanje PVC-a koji koristi Pod, pa PVC čeka u Terminating. Reclaim policy određuje sudbinu PV-a nakon brisanja PVC-a, ne blokira samo brisanje."
+  },
+  {
+    "obj": "4.3",
+    "q": "PVC app-data u namespace-u default mora se vezati baš za postojeći PV pv-data, koji nema storageClassName. Klaster ima default klasu. Koja dva polja u PVC-u to obezbjeđuju? (Izaberi DVA.)",
+    "options": [
+      "storageClassName: local-path",
+      "storageClassName: \"\"",
+      "persistentVolumeReclaimPolicy: Retain",
+      "volumeName: pv-data",
+      "claimRef: pv-data"
+    ],
+    "answer": [1, 3],
+    "explain": "Prazan string sprečava upis default klase i traži PV bez klase, a volumeName bira tačno taj PV. persistentVolumeReclaimPolicy i claimRef su polja PV-a, ne PVC-a, a local-path ne odgovara PV-u bez klase."
+  },
+  {
+    "obj": "4.3",
+    "type": "order",
+    "q": "Dinamički PV (reclaim policy Delete) sadrži važne podatke. Treba obrisati stari PVC i iste podatke dati novom PVC-u. Poredaj korake.",
+    "options": [
+      "Napravi novi PVC sa volumeName: <ime PV-a> i istom klasom",
+      "Obriši stari PVC (i Pod koji ga koristi)",
+      "Promijeni persistentVolumeReclaimPolicy PV-a u Retain",
+      "Ukloni spec.claimRef sa PV-a, da postane Available",
+      "Provjeri da su novi PVC i PV u stanju Bound"
+    ],
+    "answer": [2, 1, 3, 0, 4],
+    "explain": "Prvo Retain, inače brisanje PVC-a briše i disk. Nakon brisanja PV je Released sa starim claimRef; uklanjanje claimRef ga čini Available, pa se novi PVC preko volumeName veže za njega."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Upari zahtjev sa podešavanjem koje ga ispunjava.",
+    "options": [
+      "Više Podova na različitim čvorovima piše u isti dijeljeni direktorijum",
+      "Samo jedan Pod u cijelom klasteru smije koristiti volumen",
+      "Nakon brisanja PVC-a disk i podaci moraju ostati za ručni pregled",
+      "Nakon brisanja PVC-a disk u oblaku treba automatski obrisati",
+      "Više čvorova čita isti skup statičkih fajlova, niko ne piše"
+    ],
+    "targets": [
+      "Reclaim policy Delete",
+      "ReadOnlyMany",
+      "ReadWriteMany",
+      "Reclaim policy Recycle",
+      "ReadWriteOncePod",
+      "Reclaim policy Retain",
+      "ReadWriteOnce"
+    ],
+    "answer": [2, 4, 5, 0, 1],
+    "explain": "RWX za pisanje sa više čvorova, RWOP za jedan Pod, Retain čuva PV u stanju Released, Delete briše storage, ROX za čitanje sa više čvorova. Recycle je deprecated, a RWO je ograničenje po čvoru."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari polje StorageClass sa onim što kontroliše.",
+    "options": [
+      "provisioner",
+      "volumeBindingMode",
+      "allowVolumeExpansion",
+      "reclaimPolicy",
+      "parameters"
+    ],
+    "targets": [
+      "Da li korisnik smije povećati PVC te klase",
+      "Šta se dešava sa dinamički napravljenim PV-om kad se obriše PVC",
+      "Kada se volumen pravi: odmah ili nakon izbora čvora za Pod",
+      "Koja klasa je podrazumijevana u klasteru",
+      "Ko pravi volumen (npr. rancher.io/local-path ili CSI drajver)",
+      "Podešavanja specifična za provisioner, npr. tip diska ili IOPS"
+    ],
+    "answer": [4, 2, 0, 1, 5],
+    "explain": "Default klasa se ne određuje poljem nego anotacijom storageclass.kubernetes.io/is-default-class, pa je taj target distraktor. Ostala polja direktno odgovaraju opisima."
+  },
+  {
+    "obj": "4.3",
+    "q": "Pod web u namespace-u default je Pending sa porukom persistentvolumeclaim \"data\" not found. k get pvc -A pokazuje PVC data u namespace-u app, Bound. Šta je rješenje?",
+    "options": [
+      "U Pod dodati claimName: app/data",
+      "Napraviti PVC u namespace-u default ili Pod pokrenuti u namespace-u app",
+      "Napraviti ClusterRole koja daje pristup PVC-ovima iz drugih namespace-ova",
+      "Obrisati PV, jer je vezan za pogrešan namespace"
+    ],
+    "answer": 1,
+    "explain": "PVC je namespaced i Pod može koristiti samo PVC iz svog namespace-a. claimName ne prima prefiks namespace-a, a RBAC ne mijenja to pravilo. PV je cluster-scoped i nije uzrok."
+  },
+  {
+    "obj": "4.2",
+    "q": "ConfigMap app-config je montiran kao volumen u /etc/app/app.conf sa subPath: app.conf. Nakon k edit cm app-config fajl u kontejneru se ni nakon nekoliko minuta ne mijenja. Zašto?",
+    "options": [
+      "ConfigMap volumeni se nikad ne ažuriraju, samo Secret volumeni",
+      "Treba postaviti defaultMode: 0644",
+      "Kubelet ažurira ConfigMap volumene samo na control plane čvoru",
+      "Volumeni montirani sa subPath ne dobijaju ažuriranja; treba restartovati Pod ili montirati cijeli direktorijum"
+    ],
+    "answer": 3,
+    "explain": "Kubelet periodično ažurira projektovane ConfigMap i Secret fajlove, ali ne one montirane preko subPath. defaultMode mijenja samo dozvole fajla."
+  }
+]

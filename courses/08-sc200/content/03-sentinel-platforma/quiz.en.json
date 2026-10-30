@@ -1,0 +1,145 @@
+[
+  {
+    "obj": "1.2",
+    "q": "You have a Microsoft Sentinel workspace. SOC analysts need to assign and close incidents and manually run existing playbooks, but must not change analytics rules or playbooks. Which TWO roles should you assign, following the principle of least privilege? (Choose TWO.)",
+    "options": ["Microsoft Sentinel Contributor", "Microsoft Sentinel Responder", "Logic App Contributor", "Microsoft Sentinel Playbook Operator"],
+    "answer": [1, 3],
+    "explain": "Responder grants everything Reader does plus incident management, and Playbook Operator grants viewing and manually running playbooks. Contributor would allow editing rules, and Logic App Contributor editing playbooks."
+  },
+  {
+    "obj": "1.2",
+    "q": "A security engineer has the Microsoft Sentinel Contributor role on the workspace's resource group. They need to create a new playbook for device isolation, but cannot save it. Which role should be added?",
+    "options": ["Microsoft Sentinel Automation Contributor", "Logic App Contributor", "Microsoft Sentinel Playbook Operator", "Log Analytics Contributor"],
+    "answer": 1,
+    "explain": "Playbooks are Azure Logic Apps, a separate resource; creating and editing them requires Logic App Contributor. Playbook Operator only runs playbooks, and Automation Contributor is a role for the Sentinel service account, not for users."
+  },
+  {
+    "obj": "1.2",
+    "q": "You created an automation rule that should run a playbook from the RG-Playbooks resource group. The rule runs, but the playbook does not start. What should you do?",
+    "options": ["Grant the Microsoft Sentinel service permissions on RG-Playbooks in the Sentinel settings (Playbook permissions).", "Assign the analyst the Microsoft Sentinel Playbook Operator role.", "Move the playbook to the workspace's resource group.", "Change the playbook trigger from Incident to Alert."],
+    "answer": 0,
+    "explain": "Automation rules run playbooks through a dedicated Sentinel service account, which must be explicitly granted permissions on the playbook's resource group (this requires Owner or the right to assign roles). The analyst's role does not affect automatic runs, and moving the playbook is not necessary."
+  },
+  {
+    "obj": "1.2",
+    "q": "An application development team needs to see only the logs of its own virtual machines in the Sentinel workspace, without access to other data in the workspace. What should you use?",
+    "options": ["Microsoft Sentinel Reader on the workspace", "A separate workspace just for the team", "Resource-context RBAC", "Microsoft Sentinel Responder on the VMs' resource group"],
+    "answer": 2,
+    "explain": "Resource-context RBAC grants access to the logs of the resources the user has access to in Azure, without access to the whole workspace. Sentinel Reader on the workspace exposes all data, and a separate workspace adds cost and complicates correlation."
+  },
+  {
+    "obj": "1.2",
+    "q": "A user must create and manage scheduled KQL jobs in the Microsoft Sentinel data lake. Which role allows this with the LEAST privilege?",
+    "options": ["Global Administrator", "Security Reader", "Microsoft Sentinel Contributor", "Security Operator"],
+    "answer": 3,
+    "explain": "Creating and managing jobs in the data lake requires the Entra role Security Operator, Security Administrator or Global Administrator; the least privileged is Security Operator. Security Reader grants read only, and data lake jobs do not use the Azure Sentinel Contributor role."
+  },
+  {
+    "obj": "1.2",
+    "q": "Web proxy logs must be retained for 7 years for regulatory reasons. They are rarely searched (only during forensics) and are not used in analytics rules. How do you retain them MOST CHEAPLY?",
+    "options": ["Analytics tier with 2-year analytics retention and 7-year total retention.", "Data lake tier with 7-year retention.", "Analytics tier with 90 days and a periodic data export to a storage account.", "XDR default tier with extended retention."],
+    "answer": 1,
+    "explain": "The data lake tier has minimal ingestion cost and cheap storage for up to 12 years, and the data is searched with KQL jobs or data lake exploration queries. The analytics tier charges standard ingestion and is unnecessary without real-time detections. The XDR tier is only for Defender XDR tables."
+  },
+  {
+    "obj": "1.2",
+    "q": "Firewall logs must be analyzed by analytics rules in real time and then retained for a total of 3 years. How should you configure the table?",
+    "options": ["Analytics tier: analytics retention 90 days, total retention 3 years.", "Data lake tier: retention 3 years.", "Analytics tier: analytics retention 3 years, total retention 3 years.", "Data lake tier with a summary rule that copies all rows to the analytics tier."],
+    "answer": 0,
+    "explain": "The analytics tier enables analytics rules, and total retention keeps older data in the data lake more cheaply. An analytics retention of 3 years is not possible (the maximum is 2 years) and would be expensive. The data lake tier does not support real-time analytics rules."
+  },
+  {
+    "obj": "1.2",
+    "q": "You have Sentinel connected to the Defender portal. The hunting team needs DeviceProcessEvents data in advanced hunting for the last 60 days at the LOWEST cost. What should you do?",
+    "options": ["Increase retention to 60 days in the Microsoft Defender XDR settings.", "Set the table to the Data lake tier with 60-day retention.", "In Microsoft Sentinel > Configuration > Tables, set the analytics retention for DeviceProcessEvents to 60 days.", "Create a KQL job that copies the data to a custom table every day."],
+    "answer": 2,
+    "explain": "Raising the analytics retention of an XDR table above 30 days brings the table into the Sentinel workspace; up to 90 days there is no storage cost, only ingestion is charged. Data lake–only data is not available in advanced hunting, and Defender XDR has no setting of its own for extending beyond 30 days."
+  },
+  {
+    "obj": "1.2",
+    "q": "An administrator mistakenly reduced a table's total retention from 2 years to 90 days. What happens to data older than 90 days?",
+    "options": ["It is deleted immediately and cannot be recovered.", "It is moved to the XDR default tier.", "It remains available only through a restore operation.", "It is deleted only after 30 days, so the change can be reverted without data loss."],
+    "answer": 3,
+    "explain": "When total retention is reduced, Microsoft waits 30 days before deleting, precisely so that a mistake can be corrected. A change to analytics retention, by contrast, takes effect immediately."
+  },
+  {
+    "obj": "1.2",
+    "q": "Which TWO features stop working for a table when it is moved from the Analytics tier to the Data lake tier? (Choose TWO.)",
+    "options": ["Analytics rules over that table", "KQL jobs over that table", "Advanced hunting queries over that table", "Search jobs over that table"],
+    "answer": [0, 2],
+    "explain": "Moving to the data lake tier stops alerting, analytics rules, custom detections and advanced hunting for that table. KQL jobs and search jobs work over data lake data."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Order the steps for moving a table to the Data lake tier with 5-year retention in the Defender portal.",
+    "options": ["Select Data Lake tier and set Retention to 5 years.", "Open Microsoft Sentinel > Configuration > Tables and select the workspace.", "Read the warnings about features that stop working and select Save.", "Select the table and, in the side panel, Manage table."],
+    "answer": [1, 3, 0, 2],
+    "explain": "Tables are managed on the Tables page (after selecting the workspace); then the table is opened with Manage table, the tier and retention are chosen, and finally the warnings are acknowledged and the change is saved."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Match each requirement with the built-in role that meets it with the LEAST privilege.",
+    "options": ["View incidents, data and workbooks without making any changes.", "Install solutions from Content hub and edit analytics rules.", "Allow Sentinel to add a playbook to an automation rule.", "Create and edit workbooks for a user with the Sentinel Reader role."],
+    "targets": ["Microsoft Sentinel Automation Contributor", "Workbook Contributor", "Microsoft Sentinel Reader", "Microsoft Sentinel Contributor", "Owner"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Reader only views. Contributor manages content and Content hub. Automation Contributor is intended for the Sentinel service for playbooks in automation rules. Workbook Contributor together with Sentinel Reader allows creating workbooks without other rights. Owner is too much."
+  },
+  {
+    "obj": "1.2",
+    "q": "You need to create a dashboard of failed Microsoft Entra sign-ins in Microsoft Sentinel with the LEAST effort. What should you do first?",
+    "options": ["Install the Microsoft Entra ID solution from Content hub and save the workbook template.", "Create a new workbook from scratch with a query over SigninLogs.", "Create a Power BI report connected to the workspace.", "Pin a query result from advanced hunting to the Defender dashboard."],
+    "answer": 0,
+    "explain": "Workbook templates come with solutions from Content hub; the Microsoft Entra solution contains ready-made workbooks for sign-ins and audit. Building from scratch or using Power BI requires more work."
+  },
+  {
+    "obj": "1.2",
+    "q": "You saved a workbook from a template. Where is it stored and what does it contain?",
+    "options": ["In the Log Analytics table Workbooks_CL; it contains the query results.", "As an Azure resource in the selected resource group; it contains only the JSON definition, with no data.", "In Content hub as a new version of the template.", "In the Defender portal, with no Azure resource; it contains a snapshot of the data."],
+    "answer": 1,
+    "explain": "A workbook is an Azure resource in a resource group (usually the workspace's) and stores only the JSON definition; the data is read by queries when it is opened. That is why access is managed through Azure RBAC (Workbook Reader/Contributor)."
+  },
+  {
+    "obj": "1.2",
+    "q": "You are building a workbook and want the user to change all charts by selecting a time period at the top of the workbook. How do you complete the query?\n\nSecurityEvent\n| where TimeGenerated ???\n| summarize count() by bin(TimeGenerated, 1h)",
+    "options": ["> ago(TimeRange)", "== TimeRange", "{TimeRange}", "between ($TimeRange)"],
+    "answer": 2,
+    "explain": "A time range workbook parameter is inserted into the query as {TimeRange}, which is replaced at run time with the corresponding time condition. The other forms are not workbook parameter syntax."
+  },
+  {
+    "obj": "1.2",
+    "q": "Management requests a PDF report from a Sentinel workbook. You work in the Defender portal. What should you do?",
+    "options": ["Select Export > PDF in the Defender portal.", "Create a playbook that emails the workbook.", "Export the results of each query to CSV and merge them.", "Select Open in Azure and, in the Azure portal, Print content > Save as PDF."],
+    "answer": 3,
+    "explain": "Print and Save as PDF are available only in the Azure portal; from the Defender portal the workbook is opened with the Open in Azure option."
+  },
+  {
+    "obj": "1.2",
+    "q": "You want to automatically find tables whose ingestion you pay for but that have not been used in analytics rules in the last 30 days, and get a suggested action. What should you use?",
+    "options": ["SOC optimization, data value recommendations", "The MITRE ATT&CK page in Microsoft Sentinel", "Table insights, Volume anomaly tab", "The Workspace Usage Report workbook"],
+    "answer": 0,
+    "explain": "SOC optimization data value recommendations analyze billable tables with ingestion in the last 30 days and suggest enabling rules or reducing cost. Table insights shows volume and cost, but neither usage in detections nor recommendations."
+  },
+  {
+    "obj": "1.2",
+    "q": "For the Human-operated ransomware scenario, SOC optimization shows a coverage level of Low. What does that mean?",
+    "options": ["Less than 30% of the required tables receive data.", "0–29% of the analytics rules Microsoft recommends for that scenario are active.", "There were no ransomware incidents in the last 30 days.", "The ransomware risk in the organization is low."],
+    "answer": 1,
+    "explain": "Threat-based coverage compares active rules with recommended ones: High over 75%, Medium 30–74%, Low 0–29%. The action is usually Go to Content hub and enabling the recommended rules."
+  },
+  {
+    "obj": "1.2",
+    "q": "The table that a SOC optimization recommendation \"table not used for 30 days\" referred to has started being used in a new analytics rule. What happens to the recommendation?",
+    "options": ["It stays Active until you manually mark it as Completed.", "It moves to Dismissed.", "It is automatically marked as Completed because it is no longer relevant.", "It is removed from the list without a trace."],
+    "answer": 2,
+    "explain": "When a change in the environment makes a recommendation irrelevant, it is automatically moved to the Completed tab, and the Overview shows the number of automatically completed recommendations."
+  },
+  {
+    "obj": "1.2",
+    "q": "An organization uses Microsoft Sentinel in the Azure portal. Which statement about the future of that experience is true?",
+    "options": ["The Azure portal remains the primary location, and the Defender portal is optional only for E5 customers.", "Sentinel in the Defender portal requires a Defender XDR license.", "Sentinel in the Azure portal gets all new features at the same time as the Defender portal.", "After March 31, 2027, Sentinel is not supported in the Azure portal and is used only in the Defender portal."],
+    "answer": 3,
+    "explain": "Microsoft announced that after March 31, 2027, Sentinel is no longer supported in the Azure portal, and customers are redirected to the Defender portal. Sentinel in the Defender portal is GA even without Defender XDR licenses, and new features arrive there first."
+  }
+]

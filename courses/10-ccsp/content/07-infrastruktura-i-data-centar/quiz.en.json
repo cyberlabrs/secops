@@ -1,0 +1,287 @@
+[
+  {
+    "obj": "3.1",
+    "q": "A security manager ranks the components of an IaaS environment by the potential impact of their compromise on the entire tenant. Which component ranks first?",
+    "options": [
+      "A single web application in a VM",
+      "The ephemeral disk of one instance",
+      "The management plane (console and API with administrative rights)",
+      "The CDN cache of static content"
+    ],
+    "answer": 2,
+    "explain": "Everything in the tenant is created, changed, and deleted through the management plane: networks, identities, keys, and data. Its compromise does not require any vulnerability in the applications. The other components have limited impact."
+  },
+  {
+    "obj": "3.1",
+    "q": "Which type of hypervisor is MOST appropriate for a multi-tenant public cloud, and why?",
+    "options": [
+      "Type 1, because it runs directly on the hardware and has a smaller attack surface",
+      "Type 2, because the host OS provides an additional layer of protection",
+      "Type 2, because it is easier to install on administrators' laptops",
+      "Type 1, because it allows containers to run without a kernel"
+    ],
+    "answer": 0,
+    "explain": "A Type 1 (bare metal) hypervisor has no host OS beneath it, so the attack surface is smaller and performance is better. The host OS in Type 2 is an additional attack surface, not protection. Containers always use a kernel."
+  },
+  {
+    "obj": "3.1",
+    "q": "A customer is concerned that code in another tenant's VM could access its memory on the same physical host. Which attack does this concern describe?",
+    "options": [
+      "SQL injection",
+      "Economic denial of sustainability",
+      "VM sprawl",
+      "VM escape or a side-channel attack through shared hardware"
+    ],
+    "answer": 3,
+    "explain": "Accessing another guest through the hypervisor (VM escape) or inferring data through a shared processor cache (side-channel) are multi-tenancy risks. VM sprawl is a management problem, and SQL injection and EDoS are not related to isolation."
+  },
+  {
+    "obj": "3.1",
+    "q": "In an SDN architecture, which component requires the STRICTEST protection because it decides traffic flows for the entire network?",
+    "options": [
+      "An individual virtual switch on a host",
+      "The SDN controller in the control plane",
+      "The cables between racks",
+      "The load balancer of a single application"
+    ],
+    "answer": 1,
+    "explain": "SDN centralizes decisions in the control plane (controller). Whoever compromises the controller can redirect or intercept the traffic of the entire network, so it is protected like the management plane. Data plane components have local impact."
+  },
+  {
+    "obj": "3.1",
+    "q": "According to the ISC2 division of storage by service model, which type of storage is characteristic of IaaS?",
+    "options": [
+      "Information storage and management",
+      "Volume, object, and ephemeral storage",
+      "Content and file storage",
+      "Only structured managed databases"
+    ],
+    "answer": 1,
+    "explain": "IaaS offers volume (block), object, and ephemeral storage. Information storage and management and content/file storage are SaaS categories, and structured/unstructured are PaaS categories."
+  },
+  {
+    "obj": "3.1",
+    "q": "A tenant with intensive batch processing degrades the performance of other tenants on the same hosts. Which provider mechanism BEST guarantees a minimum of resources to the other tenants?",
+    "options": [
+      "Data dispersion",
+      "Shares without reservations",
+      "Increasing the number of availability zones",
+      "Reservations together with limits on consumption"
+    ],
+    "answer": 3,
+    "explain": "Reservations guarantee a minimum of resources, and limits cap the maximum a single guest can consume, which solves the noisy neighbor problem. Shares determine priority only during contention and do not guarantee a minimum. Data dispersion and zones are not related to compute resource allocation."
+  },
+  {
+    "obj": "3.1",
+    "q": "An object storage provider splits each object into fragments with parity and distributes them across multiple locations, so that losing several fragments does not cause data loss. What is this technique called?",
+    "options": [
+      "Data dispersion (erasure coding)",
+      "Crypto-shredding",
+      "Tokenization",
+      "Data masking"
+    ],
+    "answer": 0,
+    "explain": "Data dispersion, e.g., through erasure coding, splits data into fragments with parity and increases resilience and availability. Crypto-shredding is deletion, and tokenization and masking are confidentiality protection techniques."
+  },
+  {
+    "obj": "3.2",
+    "q": "A data center has two internet providers, but an audit reveals that both cables enter the building through the same conduit. What is the MOST important recommendation?",
+    "options": [
+      "Add a third ISP through the same conduit.",
+      "Increase the bandwidth of both links.",
+      "Ensure physically separate routes and building entrances for the links of different providers.",
+      "Move both links to the same provider for simpler management."
+    ],
+    "answer": 2,
+    "explain": "Multi-vendor pathway connectivity requires both different providers and physically separate paths. A shared conduit is a single point of failure. A third ISP through the same conduit and more bandwidth do not remove that risk, and a single provider increases it."
+  },
+  {
+    "obj": "3.2",
+    "q": "An organization is looking for a data center in which every power and cooling component can be serviced in a planned manner without shutting down IT equipment, but it does not require tolerance of any unplanned failure. Which Uptime Institute Tier minimally meets the requirement?",
+    "options": [
+      "Tier I",
+      "Tier II",
+      "Tier III",
+      "Tier IV"
+    ],
+    "answer": 2,
+    "explain": "Tier III is concurrently maintainable: planned maintenance of any component without interruption. Tier IV adds tolerance of unplanned failures (fault tolerant), which is not required and is more expensive. Tiers I and II require a shutdown for some maintenance."
+  },
+  {
+    "obj": "3.2",
+    "q": "A startup needs its own equipment in a physically secure environment within three months, with minimal upfront capital. Which option is the MOST appropriate?",
+    "options": [
+      "Build its own data center",
+      "Lease space in a colocation data center",
+      "Buy an existing building and refurbish it",
+      "Place the servers in an office without additional measures"
+    ],
+    "answer": 1,
+    "explain": "Colocation provides a quick start and low CapEx, with the building, power, and cooling maintained by the provider. Building and buying require significant capital and time, and an office does not meet security requirements."
+  },
+  {
+    "obj": "3.2",
+    "q": "When choosing the location of a new data center, which factor is the MOST important from a risk perspective?",
+    "options": [
+      "Exposure to natural hazards and the availability of independent power and telecom infrastructure",
+      "The architectural appearance of the building",
+      "Proximity to the marketing department's headquarters",
+      "The number of visitor parking spaces"
+    ],
+    "answer": 0,
+    "explain": "The location must minimize natural and human-made hazards and have reliable, redundant power and connectivity. The building's appearance, proximity to marketing, and parking are not security factors."
+  },
+  {
+    "obj": "3.2",
+    "q": "The temperature in a server room is stable, but sensors show very low air humidity. What is the GREATEST risk?",
+    "options": [
+      "Condensation and corrosion of components",
+      "Flooding in the room",
+      "Static electricity that can damage equipment",
+      "Increased generator fuel consumption"
+    ],
+    "answer": 2,
+    "explain": "Humidity that is too low increases the risk of electrostatic discharge. Condensation and corrosion are risks of humidity that is too high. Flooding and fuel are not related to air humidity."
+  },
+  {
+    "obj": "3.2",
+    "q": "A private cloud provider wants to prevent the administrator of one tenant from accessing another tenant's resources. Which logical design measure is the BEST?",
+    "options": [
+      "Tenant partitioning through separate virtual networks, hypervisor isolation, and encryption keys per tenant",
+      "A shared administrator account for all tenants for easier management",
+      "Physically separate buildings for each tenant",
+      "Placing all tenants in the same VLAN with good passwords"
+    ],
+    "answer": 0,
+    "explain": "Tenant partitioning combines network, compute, and cryptographic isolation with access control. A shared account and a shared VLAN break isolation, and separate buildings are impractical and are not a logical measure."
+  },
+  {
+    "obj": "3.2",
+    "q": "Which power configuration BEST meets the requirement that the failure of an entire distribution path must not interrupt server operation?",
+    "options": [
+      "N, with a single UPS sized exactly for the load",
+      "N+1 UPS modules on a single distribution path",
+      "A single generator with a larger fuel tank",
+      "2N: two independent paths (A and B) and servers with dual power supplies connected to both"
+    ],
+    "answer": 3,
+    "explain": "Only 2N with separate paths and dual server power supplies tolerates the loss of an entire path. N+1 protects against the failure of a single module, but a single path remains a single point of failure. N and a single generator have no redundancy."
+  },
+  {
+    "obj": "3.3",
+    "q": "Management asks that a set of security controls be selected before approving a migration to the public cloud. What should the security manager do FIRST?",
+    "options": [
+      "Buy CASB and SIEM solutions",
+      "Perform a risk assessment: identify assets, threats, and vulnerabilities and analyze likelihood and impact",
+      "Enable encryption of all data with customer-managed keys",
+      "Sign a contract with the provider that has the most certifications"
+    ],
+    "answer": 1,
+    "explain": "Controls are selected based on assessed risk. Buying tools, encryption, and choosing a provider without a risk assessment may miss the real risks or cost more than the risk is worth."
+  },
+  {
+    "obj": "3.3",
+    "q": "The value of a database is 400,000 EUR, the estimated exposure factor of a leak is 25%, and one incident is expected every four years. What is the ALE?",
+    "options": [
+      "100,000 EUR",
+      "400,000 EUR",
+      "1,600,000 EUR",
+      "25,000 EUR"
+    ],
+    "answer": 3,
+    "explain": "SLE = AV × EF = 400,000 × 0.25 = 100,000 EUR. ARO = 1/4 = 0.25. ALE = SLE × ARO = 100,000 × 0.25 = 25,000 EUR. 100,000 is the SLE, and the other values are incorrect calculations."
+  },
+  {
+    "obj": "3.3",
+    "q": "According to the CSA Top Threats reports, which cause of cloud incidents is MOST often at the top of the list?",
+    "options": [
+      "Misconfiguration and inadequate change control on the customer's side",
+      "A physical break-in at the provider's data center",
+      "VM escape attacks on the hypervisor",
+      "Cooling failures in the data center"
+    ],
+    "answer": 0,
+    "explain": "CSA Top Threats highlights misconfiguration and IAM problems as the greatest risks, mostly on the customer's side. Physical break-ins, VM escape, and cooling failures are real, but significantly rarer causes of incidents."
+  },
+  {
+    "obj": "3.3",
+    "q": "A company bought cyber insurance that covers the costs of a data leak from a cloud application. What is TRUE about this risk treatment?",
+    "options": [
+      "The risk has been avoided and no longer exists.",
+      "Accountability to the regulator and clients has been transferred to the insurer.",
+      "The financial impact has been partially transferred, but accountability remains with the company.",
+      "Insurance replaces the need for technical controls."
+    ],
+    "answer": 2,
+    "explain": "Transfer shifts the financial impact, but accountability remains with the data owner. The risk still exists, and insurers typically also require technical controls as a condition of coverage."
+  },
+  {
+    "obj": "3.3",
+    "q": "After controls are introduced, a residual risk remains of a short regional outage of a non-critical internal application. Who should formally accept that risk?",
+    "options": [
+      "The cloud provider through the SLA",
+      "The risk owner from management, in line with the risk appetite",
+      "The engineer who configured the application",
+      "The external auditor"
+    ],
+    "answer": 1,
+    "explain": "Risk acceptance is a business decision by the risk owner, within the defined appetite, and it is documented in the risk register. The provider, the engineer, and the auditor have no authority to accept risk on behalf of the organization."
+  },
+  {
+    "obj": "3.3",
+    "q": "An organization is building an application using many proprietary services from a single provider. Which risk MUST the risk assessment specifically address?",
+    "options": [
+      "Data remanence on physical disks",
+      "Excessive humidity in the data center",
+      "The noisy neighbor effect on the CDN",
+      "Vendor lock-in and its impact on portability and business continuity"
+    ],
+    "answer": 3,
+    "explain": "Reliance on proprietary services makes it harder to move to another provider in the event of bankruptcy, a change of terms, or an outage. This affects BC/DR and negotiating position, so it is assessed and treated (exit strategy, abstraction, portable formats)."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Match each storage requirement with the storage type according to the ISC2 division by service model.",
+    "options": [
+      "A virtual disk attached to a VM for a database",
+      "Temporary space that disappears when the instance is shut down",
+      "Files that users share through a SaaS collaboration application",
+      "Millions of images accessible through an HTTP API with metadata"
+    ],
+    "targets": [
+      "Ephemeral storage (IaaS)",
+      "Object storage (IaaS)",
+      "Volume storage (IaaS)",
+      "Content and file storage (SaaS)",
+      "Structured storage (PaaS)"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1
+    ],
+    "explain": "A virtual disk for a VM is volume (block) storage, an instance's temporary disk is ephemeral, files in a SaaS application are content and file storage, and a large number of objects via an API with metadata is object storage. Structured (PaaS) is not used here."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Arrange the steps of the cloud infrastructure risk management process, from first to last.",
+    "options": [
+      "Analysis of likelihood and impact",
+      "Selection and implementation of treatment (avoid, mitigate, transfer, accept)",
+      "Identification of assets, threats, and vulnerabilities",
+      "Risk evaluation against the risk appetite",
+      "Monitoring and acceptance of residual risk by the risk owner"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1,
+      4
+    ],
+    "explain": "Risk is first identified, then analyzed and evaluated against the organization's appetite. Only then is treatment selected, and the residual risk is formally accepted and monitored."
+  }
+]

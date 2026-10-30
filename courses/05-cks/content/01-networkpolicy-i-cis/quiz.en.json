@@ -1,0 +1,240 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Task: in the payments namespace, deny all ingress and egress traffic for all pods. Which policy does that?",
+    "options": [
+      "podSelector: {} and policyTypes: [Ingress, Egress], with no ingress or egress rules",
+      "podSelector: {} and policyTypes: [Ingress, Egress], with ingress: [{}] and egress: [{}]",
+      "podSelector: {} without policyTypes and without rules",
+      "podSelector: {matchLabels: {app: '*'}} and policyTypes: [Ingress, Egress]"
+    ],
+    "answer": 0,
+    "explain": "An empty podSelector selects all pods, and both policyTypes without rules isolate both directions. The empty rule {} allows everything, a policy without policyTypes isolates only Ingress, and labels don't support wildcards."
+  },
+  {
+    "obj": "1.1",
+    "q": "After a default deny egress policy in the payments namespace, the application reports 'could not resolve host postgres'. Which addition is minimal and correct?",
+    "options": [
+      "Egress to namespaceSelector: {} on all ports",
+      "Egress to ipBlock 10.96.0.10/32 (the kube-dns service ClusterIP) on UDP 53",
+      "Egress to pods k8s-app=kube-dns in the kube-system namespace on UDP and TCP 53",
+      "An ingress policy in kube-system that allows ingress from payments"
+    ],
+    "answer": 2,
+    "explain": "DNS is egress to the CoreDNS pods on port 53, both UDP and TCP. The policy sees the pod IP after ClusterIP translation, so an ipBlock on the ClusterIP is unreliable; namespaceSelector: {} on all ports is too broad."
+  },
+  {
+    "obj": "1.1",
+    "q": "Pods from other namespaces must not reach pods in the prod namespace, but pods inside prod must communicate with each other. Which ingress part of a policy (podSelector: {}, policyTypes: [Ingress]) in the prod namespace is correct?",
+    "options": [
+      "ingress: [{from: [{namespaceSelector: {}}]}]",
+      "ingress: [{from: [{podSelector: {}}]}]",
+      "ingress: []",
+      "ingress: [{}]"
+    ],
+    "answer": 1,
+    "explain": "podSelector: {} in from without a namespaceSelector selects only pods from the policy's namespace, i.e. prod. namespaceSelector: {} allows all namespaces, ingress: [] also blocks internal traffic, and ingress: [{}] allows everything."
+  },
+  {
+    "obj": "1.1",
+    "q": "You are writing a policy that allows ingress only from the monitoring namespace. The namespace has the labels kubernetes.io/metadata.name=monitoring and team=ops. Why is it better to use the first label?",
+    "options": [
+      "The second label doesn't work in a namespaceSelector because it contains the word team",
+      "namespaceSelector supports only labels with the kubernetes.io prefix",
+      "The first label also includes pods with hostNetwork: true",
+      "The first label is set automatically by the API server and cannot be changed, while team=ops can be added by anyone allowed to modify the namespace"
+    ],
+    "answer": 3,
+    "explain": "kubernetes.io/metadata.name is set automatically and matches the namespace name, so an attacker cannot add it to another namespace. Arbitrary labels work in a selector, but are easy to spoof on another namespace."
+  },
+  {
+    "obj": "1.1",
+    "q": "The operator pod in the payments namespace must communicate with the API server (controlplane IP 192.168.1.10), and the namespace has default deny egress. Which egress rule works?",
+    "options": [
+      "to: [{ipBlock: {cidr: 192.168.1.10/32}}], ports: [{protocol: TCP, port: 6443}]",
+      "to: [{ipBlock: {cidr: 10.96.0.1/32}}], ports: [{protocol: TCP, port: 443}]",
+      "to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}, podSelector: {matchLabels: {component: kube-apiserver}}}]",
+      "to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: default}}}], ports: [{port: 443}]"
+    ],
+    "answer": 0,
+    "explain": "Traffic to the kubernetes service (10.96.0.1:443) is translated to the node IP and port 6443, and the policy sees the translated address. The API server is a hostNetwork static Pod, so a podSelector doesn't reliably match it, and the default namespace has no API server pods."
+  },
+  {
+    "obj": "1.1",
+    "q": "A default deny ingress policy is applied in the prod namespace. An attacker took over a pod in that namespace that has hostNetwork: true, and it still accepts connections from everywhere. The most likely reason?",
+    "options": [
+      "The policy must also have policyTypes: [Egress]",
+      "NetworkPolicy applies only to pods created after the policy",
+      "The pod uses the node's network stack, and most CNIs don't apply NetworkPolicy to hostNetwork pods",
+      "Calico doesn't support NetworkPolicy"
+    ],
+    "answer": 2,
+    "explain": "A hostNetwork pod shares the node's IP and network stack, so policies generally don't filter it. Policies also apply to existing pods, Egress doesn't affect ingress, and Calico in the lab fully supports NetworkPolicy."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which of these policies allows ALL ingress traffic to the selected pods?",
+    "options": [
+      "policyTypes: [Ingress] and ingress: []",
+      "policyTypes: [Ingress] without the ingress field",
+      "policyTypes: [Egress] and egress: [{}]",
+      "policyTypes: [Ingress] and ingress: [{}]"
+    ],
+    "answer": 3,
+    "explain": "The empty rule {} matches every source and port, so it allows everything. An empty list or an omitted field with Ingress in policyTypes means nothing is allowed, and an egress rule doesn't affect ingress."
+  },
+  {
+    "obj": "1.1",
+    "type": "order",
+    "q": "Order the steps to lock down the payments namespace while keeping applications working.",
+    "options": [
+      "Add a policy that allows egress to CoreDNS on UDP and TCP 53",
+      "Test from a temporary pod: nslookup, nc -zv to allowed and denied destinations",
+      "Look at the pod and namespace labels (--show-labels)",
+      "Apply default deny for Ingress and Egress",
+      "Add policies that allow only the required flows (frontend -> backend, backend -> postgres)"
+    ],
+    "answer": [2, 3, 0, 4, 1],
+    "explain": "First you find the labels for the selectors, then introduce default deny, immediately restore DNS, and then add the specific allows. Finally you test that what is allowed works and what is denied doesn't."
+  },
+  {
+    "obj": "1.2",
+    "q": "On which node and with which command do you check the CIS recommendations for the kubelet on node01?",
+    "options": [
+      "On controlplane: kube-bench run --targets node --node node01",
+      "On node01: kube-bench run --targets node",
+      "On controlplane: kube-bench run --targets master,node",
+      "On node01: kube-bench run --targets policies"
+    ],
+    "answer": 1,
+    "explain": "kube-bench reads local processes, flags and files, so it runs on the node it checks, with the node target for a worker. There is no --node flag, and policies checks Kubernetes objects (RBAC, PSA), not the kubelet."
+  },
+  {
+    "obj": "1.2",
+    "q": "kube-bench prints: '[WARN] 1.2.1 Ensure that the --anonymous-auth argument is set to false (Manual)'. What does that mean?",
+    "options": [
+      "The check is manual: the tool gives no verdict, you assess whether and how to fix it",
+      "The API server crashed during the check",
+      "The check passed, but with a warning",
+      "The flag doesn't exist in version 1.35"
+    ],
+    "answer": 0,
+    "explain": "WARN is reported for Manual checks and for cases where the tool can't decide on its own. On a kubeadm cluster, --anonymous-auth=false on the API server can break the liveness probe, which is exactly why this recommendation is manual."
+  },
+  {
+    "obj": "1.2",
+    "q": "kube-bench reports FAIL for '--profiling argument is set to false' in sections 1.2, 1.3 and 1.4. What exactly do you change?",
+    "options": [
+      "Add profiling: false to /var/lib/kubelet/config.yaml on controlplane",
+      "kubectl -n kube-system edit pod for kube-apiserver, kube-controller-manager and kube-scheduler",
+      "Add --profiling=false to kube-apiserver.yaml, kube-controller-manager.yaml and kube-scheduler.yaml in /etc/kubernetes/manifests",
+      "Add --profiling=false only to kube-apiserver.yaml because it passes flags to the other components"
+    ],
+    "answer": 2,
+    "explain": "Sections 1.2, 1.3 and 1.4 are the API server, controller-manager and scheduler, and each has its own static Pod manifest. Mirror pods can't be changed permanently with kubectl edit, and the kubelet configuration has nothing to do with these components."
+  },
+  {
+    "obj": "1.2",
+    "q": "After editing /etc/kubernetes/manifests/kube-apiserver.yaml, kubectl returns 'connection refused', and 'crictl ps -a --name kube-apiserver' shows no new container. Where is the error most likely and where do you look for it?",
+    "options": [
+      "A wrong flag; the error is in crictl logs",
+      "etcd crashed; the error is in /var/lib/etcd",
+      "A certificate expired; the error is in kubectl get events",
+      "The YAML doesn't parse, so the kubelet doesn't create the pod; the error is in journalctl -u kubelet"
+    ],
+    "answer": 3,
+    "explain": "If the container wasn't even created, the kubelet failed to read the manifest, which is logged in journalctl -u kubelet. A wrong flag would produce a container that starts and crashes (visible in crictl ps -a and crictl logs), and kubectl get events doesn't work without the API server."
+  },
+  {
+    "obj": "1.2",
+    "q": "Before editing a static Pod manifest you made a backup with 'cp kube-apiserver.yaml kube-apiserver.yaml.bak' inside /etc/kubernetes/manifests. What happens?",
+    "options": [
+      "Nothing, the kubelet only reads files with the .yaml extension",
+      "The kubelet tries to start the copy too, so two API servers fight over the same port and the control plane becomes unstable",
+      "kubeadm automatically deletes the backup file",
+      "The kubelet uses the backup as a fallback if the new manifest doesn't work"
+    ],
+    "answer": 1,
+    "explain": "The kubelet loads files from the manifests directory regardless of extension (except hidden files), so it may start a second pod on the same port. The backup goes outside the directory, e.g. into /root."
+  },
+  {
+    "obj": "1.2",
+    "q": "kube-bench on node01 reports FAIL: 'Ensure that the --anonymous-auth argument is set to false' (section 4.2). Which change is correct?",
+    "options": [
+      "In /var/lib/kubelet/config.yaml set authentication.anonymous.enabled: false, then systemctl restart kubelet",
+      "In /etc/kubernetes/manifests/kube-apiserver.yaml set --anonymous-auth=false",
+      "In /var/lib/kubelet/config.yaml set authorization.mode: AlwaysAllow, then systemctl restart kubelet",
+      "In /etc/kubernetes/kubelet.conf set anonymous: false"
+    ],
+    "answer": 0,
+    "explain": "Section 4 is the worker node, and anonymous access to the kubelet is disabled in the KubeletConfiguration and requires a service restart. The API server is a different component, AlwaysAllow is the opposite of the recommendation, and kubelet.conf is the kubeconfig for connecting to the API server."
+  },
+  {
+    "obj": "1.2",
+    "q": "You set authentication.anonymous.enabled: false in /var/lib/kubelet/config.yaml and restarted the kubelet, but kube-bench still reports FAIL. 'ps -ef | grep kubelet' shows '--anonymous-auth=true'. Why?",
+    "options": [
+      "The kubelet reads config.yaml only after a node reboot",
+      "A command-line flag (e.g. from /etc/default/kubelet or a systemd drop-in) takes precedence over config.yaml",
+      "kube-bench reads only config.yaml and ignores flags",
+      "kubectl drain node01 is also required"
+    ],
+    "answer": 1,
+    "explain": "When the same parameter is set both as a flag and in the configuration file, the flag wins. Remove the flag from KUBELET_EXTRA_ARGS or the drop-in, run daemon-reload and restart; a reboot and drain are not needed."
+  },
+  {
+    "obj": "1.2",
+    "q": "kube-bench reports FAIL for the ownership of the /var/lib/etcd directory (it expects etcd:etcd). On a kubeadm cluster 'id etcd' returns 'no such user'. What do you do?",
+    "options": [
+      "Change --data-dir in etcd.yaml to /home/etcd",
+      "Ignore the finding because kubeadm doesn't support the etcd user",
+      "Create a system user etcd and run chown -R etcd:etcd /var/lib/etcd",
+      "Run chmod 777 /var/lib/etcd so etcd can write"
+    ],
+    "answer": 2,
+    "explain": "The remediation requires the owner etcd:etcd, so the user must be created first (useradd -r). The etcd container runs as root and keeps working; changing data-dir isn't required, and 777 is the opposite of the 700 recommendation."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Match the CIS finding with where it is fixed.",
+    "options": [
+      "kube-scheduler --profiling is not false",
+      "kubelet authorization.mode is AlwaysAllow",
+      "Permissions on /etc/kubernetes/admin.conf are 644",
+      "kube-controller-manager lacks --use-service-account-credentials=true"
+    ],
+    "targets": [
+      "/var/lib/kubelet/config.yaml on the node",
+      "/etc/kubernetes/manifests/kube-controller-manager.yaml",
+      "chmod 600 on the controlplane node",
+      "/etc/kubernetes/manifests/kube-scheduler.yaml",
+      "/etc/kubernetes/manifests/etcd.yaml"
+    ],
+    "answer": [3, 0, 2, 1],
+    "explain": "Control plane component flags are changed in their static Pod manifests, kubelet settings in config.yaml, and file permissions with chmod. etcd.yaml is not related to any of these findings."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Order the steps to safely fix the CIS finding '--profiling=false' on the API server.",
+    "options": [
+      "Add --profiling=false to the command list in /etc/kubernetes/manifests/kube-apiserver.yaml",
+      "Re-run kube-bench for that check only (--check)",
+      "Copy the manifest to /root/kube-apiserver.yaml.bak",
+      "Wait for the kubelet to recreate the pod and check crictl ps and kubectl get pods -n kube-system"
+    ],
+    "answer": [2, 0, 3, 1],
+    "explain": "Backup outside the manifests directory, then the edit, waiting for the API server to come up, and finally confirmation with kube-bench. If the pod doesn't come up, the backup allows a quick rollback."
+  },
+  {
+    "type": "spot",
+    "obj": "1.1",
+    "q": "The policy should allow only pods app=frontend from namespace web to reach backend (TCP 8080). Testing shows traffic from other pods also gets through. Click the line that causes it.",
+    "snippet": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: backend-from-frontend\n  namespace: prod\nspec:\n  podSelector:\n    matchLabels: {app: backend}\n  policyTypes: [Ingress]\n  ingress:\n  - from:\n    - namespaceSelector:\n        matchLabels: {kubernetes.io/metadata.name: web}\n    - podSelector:\n        matchLabels: {app: frontend}\n    ports:\n    - {protocol: TCP, port: 8080}",
+    "lang": "yaml",
+    "answer": [
+      13
+    ],
+    "explain": "The dash before podSelector creates a second, separate element of the from list, and list elements are ORed. The policy therefore allows every pod in namespace web plus app=frontend pods in namespace prod itself. Fix: remove the dash and align podSelector under namespaceSelector so both selectors form one element (AND): app=frontend pods in namespace web."
+  }
+]

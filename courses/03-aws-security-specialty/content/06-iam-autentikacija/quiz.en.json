@@ -1,0 +1,230 @@
+[
+  {
+    "obj": "4.1",
+    "q": "A company has 35 AWS accounts in AWS Organizations. Employees sign in through Microsoft Entra ID. When an employee leaves the company and is deactivated in Entra ID, they must automatically lose access to all accounts. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Create IAM users in every account and a script that deletes them based on an export from Entra ID",
+      "Configure an IAM SAML identity provider in every account and maintain the roles manually",
+      "Enable IAM Identity Center with Entra ID as the external IdP (SAML 2.0) and automatic SCIM provisioning, and assign permission sets to groups",
+      "Create a Cognito user pool federated with Entra ID and an identity pool for access to the accounts"
+    ],
+    "answer": 2,
+    "explain": "Identity Center with SAML for sign-in and SCIM for synchronizing users and groups automatically deactivates a user when the IdP deactivates them. A SAML provider per account and IAM users require manual maintenance, and Cognito is for application end users, not the workforce."
+  },
+  {
+    "obj": "4.1",
+    "q": "A user signs in to the AWS access portal (IAM Identity Center) successfully but does not see the Production account, even though colleagues on the same team do. The Platform group has a permission set assigned for Production. What is the MOST LIKELY cause?",
+    "options": [
+      "The user is not a member of the Platform group in Identity Center, e.g., because SCIM synchronization did not carry over the membership from the IdP",
+      "The permission set has a session duration shorter than 12 hours",
+      "The user does not have an MFA device registered in IAM in the Production account",
+      "An SCP on the Production account blocks sts:AssumeRoleWithSAML"
+    ],
+    "answer": 0,
+    "explain": "The access portal shows only the accounts for which the user (directly or through a group) has an assignment; if the membership was not synchronized, the account is not visible. Session duration does not affect visibility, IAM MFA is irrelevant for an Identity Center user, and an SCP would cause an error on entry rather than hiding the account."
+  },
+  {
+    "obj": "4.1",
+    "q": "An administrator added a new customer managed policy by name to a permission set and started provisioning, but provisioning fails in the Dev account. It succeeds in the other accounts. What is the cause?",
+    "options": [
+      "The Dev account does not have CloudTrail enabled",
+      "A permission set can contain only AWS managed policies",
+      "The Dev account is the delegated administrator, and permission sets cannot be assigned to the delegated administrator",
+      "A customer managed policy with that name and path does not exist in the Dev account"
+    ],
+    "answer": 3,
+    "explain": "A permission set references a customer managed policy by name and path, so that policy must exist in every target account. Permission sets support both customer managed and inline policies, and CloudTrail is not a prerequisite for provisioning."
+  },
+  {
+    "obj": "4.1",
+    "q": "A startup is building a mobile app in which users sign up with email or a Google account and then upload photos directly to S3, each only to their own prefix. There is no backend server. Which solution meets the requirements?",
+    "options": [
+      "An IAM user per mobile user with an access key embedded in the app",
+      "A Cognito user pool with Google federation and a Cognito identity pool whose authenticated role allows s3:PutObject on the prefix ${cognito-identity.amazonaws.com:sub}/*",
+      "IAM Identity Center with Google Workspace as the IdP",
+      "An S3 bucket policy that allows s3:PutObject for Principal \"*\" with an aws:SecureTransport condition"
+    ],
+    "answer": 1,
+    "explain": "The user pool handles sign-up and federation, the identity pool exchanges the token for temporary credentials, and the sub variable restricts the user to their own prefix. IAM users per user and public uploads are insecure, and Identity Center is for the workforce."
+  },
+  {
+    "obj": "4.1",
+    "q": "The security team reviews the trust policy of a role used by a Cognito identity pool. The role allows sts:AssumeRoleWithWebIdentity for the principal cognito-identity.amazonaws.com without any conditions. What is the risk and how can it be removed?",
+    "options": [
+      "There is no risk because only Cognito can issue the token",
+      "The risk is that the role lasts too long; reduce the max session duration to 15 minutes",
+      "Any identity pool, including someone else's, could assume the role; add a cognito-identity.amazonaws.com:aud condition with your own identity pool ID and an amr condition",
+      "The risk is that guest users get admin rights; disable the user pool"
+    ],
+    "answer": 2,
+    "explain": "Without an aud condition, any identity pool in AWS can request that role. The aud condition binds the role to your pool, and amr distinguishes authenticated from unauthenticated identities. Session duration does not solve the problem."
+  },
+  {
+    "obj": "4.1",
+    "q": "A company must reduce phishing risk for root users and the remaining IAM users with console access. Which MFA type should be chosen?",
+    "options": [
+      "A virtual authenticator app (TOTP)",
+      "A hardware TOTP token",
+      "SMS MFA to company phones",
+      "Passkeys or FIDO2 security keys"
+    ],
+    "answer": 3,
+    "explain": "Passkeys and security keys are based on FIDO standards and bound to the domain, so they are phishing-resistant. TOTP codes (virtual and hardware) can be intercepted on a fake page, and AWS no longer supports SMS MFA for new devices."
+  },
+  {
+    "obj": "4.1",
+    "q": "An organization has 200 member accounts and wants to remove root user passwords and MFA devices in member accounts while still being able to perform rare root tasks, such as deleting a faulty S3 bucket policy that locked out all principals. Which solution meets the requirements?",
+    "options": [
+      "Enable centralized root access for member accounts and use sts:AssumeRoot from the management or delegated admin account for root tasks",
+      "Set an SCP that denies all root user actions and store the root passwords in Secrets Manager",
+      "Rotate root passwords every 90 days and assign a single hardware MFA token to all accounts",
+      "Delete the member accounts and recreate them without a root user"
+    ],
+    "answer": 0,
+    "explain": "Centralized root access removes the root credentials of member accounts, and privileged tasks are performed by a short-lived AssumeRoot session with a task policy. An SCP does not remove credentials, sharing passwords and tokens is risky, and an account cannot exist without a root user."
+  },
+  {
+    "obj": "4.1",
+    "q": "A cost analysis SaaS vendor requests an IAM role in the company's account. The vendor uses a single AWS role of its own for all customers. The security team must prevent another of the vendor's customers from specifying this role's ARN and thereby gaining access to the company's data. Which solution meets the requirement?",
+    "options": [
+      "Add an aws:SourceIp condition with the vendor's IP addresses to the role's identity policy",
+      "Give the vendor an IAM user with an access key that is rotated every 30 days",
+      "In the role's trust policy, specify the vendor's role as the principal and require the unique sts:ExternalId that the vendor assigned to the company",
+      "Specify \"Principal\": {\"AWS\": \"*\"} with an aws:PrincipalOrgID condition"
+    ],
+    "answer": 2,
+    "explain": "An external ID solves the confused deputy problem: on AssumeRole the vendor sends an ID tied to a specific customer, so a request on behalf of another customer fails. An IP condition does not distinguish the vendor's customers, an access key is worse practice, and the vendor is not in your organization."
+  },
+  {
+    "obj": "4.1",
+    "q": "An SNS topic in the company's account sends messages to an SQS queue. The security team wants to prevent SNS topics from other accounts from using the same path to write to the queue (a confused deputy via a service). What should be added to the SQS queue policy?",
+    "options": [
+      "An sts:ExternalId condition in the statement for sns.amazonaws.com",
+      "An aws:SecureTransport = true condition",
+      "An aws:PrincipalOrgID condition",
+      "An aws:SourceArn condition with the ARN of the allowed SNS topic (and aws:SourceAccount)"
+    ],
+    "answer": 3,
+    "explain": "When an AWS service acts on behalf of a resource, aws:SourceArn and aws:SourceAccount restrict for which source resource the service may access. An external ID is used with AssumeRole, SecureTransport does not address identity, and a service principal has no PrincipalOrgID."
+  },
+  {
+    "obj": "4.1",
+    "q": "A Lambda function generates S3 presigned URLs with --expires-in of 24 hours for partners. Partners report that the links stop working after about an hour. What is the cause?",
+    "options": [
+      "The URL is signed with the temporary credentials of the function's execution role, so it is not valid longer than those credentials",
+      "An S3 presigned URL can never last longer than one hour",
+      "The bucket does not have versioning enabled",
+      "The partners use HTTP instead of HTTPS"
+    ],
+    "answer": 0,
+    "explain": "A presigned URL is valid at most as long as the credentials it was signed with; the role credentials expire before 24 hours. With an IAM user key and SigV4, a URL can be valid for up to 7 days, and versioning is unrelated to duration."
+  },
+  {
+    "obj": "4.1",
+    "q": "An administrator uses an IAM user with an access key for the CLI. A policy requires MFA (aws:MultiFactorAuthPresent) for sensitive actions. What is the SIMPLEST way for the administrator to get credentials from the CLI that satisfy this condition?",
+    "options": [
+      "Call sts:GetFederationToken without MFA",
+      "Call aws sts get-session-token with --serial-number and --token-code of the virtual MFA device and use the returned temporary credentials",
+      "Add the MFA serial number to ~/.aws/config without calling STS",
+      "Generate a new access key after signing in to the console with MFA"
+    ],
+    "answer": 1,
+    "explain": "GetSessionToken with an MFA code returns temporary credentials in which MFA is present. GetFederationToken does not support MFA, a new access key is still long-lived and has no MFA context, and an entry in the config file without an STS call changes nothing."
+  },
+  {
+    "obj": "4.1",
+    "q": "From role A (obtained via AssumeRole), a developer tries to assume role B with --duration-seconds 14400. Role B has a max session duration of 12 hours. The call returns a duration error. Why?",
+    "options": [
+      "Role B must have MFA enabled",
+      "Role chaining (assuming a role from another role's session) limits the session to at most one hour",
+      "AssumeRole never allows more than 4 hours",
+      "Role A has no permissions boundary"
+    ],
+    "answer": 1,
+    "explain": "With role chaining, AWS limits the new session to one hour regardless of the role's max session duration. A role's max session duration of up to 12 hours applies when the role is assumed directly from an IAM user or federation."
+  },
+  {
+    "obj": "4.1",
+    "q": "A company wants users from its on-premises Active Directory to sign in to IAM Identity Center. Users and passwords must not be synchronized or copied to AWS, and there is a Site-to-Site VPN to the data center. Which solution meets the requirements?",
+    "options": [
+      "AD Connector as the identity source for Identity Center",
+      "AWS Managed Microsoft AD with one-way password synchronization",
+      "Simple AD with manually created users",
+      "A Cognito user pool with SAML federation to AD FS"
+    ],
+    "answer": 0,
+    "explain": "AD Connector is a proxy to the on-premises AD and stores no users or passwords in AWS. Managed AD would be a separate directory in AWS, Simple AD does not connect on-premises users, and Cognito is not an identity source for Identity Center."
+  },
+  {
+    "obj": "4.1",
+    "q": "User sign-in to WorkSpaces through AD Connector suddenly stops working for every user. The on-premises domain controllers are working normally. What should be checked FIRST?",
+    "options": [
+      "Whether data event logging is enabled in CloudTrail",
+      "Whether the IAM SAML certificate has expired",
+      "Whether the users have a permission set in Identity Center",
+      "The network connection (VPN/Direct Connect) and DNS/ports (53, 88, 389) from AD Connector to the on-premises DCs"
+    ],
+    "answer": 3,
+    "explain": "AD Connector has no cache and forwards every sign-in to the on-premises DCs, so a VPN or DNS outage or blocked ports break sign-in for everyone. The SAML certificate and permission sets are not part of this flow, and data events do not affect authentication."
+  },
+  {
+    "obj": "4.1",
+    "q": "SAML federation (IAM SAML provider, without Identity Center) into one AWS account worked for years, and today all sign-ins fail with a message that the SAML response is invalid. No rules were changed on the IdP side. What is the MOST LIKELY cause?",
+    "options": [
+      "The roles have reached the maximum number of sessions",
+      "The CloudTrail trail was deleted",
+      "The IdP rotated its signing certificate or the certificate expired, and the metadata in the IAM SAML provider was not updated",
+      "The root user has no MFA"
+    ],
+    "answer": 2,
+    "explain": "AWS verifies the assertion signature with the certificate from the SAML provider's metadata; when the IdP changes the certificate, all sign-ins fail until the metadata is updated. The number of sessions is not limited that way, and CloudTrail and root MFA do not affect federation."
+  },
+  {
+    "obj": "4.1",
+    "q": "A security analyst is investigating suspicious sign-ins to IAM Identity Center (the identity source is the Identity Center directory). Which TWO statements correctly describe what they will find in CloudTrail? (Choose TWO.)",
+    "options": [
+      "The CredentialVerification event shows whether an individual factor (e.g., PASSWORD or TOTP) succeeded",
+      "Failed sign-ins are not logged at all",
+      "The UserAuthentication event is logged only when all required factors have passed successfully",
+      "Sign-ins are visible only in VPC Flow Logs",
+      "Every sign-in creates a ConsoleLogin event of type IAMUser"
+    ],
+    "answer": [0, 2],
+    "explain": "Identity Center logs CredentialChallenge and CredentialVerification per factor, and UserAuthentication only after a successful sign-in; a failure appears as a failed verification without UserAuthentication. Flow Logs do not record identity, and Identity Center users are not IAM users."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match the scenario with the STS API that is used.",
+    "options": [
+      "A GitHub Actions job assumes a role in AWS using an OIDC token.",
+      "A user with an IAM user key obtains MFA-protected credentials for the CLI.",
+      "Okta sends a SAML assertion directly to the IAM SAML provider of one account.",
+      "A role in account A assumes a read role in account B.",
+      "The management account performs a privileged root task in a member account."
+    ],
+    "targets": [
+      "AssumeRoleWithSAML",
+      "AssumeRoot",
+      "AssumeRole",
+      "GetSessionToken",
+      "AssumeRoleWithWebIdentity",
+      "GetFederationToken"
+    ],
+    "answer": [4, 3, 0, 2, 1],
+    "explain": "OIDC token = AssumeRoleWithWebIdentity, MFA session for an IAM user = GetSessionToken, SAML assertion = AssumeRoleWithSAML, cross-account role = AssumeRole, root task in a member account = AssumeRoot. GetFederationToken is a distractor."
+  },
+  {
+    "obj": "4.1",
+    "type": "order",
+    "q": "Order the steps of a user sign-in through IAM Identity Center with an external IdP, up to accessing an account's console.",
+    "options": [
+      "Identity Center validates the assertion and shows the accounts and permission sets assigned to the user",
+      "The user opens the AWS access portal URL",
+      "The user selects an account and permission set, and Identity Center issues temporary credentials for the AWSReservedSSO role",
+      "Identity Center redirects the user to the IdP, which authenticates them (including MFA) and returns a SAML assertion"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Sign-in starts at the access portal, authentication and MFA are handled by the IdP, which returns a SAML assertion, Identity Center validates it and shows the assignments, and only choosing an account and permission set creates the role session in the account."
+  }
+]

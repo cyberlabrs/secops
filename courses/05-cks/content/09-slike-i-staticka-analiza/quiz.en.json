@@ -1,0 +1,251 @@
+[
+  {
+    "obj": "5.1",
+    "q": "A Dockerfile builds a Go application: FROM golang:1.25, COPY . ., RUN go build -o /app, CMD [\"/app\"]. The image is 900 MB and has hundreds of CVEs. Which change reduces the attack surface the most without losing functionality?",
+    "options": [
+      "Add RUN apt-get upgrade -y at the end",
+      "Multi-stage build: build in a golang stage with CGO_ENABLED=0, then COPY --from=build /app into gcr.io/distroless/static-debian12:nonroot",
+      "Replace golang:1.25 with golang:latest",
+      "Add a .dockerignore containing .git"
+    ],
+    "answer": 1,
+    "explain": "The final image then contains only the static binary, with no compiler, source code or shell. upgrade does not remove the toolchain, latest hurts predictability, and .dockerignore only shrinks the build context."
+  },
+  {
+    "obj": "5.1",
+    "q": "A Pod with runAsNonRoot: true is in CreateContainerConfigError with the message: container has runAsNonRoot and image has non-numeric user (app), cannot verify user is non-root. The Dockerfile has USER app. What is the fix in the Dockerfile?",
+    "options": [
+      "Change USER app to USER 10001 (the numeric UID of user app)",
+      "Remove the USER line",
+      "Add RUN chmod 777 /",
+      "Change USER app to USER app:root"
+    ],
+    "answer": 0,
+    "explain": "The kubelet can only verify non-root for a numeric UID, so a user name does not pass the check. Without USER the container runs as root, chmod 777 is a new risk, and app:root is still not numeric."
+  },
+  {
+    "obj": "5.1",
+    "q": "A Dockerfile contains: COPY id_rsa /root/.ssh/id_rsa, RUN git clone git@github.com:org/lib.git, RUN rm /root/.ssh/id_rsa. What is the problem?",
+    "options": [
+      "There is no problem, because the key is deleted before the build ends",
+      "The only problem is that git does not work without known_hosts",
+      "The key remains in the layer created by COPY and can be extracted from the image; use RUN --mount=type=secret or an ssh mount",
+      "The problem is that COPY cannot copy into /root"
+    ],
+    "answer": 2,
+    "explain": "Every instruction creates a layer, and deleting in a later layer only hides the file; the earlier layer still contains it. A BuildKit secret/ssh mount provides the file only during that RUN step without writing it into a layer."
+  },
+  {
+    "obj": "5.1",
+    "q": "Which FROM line guarantees that every build uses exactly the same base image?",
+    "options": [
+      "FROM nginx:stable",
+      "FROM nginx:1.27",
+      "FROM nginx:latest",
+      "FROM nginx:1.27.5@sha256:<digest>"
+    ],
+    "answer": 3,
+    "explain": "A digest is a hash of the image content and cannot point to different content. Tags, including a specific version, can be moved to a new image."
+  },
+  {
+    "obj": "5.1",
+    "q": "Dockerfile: (Choose TWO best-practice violations.) FROM python:3.13-slim / ADD https://example.com/app.tar.gz /opt/ / ENV DB_PASSWORD=Pa55w0rd / USER 10001 / ENTRYPOINT [\"python\", \"/opt/app/main.py\"]",
+    "options": [
+      "ENTRYPOINT in exec form",
+      "ADD with a URL instead of an explicit download and COPY",
+      "USER with a numeric UID",
+      "Password in an ENV line, visible in the image and in the container's env",
+      "Using the -slim variant of the base image"
+    ],
+    "answer": [1, 3],
+    "explain": "ADD downloads URLs and extracts archives implicitly and without hash verification, and ENV writes the secret into the image metadata. Exec form, a numeric USER and a slim base are good practices."
+  },
+  {
+    "obj": "5.1",
+    "q": "An attacker has gained RCE in an application running on the gcr.io/distroless/static-debian12:nonroot image. Why is it harder for them than on an ubuntu image?",
+    "options": [
+      "Distroless encrypts process memory",
+      "Distroless automatically enables a seccomp profile",
+      "There is no shell, package manager or tools like curl, so they cannot easily run commands or download tools, and the process is not root",
+      "Distroless images run in gVisor"
+    ],
+    "answer": 2,
+    "explain": "Distroless contains only the application runtime; without /bin/sh and tools the attacker cannot use the usual techniques, and the :nonroot tag runs as UID 65532. Seccomp and sandboxing are Pod and node settings, not image settings."
+  },
+  {
+    "obj": "5.1",
+    "type": "order",
+    "q": "Order the Dockerfile lines for a Node application according to best practice.",
+    "options": [
+      "USER node",
+      "FROM node:22-alpine",
+      "RUN npm ci --omit=dev",
+      "COPY package*.json ./",
+      "COPY . .",
+      "WORKDIR /app"
+    ],
+    "answer": [1, 5, 3, 2, 4, 0],
+    "explain": "Base, working directory, then only the package files and dependency installation first (layer cache), then the rest of the code, and finally USER so the process does not run as root. node images already have a node user."
+  },
+  {
+    "obj": "5.1",
+    "type": "match",
+    "q": "Match the base image to its description.",
+    "options": [
+      "scratch",
+      "alpine",
+      "gcr.io/distroless/base-debian12",
+      "ubuntu"
+    ],
+    "targets": [
+      "Small image with a busybox shell and apk, musl libc",
+      "Full distribution with apt and bash",
+      "Always includes a Docker HEALTHCHECK",
+      "Empty image, only for static binaries",
+      "glibc and CA certificates, no shell or package manager"
+    ],
+    "answer": [3, 0, 4, 1],
+    "explain": "scratch is empty, alpine has busybox and apk, distroless base has glibc without a shell, and ubuntu is a full distribution. No base image guarantees a HEALTHCHECK."
+  },
+  {
+    "obj": "5.4",
+    "q": "kubesec scan pod.yaml returns score: -30 and, in scoring.critical, the selector containers[] .securityContext .privileged == true. What do you do to get the Pod to a positive score?",
+    "options": [
+      "Remove privileged: true (or set it to false)",
+      "Add serviceAccountName",
+      "Add resources.limits.cpu and memory",
+      "Add runAsNonRoot: true"
+    ],
+    "answer": 0,
+    "explain": "Privileged carries -30 points; positive rules give 1 to 3 points, so they cannot make up for it. The score is the sum of the matched rules, and the result is Failed while it is below zero."
+  },
+  {
+    "obj": "5.4",
+    "q": "/opt/manifests/ contains 6 YAML files with one Pod each. You must write down the name of the file with the lowest kubesec score. Which command gives a sorted list?",
+    "options": [
+      "kube-linter lint /opt/manifests/ | sort",
+      "for f in /opt/manifests/*.yaml; do echo \"$f $(kubesec scan $f | jq '.[0].score')\"; done | sort -k2 -n",
+      "kubesec print-rules --format table | sort",
+      "trivy config /opt/manifests/ --format table | sort -k2"
+    ],
+    "answer": 1,
+    "explain": "kubesec returns a JSON array, and .[0].score is the score of the first object; sort -n on the second column puts the lowest score at the top. kube-linter and trivy do not produce a kubesec score, and print-rules lists the rules, not a result."
+  },
+  {
+    "obj": "5.4",
+    "q": "kube-linter lint deploy.yaml prints: container \"web\" is not set to runAsNonRoot (check: run-as-non-root ...) and ends with Error: found 1 lint errors. What do you fix?",
+    "options": [
+      "Add the annotation kube-linter.io/run-as-non-root: true",
+      "Add privileged: false",
+      "Add runAsNonRoot: true (and, if needed, a runAsUser other than 0) to the securityContext of the Pod or of the web container",
+      "Run kube-linter with --add-all-built-in"
+    ],
+    "answer": 2,
+    "explain": "The run-as-non-root check requires runAsNonRoot: true and a non-root UID. That annotation does not exist (exceptions are written as ignore-check.kube-linter.io/<check>), and --add-all-built-in would only add more checks."
+  },
+  {
+    "obj": "5.4",
+    "q": "A CNI agent DaemonSet must be privileged, but kube-linter in CI fails on the privileged-container check. How do you exempt only that object, with a justification?",
+    "options": [
+      "Run kube-linter with --exclude privileged-container for the whole repository",
+      "Add the annotation kube-linter.io/ignore-all: \"true\" to all objects",
+      "Set privileged: false and add the SYS_ADMIN capability",
+      "Add the annotation ignore-check.kube-linter.io/privileged-container: \"CNI agent needs kernel access\" to that DaemonSet"
+    ],
+    "answer": 3,
+    "explain": "The ignore-check.kube-linter.io/<check> annotation exempts only that object and carries the justification as its value. --exclude and ignore-all disable the check more broadly than needed, and SYS_ADMIN is just as dangerous."
+  },
+  {
+    "obj": "5.4",
+    "q": "You need a tool that, with a single command, finds misconfigurations in both the Dockerfile and the Kubernetes manifests in the /opt/app directory and filters only HIGH and CRITICAL. Which command?",
+    "options": [
+      "trivy config --severity HIGH,CRITICAL /opt/app",
+      "trivy image --severity HIGH,CRITICAL /opt/app",
+      "kubesec scan /opt/app",
+      "hadolint /opt/app"
+    ],
+    "answer": 0,
+    "explain": "trivy config scans IaC files (Dockerfile, Kubernetes, Helm, Terraform) and supports --severity. trivy image expects an image, kubesec scores only Kubernetes workloads, and hadolint only Dockerfiles."
+  },
+  {
+    "obj": "5.4",
+    "q": "You are manually reviewing three Deployments and must delete those that allow direct access to the node's file system. Which finding indicates that?",
+    "options": [
+      "readOnlyRootFilesystem: false",
+      "volumes with emptyDir: {medium: Memory}",
+      "image: nginx without a tag",
+      "volumes with hostPath: {path: /} mounted into the container"
+    ],
+    "answer": 3,
+    "explain": "hostPath on / gives the container the node's entire file system. emptyDir is a temporary Pod volume, readOnlyRootFilesystem concerns the container's file system, and the image tag is not node access."
+  },
+  {
+    "obj": "5.4",
+    "q": "Which two findings in a Pod manifest does kubesec score as critical (negative points)? (Choose TWO.)",
+    "options": [
+      "hostNetwork: true",
+      "readOnlyRootFilesystem: true",
+      "env.valueFrom.secretKeyRef for the database password",
+      "serviceAccountName: app",
+      "capabilities.drop: [ALL]"
+    ],
+    "answer": [0, 2],
+    "explain": "kubesec gives -9 for hostNetwork and -5 for a Secret in an env variable. readOnlyRootFilesystem and drop ALL carry +1, and serviceAccountName +3."
+  },
+  {
+    "obj": "5.4",
+    "type": "match",
+    "q": "Match the tool to what it analyzes.",
+    "options": [
+      "kubesec",
+      "kube-linter",
+      "hadolint",
+      "trivy config"
+    ],
+    "targets": [
+      "Dockerfile, with DL3xxx rules",
+      "Signs images in the registry",
+      "Kubernetes workload; the result is a point score with critical/advise",
+      "IaC files of several types (Kubernetes, Dockerfile, Helm, Terraform) with finding severity",
+      "Kubernetes YAML and Helm charts by named checks, non-zero exit code on findings"
+    ],
+    "answer": [2, 4, 0, 3],
+    "explain": "kubesec scores, kube-linter returns a list of checks, hadolint is a Dockerfile linter, and trivy config covers several IaC formats. Image signing is done by cosign, not by any of these tools."
+  },
+  {
+    "obj": "5.4",
+    "q": "You review a Deployment and see: image: registry.local/api:latest, env: [{name: API_KEY, value: \"sk-123...\"}], securityContext: {runAsUser: 0}. Which change fixes all three problems?",
+    "options": [
+      "Add privileged: false and readOnlyRootFilesystem: true",
+      "Pin the image to a specific tag or digest, move API_KEY into a Secret mounted as a volume, and set runAsNonRoot: true with a non-zero runAsUser",
+      "Move API_KEY into a ConfigMap and add imagePullPolicy: Always",
+      "Add the annotation ignore-check.kube-linter.io/latest-tag and runAsGroup: 1000"
+    ],
+    "answer": 1,
+    "explain": "The three findings are the latest tag, a plaintext secret in the manifest, and root. A ConfigMap is not for secrets, imagePullPolicy does not pin the image, and the annotation only hides the finding."
+  },
+  {
+    "obj": "5.4",
+    "q": "You run kube-linter lint deploy.yaml and get no finding for missing CPU limits even though there are none. The directory contains a .kube-linter.yaml. What is the most likely reason?",
+    "options": [
+      "kube-linter does not read Deployments, only Pods",
+      "CPU limits are not a security check, so kube-linter never checks them",
+      "You need to add --format json for the finding to be shown",
+      ".kube-linter.yaml excludes unset-cpu-requirements (exclude) or has doNotAutoAddDefaults without an include for that check"
+    ],
+    "answer": 3,
+    "explain": "kube-linter automatically reads .kube-linter.yaml from the current directory, and unset-cpu-requirements is a default check that the configuration can disable. Deployments are checked, and the output format does not change the set of findings."
+  },
+  {
+    "type": "spot",
+    "obj": "5.1",
+    "q": "The runtime image should be minimal and the app must not run as root. The binary is static (CGO_ENABLED=0). Mark the problematic lines.",
+    "snippet": "FROM golang:1.23 AS build\nWORKDIR /src\nCOPY go.mod go.sum ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 go build -o /out/app ./cmd/app\n\nFROM golang:1.23\nCOPY --from=build /out/app /app\nUSER root\nENTRYPOINT [\"/app\"]",
+    "lang": "dockerfile",
+    "answer": [
+      7,
+      9
+    ],
+    "explain": "The second stage starts again from golang:1.23, a full image with compiler, shell and package manager, so the multi-stage build gains nothing. A static binary needs none of that: use gcr.io/distroless/static-debian12:nonroot (or scratch) with a specific tag. USER root explicitly runs the app as root; replace it with an unprivileged user, e.g. USER 65532:65532 (nonroot in the distroless image). The first stage may be large because it does not ship to production."
+  }
+]

@@ -1,0 +1,250 @@
+[
+  {
+    "obj": "3.2",
+    "q": "There is no NetworkPolicy in the backend namespace. You apply a policy that selects Pods app=api, has policyTypes: [Ingress] and allows ingress only from app=frontend. What happens to Pod app=worker in the same namespace?",
+    "options": [
+      "Pod app=worker still receives all traffic, because no policy selects it",
+      "Pod app=worker now rejects all ingress traffic, because the policy applies to the whole namespace",
+      "Pod app=worker receives traffic only from app=frontend",
+      "Pod app=worker also loses its egress traffic"
+    ],
+    "answer": 0,
+    "explain": "Isolation applies only to Pods selected by the policy's spec.podSelector. A Pod that no policy selects stays non-isolated in both directions; the policy does not affect the rest of the namespace."
+  },
+  {
+    "obj": "3.2",
+    "q": "Task: allow ingress to Pods app=db (namespace data) only from Pods app=api located in the prod namespace. Which from block is correct?",
+    "options": [
+      "from: [ {namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: prod}}}, {podSelector: {matchLabels: {app: api}}} ]",
+      "from: [ {podSelector: {matchLabels: {app: api}}} ]",
+      "from: [ {namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: prod}}, podSelector: {matchLabels: {app: api}}} ]",
+      "from: [ {ipBlock: {cidr: 10.244.0.0/16}} ]"
+    ],
+    "answer": 2,
+    "explain": "Both selectors in the same list item give AND: Pods app=api in the prod namespace. Two separate items give OR (all Pods from prod or app=api from data), a podSelector alone only looks at the policy's namespace, and ipBlock is not reliable for Pods and would be far too broad."
+  },
+  {
+    "obj": "3.2",
+    "q": "You applied a default-deny-egress policy (podSelector: {}, policyTypes: [Egress]) in the secure namespace. Now wget -T 2 http://web from a Pod in that namespace returns 'bad address'. What is missing?",
+    "options": [
+      "An ingress policy for the web Service",
+      "An egress rule to kube-system (Pods k8s-app=kube-dns) on UDP and TCP port 53",
+      "An egress rule to the ClusterIP of the kube-dns Service using ipBlock",
+      "The kubernetes.io/metadata.name label on the secure namespace"
+    ],
+    "answer": 1,
+    "explain": "'bad address' means the DNS query does not get through, and DNS is egress to the CoreDNS Pods on port 53 (UDP and TCP). The policy sees the Pod IP after the ClusterIP is translated, so an ipBlock on the ClusterIP is not reliable, and the namespace label already exists automatically."
+  },
+  {
+    "obj": "3.2",
+    "q": "The cluster uses only Flannel as its CNI. You applied a default deny ingress policy and kubectl get netpol shows it, but traffic still gets through. Why?",
+    "options": [
+      "The policy must also have policyTypes: [Egress]",
+      "A NetworkPolicy takes effect only after the Pods are restarted",
+      "kube-proxy must be in nftables mode",
+      "Flannel does not implement NetworkPolicy, so the API stores the object but nobody enforces it"
+    ],
+    "answer": 3,
+    "explain": "Kubernetes only stores the NetworkPolicy; the CNI enforces it. Flannel does not, so there is neither an error nor an effect. Policies apply immediately to existing Pods, and kube-proxy plays no part in enforcing policies."
+  },
+  {
+    "obj": "3.2",
+    "q": "In the app namespace there are two policies for Pods tier=db: one allows ingress from tier=api on 5432, the other allows ingress from all Pods in the monitoring namespace on 9187. Pod tier=batch from the app namespace tries port 5432. What happens?",
+    "options": [
+      "Blocked, because no policy allows tier=batch",
+      "Allowed, because the second policy overrides the first",
+      "Allowed, because policies apply only to traffic between namespaces",
+      "Blocked only if the second policy was created last"
+    ],
+    "answer": 0,
+    "explain": "Policies are additive: whatever at least one policy allows is allowed, and tier=batch is in none of them. There is no ordering or overriding, and policies also apply within a namespace."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pod api in the app namespace is isolated for Egress only (it may only send egress traffic to DNS). Pod db is isolated for Ingress and allows ingress from tier=api on 5432. The connection api → db:5432 does not work. What needs to be added?",
+    "options": [
+      "An ingress rule on api that allows replies from db",
+      "An egress rule on db to api",
+      "An egress rule on api that allows tier=db on port 5432",
+      "Nothing, the ingress rule on db is enough"
+    ],
+    "answer": 2,
+    "explain": "When both sides are isolated, a connection needs an egress allowance at the source and an ingress allowance at the destination. Replies to an allowed connection get through automatically, so no extra rules for the return direction are needed."
+  },
+  {
+    "obj": "3.2",
+    "q": "What is the difference between these two policy fragments: (A) ingress: [{}] and (B) policyTypes: [Ingress] without an ingress key, both with podSelector: {}?",
+    "options": [
+      "Both block all ingress",
+      "A allows all ingress to all Pods in the namespace, B blocks all ingress",
+      "A blocks all ingress, B allows all ingress",
+      "Both allow all ingress"
+    ],
+    "answer": 1,
+    "explain": "The empty rule {} matches every source and every port, so A allows everything. B isolates the Pods for ingress without a single rule, which is default deny ingress."
+  },
+  {
+    "obj": "3.2",
+    "q": "A policy needs to allow ingress on TCP ports 30000 through 30100. Which ports fragment is correct?",
+    "options": [
+      "ports: [{protocol: TCP, port: 30000-30100}]",
+      "ports: [{protocol: TCP, startPort: 30000, endPort: 30100}]",
+      "ports: [{protocol: TCP, port: high-ports, endPort: 30100}]",
+      "ports: [{protocol: TCP, port: 30000, endPort: 30100}]"
+    ],
+    "answer": 3,
+    "explain": "A range is specified with a numeric port and the endPort field. The startPort field does not exist, port does not accept a dashed notation, and endPort does not work with a named port."
+  },
+  {
+    "obj": "3.2",
+    "q": "You are testing a policy: kubectl -n app run t --rm -it --restart=Never --image=busybox:1.36 -- nc -zv -w 2 db 5432 returns 'Connection refused'. What does this tell you?",
+    "options": [
+      "The policy is blocking the traffic",
+      "DNS does not work",
+      "The packet reached the Pod, but nothing is listening on port 5432; the problem is not the policy",
+      "Pod db does not have the label tier=db"
+    ],
+    "answer": 2,
+    "explain": "A block by a policy typically looks like a timeout because packets are dropped, while 'Connection refused' means the destination replied with an RST. The name was resolved, otherwise nc would have reported an address error."
+  },
+  {
+    "obj": "3.2",
+    "q": "A task requires a policy in the payments namespace to allow ingress from the monitoring namespace. The monitoring namespace has no additional labels. Which selector do you use without modifying the namespace?",
+    "options": [
+      "namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: monitoring}}",
+      "namespaceSelector: {matchLabels: {name: monitoring}}",
+      "podSelector: {matchLabels: {namespace: monitoring}}",
+      "namespaceSelector: {}"
+    ],
+    "answer": 0,
+    "explain": "The API server automatically sets the kubernetes.io/metadata.name label on every namespace, with its name as the value. The name label does not exist unless someone added it, podSelector does not select namespaces, and an empty namespaceSelector selects all namespaces."
+  },
+  {
+    "obj": "3.2",
+    "q": "A policy has only spec.podSelector and an egress list, without the policyTypes field. What applies to the Pods it selects?",
+    "options": [
+      "They are isolated for Egress only",
+      "They are isolated for both Ingress and Egress, because Ingress is always implied and Egress is added because of the egress section",
+      "They are not isolated in either direction until policyTypes is added",
+      "The policy is rejected on apply because policyTypes is missing"
+    ],
+    "answer": 1,
+    "explain": "Without policyTypes, Kubernetes always includes Ingress and adds Egress if there are egress rules. That is why such a policy unintentionally also isolates ingress without a single ingress rule, so it is better to write policyTypes explicitly."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pod web in the shop namespace needs egress to the internet (443), but not to the internal networks 10.0.0.0/8. Which egress fragment does that?",
+    "options": [
+      "to: [{ipBlock: {cidr: 10.0.0.0/8}}], ports: [{port: 443}]",
+      "to: [{namespaceSelector: {}}], ports: [{port: 443}]",
+      "to: [{podSelector: {}}], ports: [{port: 443}]",
+      "to: [{ipBlock: {cidr: 0.0.0.0/0, except: [10.0.0.0/8]}}], ports: [{protocol: TCP, port: 443}]"
+    ],
+    "answer": 3,
+    "explain": "ipBlock with except allows all addresses except the listed ranges. The first option allows exactly the internal network, and namespaceSelector and podSelector select Pods in the cluster, not the internet."
+  },
+  {
+    "obj": "3.2",
+    "q": "The allow-frontend policy in the backend namespace uses from: [{podSelector: {matchLabels: {app: frontend}}}]. Pods app=frontend are in the frontend namespace and are blocked. Why?",
+    "options": [
+      "A ports list needs to be added",
+      "policyTypes needs to be changed to [Ingress, Egress]",
+      "A podSelector without a namespaceSelector selects only Pods in the policy's namespace (backend)",
+      "The frontend Pods must have an egress policy"
+    ],
+    "answer": 2,
+    "explain": "A podSelector alone never leaves the policy's namespace, so a namespaceSelector for frontend must be added to the same item. An omitted ports list means all ports, and an egress policy at the source is needed only if the source is isolated for egress."
+  },
+  {
+    "obj": "3.2",
+    "q": "What is the fastest way to check whether you created an AND or an OR combination of selectors in the from list?",
+    "options": [
+      "kubectl get netpol -o wide",
+      "kubectl describe netpol <name> -n <ns>, which shows whether NamespaceSelector and PodSelector are in the same block",
+      "kubectl auth can-i --list",
+      "kubectl get netpol <name> -o jsonpath='{.status}'"
+    ],
+    "answer": 1,
+    "explain": "describe prints the rules in a readable form and groups the selectors of the same item together. get -o wide does not show the rules, auth can-i is for RBAC, and NetworkPolicy has no useful status field for this."
+  },
+  {
+    "obj": "3.2",
+    "q": "Order the steps for locking down the secure namespace so that the web Pods still receive traffic from the traefik namespace on port 8080 and can resolve DNS.",
+    "type": "order",
+    "options": [
+      "Test from a temporary Pod in the traefik namespace (wget -T 2) and from a Pod without an allowance",
+      "Apply allow-dns (egress UDP/TCP 53 to kube-system)",
+      "Review the Pod and namespace labels (kubectl get pods,ns --show-labels)",
+      "Apply default deny for Ingress and Egress",
+      "Apply a policy that allows ingress from the traefik namespace on 8080"
+    ],
+    "answer": [2, 3, 1, 4, 0],
+    "explain": "First you need to know the labels so that the selectors are accurate, then you close everything, restore DNS and the required ingress, and then test both the allowed and the denied case. Testing at the end confirms both the allowance and the block."
+  },
+  {
+    "obj": "3.2",
+    "q": "Match the from list fragment with the set of sources it allows (the policy is in the data namespace).",
+    "type": "match",
+    "options": [
+      "- podSelector: {matchLabels: {app: api}}",
+      "- namespaceSelector: {matchLabels: {team: blue}}",
+      "- namespaceSelector: {matchLabels: {team: blue}}\n  podSelector: {matchLabels: {app: api}}",
+      "- namespaceSelector: {}"
+    ],
+    "targets": [
+      "All Pods in all namespaces",
+      "Pods app=api in the data namespace",
+      "Pods app=api only in namespaces labeled team=blue",
+      "All Pods in namespaces labeled team=blue",
+      "Only addresses outside the cluster"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "A podSelector alone looks at the policy's namespace, a namespaceSelector alone selects all Pods in the chosen namespaces, the combination in the same item is the intersection, and an empty namespaceSelector selects all namespaces. Addresses outside the cluster are selected with ipBlock."
+  },
+  {
+    "obj": "3.2",
+    "q": "Task: in the secure namespace, Pods may send traffic only to DNS and to Pods app=db in the same namespace on 5432. (Choose TWO fragments that, together with policyTypes: [Egress] and podSelector: {}, achieve this.)",
+    "options": [
+      "egress: - to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}}] ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]",
+      "egress: - to: [{podSelector: {matchLabels: {app: db}}}] ports: [{protocol: TCP, port: 5432}]",
+      "egress: - {}",
+      "ingress: - from: [{podSelector: {matchLabels: {app: db}}}]",
+      "egress: - to: [{ipBlock: {cidr: 0.0.0.0/0}}]"
+    ],
+    "answer": [0, 1],
+    "explain": "Two egress rules are needed: DNS to kube-system on port 53 and app=db on 5432. The empty rule and ipBlock 0.0.0.0/0 allow all egress, and an ingress rule does not affect egress."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pod tier=api from the app namespace is allowed ingress to db on 5432 by the db-from-api policy. Someone added a policy open-db with podSelector: {matchLabels: {tier: db}} and ingress: [{}]. The task says db must receive traffic only from tier=api. How do you fix this?",
+    "options": [
+      "Delete or correct the open-db policy, because policies are additive and it allows all ingress",
+      "Add another item with except to db-from-api",
+      "Set policyTypes: [Egress] in db-from-api",
+      "Change the order of the policies so that db-from-api comes first"
+    ],
+    "answer": 0,
+    "explain": "Because allowances add up, a policy with ingress: [{}] opens all ingress regardless of other policies. There is no ordering and no deny rule with which another policy could cancel it, so the cause has to be removed."
+  },
+  {
+    "obj": "3.2",
+    "q": "You are testing whether the frontend namespace may reach the Service api.app:8080. Which command gives a reliable and fast test with the correct label app=web?",
+    "options": [
+      "kubectl -n app exec deploy/api -- wget -qO- http://api:8080",
+      "kubectl -n frontend run t --image=busybox:1.36 -- ping api.app",
+      "kubectl run t --rm -it --restart=Never --image=busybox:1.36 -- wget -qO- http://api.app:8080",
+      "kubectl -n frontend run t --rm -it --restart=Never --image=busybox:1.36 --labels=app=web -- wget -qO- -T 2 http://api.app:8080"
+    ],
+    "answer": 3,
+    "explain": "The test must come from the frontend namespace, with the label the policy expects and with a timeout. exec from the api Pod itself tests the wrong source, ping to a ClusterIP does not work, and a Pod without -n lands in the default namespace and has no label."
+  },
+  {
+    "obj": "3.2",
+    "type": "spot",
+    "q": "Pods app=db in the shop namespace should receive traffic ONLY from app=api pods in the same namespace, on TCP 5432. Click the lines that break this.",
+    "lang": "yaml",
+    "snippet": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: db-allow-api\n  namespace: shop\nspec:\n  podSelector:\n    matchLabels:\n      app: db\n  policyTypes: [\"Ingress\"]\n  ingress:\n  - from:\n    - namespaceSelector: {}\n    - podSelector:\n        matchLabels:\n          app: api\n    ports:\n    - {protocol: TCP, port: 5423}",
+    "answer": [12, 17],
+    "explain": "Line 13: namespaceSelector: {} is a separate peer (it has its own dash), and peers in the from list are combined with OR, so ALL pods from ALL namespaces are allowed. Delete that line; a podSelector without a namespaceSelector already means the policy's own namespace. Line 18: port 5423 instead of 5432, so even the api pods can't reach the database."
+  }
+]

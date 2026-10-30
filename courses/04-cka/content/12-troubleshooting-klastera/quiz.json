@@ -1,0 +1,240 @@
+[
+  {
+    "obj": "5.1",
+    "q": "node01 je NotReady, a k describe node node01 pokazuje Ready=Unknown: Kubelet stopped posting node status. Na node01 systemctl status kubelet pokazuje Loaded: ...; disabled i Active: inactive (dead). Zadatak traži da čvor ostane ispravan i nakon restarta mašine. Koja komanda to rješava?",
+    "options": [
+      "systemctl enable --now kubelet",
+      "systemctl start kubelet",
+      "systemctl daemon-reload",
+      "kubeadm join --control-plane"
+    ],
+    "answer": 0,
+    "explain": "enable --now pokreće servis odmah i uključuje ga pri boot-u. Samo start ne preživljava restart, daemon-reload samo ponovo čita unit fajlove, a ponovni join nije potreban jer je čvor već dio klastera."
+  },
+  {
+    "obj": "5.1",
+    "q": "Na node01 journalctl -u kubelet pokazuje: failed to load kubelet config file, path: /var/lib/kubelet/confg.yaml ... no such file or directory. Fajl /var/lib/kubelet/config.yaml postoji i ispravan je. Šta treba uraditi?",
+    "options": [
+      "Pokrenuti kubeadm reset i ponovo join",
+      "Kopirati config.yaml u /etc/kubernetes/kubelet.conf",
+      "Ispraviti putanju --config u kubelet drop-in fajlu (systemctl cat kubelet pokazuje koji), pa systemctl daemon-reload i systemctl restart kubelet",
+      "Ispraviti staticPodPath u config.yaml"
+    ],
+    "answer": 2,
+    "explain": "Putanja do konfiguracije dolazi iz flaga --config u drop-in fajlu; nakon izmjene unit/drop-in fajla treba daemon-reload pa restart. kubelet.conf je kubeconfig (adresa API servera i kredencijali), ne KubeletConfiguration, a reset je destruktivan i nepotreban."
+  },
+  {
+    "obj": "5.2",
+    "q": "kubectl vraća The connection to the server controlplane:6443 was refused. Na controlplane crictl ps -a pokazuje kube-apiserver kontejnere u stanju Exited, a crictl logs posljednjeg kaže: Error: unknown flag: --etcd-server. Šta je rješenje?",
+    "options": [
+      "Restartovati etcd sa crictl stop",
+      "U /etc/kubernetes/manifests/kube-apiserver.yaml ispraviti flag u --etcd-servers",
+      "kubectl edit pod kube-apiserver-controlplane -n kube-system i ispraviti flag",
+      "Pokrenuti kubeadm init phase etcd local"
+    ],
+    "answer": 1,
+    "explain": "API server ne prepoznaje flag, a ispravan naziv je --etcd-servers. Static Pod se mijenja u manifestu na disku; kubectl edit ionako ne radi dok API server ne radi, a etcd nije uzrok."
+  },
+  {
+    "obj": "5.2",
+    "q": "Novi Podovi u svim namespace-ovima ostaju Pending. k describe pod pokazuje Node: <none> i Events: <none>. Čvorovi su Ready i imaju slobodnih resursa. Koja komponenta je najvjerovatniji uzrok?",
+    "options": [
+      "kube-controller-manager",
+      "kube-proxy",
+      "kubelet na node01",
+      "kube-scheduler"
+    ],
+    "answer": 3,
+    "explain": "Pending bez ijednog eventa (ni Scheduled ni FailedScheduling) znači da Pod niko nije ni pokušao rasporediti, što je posao kube-scheduler-a. Kad scheduler radi a ne nalazi čvor, postoji event FailedScheduling; kube-proxy i kubelet ne učestvuju u raspoređivanju."
+  },
+  {
+    "obj": "5.2",
+    "q": "k create deployment web --image=nginx:1.27 --replicas=3 prolazi, ali k get rs,pods ne pokazuje ni ReplicaSet ni Podove. Pod napravljen sa k run test --image=nginx:1.27 radi normalno. Šta provjeriti?",
+    "options": [
+      "Static Pod kube-controller-manager (manifest i logovi), jer kontroleri prave ReplicaSet i Podove",
+      "kube-scheduler, jer ne raspoređuje Deployment",
+      "CoreDNS, jer Deployment ne može razriješiti ime slike",
+      "Admission plugin ResourceQuota u API serveru"
+    ],
+    "answer": 0,
+    "explain": "Deployment kontroler i ReplicaSet kontroler rade u kube-controller-manager-u. Bez njega objekat Deployment postoji, ali niko ne pravi ReplicaSet. Scheduler radi jer se samostalni Pod pokrenuo, a ResourceQuota bi odbio zahtjev sa porukom."
+  },
+  {
+    "obj": "5.2",
+    "q": "Izmijenio si /etc/kubernetes/manifests/kube-scheduler.yaml. Nakon dva minuta crictl ps -a ne pokazuje nijedan kube-scheduler kontejner, ni Running ni Exited. Gdje ćeš najbrže naći uzrok?",
+    "options": [
+      "crictl logs posljednjeg kube-scheduler kontejnera",
+      "k logs -n kube-system kube-scheduler-controlplane --previous",
+      "journalctl -u kubelet, jer kubelet nije uspio učitati manifest (npr. YAML greška)",
+      "/var/log/containers/kube-scheduler*.log"
+    ],
+    "answer": 2,
+    "explain": "Ako kontejner uopšte ne postoji, kubelet nije ni napravio Pod, najčešće zbog neispravnog YAML-a, i to piše u logu kubeleta. crictl logs, k logs i /var/log/containers traže kontejner koji je bar jednom pokrenut."
+  },
+  {
+    "obj": "5.1",
+    "q": "Nakon kubeadm init i join oba čvora su NotReady. k describe node pokazuje Ready=False: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: cni plugin not initialized. Šta nedostaje?",
+    "options": [
+      "kube-proxy DaemonSet",
+      "CNI plugin (npr. primijeniti manifest flannel ili drugog CNI-ja)",
+      "CoreDNS",
+      "containerd servis"
+    ],
+    "answer": 1,
+    "explain": "Poruka direktno kaže da CNI nije inicijalizovan: dok se ne instalira mrežni plugin, kubelet prijavljuje čvor kao NotReady. Bez containerd-a poruka bi govorila o runtime-u, a CoreDNS i kube-proxy ne utiču na Ready uslov."
+  },
+  {
+    "obj": "5.2",
+    "q": "Treba dodati flag --audit-log-maxage=7 API serveru u kubeadm klasteru. Koji pristup je ispravan?",
+    "options": [
+      "kubectl edit pod kube-apiserver-controlplane -n kube-system",
+      "kubectl edit cm kubeadm-config -n kube-system i sačekati da se primijeni",
+      "systemctl edit kube-apiserver i dodati flag u ExecStart",
+      "Dodati flag u /etc/kubernetes/manifests/kube-apiserver.yaml; kubelet će ponovo napraviti static Pod"
+    ],
+    "answer": 3,
+    "explain": "Komponente kontrolne ravni u kubeadm-u su static Podovi koje kubelet pravi iz manifesta na disku. Izmjena mirror Poda se ne primjenjuje, kube-apiserver nije systemd servis, a kubeadm-config se čita tek pri kubeadm upgrade/init, ne automatski."
+  },
+  {
+    "obj": "5.1",
+    "q": "Novi Podovi se ne raspoređuju na node01. k describe node node01 pokazuje DiskPressure=True i taint node.kubernetes.io/disk-pressure:NoSchedule. Šta je ispravno?",
+    "options": [
+      "Osloboditi prostor na node01 (npr. crictl rmi --prune, stari logovi); kubelet će ukloniti uslov i taint",
+      "Ukloniti taint komandom k taint node node01 node.kubernetes.io/disk-pressure-",
+      "Dodati toleranciju za disk-pressure u sve Deploymente",
+      "Restartovati containerd da obriše nekorišćene volumene"
+    ],
+    "answer": 0,
+    "explain": "Taint je posljedica stvarnog nedostatka diska: kubelet ga ponovo postavlja dok pritisak traje. Kad se prostor oslobodi, uslov postaje False i taint nestaje. Ručno skidanje taint-a ili tolerancije samo guraju Podove na čvor bez diska."
+  },
+  {
+    "obj": "5.2",
+    "q": "API server se stalno restartuje. Njegov log pokazuje: grpc: addrConn.createTransport failed to connect to {Addr: \"127.0.0.1:2380\"} ... connection refused. etcd kontejner radi. Šta je vjerovatna greška?",
+    "options": [
+      "etcd certifikat je istekao",
+      "Treba restartovati kubelet",
+      "U kube-apiserver.yaml --etcd-servers pokazuje na peer port 2380 umjesto klijentskog 2379",
+      "API server treba --secure-port=2380"
+    ],
+    "answer": 2,
+    "explain": "Klijenti (API server) se spajaju na etcd preko porta 2379; 2380 služi za komunikaciju između etcd članova. Istekli certifikat bi dao x509 grešku, a --secure-port je port samog API servera (6443)."
+  },
+  {
+    "obj": "5.1",
+    "q": "Na node01 journalctl -u kubelet stalno ispisuje: Get \"https://10.0.0.99:6443/api/v1/nodes/node01\": dial tcp 10.0.0.99:6443: connect: no route to host. API server radi na controlplane:6443. Koji fajl treba ispraviti?",
+    "options": [
+      "/var/lib/kubelet/config.yaml (polje clusterDNS)",
+      "/etc/kubernetes/kubelet.conf (polje server: u kubeconfigu)",
+      "/etc/kubernetes/manifests/kube-apiserver.yaml na node01",
+      "/etc/containerd/config.toml"
+    ],
+    "answer": 1,
+    "explain": "kubelet.conf je kubeconfig kubeleta i sadrži adresu API servera. clusterDNS je adresa DNS-a za Podove, node01 nema static Podove kontrolne ravni, a containerd ne komunicira sa API serverom."
+  },
+  {
+    "obj": "5.2",
+    "q": "kubectl ne radi jer je API server pao. Gdje na controlplane možeš pročitati logove njegovog kontejnera? (Izaberi DVA.)",
+    "options": [
+      "crictl logs <id> (id iz crictl ps -a | grep kube-apiserver)",
+      "journalctl -u kube-apiserver",
+      "kubectl logs -n kube-system kube-apiserver-controlplane",
+      "/var/log/pods/kube-system_kube-apiserver-controlplane_<uid>/kube-apiserver/",
+      "/etc/kubernetes/manifests/kube-apiserver.log"
+    ],
+    "answer": [0, 3],
+    "explain": "Static Pod logovi su dostupni preko container runtime-a (crictl logs) i kao fajlovi u /var/log/pods/. kube-apiserver nije systemd servis, kubectl logs traži API server, a manifest direktorijum ne sadrži logove."
+  },
+  {
+    "obj": "5.2",
+    "q": "k get --raw='/readyz?verbose' vraća listu u kojoj stoji [-]etcd failed: reason withheld, a ostale provjere su [+]. Koji je sljedeći korak?",
+    "options": [
+      "Restartovati kube-scheduler",
+      "Obrisati /var/lib/etcd da se etcd inicijalizuje ponovo",
+      "Pokrenuti k get componentstatuses za detalje",
+      "Provjeriti etcd static Pod: crictl ps -a | grep etcd, njegove logove i /etc/kubernetes/manifests/etcd.yaml"
+    ],
+    "answer": 3,
+    "explain": "API server ne dobija odgovor od etcd-a, pa se gleda etcd kontejner, njegov log i manifest (putanje certifikata, data-dir, port). Brisanje /var/lib/etcd uništava sve podatke klastera, a componentstatuses je deprecated."
+  },
+  {
+    "obj": "5.1",
+    "q": "Kubelet na node01 je pao prije 10 minuta. Podovi Deployment-a koji su bili na node01 sada su prikazani kao Terminating, a na controlplane su nastale nove replike. Šta je ovo prouzrokovalo?",
+    "options": [
+      "Taint node.kubernetes.io/unreachable:NoExecute i podrazumijevana tolerancija od 300 sekundi, nakon čega su Podovi izbačeni",
+      "kube-scheduler je preselio Podove jer je node01 imao DiskPressure",
+      "Kubelet je prije pada sam obrisao Podove",
+      "PodDisruptionBudget je premjestio Podove"
+    ],
+    "answer": 0,
+    "explain": "Kad čvor prestane javljati status, dobija NoExecute taint, a Podovi imaju podrazumijevanu toleranciju od 300 sekundi; nakon toga se izbacuju i ReplicaSet pravi nove. Terminating ostaje jer kubelet na node01 ne može potvrditi brisanje. Scheduler ne premješta Podove, a PDB samo ograničava dobrovoljna izbacivanja."
+  },
+  {
+    "obj": "5.1",
+    "q": "node01 je NotReady sa porukom container runtime is down. Na node01 journalctl -u kubelet pokazuje greške prema unix:///run/containerd/containerd.sock: no such file or directory. Šta je prvi korak?",
+    "options": [
+      "Promijeniti containerRuntimeEndpoint u unix:///var/run/dockershim.sock",
+      "systemctl status containerd, pa systemctl enable --now containerd i restart kubeleta",
+      "crictl rmi --prune",
+      "Ponovo generisati certifikate kubeleta"
+    ],
+    "answer": 1,
+    "explain": "Socket ne postoji jer containerd ne radi; kad se containerd pokrene (i uključi pri boot-u), kubelet se ponovo spaja. dockershim je uklonjen još u v1.24, a čišćenje slika i certifikati nemaju veze sa nedostajućim socketom."
+  },
+  {
+    "obj": "5.2",
+    "type": "order",
+    "q": "kubectl ne radi nakon što je neko mijenjao manifest API servera. Poredaj korake popravke.",
+    "options": [
+      "Provjeri sa kubectl get pods -n kube-system da kontrolna ravan radi",
+      "Pronađi grešku: crictl ps -a | grep kube-apiserver i crictl logs <id>",
+      "Ispravi grešku u /etc/kubernetes/manifests/kube-apiserver.yaml",
+      "Napravi kopiju manifesta u /root/",
+      "Prati crictl ps dok kube-apiserver ne ostane Running"
+    ],
+    "answer": [1, 3, 2, 4, 0],
+    "explain": "Prvo saznaj šta je pogrešno iz loga, zatim napravi kopiju van manifest direktorijuma, ispravi fajl, sačekaj da kubelet podigne kontejner i na kraju provjeri preko kubectl-a."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Upari simptom sa komponentom koja najvjerovatnije ne radi.",
+    "options": [
+      "Novi Podovi Pending, bez ijednog eventa",
+      "Deployment postoji, ali nema ReplicaSet-a",
+      "Pod-ovi rade, ali ClusterIP servis ne prosljeđuje saobraćaj iako endpointi postoje",
+      "Imena servisa se ne razrješavaju, a IP adrese rade",
+      "kubectl: connection to the server controlplane:6443 was refused"
+    ],
+    "targets": [
+      "CoreDNS",
+      "kube-apiserver",
+      "kube-scheduler",
+      "etcd članovi preko peer porta",
+      "kube-controller-manager",
+      "kube-proxy"
+    ],
+    "answer": [2, 4, 5, 0, 1],
+    "explain": "Raspoređivanje je posao scheduler-a, ReplicaSet pravi controller-manager, pravila za ClusterIP postavlja kube-proxy, imena razrješava CoreDNS, a na 6443 sluša API server. Peer port etcd-a je distraktor."
+  },
+  {
+    "obj": "5.1",
+    "q": "Na node01 si u /var/lib/kubelet/config.yaml ispravio pogrešnu vrijednost clusterDNS. Ništa drugo nisi mijenjao. Šta treba uraditi da izmjena važi?",
+    "options": [
+      "systemctl daemon-reload, bez restarta",
+      "kubeadm upgrade node",
+      "systemctl restart kubelet (i provjeriti systemctl status kubelet)",
+      "Ništa, kubelet automatski prati izmjene config.yaml"
+    ],
+    "answer": 2,
+    "explain": "Kubelet čita config.yaml pri pokretanju, pa treba restart. daemon-reload je potreban samo za izmjene unit/drop-in fajlova, a kubeadm upgrade node služi za nadogradnju verzije."
+  },
+  {
+    "obj": "5.2",
+    "type": "spot",
+    "q": "Nakon ručne izmjene /etc/kubernetes/manifests/kube-apiserver.yaml na kubeadm klasteru, API server se ruši, a crictl logs pokazuje greške pri povezivanju na etcd. Klikni redove koje treba ispraviti.",
+    "lang": "yaml",
+    "snippet": "spec:\n  containers:\n  - command:\n    - kube-apiserver\n    - --advertise-address=172.18.0.2\n    - --allow-privileged=true\n    - --authorization-mode=Node,RBAC\n    - --client-ca-file=/etc/kubernetes/pki/ca.crt\n    - --etcd-cafile=/etc/kubernetes/pki/ca.crt\n    - --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt\n    - --etcd-keyfile=/etc/kubernetes/pki/apiserver-etcd-client.key\n    - --etcd-servers=https://127.0.0.1:2380\n    - --secure-port=6443\n    - --service-cluster-ip-range=10.96.0.0/12\n    - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt\n    - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key\n    image: registry.k8s.io/kube-apiserver:v1.35.0",
+    "answer": [8, 11],
+    "explain": "Red 9: etcd ima vlastiti CA; kubeadm ga drži u /etc/kubernetes/pki/etcd/ca.crt. Sa CA-om klastera API server ne može provjeriti certifikat etcd-a (x509: certificate signed by unknown authority). Red 12: 2380 je peer port etcd-a, a klijenti (API server) se spajaju na 2379. Kubelet sam ponovo pokreće statički pod čim sačuvaš ispravljen manifest."
+  }
+]

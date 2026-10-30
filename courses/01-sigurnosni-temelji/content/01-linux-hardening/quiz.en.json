@@ -1,0 +1,76 @@
+[
+  {
+    "q": "You want to check which PermitRootLogin value the SSH server ACTUALLY uses, including files from sshd_config.d. Which command?",
+    "options": ["grep PermitRootLogin /etc/ssh/sshd_config", "sshd -t", "sshd -T | grep -i permitrootlogin", "systemctl status ssh"],
+    "answer": 2,
+    "explain": "sshd -T prints the effective configuration after all Include files. grep on the main file may show a value that a drop-in file has already overridden, and sshd -t only checks syntax."
+  },
+  {
+    "q": "A sudoers file contains: deploy ALL=(ALL) NOPASSWD: /usr/bin/vim. Why is this dangerous?",
+    "options": ["vim has no full path", "You can spawn a shell from vim, and it runs as root", "NOPASSWD is forbidden in modern distributions", "It's not dangerous, vim only edits files"],
+    "answer": 1,
+    "explain": "vim (like less, find, awk, tar…) can spawn a shell (e.g. :!bash). Through sudo that shell gets root privileges. GTFOBins catalogs such programs."
+  },
+  {
+    "q": "The script /opt/backup.sh runs from root's cron and has permissions -rwxrwxrwx. What is the problem?",
+    "options": ["No problem as long as the owner is root", "Any user can write commands that will run as root", "The script is too large", "Cron can't run scripts with 777 permissions"],
+    "answer": 1,
+    "explain": "The combination of 'run by root' and 'anyone can write' is a classic privilege escalation. The correct setting is 700 or 750, owned by root."
+  },
+  {
+    "q": "What does an 's' in place of the owner's x bit mean, e.g. -rwsr-xr-x root root /usr/bin/passwd?",
+    "options": ["The file is a symbolic link", "SUID: the program runs with the rights of the file's owner (root)", "Sticky bit: only the owner may delete the file", "The file is signed"],
+    "answer": 1,
+    "explain": "The SUID bit runs the program with the rights of the file's owner. passwd needs it to modify /etc/shadow. The sticky bit shows up as 't' on directories (e.g. /tmp)."
+  },
+  {
+    "q": "Which two SSH settings together shut down password login? (multiple answers)",
+    "options": ["PasswordAuthentication no", "KbdInteractiveAuthentication no", "PermitEmptyPasswords no", "UsePAM no"],
+    "answer": [0, 1],
+    "explain": "PasswordAuthentication closes classic password login, and KbdInteractiveAuthentication (formerly ChallengeResponseAuthentication) closes the PAM path through which a password can be requested interactively."
+  },
+  {
+    "q": "Which command finds files that any user can modify?",
+    "options": ["find / -xdev -type f -perm -0002", "find / -xdev -perm -4000", "find / -nouser", "ls -la / | grep rw"],
+    "answer": 0,
+    "explain": "-perm -0002 means 'the write bit for others is set'. -4000 looks for SUID, and -nouser for files without an owner."
+  },
+  {
+    "q": "Why is PermitRootLogin no better than allowing root login with a key?",
+    "options": ["Root keys don't work with ed25519", "The attacker also has to know a username, and every admin action goes through sudo and records WHO did it", "It speeds up SSH", "CIS forbids keys for root"],
+    "answer": 1,
+    "explain": "Logging in as root erases accountability: the log only says 'root'. Personal accounts plus sudo give both an extra hurdle and a clear audit trail."
+  },
+  {
+    "q": "What does the auditd rule -w /etc/shadow -p wa -k identity do?",
+    "options": ["Forbids writing to /etc/shadow", "Records writes (w) and attribute changes (a) to /etc/shadow, with the key 'identity' for searching", "Encrypts /etc/shadow", "Backs up /etc/shadow"],
+    "answer": 1,
+    "explain": "-w is a watch on a path, -p wa are the permissions being monitored (write, attribute change), -k is the key you later search with ausearch -k identity. auditd records, it does not block."
+  },
+  {
+    "q": "Which umask does CIS recommend so other users can't read new files?",
+    "options": ["000", "022", "027", "777"],
+    "answer": 2,
+    "explain": "umask 027 yields files 640 and directories 750: the group can read, others see nothing. 022 (the default) leaves files readable by everyone."
+  },
+  {
+    "q": "Before restarting the SSH service on a remote server after a config change, what is the most important thing to do?",
+    "options": ["Turn off the firewall", "Run sshd -t and keep an existing session open until you've tested a new login", "Reboot the whole server", "Delete known_hosts"],
+    "answer": 1,
+    "explain": "sshd -t catches syntax errors, and the open session is your fallback if the new configuration still blocks logins."
+  },
+  {
+    "q": "How does CIS Benchmark Level 1 compare to Level 2?",
+    "options": ["Level 1 is for Windows, Level 2 for Linux", "Level 1 is baseline settings with little risk of breaking applications; Level 2 is stricter, for higher-assurance environments", "Level 2 is an outdated version", "Level 1 requires a paid license"],
+    "answer": 1,
+    "explain": "Level 1 is a practical minimum for most systems. Level 2 adds measures that can reduce functionality and are applied where the risk is higher."
+  },
+  {
+    "type": "spot",
+    "q": "This file should enforce the SSH hardening from the lesson: key-only login and no direct root login. Click the lines that violate it.",
+    "lang": "text",
+    "snippet": "# /etc/ssh/sshd_config.d/10-hardening.conf\nPort 22\nPermitRootLogin yes\nPubkeyAuthentication yes\nPasswordAuthentication yes\nKbdInteractiveAuthentication no\nMaxAuthTries 3\nX11Forwarding no\nLoginGraceTime 60\nAllowGroups ssh-users\nClientAliveInterval 300\nClientAliveCountMax 2",
+    "answer": [2, 4],
+    "explain": "PermitRootLogin yes allows direct root login, so an attacker doesn't have to guess a username and there is no trace of who acted as root; use PermitRootLogin no. PasswordAuthentication yes keeps password login and brute force open; use PasswordAuthentication no. The other lines match the recommendations. After the change, check with sshd -t and sshd -T."
+  }
+]

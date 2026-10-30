@@ -1,0 +1,260 @@
+[
+  {
+    "obj": "3.1",
+    "q": "A company serves a static website from an S3 bucket through Amazon CloudFront. The objects are encrypted with an SSE-KMS customer managed key. Users must not be able to read objects directly from S3, and S3 Block Public Access must stay enabled. Which solution meets the requirements?",
+    "options": [
+      "Enable S3 static website hosting and allow s3:GetObject for everyone with an aws:Referer condition equal to the distribution's domain.",
+      "Use Origin Access Identity (OAI) and switch to SSE-S3 because OAI does not support KMS.",
+      "Use Origin Access Control (OAC), a bucket policy that allows cloudfront.amazonaws.com with the distribution's AWS:SourceArn, and add kms:Decrypt for the same principal and condition to the key policy.",
+      "Create an IAM user for CloudFront and enter its access keys in the origin settings."
+    ],
+    "answer": 2,
+    "explain": "OAC signs requests to S3, supports SSE-KMS, and works with Block Public Access enabled; the bucket policy and key policy allow only that distribution. Website hosting with a Referer condition is public access that is easy to spoof, OAI is legacy and does not support SSE-KMS, and CloudFront does not use IAM keys for S3."
+  },
+  {
+    "obj": "3.1",
+    "q": "An application runs on a public ALB behind a CloudFront distribution with an AWS WAF web ACL. A penetration test showed that an attacker can bypass CloudFront and WAF by sending requests directly to the ALB's DNS name. Which solution prevents this with the FEWEST application changes?",
+    "options": [
+      "In the ALB security group, allow inbound only from the managed prefix list com.amazonaws.global.cloudfront.origin-facing, and add a custom origin header with a secret that an ALB listener rule checks.",
+      "Move the WAF web ACL from CloudFront to the ALB and remove CloudFront.",
+      "Enable CloudFront geo restriction for all countries except your own.",
+      "Enable Shield Advanced on the ALB."
+    ],
+    "answer": 0,
+    "explain": "The prefix list restricts the ALB to CloudFront IP addresses, and the secret header confirms that the request comes from your distribution specifically. Removing CloudFront loses edge protection and caching, geo restriction does not prevent direct access to the ALB, and Shield Advanced protects against DDoS, not against bypassing."
+  },
+  {
+    "obj": "3.1",
+    "q": "A streaming platform serves paid video through CloudFront as HLS: each video has hundreds of segments. Only signed-in subscribers may download the segments, and the URLs in the playlist must not change. What should be used?",
+    "options": [
+      "A signed URL for each segment, signed with a root user CloudFront key pair.",
+      "An S3 presigned URL for each segment.",
+      "An AWS WAF rate-based rule per IP address.",
+      "CloudFront signed cookies with a trusted key group."
+    ],
+    "answer": 3,
+    "explain": "Signed cookies grant access to a group of files without changing URLs, and trusted key groups are the recommended signing method. A signed URL per segment changes every URL, a key pair requires the root user, a presigned URL bypasses CloudFront, and a rate limit does not check the subscription."
+  },
+  {
+    "obj": "3.1",
+    "q": "A payment form sends the card number through CloudFront to an ALB and then through several microservices to the billing service. Compliance requires that only the billing service can read the card number, not the ALB, the logs, or the other microservices. Which solution meets this?",
+    "options": [
+      "Set the viewer protocol policy to HTTPS only and the origin protocol policy to HTTPS.",
+      "Enable CloudFront field-level encryption for the card number field, with a public key whose private pair only the billing service holds.",
+      "Encrypt ALB access logs with an SSE-KMS key.",
+      "Add a response headers policy with Strict-Transport-Security."
+    ],
+    "answer": 1,
+    "explain": "Field-level encryption encrypts the selected field at the edge location, and only the owner of the private key can decrypt it, regardless of how many layers the request passes through. HTTPS protects only up to TLS termination, encrypting logs does not prevent services from seeing the data, and HSTS only enforces HTTPS."
+  },
+  {
+    "obj": "3.1",
+    "q": "The /login endpoint of a public application behind an ALB is suffering brute-force attempts from hundreds of IP addresses. The rest of the application has legitimate users with high request volumes. The team wants to limit the number of requests per IP address for login only. What should be done?",
+    "options": [
+      "Add NACL deny rules for the attacking IP addresses.",
+      "Enable Shield Advanced automatic application layer DDoS mitigation.",
+      "Add a rate-based rule to the web ACL for the entire application with a low limit.",
+      "Add a WAF rate-based rule with aggregation by IP address and a scope-down statement that covers only the URI path /login."
+    ],
+    "answer": 3,
+    "explain": "Scope-down limits counting and the action to /login, so the rest of the application is unaffected. An application-wide limit would block legitimate users, a NACL with hundreds of addresses is not sustainable, and Shield L7 mitigation targets DDoS, not targeted limiting of one endpoint."
+  },
+  {
+    "obj": "3.1",
+    "q": "An e-commerce site records login attempts with username and password combinations stolen from other sites (credential stuffing). The team wants managed login page protection that recognizes compromised credentials and suspicious login patterns, with the LEAST development. What should be used?",
+    "options": [
+      "AWS WAF Bot Control at the Common level.",
+      "The AWS WAF Fraud Control account takeover prevention (ATP) managed rule group on the login path.",
+      "Amazon GuardDuty with S3 Protection enabled.",
+      "AWS WAF Core rule set."
+    ],
+    "answer": 1,
+    "explain": "ATP is designed for login pages: it checks credentials against a database of stolen ones and tracks failed attempts. Bot Control Common recognizes known bots, not stolen credentials, the Core rule set protects against injection attacks, and GuardDuty does not analyze HTTP logins."
+  },
+  {
+    "obj": "3.1",
+    "q": "A scraper bot rotates thousands of IP addresses and changes the User-Agent header, so IP blocks and header rules do not help. Analysis of WAF logs on the CloudFront distribution shows that all of the bot's requests have the same JA4 fingerprint. Which solution is the MOST PRECISE?",
+    "options": [
+      "Add a WAF string match rule on the JA4 fingerprint component with that fingerprint and a Block action, with defined fallback behavior.",
+      "Add all observed IP addresses to a WAF IP set.",
+      "Enable CloudFront geo restriction for the countries that send the most requests.",
+      "Add a regex rule that blocks the bot's User-Agent values."
+    ],
+    "answer": 0,
+    "explain": "The JA4 fingerprint describes the TLS client and stays the same when the bot changes IP and User-Agent; WAF supports it on CloudFront and ALB with a fallback when it cannot be computed. An IP set cannot keep up with rotation, geo restriction affects legitimate users, and the User-Agent is easy to change."
+  },
+  {
+    "obj": "3.1",
+    "q": "An application behind CloudFront may be accessible only from EU countries. The exception is a partner in the US with a known fixed IP range. Which solution meets the requirement?",
+    "options": [
+      "CloudFront geo restriction with an allow list of EU countries.",
+      "Route 53 geolocation routing that sends users outside the EU to a static page.",
+      "A WAF web ACL with a rule that blocks requests that are not from the EU geo match list and not from the partner IP set.",
+      "A NACL on the origin subnets with the IP ranges of EU countries."
+    ],
+    "answer": 2,
+    "explain": "WAF can combine geo match and an IP set with AND/NOT logic, so the partner gets through despite its geography. CloudFront geo restriction does not support IP exceptions, Route 53 routing is not a security control because the origin can still be called, and a NACL does not see the original client addresses behind CloudFront."
+  },
+  {
+    "obj": "3.1",
+    "q": "An organization with 300 accounts wants every ALB and API Gateway in all accounts, including future ones, to automatically have a web ACL with the AWS Core rule set and one third-party managed rule group from AWS Marketplace. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "A CloudFormation StackSet that creates a web ACL in every account, with manual association to new resources.",
+      "An AWS Firewall Manager WAF policy from the delegated admin account with automatic remediation for the selected resource types.",
+      "An AWS Config rule that reports resources without a web ACL.",
+      "Shield Advanced protection on all resources."
+    ],
+    "answer": 1,
+    "explain": "Firewall Manager centrally applies WAF policies, including Marketplace rules, to existing and new resources in the organization. A StackSet does not automatically associate the web ACL with new resources, Config only reports, and Shield Advanced by itself does not add those rules."
+  },
+  {
+    "obj": "3.1",
+    "q": "A single-page application at https://app.example.com must upload files directly to an S3 bucket using presigned URLs. The browser reports a CORS error, while the same PUT request from curl succeeds. What should be done?",
+    "options": [
+      "Add a bucket policy that allows s3:PutObject for Principal *.",
+      "Disable S3 Block Public Access.",
+      "Add a CORS configuration with AllowedOrigins [\"*\"] and AllowedMethods with all methods.",
+      "Add a CORS configuration to the bucket with AllowedOrigins https://app.example.com, AllowedMethods PUT, and the required headers."
+    ],
+    "answer": 3,
+    "explain": "A CORS error means the browser did not get permission for a cross-origin request; a CORS rule with the exact origin and method solves it, and access is still controlled by the presigned URL. A public bucket policy and disabling Block Public Access open the bucket, and a wildcard origin is unnecessarily broad."
+  },
+  {
+    "obj": "3.1",
+    "q": "A manufacturer has 50,000 IoT devices in AWS IoT Core, each with its own X.509 certificate and registered as a thing. Each device may connect only under its own name and publish only to the topic devices/<thing-name>/telemetry. Which solution meets this with the LEAST policy management?",
+    "options": [
+      "Create a separate IoT policy for each device with its name written into the ARN.",
+      "A single IoT policy with iot:* on resource * attached to all certificates.",
+      "A single IoT policy with the policy variable ${iot:Connection.Thing.ThingName} in the ARNs for iot:Connect and iot:Publish, attached to all certificates.",
+      "An IAM policy for each device with the iot:Publish permission."
+    ],
+    "answer": 2,
+    "explain": "During evaluation the policy variable is replaced with the name of the thing associated with the connection, so a single policy gives each device least privilege. 50,000 policies are hard to maintain, iot:* on * is too broad, and devices do not authenticate with IAM policies."
+  },
+  {
+    "obj": "3.3",
+    "q": "An application has an app tier in an Auto Scaling group and a PostgreSQL database on EC2. The database must accept connections on port 5432 only from app tier instances, and the number and IP addresses of those instances change constantly. Which solution meets the requirement with the LEAST maintenance?",
+    "options": [
+      "In the database security group, allow port 5432 with the app tier security group as the source.",
+      "In the database subnet NACL, add an allow rule for each app instance IP address via a Lambda function.",
+      "In the database security group, allow port 5432 from the entire VPC CIDR.",
+      "Place AWS Network Firewall between the subnets with rules by IP address."
+    ],
+    "answer": 0,
+    "explain": "Referencing a security group automatically covers all instances with that group, regardless of IP addresses. A Lambda function that modifies the NACL is fragile, the VPC CIDR is too broad, and Network Firewall with IP rules is unnecessarily complex for this requirement."
+  },
+  {
+    "obj": "3.3",
+    "q": "The threat intel team identified a malicious range 198.51.100.0/24 that is scanning public subnets. The team wants to quickly block all traffic from that range to all instances in those subnets, without modifying dozens of security groups. What should be done?",
+    "options": [
+      "Add an inbound deny rule for 198.51.100.0/24 to the public subnets' NACL with a number lower than the existing allow rules.",
+      "Add a deny rule for 198.51.100.0/24 to every security group.",
+      "Remove the internet gateway from the VPC.",
+      "Enable GuardDuty and wait for a finding."
+    ],
+    "answer": 0,
+    "explain": "A NACL supports deny rules at the subnet level and evaluates them by number, so a rule with a lower number wins over allow rules. Security groups have no deny rules, removing the IGW breaks the application, and GuardDuty detects rather than blocks."
+  },
+  {
+    "obj": "3.3",
+    "q": "A company has 40 VPCs connected by a Transit Gateway. All outbound HTTPS traffic to the internet may go only to approved domains (e.g., github.com, *.amazonaws.com), with central rule management and logging. Which solution meets the requirement?",
+    "options": [
+      "Security groups in all VPCs with egress rules to the IP addresses of the approved domains.",
+      "Route 53 Resolver query logging and a manual review of the logs every week.",
+      "A centralized inspection VPC with AWS Network Firewall and stateful domain list allowlist rules (TLS SNI and HTTP Host), with egress traffic from all VPCs routed through the Transit Gateway.",
+      "An AWS WAF web ACL on the NAT gateways."
+    ],
+    "answer": 2,
+    "explain": "Network Firewall understands domains via TLS SNI and HTTP Host and centrally filters egress from all spoke VPCs. Security groups work only with IP addresses, which change, DNS logging does not block, and WAF cannot be attached to a NAT gateway."
+  },
+  {
+    "obj": "3.3",
+    "q": "A bank has a dedicated 100 Gbps AWS Direct Connect connection. The regulator requires encryption of traffic on that link, and IPsec VPN tunnels cannot deliver the required throughput. Which solution meets the requirement?",
+    "options": [
+      "Site-to-Site VPN over a public VIF.",
+      "AWS Client VPN for all servers in the data center.",
+      "Switch to a 10 Gbps hosted connection.",
+      "Enable MACsec on the dedicated connection with a CKN/CAK key on a MACsec-capable router, in must_encrypt mode."
+    ],
+    "answer": 3,
+    "explain": "MACsec encrypts the L2 link between the router and the DX device at full speed and is supported on dedicated 10, 100, and 400 Gbps connections at selected locations; must_encrypt does not allow unencrypted traffic. VPN tunnels have limited throughput, Client VPN is for users, and hosted connections do not support MACsec."
+  },
+  {
+    "obj": "3.3",
+    "q": "External contractors need SSH and RDP access to specific instances in private subnets. The company does not want a VPN and requires every access to verify identity from IAM Identity Center and device posture from Jamf. Which solution meets the requirement?",
+    "options": [
+      "A bastion host in a public subnet with SSH keys for each contractor.",
+      "AWS Verified Access with network CIDR or network interface TCP endpoints, IAM Identity Center and Jamf trust providers, a Cedar policy, and the Connectivity Client application on the contractors' devices.",
+      "AWS Client VPN with certificates for each contractor.",
+      "Security groups that allow SSH and RDP from the contractors' home IP addresses."
+    ],
+    "answer": 1,
+    "explain": "Verified Access evaluates every access based on identity and device posture, and TCP endpoints with the Connectivity Client support SSH and RDP without a VPN. A bastion and opening ports do not check the device and widen the attack surface, and Client VPN is exactly the VPN they do not want."
+  },
+  {
+    "obj": "3.3",
+    "q": "The security team must continuously and systematically find unintended network access across 50 VPCs: instances whose ports are reachable from the internet, and paths that violate the rule that the dev VPC must not reach the prod VPC. Which TWO services BEST meet this? (Choose TWO.)",
+    "options": [
+      "Network Access Analyzer with Network Access Scopes for paths from the internet and between dev and prod.",
+      "VPC Reachability Analyzer for every pair of instances.",
+      "An AWS Trusted Advisor check for unused Elastic IP addresses.",
+      "Amazon Inspector EC2 scanning with network reachability findings.",
+      "VPC Traffic Mirroring on all instances."
+    ],
+    "answer": [0, 3],
+    "explain": "Network Access Analyzer finds all paths that violate the defined intent, and Inspector continuously reports ports reachable from the internet. Reachability Analyzer is point-to-point diagnostics, Trusted Advisor is not relevant here, and Traffic Mirroring copies traffic rather than analyzing access."
+  },
+  {
+    "obj": "3.3",
+    "type": "match",
+    "q": "Match the description with the network control.",
+    "options": [
+      "Stateless, numbered allow and deny rules at the subnet level.",
+      "Stateful, allow-only rules at the ENI level; the source can be another group.",
+      "Suricata IPS rules, domain lists, and central inspection through a Transit Gateway.",
+      "Transparent insertion of third-party virtual firewalls with GENEVE encapsulation.",
+      "Blocking SQL injection in HTTP requests to an ALB."
+    ],
+    "targets": ["AWS WAF", "Security group", "AWS Shield Advanced", "Network ACL", "Gateway Load Balancer", "AWS Network Firewall"],
+    "answer": [3, 1, 5, 4, 0],
+    "explain": "A NACL is stateless on the subnet with deny rules, a security group is stateful with allow rules and group references, Network Firewall uses Suricata and domain lists, GWLB inserts a third-party appliance via GENEVE, and WAF filters L7 attacks. Shield Advanced is DDoS protection."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Match the threat with the MOST APPROPRIATE edge control.",
+    "options": [
+      "A UDP reflection DDoS attack on public endpoints.",
+      "Scraping bots that pose as browsers.",
+      "SQL injection attempts in query parameters.",
+      "Users access S3 objects directly, bypassing CloudFront.",
+      "The license allows the content to be shown in only three countries."
+    ],
+    "targets": ["CloudFront geo restriction", "Origin Access Control", "AWS WAF Bot Control", "S3 CORS configuration", "AWS WAF SQL database managed rule group", "AWS Shield"],
+    "answer": [5, 2, 4, 1, 0],
+    "explain": "Shield mitigates L3/L4 DDoS, WAF Bot Control handles bots, WAF managed rules handle SQL injection, OAC prevents direct access to S3, and CloudFront geo restriction handles a simple per-country restriction. CORS is not access control."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Order the steps for rolling out centralized inspection with AWS Network Firewall and a Transit Gateway.",
+    "options": [
+      "Configure routing: spoke VPCs and TGW route tables send traffic to the inspection attachment, and in the inspection VPC the TGW subnet goes to the firewall endpoint and back.",
+      "Create AWS Network Firewall in the firewall subnets with that policy.",
+      "Verify the traffic flow through Network Firewall flow and alert logs.",
+      "Create an inspection VPC with firewall and TGW subnets in every AZ and a firewall policy with stateful rule groups.",
+      "Attach the inspection VPC to the Transit Gateway and enable appliance mode on that attachment."
+    ],
+    "answer": [3, 1, 4, 0, 2],
+    "explain": "First the VPC and policy are prepared, then the firewall is created (the endpoints are created). The inspection VPC is attached to the TGW with appliance mode for symmetric routing, only then are routes changed so that traffic goes through the firewall, and finally the flow is verified in the logs."
+  },
+  {
+    "obj": "3.3",
+    "type": "spot",
+    "q": "The application instances are in a private subnet behind an ALB and should receive traffic only from it, while administration goes through Session Manager. Click the rules that break segmentation.",
+    "lang": "text",
+    "snippet": "SecurityGroup: sg-0app (app-servers)  # behind the ALB (sg-0alb); admin access only via SSM\nDirection  Protocol  Port   Source / Destination       Description\nInbound    TCP       8080   sg-0alb                    ALB traffic and health check\nInbound    TCP       22     0.0.0.0/0                  temporary for debugging\nInbound    TCP       8080   0.0.0.0/0                  direct test\nOutbound   TCP       443    pl-6ea54007 (S3)           artifact download\nOutbound   TCP       5432   sg-0db                     database\nOutbound   TCP       443    sg-0vpce                   SSM interface endpoints",
+    "answer": [3, 4],
+    "explain": "Inbound 22 from 0.0.0.0/0 opens SSH to the whole world (as soon as the instance gets a public address or becomes reachable another way), and SSM doesn't need it at all; delete the rule. Inbound 8080 from 0.0.0.0/0 bypasses the ALB (and the WAF on it); the source must be only sg-0alb, which the first rule already does. The outbound rules to the S3 prefix list, the database and the SSM endpoints are narrowly scoped by references."
+  }
+]

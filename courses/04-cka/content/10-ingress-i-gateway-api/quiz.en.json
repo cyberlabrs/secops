@@ -1,0 +1,227 @@
+[
+  {
+    "obj": "3.5",
+    "q": "You created an Ingress with kubectl create ingress api --class=traefik --rule=\"shop.example.com/api=api:8080\". A request to /api works, but /api/users returns 404. Why?",
+    "options": [
+      "A path without an asterisk creates pathType: Exact, so only /api matches",
+      "The api Service does not listen on 8080",
+      "Traefik does not support nested paths",
+      "The defaultBackend is missing"
+    ],
+    "answer": 0,
+    "explain": "In kubectl create ingress a path ending with * becomes Prefix, and without it Exact. If the Service were not listening, /api would fail too, and a defaultBackend would only take over the request instead of the 404, not send it to api."
+  },
+  {
+    "obj": "3.5",
+    "q": "An Ingress has the rule path: /app, pathType: Prefix. Which request will NOT match this rule?",
+    "options": [
+      "/app",
+      "/app/",
+      "/application",
+      "/app/v1/users"
+    ],
+    "answer": 2,
+    "explain": "Prefix compares segments separated by a slash, so /app matches /app, /app/ and everything under /app/. /application is a different segment and does not match."
+  },
+  {
+    "obj": "3.5",
+    "q": "You are adding TLS to the Ingress shop in the namespace shop. You have tls.crt and tls.key. What is the correct procedure?",
+    "options": [
+      "kubectl create secret generic shop-tls --from-file=tls.crt --from-file=tls.key -n kube-system and spec.tls[].secretName: kube-system/shop-tls",
+      "kubectl -n shop create secret tls shop-tls --cert=tls.crt --key=tls.key, then in the Ingress spec.tls: [{hosts: [shop.example.com], secretName: shop-tls}]",
+      "Put the file paths into an Ingress annotation",
+      "kubectl -n shop create configmap shop-tls --from-file=tls.crt --from-file=tls.key and spec.tls[].secretName: shop-tls"
+    ],
+    "answer": 1,
+    "explain": "Ingress TLS requires a Secret of type kubernetes.io/tls in the same namespace, and kubectl create secret tls creates exactly that. secretName does not accept a namespace prefix, and a ConfigMap is not supported for certificates."
+  },
+  {
+    "obj": "3.5",
+    "q": "You created an Ingress with ingressClassName: nginx, but in the cluster kubectl get ingressclass shows only traefik. The apply succeeded without an error, but nothing works. What is the problem?",
+    "options": [
+      "The Ingress must also have a defaultBackend",
+      "The Service must be of type NodePort",
+      "You need to add the annotation kubernetes.io/ingress.class: traefik alongside ingressClassName",
+      "No controller processes the class nginx; set ingressClassName: traefik"
+    ],
+    "answer": 3,
+    "explain": "An Ingress is processed only by the controller whose IngressClass matches the class name; a nonexistent class does not cause an error on apply. The old annotation is deprecated and should not be combined, and the backend Service can be ClusterIP."
+  },
+  {
+    "obj": "3.5",
+    "q": "An Ingress in the namespace web needs to send /pay to the Service payments in the namespace billing. Which statement is correct?",
+    "options": [
+      "It is enough to write backend.service.name: payments.billing",
+      "You need to add a ReferenceGrant in the namespace billing",
+      "An Ingress backend must be in the same namespace; the options are an Ingress in billing, an ExternalName Service in web, or moving to the Gateway API with a ReferenceGrant",
+      "You need to add backend.service.namespace: billing"
+    ],
+    "answer": 2,
+    "explain": "An Ingress backend can only point to a Service in its own namespace and has no namespace field. ReferenceGrant is a Gateway API mechanism, and a name with a dot is not a valid Service name."
+  },
+  {
+    "obj": "3.5",
+    "q": "A client claims that ingress-nginx still works in production, so there is no reason to change anything. What is the correct assessment of the situation in October 2026?",
+    "options": [
+      "The ingress-nginx project has been retired: since March 2026 there are no new releases or security patches, so vulnerabilities remain open; the recommendation is to migrate to the Gateway API or another controller",
+      "The Ingress API was removed in Kubernetes 1.35, so ingress-nginx will stop working on upgrade",
+      "ingress-nginx is now maintained by F5 and receives regular patches",
+      "ingress-nginx is deprecated only as of Kubernetes 1.40"
+    ],
+    "answer": 0,
+    "explain": "The Kubernetes blog announced the end of maintenance in March 2026, after which there are no fixes or security patches, even though existing installations keep working. The Ingress API has not been removed, and the F5 NGINX Ingress Controller is a separate project."
+  },
+  {
+    "obj": "3.4",
+    "q": "The HTTPRoute shop in the namespace shop has parentRefs: [{name: main}]. The Gateway main is in the namespace infra. The route has no status at all. What is the mistake?",
+    "options": [
+      "A ReferenceGrant is missing in the namespace infra",
+      "parentRefs without namespace defaults to the route's namespace (shop), so the route looks for a nonexistent Gateway; add namespace: infra",
+      "hostnames must be empty",
+      "The Gateway must have gatewayClassName: shop"
+    ],
+    "answer": 1,
+    "explain": "Without the namespace field, parentRefs looks in the route's own namespace, where the Gateway does not exist, so no controller binds it. Attaching a route to a Gateway from another namespace is controlled by allowedRoutes, not by ReferenceGrant."
+  },
+  {
+    "obj": "3.4",
+    "q": "An HTTPRoute in the namespace shop has a correct parentRefs (name: main, namespace: infra), but describe shows Accepted=False with the reason NotAllowedByListeners. The http listener has no allowedRoutes. How do you fix it?",
+    "options": [
+      "Add a ReferenceGrant in the namespace shop",
+      "Change the listener protocol to HTTPS",
+      "Move the Service to the namespace infra",
+      "On the listener, set allowedRoutes.namespaces.from: All or a Selector that selects the namespace shop"
+    ],
+    "answer": 3,
+    "explain": "By default allowedRoutes.namespaces.from is Same, so the listener accepts only routes from the Gateway's namespace. ReferenceGrant is for references to objects in another namespace (Service, Secret), not for attaching a route."
+  },
+  {
+    "obj": "3.4",
+    "q": "An HTTPRoute in the namespace shop has backendRefs: [{name: payments, namespace: pay, port: 8080}]. Status: ResolvedRefs=False, Reason RefNotPermitted. What is missing?",
+    "options": [
+      "A ReferenceGrant in the namespace pay with from: HTTPRoute from the namespace shop and to: kind Service",
+      "A ReferenceGrant in the namespace shop with from: Service from pay",
+      "allowedRoutes.namespaces.from: All on the Gateway",
+      "A NetworkPolicy that allows traffic from shop to pay"
+    ],
+    "answer": 0,
+    "explain": "A ReferenceGrant is created in the target namespace (pay) and allows a reference from an HTTPRoute in shop to Service objects. allowedRoutes governs attaching to the Gateway, and a NetworkPolicy does not affect the route status."
+  },
+  {
+    "obj": "3.4",
+    "q": "You need to send 90% of traffic to web-v1 and 10% to web-v2 (both on port 80). Which backendRefs fragment is correct?",
+    "options": [
+      "backendRefs: [{name: web-v1, port: 80, percent: 90}, {name: web-v2, port: 80, percent: 10}]",
+      "backendRefs: [{name: web-v1, weight: 90}, {name: web-v2, weight: 10}]",
+      "backendRefs: [{name: web-v1, port: 80, weight: 90}, {name: web-v2, port: 80, weight: 10}]",
+      "filters: [{type: RequestMirror, requestMirror: {backendRef: {name: web-v2, port: 80}}}]"
+    ],
+    "answer": 2,
+    "explain": "Splitting is done with the weight field together with the required port for a Service backend. The percent field does not exist in backendRefs, a Service reference without a port is not valid, and RequestMirror copies traffic instead of splitting it."
+  },
+  {
+    "obj": "3.4",
+    "q": "All HTTP requests to shop.example.com should get a 301 redirect to HTTPS. Which HTTPRoute rule fragment (attached to the HTTP listener) does that?",
+    "options": [
+      "filters: [{type: URLRewrite, urlRewrite: {scheme: https}}]",
+      "filters: [{type: RequestHeaderModifier, requestHeaderModifier: {set: [{name: Location, value: https}]}}]",
+      "backendRefs: [{name: web, port: 443}]",
+      "filters: [{type: RequestRedirect, requestRedirect: {scheme: https, statusCode: 301}}]"
+    ],
+    "answer": 3,
+    "explain": "RequestRedirect returns a redirect to the client with the new scheme and status code (default 302). URLRewrite changes the request sent to the backend and has no scheme, and modifying request headers does not produce a redirect."
+  },
+  {
+    "obj": "3.4",
+    "q": "Clients call /old-api/users, but the api backend expects /api/users. The client must not see a redirect. Which filter do you use?",
+    "options": [
+      "URLRewrite with path.type: ReplacePrefixMatch and replacePrefixMatch: /api, with the match PathPrefix /old-api",
+      "RequestRedirect with path.type: ReplacePrefixMatch and replacePrefixMatch: /api",
+      "RequestHeaderModifier that sets the header X-Path: /api",
+      "RequestMirror to the api Service"
+    ],
+    "answer": 0,
+    "explain": "URLRewrite changes the path before sending to the backend, so the client does not see the change; ReplacePrefixMatch replaces only the part that matched. RequestRedirect would return a 3xx to the client, and a header or mirror does not change the path."
+  },
+  {
+    "obj": "3.4",
+    "q": "The Gateway main has an HTTPS listener with tls.certificateRefs: [{name: shop-tls}], and kubectl get gateway shows PROGRAMMED False. The Secret shop-tls exists only in the namespace shop, and the Gateway is in infra. What is the correct fix?",
+    "options": [
+      "Add tls to the HTTPRoute in the namespace shop",
+      "Create the Secret shop-tls in the namespace infra (or add namespace: shop to certificateRefs together with a ReferenceGrant in shop from Gateway to Secret)",
+      "Change tls.mode to Passthrough",
+      "Change the Secret type to Opaque"
+    ],
+    "answer": 1,
+    "explain": "certificateRefs without a namespace looks for the Secret in the Gateway's namespace; a cross-namespace Secret requires a ReferenceGrant in the Secret's namespace. HTTPRoute has no TLS configuration, Passthrough does not terminate TLS, and the Secret must be of type kubernetes.io/tls."
+  },
+  {
+    "obj": "3.4",
+    "q": "In an HTTPRoute, a rule has matches: [{path: {type: PathPrefix, value: /api}, headers: [{name: x-env, value: canary}]}]. Which request matches the rule?",
+    "options": [
+      "GET /api/users without the x-env header",
+      "GET /web with the header x-env: canary",
+      "GET /api/users with the header x-env: canary",
+      "Any request with the path /api or the header x-env: canary"
+    ],
+    "answer": 2,
+    "explain": "Conditions within a single match element are combined with AND, so both the path and the header must match. OR would be achieved with two separate elements in the matches list."
+  },
+  {
+    "obj": "3.4",
+    "q": "In the lab cluster with Traefik you create your own Gateway with gatewayClassName: traefik. A listener on port 80 remains invalid, while a listener on 8000 works. Why?",
+    "options": [
+      "The Gateway API does not allow port 80",
+      "With Traefik the listener port must match the port of the Traefik entrypoint (8000 web, 8443 websecure), and the traefik Service exposes them externally as 80/443",
+      "Port 80 is reserved for Ingress resources",
+      "You need to add allowedRoutes.kinds for port 80"
+    ],
+    "answer": 1,
+    "explain": "This is a Traefik implementation detail: a listener is mapped to an entrypoint by port. The Gateway API itself allows any port, and other controllers often use 80/443 directly."
+  },
+  {
+    "obj": "3.4",
+    "q": "Order the resources in the sequence you create them when, in an empty cluster (CRDs and Traefik installed), you set up HTTPS ingress for an application in the namespace shop through a Gateway in infra.",
+    "type": "order",
+    "options": [
+      "HTTPRoute in shop with parentRefs to infra/main",
+      "Secret of type kubernetes.io/tls in infra",
+      "Check: kubectl describe httproute (Accepted and ResolvedRefs True) and curl",
+      "Gateway main in infra with an HTTPS listener and allowedRoutes that allows shop"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "The Gateway references the Secret, so the Secret goes first so that the listener is Programmed right away; the route attaches to an existing Gateway; the status check and curl come last. The order is not strictly required because the controller reconciles, but this way you avoid transient errors."
+  },
+  {
+    "obj": "3.4",
+    "q": "Match each Ingress field with the corresponding Gateway API field.",
+    "type": "match",
+    "options": [
+      "spec.ingressClassName",
+      "spec.tls[].secretName",
+      "spec.rules[].host",
+      "pathType: Prefix"
+    ],
+    "targets": [
+      "HTTPRoute spec.hostnames",
+      "matches[].path.type: PathPrefix",
+      "Gateway spec.gatewayClassName",
+      "Gateway listeners[].tls.certificateRefs",
+      "HTTPRoute filters[].type: URLRewrite"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "The class becomes gatewayClassName, the TLS Secret goes into the listener's certificateRefs, the host into the route's hostnames, and Prefix into PathPrefix. URLRewrite replaces controller rewrite annotations, not any standard Ingress field."
+  },
+  {
+    "obj": "3.5",
+    "q": "The cluster has an IngressClass traefik with the annotation ingressclass.kubernetes.io/is-default-class: \"true\". You create an Ingress without the ingressClassName field. What happens?",
+    "options": [
+      "The Ingress is rejected because ingressClassName is required",
+      "The Ingress stays without a class and nobody processes it",
+      "All controllers in the cluster process the Ingress at the same time",
+      "The Ingress gets the class traefik because it is marked as the default"
+    ],
+    "answer": 3,
+    "explain": "An admission controller writes the default IngressClass into an Ingress without a class. ingressClassName is not a required field, and without a default class the Ingress could remain unprocessed."
+  }
+]

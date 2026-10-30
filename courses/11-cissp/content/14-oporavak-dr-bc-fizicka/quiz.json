@@ -1,0 +1,338 @@
+[
+  {
+    "obj": "7.10",
+    "q": "BIA je odredila MTD od 12 h za sistem naručivanja. Tehnički restore traje 8 h, a provjera i unos zaostalih podataka (WRT) 5 h. Šta je NAJBOLJI zaključak?",
+    "options": [
+      "Strategija ne zadovoljava MTD jer RTO + WRT iznosi 13 h; potrebna je brža strategija oporavka.",
+      "Strategija je prihvatljiva jer je RTO od 8 h manji od MTD.",
+      "Strategija je prihvatljiva jer WRT ne ulazi u proračun MTD.",
+      "MTD treba povećati na 13 h da bi se uskladio sa tehničkim mogućnostima."
+    ],
+    "answer": 0,
+    "explain": "Mora važiti RTO + WRT ≤ MTD. 8 + 5 = 13 h > 12 h. MTD je poslovna odluka iz BIA i ne prilagođava se tehnici; prilagođava se strategija."
+  },
+  {
+    "obj": "7.10",
+    "q": "Ransomware je šifrovao servere i obrisao sve backupe na NAS-u u domeni, koristeći ukradeni administratorski nalog. Koja strategija čuvanja backupa bi NAJVJEROVATNIJE spriječila gubitak backupa?",
+    "options": [
+      "Šifrovanje backupa jakim algoritmom.",
+      "Immutable (WORM / object lock) kopija sa odvojenim kredencijalima, van domene.",
+      "Češći inkrementalni backup na isti NAS.",
+      "RAID 6 na NAS uređaju."
+    ],
+    "answer": 1,
+    "explain": "Immutable kopija se ne može izmijeniti ni obrisati ni administratorskim pravima do isteka retencije. Šifrovanje štiti povjerljivost, ne integritet/dostupnost; RAID i češći backup na isti uređaj ne pomažu protiv brisanja."
+  },
+  {
+    "obj": "7.10",
+    "q": "Organizacija radi full backup u nedjelju i diferencijalni backup svaki dan. Kvar se desi u petak ujutru. Šta je potrebno za restore?",
+    "options": [
+      "Nedjeljni full i svi diferencijalni backupi od ponedjeljka do četvrtka.",
+      "Samo četvrtkov diferencijalni backup.",
+      "Nedjeljni full i četvrtkov diferencijalni backup.",
+      "Nedjeljni full i ponedjeljkov diferencijalni backup."
+    ],
+    "answer": 2,
+    "explain": "Diferencijalni backup ne briše archive bit, pa sadrži sve promjene od zadnjeg full-a. Dovoljni su zadnji full i zadnji diferencijalni."
+  },
+  {
+    "obj": "7.10",
+    "q": "Kompanija ima MTD od tri sedmice za interni sistem obuke i traži najisplativiju rezervnu lokaciju. Šta treba preporučiti?",
+    "options": [
+      "Hot site sa sinhronom replikacijom.",
+      "Mirrored site u active-active režimu.",
+      "Warm site sa dnevnom replikacijom.",
+      "Cold site ili ugovor o kapacitetu sa provajderom."
+    ],
+    "answer": 3,
+    "explain": "Kod dugog MTD-a cold site zadovoljava zahtjev uz najmanji trošak. Hot i mirrored lokacije su rasipanje novca za proces koji toleriše tri sedmice prekida."
+  },
+  {
+    "obj": "7.14",
+    "q": "Kompanija projektuje parking i okolinu novog sjedišta i želi da smanji kriminal bez vidljivih „tvrđavskih“ mjera. Koji pristup je NAJPRIKLADNIJI?",
+    "options": [
+      "CPTED: prirodni nadzor (vidljivost, osvjetljenje), prirodna kontrola pristupa (usmjeravanje kretanja) i teritorijalno ojačanje",
+      "Ograda visine 2,5 m sa bodljikavom žicom oko cijelog kompleksa",
+      "Naoružani čuvari na svim ulazima tokom cijelog dana",
+      "Uklanjanje svih prozora na prizemlju zgrade"
+    ],
+    "answer": 0,
+    "explain": "Crime Prevention Through Environmental Design (CPTED) koristi dizajn okoline (vidljivost, osvjetljenje, usmjeravanje kretanja, jasne granice) da odvrati napadača bez agresivnog izgleda. Visoka ograda i naoružani čuvari su vidljive i skuplje mjere, a uklanjanje prozora ugrožava sigurnost ljudi i ne rješava spoljni prostor."
+  },
+  {
+    "obj": "7.11",
+    "q": "Poplava je uništila primarni data centar i sistemi rade sa hot site-a. Primarna lokacija je obnovljena. Koje sisteme treba PRVO vratiti na primarnu lokaciju?",
+    "options": [
+      "Najkritičnije sisteme, jer imaju najkraći MTD.",
+      "Najmanje kritične sisteme, da se provjeri ispravnost primarne lokacije.",
+      "Sve sisteme istovremeno, da se izbjegne podijeljeno okruženje.",
+      "Sisteme sa najvećim brojem korisnika."
+    ],
+    "answer": 1,
+    "explain": "Pri povratku prvo se vraćaju najmanje kritični sistemi; oni služe kao test primarne lokacije, dok kritični ostaju na rezervnoj lokaciji dok se primarna ne dokaže."
+  },
+  {
+    "obj": "7.11",
+    "q": "Tokom DR događaja e-mail sistem kompanije je nedostupan i moguće kompromitovan. Kako DR tim treba komunicirati sa zaposlenima?",
+    "options": [
+      "Preko ličnih e-mail adresa članova tima, ad hoc.",
+      "Sačekati obnovu e-mail sistema.",
+      "Preko unaprijed definisanih out-of-band kanala (pozivno stablo, sistem masovnog obavještavanja, statusna stranica).",
+      "Preko javnih društvenih mreža kompanije."
+    ],
+    "answer": 2,
+    "explain": "DR plan mora definisati alternativne, out-of-band metode komunikacije unaprijed. Kompromitovan kanal se ne koristi, a improvizacija i javne mreže rizikuju curenje informacija."
+  },
+  {
+    "obj": "7.11",
+    "q": "Storage niz je u godini (8.760 h) imao 4 kvara, a ukupno vrijeme popravke je bilo 24 h. RTO za taj sistem je 4 h. Šta je NAJTAČNIJI zaključak?",
+    "options": [
+      "MTBF je 6 h, pa je sistem nepouzdan.",
+      "MTTR je 24 h, što je šest puta više od RTO.",
+      "Dostupnost je ispod 99%, pa SLA nije ispunjen.",
+      "MTTR je 6 h, što premašuje RTO od 4 h, pa strategija oporavka ne zadovoljava cilj."
+    ],
+    "answer": 3,
+    "explain": "MTTR = 24 / 4 = 6 h. MTBF je oko 2.184 h, dostupnost oko 99,7%. Ključan nalaz je da je prosječno vrijeme oporavka veće od RTO."
+  },
+  {
+    "obj": "7.11",
+    "q": "Ko treba da daje izjave medijima tokom velikog DR događaja?",
+    "options": [
+      "Samo ovlašteni portparol, sa unaprijed odobrenim porukama.",
+      "DR koordinator, jer ima najbolje informacije.",
+      "Bilo koji menadžer koga mediji kontaktiraju.",
+      "Niko; mediji se ignorišu do završetka oporavka."
+    ],
+    "answer": 0,
+    "explain": "Komunikacioni plan određuje jednog ovlaštenog portparola i odobrene poruke. Ignorisanje medija vodi spekulacijama, a više glasova vodi kontradiktornim informacijama."
+  },
+  {
+    "obj": "7.11",
+    "q": "Nakon DR događaja tim održava sastanak. Šta je PRIMARNI cilj lessons learned aktivnosti?",
+    "options": [
+      "Utvrditi ko je odgovoran za kašnjenje i preduzeti disciplinske mjere.",
+      "Identifikovati šta treba unaprijediti i ažurirati DR plan i procedure.",
+      "Pripremiti izvještaj za osiguravajuću kuću.",
+      "Zatvoriti tiket incidenta."
+    ],
+    "answer": 1,
+    "explain": "Lessons learned služi poboljšanju plana, ne traženju krivca. Rezultat je ažuriran plan i akcioni plan sa vlasnicima i rokovima."
+  },
+  {
+    "obj": "7.12",
+    "q": "Organizacija želi potvrditi da rezervna lokacija zaista može obrađivati produkcijske transakcije, ali bez ikakvog rizika za primarne sisteme. Koji test je NAJBOLJI?",
+    "options": [
+      "Tabletop.",
+      "Full interruption.",
+      "Parallel test.",
+      "Read-through."
+    ],
+    "answer": 2,
+    "explain": "Parallel test podiže sisteme na rezervnoj lokaciji i obrađuje podatke paralelno dok primarna radi normalno. Full interruption ugrožava produkciju, a tabletop i read-through ne dokazuju tehnički rad lokacije."
+  },
+  {
+    "obj": "7.12",
+    "q": "DR plan je upravo napisan i nikad nije testiran. Rukovodilac IT-a predlaže full interruption test sljedeće sedmice. Šta treba preporučiti?",
+    "options": [
+      "Izvesti full interruption jer je jedini pravi dokaz.",
+      "Preskočiti testiranje dok se ne desi prvi incident.",
+      "Izvesti full interruption bez najave da bi bio realističan.",
+      "Prvo izvesti manje ometajuće testove (read-through, tabletop, simulation, parallel), a full interruption samo uz odobrenje višeg menadžmenta."
+    ],
+    "answer": 3,
+    "explain": "Testovi idu postupno od najmanje ometajućih. Full interruption nosi rizik stvarne katastrofe i zahtijeva odobrenje višeg menadžmenta i prethodne uspješne testove."
+  },
+  {
+    "obj": "7.12",
+    "q": "Tim se okuplja u sali za sastanke, facilitator izlaže scenarij zemljotresa, a članovi diskutuju šta bi svako radio, bez ikakve aktivacije sistema. O kojem testu je riječ?",
+    "options": [
+      "Tabletop.",
+      "Simulation.",
+      "Parallel.",
+      "Checklist (read-through)."
+    ],
+    "answer": 0,
+    "explain": "Tabletop (structured walkthrough) je grupna diskusija kroz scenarij. Read-through je pojedinačno čitanje, a simulation uključuje izvođenje reakcije."
+  },
+  {
+    "obj": "7.12",
+    "q": "Tokom parallel testa DR plana, šta je NAJVAŽNIJE u vezi sa komunikacijom?",
+    "options": [
+      "Komunicirati samo sa IT timom da se ne ometa poslovanje.",
+      "Sve poruke jasno označiti kao test i unaprijed obavijestiti interne učesnike i relevantne eksterne strane (vendore, DR provajdera, po potrebi regulatore).",
+      "Testirati komunikaciju bez najave da se dobije realan odziv.",
+      "Koristiti iste kanale kao za stvarnu katastrofu, bez oznake testa."
+    ],
+    "answer": 1,
+    "explain": "Poruke tokom testa moraju biti označene kao test da ne izazovu paniku ili stvarne reakcije, a eksterne strane koje su uključene moraju biti obaviještene unaprijed."
+  },
+  {
+    "obj": "7.13",
+    "q": "Sigurnosni menadžer je pozvan da učestvuje u godišnjoj BC vježbi. Šta je NAJBOLJI način da se osigura da vježba da vrijedne rezultate?",
+    "options": [
+      "Fokusirati vježbu isključivo na oporavak IT sistema.",
+      "Ne definisati ciljeve da bi vježba bila spontana.",
+      "Definisati ciljeve i realan scenarij zasnovan na procjeni rizika unaprijed, uključiti poslovne jedinice i dokumentovati nalaze u after-action report.",
+      "Ponoviti isti scenarij kao prošle godine radi poređenja."
+    ],
+    "answer": 2,
+    "explain": "BC vježba testira poslovni kontinuitet kao cjelinu: unaprijed postavljeni ciljevi, realan scenarij, učešće poslovanja i formalni izvještaj koji vodi ažuriranju BCP-a."
+  },
+  {
+    "obj": "7.13",
+    "q": "Šta je NAJČEŠĆI razlog zbog kojeg BCP ne uspije kada se desi stvarni poremećaj?",
+    "options": [
+      "Previše detaljna dokumentacija.",
+      "Upotreba cloud usluga.",
+      "Prevelik broj učesnika u vježbama.",
+      "Plan nije održavan ni testiran nakon promjena u organizaciji."
+    ],
+    "answer": 3,
+    "explain": "Zastario, netestiran plan je glavni uzrok neuspjeha. Zato BCP životni ciklus uključuje redovne vježbe i održavanje pri svakoj značajnoj promjeni."
+  },
+  {
+    "obj": "7.13",
+    "q": "Koja je uloga višeg menadžmenta u BC planiranju i vježbama?",
+    "options": [
+      "Odobrava i podržava program, dodjeljuje resurse i nosi konačnu odgovornost.",
+      "Piše tehničke procedure oporavka.",
+      "Nema ulogu dok se ne desi katastrofa.",
+      "Izvodi full interruption test lično."
+    ],
+    "answer": 0,
+    "explain": "Viši menadžment daje mandat, resurse i odobrenje i snosi odgovornost (due care). Tehničke procedure pišu timovi."
+  },
+  {
+    "obj": "7.13",
+    "q": "Koliko često treba izvoditi BC vježbe, prema dobroj praksi?",
+    "options": [
+      "Samo nakon stvarnog incidenta.",
+      "Najmanje godišnje i pri svakoj značajnoj promjeni poslovanja, lokacije ili kritičnih sistema.",
+      "Svakih pet godina, uz reviziju BIA.",
+      "Samo kada to traži regulator."
+    ],
+    "answer": 1,
+    "explain": "Dobra praksa je najmanje godišnje vježbanje i dodatno pri značajnim promjenama, jer se plan inače brzo udaljava od stvarnosti."
+  },
+  {
+    "obj": "7.14",
+    "q": "Elektronska brava na glavnom izlazu iz zgrade treba da se ponaša na koji način pri nestanku struje?",
+    "options": [
+      "Fail-secure, da zaštiti imovinu.",
+      "Da zahtijeva PIN sa baterijskom tastaturom.",
+      "Fail-safe (otključava se), da ljudi mogu evakuisati.",
+      "Da ostane u zadnjem stanju."
+    ],
+    "answer": 2,
+    "explain": "Ljudski život je na prvom mjestu, pa su izlazi za evakuaciju fail-safe. Fail-secure se koristi za sefove i sl., uz ručni izlaz iznutra."
+  },
+  {
+    "obj": "7.14",
+    "q": "Kompanija gradi novi data centar i bira sistem prskalica. Koji je NAJBOLJI izbor?",
+    "options": [
+      "Wet pipe, jer je najjeftiniji.",
+      "Deluge, jer brzo gasi velike požare.",
+      "Dry pipe, jer nema vode u cijevima.",
+      "Pre-action, jer zahtijeva dva okidača i smanjuje rizik lažne aktivacije i curenja."
+    ],
+    "answer": 3,
+    "explain": "Pre-action sistem puni cijevi tek nakon detekcije, a glava se otvara tek pri toploti, što ga čini preporučenim za IT prostore. Deluge je za industriju, dry pipe za hladne prostore."
+  },
+  {
+    "obj": "7.14",
+    "q": "Zaposleni prijavljuju da neovlaštene osobe ulaze u zgradu prateći zaposlene kroz vrata na kartice. Koja kontrola NAJEFIKASNIJE rješava problem?",
+    "options": [
+      "Mantrap (access control vestibule).",
+      "Dodatne CCTV kamere na ulazu.",
+      "Viša ograda oko parkinga.",
+      "Duže zaključavanje vrata nakon prolaza."
+    ],
+    "answer": 0,
+    "explain": "Mantrap propušta jednu osobu između dvoja vrata i direktno sprečava tailgating i piggybacking. CCTV samo detektuje, a ograda ne utiče na ulaz u zgradu."
+  },
+  {
+    "obj": "7.15",
+    "q": "Službenik banke je pod prijetnjom oružjem prisiljen da otvori trezor. Šta je, prema dobroj praksi, ISPRAVNO postupanje?",
+    "options": [
+      "Odbiti i pokušati zaključati trezor.",
+      "Sarađivati i diskretno aktivirati duress alarm ili koristiti duress kod.",
+      "Pokušati fizički savladati napadača.",
+      "Namjerno unositi pogrešan kod dok se trezor ne blokira."
+    ],
+    "answer": 1,
+    "explain": "Život je važniji od imovine; zaposleni sarađuje i tiho alarmira obezbjeđenje. Otpor i blokiranje mogu izazvati nasilje."
+  },
+  {
+    "obj": "7.15",
+    "q": "Inženjer putuje u zemlju sa visokim rizikom industrijske špijunaže i pregleda uređaja na granici. Koja je NAJBOLJA kontrola?",
+    "options": [
+      "Ponijeti uobičajeni laptop sa full-disk encryption.",
+      "Ostaviti laptop u hotelskom sefu.",
+      "Koristiti loaner uređaj sa minimalnim podacima i reimagovati ga po povratku.",
+      "Isključiti Wi-Fi tokom putovanja."
+    ],
+    "answer": 2,
+    "explain": "Loaner uređaj minimizira izloženost podataka pri oduzimanju ili pregledu i sprečava unos kompromitovanog uređaja u mrežu. Šifrovanje ne pomaže ako se lozinka mora otkriti na granici."
+  },
+  {
+    "obj": "7.15",
+    "q": "Zaposleni dobija niz neočekivanih MFA push zahtjeva u ponoć. Šta obuka o sigurnosti treba da ga nauči da uradi?",
+    "options": [
+      "Odobriti zahtjev da prestanu notifikacije.",
+      "Isključiti telefon do jutra.",
+      "Ignorisati zahtjeve, jer MFA štiti nalog.",
+      "Odbiti zahtjeve i odmah prijaviti incident sigurnosnom timu, jer je lozinka vjerovatno kompromitovana."
+    ],
+    "answer": 3,
+    "explain": "Ovo je MFA fatigue (push bombing). Napadač već ima lozinku; korisnik odbija i prijavljuje da se lozinka promijeni i incident istraži."
+  },
+  {
+    "obj": "7.12",
+    "type": "order",
+    "q": "Poredaj testove DR plana od najmanje do najviše ometajućeg za produkciju.",
+    "options": [
+      "Parallel test",
+      "Read-through (checklist)",
+      "Full interruption",
+      "Simulation",
+      "Tabletop / structured walkthrough"
+    ],
+    "answer": [
+      1,
+      4,
+      3,
+      0,
+      2
+    ],
+    "explain": "Read-through je pojedinačno čitanje, tabletop grupna diskusija, simulation izvođenje reakcije bez prebacivanja produkcije, parallel stvarna obrada na rezervnoj lokaciji uz rad primarne, a full interruption gasi primarnu lokaciju."
+  },
+  {
+    "obj": "7.10",
+    "type": "match",
+    "q": "Upari opis sa tipom rezervne lokacije ili ugovora.",
+    "options": [
+      "Prostor, struja i klima bez opreme; aktivacija traje sedmice.",
+      "Kompletna oprema i skoro aktuelni podaci; aktivacija za minute do sati.",
+      "Dio opreme i povezivost, podaci nisu aktuelni; aktivacija za sate do dana.",
+      "Dvije organizacije se dogovore da ugoste jedna drugu.",
+      "Provajder garantuje rezervisan kapacitet u slučaju katastrofe."
+    ],
+    "targets": [
+      "Mirrored site",
+      "Warm site",
+      "Resource capacity agreement",
+      "Cold site",
+      "Reciprocal agreement",
+      "Hot site"
+    ],
+    "answer": [
+      3,
+      5,
+      1,
+      4,
+      2
+    ],
+    "explain": "Cold site nema opremu, warm ima dio, hot ima sve i aktuelne podatke. Reciprocal agreement je međusobni dogovor, a resource capacity agreement ugovorno garantuje kapacitet. Mirrored site (stalno active-active) je distraktor."
+  }
+]

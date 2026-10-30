@@ -1,0 +1,245 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Pravni tim piše internu AI politiku i traži neutralnu, preciznu definiciju pojma „membership inference“ na koju se može pozvati. Koji izvor je najprikladniji?",
+    "options": [
+      "OWASP Top 10 for LLM Applications 2025",
+      "MITRE ATLAS studija slučaja",
+      "NIST AI 100-2 E2025 (taksonomija i terminologija adversarial ML)",
+      "Dokumentacija dobavljača modela"
+    ],
+    "answer": 2,
+    "explain": "NIST AI 100-2 je referentni rječnik za napade na ML sa definicijama i oznakama (privacy compromise, NISTAML.03). OWASP je prioritizovana lista rizika za developere, ATLAS studije slučaja opisuju incidente, a dokumentacija dobavljača nije neutralan izvor."
+  },
+  {
+    "obj": "1.1",
+    "q": "SOC već mapira sva detekciona pravila na MITRE ATT&CK. Uvodi se LLM asistent sa alatima. Kako je najbolje proširiti postojeću praksu?",
+    "options": [
+      "Dodati MITRE ATLAS oznake (AML.TA/AML.T) na pravila specifična za AI, a zadržati ATT&CK za klasične korake napada",
+      "Zamijeniti ATT&CK ATLAS-om za sve sisteme koji koriste AI",
+      "Mapirati AI pravila samo na OWASP LLM Top 10 jer ATLAS nije namijenjen SOC-u",
+      "Ne mapirati AI pravila dok MITRE ne objavi stabilnu verziju ATLAS-a"
+    ],
+    "answer": 0,
+    "explain": "ATLAS je modelovan po uzoru na ATT&CK i dopunjuje ga tehnikama specifičnim za AI. Incident sa AI sistemom obično ima i klasične korake (ukradeni ključ, kompromitovan runner) koje i dalje pokriva ATT&CK. OWASP lista nije taksonomija za detekciju, a čekanje ostavlja rupu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Prema NIST AI 100-2, napadač koji kontroliše dio podataka za treniranje i ubacuje skriveni okidač tako da model pogrešno klasifikuje samo ulaze sa tim okidačem izvodi koji napad?",
+    "options": [
+      "Evasion napad u fazi upotrebe",
+      "Model extraction",
+      "Availability poisoning",
+      "Backdoor poisoning"
+    ],
+    "answer": 3,
+    "explain": "Backdoor poisoning traži kontrolu podataka za treniranje i izaziva integrity violation samo na ulazima sa okidačem. Evasion mijenja ulaze u fazi upotrebe bez izmjene treniranja, availability poisoning izaziva opštu degradaciju, a model extraction je napad na privatnost/povjerljivost modela."
+  },
+  {
+    "obj": "1.1",
+    "q": "NIST AI 100-2 za generativnu AI dodaje cilj napadača koji ne postoji kod prediktivne AI. Koji?",
+    "options": [
+      "Availability breakdown",
+      "Misuse enablement (zaobilaženje ograničenja na izlazu modela)",
+      "Integrity violation",
+      "Privacy compromise"
+    ],
+    "answer": 1,
+    "explain": "Za GenAI taksonomija uz availability, integrity i privacy dodaje misuse enablement (NISTAML.04): napadač želi zaobići ograničenja postavljena na izlaz sistema. Ostala tri cilja postoje i za PredAI."
+  },
+  {
+    "obj": "1.1",
+    "q": "Analitičar opisuje incident: instrukcije su stigle kroz e-mail koji je asistent sažimao, nakon čega je asistent pozvao alat za slanje poruka. Koje dvije ATLAS tehnike najbolje opisuju ovaj lanac?",
+    "options": [
+      "AML.T0020 Poison Training Data i AML.T0018 Manipulate AI Model",
+      "AML.T0051.001 LLM Prompt Injection: Indirect i AML.T0053 AI Agent Tool Invocation",
+      "AML.T0024 Exfiltration via AI Inference API i AML.T0034 Cost Harvesting",
+      "AML.T0010 AI Supply Chain Compromise i AML.T0056 Extract LLM System Prompt"
+    ],
+    "answer": 1,
+    "explain": "Instrukcije u sadržaju koji model obrađuje su indirektna prompt injection (AML.T0051.001), a posljedica je poziv alata (AML.T0053). Trovanje podataka i manipulacija modelom odnose se na treniranje, a ostale kombinacije opisuju drugačije scenarije."
+  },
+  {
+    "obj": "1.1",
+    "q": "Menadžer pita: „Ako kupimo najbolji filter za prompt injection, jesmo li riješili problem?“ Šta je ispravan odgovor u duhu NIST AI 100-2?",
+    "options": [
+      "Da, ako filter ima preciznost iznad 99%",
+      "Da, ako se filter ažurira svake sedmice",
+      "Ne, jer filteri ne rade sa jezicima osim engleskog",
+      "Ne, za mnoge napade ne postoji potpuna mitigacija; filter je jedan sloj, a posljedice se ograničavaju arhitekturom (privilegije, potvrda, izolacija)"
+    ],
+    "answer": 3,
+    "explain": "NIST AI 100-2 naglašava da potpune mitigacije za mnoge AML napade ne postoje i da postoje kompromisi između tačnosti, robusnosti i privatnosti. Zato je odbrana slojevita na nivou sistema. Visoka preciznost na testu ne garantuje otpornost na nove varijante."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koja ATLAS taktika nema direktan ekvivalent u ATT&CK-u i opisuje sticanje pristupa modelu, npr. preko API-ja za inferencu ili proizvoda koji koristi model?",
+    "options": [
+      "AI Model Access (AML.TA0000)",
+      "Initial Access (AML.TA0004)",
+      "Collection (AML.TA0009)",
+      "Exfiltration (AML.TA0010)"
+    ],
+    "answer": 0,
+    "explain": "AI Model Access i AI Attack Staging su taktike specifične za ATLAS. Initial Access, Collection i Exfiltration postoje i u ATT&CK-u."
+  },
+  {
+    "obj": "1.1",
+    "q": "Interni red team planira testiranje AI asistenta. Kako ATLAS najbolje pomaže u planiranju?",
+    "options": [
+      "Daje gotove payloade za svaku tehniku",
+      "Zamjenjuje modelovanje prijetnji jer pokriva sve moguće napade",
+      "Omogućava izbor scenarija po tehnikama relevantnim za arhitekturu i poređenje sa studijama slučaja",
+      "Određuje pragove za prolaz i pad testa"
+    ],
+    "answer": 2,
+    "explain": "ATLAS daje strukturu (taktike, tehnike, mitigacije, studije slučaja) za izbor i dokumentovanje scenarija. Ne sadrži gotove payloade, ne zamjenjuje modelovanje prijetnji specifično za sistem i ne definiše kriterije prolaza."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari scenario sa klasom napada iz NIST AI 100-2.",
+    "options": [
+      "Neznatno izmijenjena slika saobraćajnog znaka u fazi upotrebe dovodi do pogrešne klasifikacije",
+      "Veliki broj upita API-ju sa ciljem da se napravi funkcionalna kopija modela",
+      "Upiti kojima se utvrđuje da li je određeni zapis bio u skupu za treniranje",
+      "Kompromitovan skup podataka sa javnog repozitorija ugrađen u fine-tuning"
+    ],
+    "targets": ["Supply chain (trovanje podataka)", "Membership inference", "Evasion", "Model extraction"],
+    "answer": [2, 3, 1, 0],
+    "explain": "Izmjena ulaza u fazi upotrebe je evasion, kopiranje modela kroz upite je model extraction, utvrđivanje članstva zapisa je membership inference, a zatrovan skup od treće strane je napad na lanac snabdijevanja."
+  },
+  {
+    "obj": "1.1",
+    "q": "Tim piše detekciono pravilo za situaciju kada agent pokuša pozvati alat van allowliste. Šta je dobra praksa za metapodatke pravila?",
+    "options": [
+      "Navesti ATLAS ID i naziv tehnike (npr. AML.T0053 AI Agent Tool Invocation) i povezane mitigacije, uz provjeru u aktuelnoj verziji ATLAS-a",
+      "Navesti samo naziv tehnike jer se ID-jevi mijenjaju",
+      "Navesti samo OWASP oznaku jer ATLAS nema tehnike za agente",
+      "Ne navoditi mapiranje jer usporava SIEM"
+    ],
+    "answer": 0,
+    "explain": "ID i naziv zajedno su otporni na preimenovanja, a provjera u aktuelnoj verziji sprječava zastarjele oznake. ATLAS ima tehnike za agente (npr. AML.T0053), a metapodaci ne utiču na performanse SIEM-a."
+  },
+  {
+    "obj": "1.2",
+    "q": "Chatbot generiše HTML odgovor koji frontend ubacuje u stranicu preko innerHTML. Kojoj stavci OWASP LLM Top 10 2025 ovo primarno pripada?",
+    "options": [
+      "LLM01 Prompt Injection",
+      "LLM09 Misinformation",
+      "LLM05 Improper Output Handling",
+      "LLM10 Unbounded Consumption"
+    ],
+    "answer": 2,
+    "explain": "Prosljeđivanje izlaza modela bez validacije i encodinga u browser, shell ili SQL je LLM05. Prompt injection može biti uzrok sadržaja, ali ranjivost je u obradi izlaza."
+  },
+  {
+    "obj": "1.2",
+    "q": "Sistemski prompt sadrži API ključ i rečenicu „korisnicima bez admin uloge ne prikazuj finansijske izvještaje“. Šta je glavni problem po OWASP LLM07?",
+    "options": [
+      "Prompt je predugačak i povećava trošak",
+      "Tajne i sigurnosna logika ne smiju zavisiti od tajnosti prompta; ključ ide u backend, a autorizacija u kod",
+      "Prompt treba prevesti na engleski da bi model bolje slušao",
+      "Prompt treba šifrovati prije slanja modelu"
+    ],
+    "answer": 1,
+    "explain": "LLM07 System Prompt Leakage naglašava da prompt nije sigurnosna granica: treba pretpostaviti da može procuriti. Tajne se drže van prompta, a autorizacija se sprovodi u kodu aplikacije. Šifrovanje nema smisla jer model mora čitati tekst."
+  },
+  {
+    "obj": "1.2",
+    "q": "U multi-tenant RAG aplikaciji korisnik jednog klijenta dobija odlomke iz dokumenata drugog klijenta jer svi dijele jedan indeks bez filtera. Koja OWASP LLM stavka je najdirektnija?",
+    "options": [
+      "LLM03 Supply Chain",
+      "LLM04 Data and Model Poisoning",
+      "LLM06 Excessive Agency",
+      "LLM08 Vector and Embedding Weaknesses"
+    ],
+    "answer": 3,
+    "explain": "LLM08 pokriva slabosti u čuvanju i pretrazi embeddinga, uključujući neovlašćen pristup i curenje između tenanata. Posljedica je i LLM02, ali uzrok je u vektorskom sloju bez kontrole pristupa."
+  },
+  {
+    "obj": "1.2",
+    "q": "Agent za podršku ima alat koji može brisati korisničke naloge, iako mu za posao treba samo čitanje tiketa. Kako se ovo zove i koja je kontrola?",
+    "options": [
+      "LLM06 Excessive Agency; ukloniti nepotrebne alate i suziti ovlašćenja na minimum",
+      "LLM09 Misinformation; dodati citiranje izvora",
+      "LLM10 Unbounded Consumption; uvesti rate limiting",
+      "LLM02 Sensitive Information Disclosure; šifrovati bazu"
+    ],
+    "answer": 0,
+    "explain": "Previše funkcionalnosti, ovlašćenja ili autonomije je LLM06 Excessive Agency. Kontrola je minimalni skup alata i uski scope kredencijala, uz potvrdu za rizične akcije."
+  },
+  {
+    "obj": "1.2",
+    "q": "Agent pamti „preferencije“ korisnika između sesija. Analiza pokazuje da sadržaj iz pročitanog dokumenta završava u dugoročnoj memoriji i utiče na kasnije odluke. Koja stavka OWASP Agentic Top 10 je najdirektnija?",
+    "options": [
+      "ASI07 Insecure Inter-Agent Communication",
+      "ASI06 Memory & Context Poisoning",
+      "ASI08 Cascading Failures",
+      "ASI04 Agentic Supply Chain Vulnerabilities"
+    ],
+    "answer": 1,
+    "explain": "Trovanje memorije ili konteksta koji agent kasnije koristi je ASI06. Kontrole su provjera prije upisa u memoriju, izolacija po korisniku, istek i revizija zapisa."
+  },
+  {
+    "obj": "1.2",
+    "q": "Operater odobrava desetine akcija agenta dnevno klikom na „Odobri“, bez čitanja detalja, jer je agent „uvijek u pravu“. Koja stavka Agentic Top 10 opisuje ovaj rizik?",
+    "options": [
+      "ASI10 Rogue Agents",
+      "ASI05 Unexpected Code Execution (RCE)",
+      "ASI09 Human-Agent Trust Exploitation",
+      "ASI03 Identity and Privilege Abuse"
+    ],
+    "answer": 2,
+    "explain": "ASI09 pokriva pretjerano povjerenje ljudi u agenta, zbog kojeg ljudska potvrda gubi smisao. Kontrole: jasan prikaz šta se tačno odobrava, manje i rizikom usmjerene potvrde, edukacija i nadzor obrazaca odobravanja."
+  },
+  {
+    "obj": "1.2",
+    "q": "Orkestrator agent šalje zadatke pod-agentima preko interne poruke bez autentifikacije, a pod-agenti izvršavaju sve što stigne. Koja kontrola direktno adresira ASI07?",
+    "options": [
+      "Veći kontekstni prozor za pod-agente",
+      "Češće ažuriranje modela",
+      "Logovanje samo konačnog odgovora korisniku",
+      "Međusobna autentifikacija agenata, integritet poruka i validacija šeme poruka"
+    ],
+    "answer": 3,
+    "explain": "ASI07 Insecure Inter-Agent Communication se adresira autentifikacijom, zaštitom integriteta i validacijom poruka između agenata. Ostale opcije ne sprječavaju da lažna ili izmijenjena poruka bude izvršena."
+  },
+  {
+    "obj": "1.2",
+    "q": "Tim gradi agenta sa alatima, RAG-om i memorijom. Arhitekta pita koju OWASP listu da koriste. Šta je ispravno?",
+    "options": [
+      "Obje: LLM Top 10 za aplikaciju oko modela i Agentic Top 10 za autonomiju, alate, memoriju i komunikaciju agenata",
+      "Samo Agentic Top 10 jer zamjenjuje LLM Top 10",
+      "Samo LLM Top 10 jer je Agentic Top 10 namijenjen istraživačima",
+      "Nijednu, nego samo ATLAS"
+    ],
+    "answer": 0,
+    "explain": "Liste se dopunjuju: agentna aplikacija je izložena rizicima sa obje liste (npr. LLM01 kao mehanizam, ASI01/ASI02 kao posljedica). ATLAS je koristan za detekciju i testiranje, ali ne zamjenjuje design checklist."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Poredaj korake uvođenja okvira za novi AI sistem, od prvog do posljednjeg.",
+    "options": [
+      "Mapirati detekcije u SIEM-u na ATLAS tehnike",
+      "Napraviti inventar AI sistema i komponenti (model, RAG, alati, podaci)",
+      "Proći OWASP LLM i Agentic Top 10 u design reviewu i odrediti kontrole",
+      "Redovno revidirati mapiranje kad se liste ili arhitektura promijene"
+    ],
+    "answer": [1, 2, 0, 3],
+    "explain": "Bez inventara ne znaš šta pokrivaš; zatim u dizajnu biraš kontrole po OWASP listama; kad sistem radi, detekcije mapiraš na ATLAS; na kraju periodično revidiraš jer se i liste i arhitektura mijenjaju."
+  },
+  {
+    "obj": "1.2",
+    "q": "Javni API za LLM nema limite: jedan nalog je za vikend potrošio mjesečni budžet. Koja OWASP stavka i koja kontrola?",
+    "options": [
+      "LLM04 Data and Model Poisoning; validacija podataka",
+      "LLM10 Unbounded Consumption; rate limiting, kvote po korisniku, limiti tokena i budžetski alarmi",
+      "LLM07 System Prompt Leakage; skraćivanje prompta",
+      "LLM01 Prompt Injection; filter ulaza"
+    ],
+    "answer": 1,
+    "explain": "LLM10 Unbounded Consumption obuhvata iscrpljivanje resursa i finansijske gubitke (denial of wallet), kao i ekstrakciju modela kroz neograničene upite. Kontrole su limiti na nivou gatewaya i servinga i budžetski alarmi."
+  }
+]

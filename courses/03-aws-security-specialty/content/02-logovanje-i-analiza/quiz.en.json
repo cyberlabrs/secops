@@ -1,0 +1,239 @@
+[
+  {
+    "obj": "1.2",
+    "q": "A company has AWS Organizations with 80 accounts and a dedicated Log Archive account. Requirement: API activity from all existing and future accounts must be recorded to a bucket in the Log Archive account, and member account administrators must not be able to stop or modify that logging. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Create a trail in every account through a CloudFormation StackSet and add an SCP that denies cloudtrail:DeleteTrail.",
+      "From the management account, create a multi-Region organization trail that writes to a bucket in the Log Archive account, with a bucket policy that allows cloudtrail.amazonaws.com with that trail's aws:SourceArn.",
+      "Enable CloudTrail Event history in all accounts and export it once a day to the Log Archive account.",
+      "Create a trail in the Log Archive account and add the members as sources through the bucket policy."
+    ],
+    "answer": 1,
+    "explain": "An organization trail automatically covers all existing and new accounts, and members cannot modify or delete it. A StackSet per account works, but it is more maintenance and local administrators can modify the trail until an SCP prevents it. Event history keeps only 90 days of management events, and a trail in the Log Archive account cannot record other accounts."
+  },
+  {
+    "obj": "1.2",
+    "q": "An auditor requires proof that CloudTrail log files in S3 were not modified or deleted after delivery. What should the security team enable and use?",
+    "options": [
+      "S3 Versioning on the bucket and comparing object versions.",
+      "SSE-KMS encryption of the bucket with a customer managed key.",
+      "CloudTrail Insights for the trail.",
+      "CloudTrail log file integrity validation and verification with the aws cloudtrail validate-logs command."
+    ],
+    "answer": 3,
+    "explain": "Validation creates signed digest files with SHA-256 hashes, so validate-logs proves whether a file was modified or deleted. Versioning keeps old versions but gives no cryptographic proof; KMS protects confidentiality, and Insights tracks anomalies in API calls."
+  },
+  {
+    "obj": "1.2",
+    "q": "A bucket with medical reports must have a record of every object read and delete, with the caller's IAM identity. The other buckets in the account must not increase logging costs. Which solution meets the requirement?",
+    "options": [
+      "Enable CloudTrail data events for S3 with an advanced event selector limited to that bucket's ARN.",
+      "Enable CloudTrail management events for read and write operations.",
+      "Enable S3 server access logs for all buckets in the account.",
+      "Enable VPC Flow Logs for the VPC in which the application runs."
+    ],
+    "answer": 0,
+    "explain": "GetObject and DeleteObject are data events; an advanced event selector limits them to one bucket, so costs do not rise for the others. Management events do not record object operations, server access logs for all buckets are too broad and best effort, and flow logs know nothing about IAM identity."
+  },
+  {
+    "obj": "1.2",
+    "q": "The security team wants to be notified automatically when the number of TerminateInstances calls or the number of AccessDenied errors in the account deviates significantly from normal, without manually setting thresholds. What should be enabled?",
+    "options": [
+      "An AWS Config rule for EC2 instances.",
+      "A metric filter with a fixed threshold for TerminateInstances.",
+      "CloudTrail Insights for API call rate and API error rate on the trail.",
+      "GuardDuty Runtime Monitoring."
+    ],
+    "answer": 2,
+    "explain": "CloudTrail Insights learns a baseline of API call and error volumes and creates an Insights event when a deviation appears. A metric filter needs a fixed threshold, Config tracks configuration, and Runtime Monitoring watches processes on a host."
+  },
+  {
+    "obj": "1.2",
+    "q": "A company wants to centralize CloudTrail, VPC Flow, Route 53 Resolver, and WAF logs from all accounts and Regions into one account, in an open normalized schema. An external SIEM provider must pick up new data as it arrives, and internal analysts must query it with Athena. Which solution meets the requirements with the LEAST development effort?",
+    "options": [
+      "Copy all logs into one S3 bucket and write Glue ETL jobs that convert them into a common JSON format.",
+      "Send all logs to Security Hub CSPM and give the SIEM access to the findings.",
+      "Enable Amazon Security Lake with a delegated administrator and a rollup Region, create a data access subscriber for the SIEM and query access for the analysts.",
+      "Send all logs to CloudWatch Logs in one account and give the SIEM an IAM user with read permissions."
+    ],
+    "answer": 2,
+    "explain": "Security Lake collects those sources, normalizes them into OCSF/Parquet, and offers subscribers: data access for the SIEM and query access via Lake Formation for Athena queries. Custom ETL is a lot of development, Security Hub CSPM receives findings rather than raw logs, and an IAM user for an external SIEM is bad practice and provides no normalization."
+  },
+  {
+    "obj": "1.2",
+    "q": "A SOC uses a SIEM that ingests data from Kinesis Data Streams in a central security account. Application logs from 50 accounts are in CloudWatch Logs. Logs must reach the SIEM in near real time. What should be done?",
+    "options": [
+      "In the security account, create a CloudWatch Logs destination backed by Kinesis Data Streams with a destination policy for the organization, and in the source accounts create subscription filters pointing to that destination.",
+      "In every account, schedule CreateExportTask to an S3 bucket in the security account every hour.",
+      "Enable CloudWatch cross-account observability and give the SIEM access to the monitoring account.",
+      "Install a SIEM agent on every EC2 instance and Lambda function."
+    ],
+    "answer": 0,
+    "explain": "A cross-account subscription filter to a CloudWatch Logs destination sends logs to the stream in near real time. An export task is batch and slow, cross-account observability enables viewing but not delivery to a SIEM, and agents on Lambda are neither possible nor sustainable."
+  },
+  {
+    "obj": "1.2",
+    "q": "VPC Flow Logs (default format) are sent to CloudWatch Logs. An analyst must determine within a few minutes which source IP addresses had the most rejected attempts on port 22 in the last hour. Which approach is the FASTEST?",
+    "options": [
+      "Export the log group to S3 and create an Athena table.",
+      "Create a metric filter and wait for the data to appear in metrics.",
+      "Enable Amazon Detective and review the instance profile.",
+      "Run a CloudWatch Logs Insights query that filters action = REJECT and dstPort = 22 and groups by srcAddr."
+    ],
+    "answer": 3,
+    "explain": "Logs Insights works directly on the log group and automatically recognizes the fields of the default flow log format, so the answer is available immediately. Export to S3 and Athena require preparation, a metric filter does not work retroactively, and Detective is not an ad hoc query tool."
+  },
+  {
+    "obj": "1.2",
+    "q": "Instances in private subnets reach the internet through a NAT gateway. In the existing flow logs the team sees only the NAT gateway's IP address and cannot determine which instance sent the data, or whether the destination was S3. Which change solves the problem?",
+    "options": [
+      "Change the aggregation interval from 10 minutes to 1 minute.",
+      "Create a new flow log with a custom format that includes pkt-srcaddr, pkt-dstaddr, and pkt-dst-aws-service.",
+      "Enable Route 53 Resolver query logs.",
+      "Enable VPC Traffic Mirroring on the NAT gateway."
+    ],
+    "answer": 1,
+    "explain": "The pkt-srcaddr and pkt-dstaddr fields (version 3) give the original packet addresses, and pkt-dst-aws-service (version 5) tells whether the destination belongs to an AWS service. The interval does not change the fields, DNS logs do not show flows, and Traffic Mirroring cannot be enabled on a NAT gateway."
+  },
+  {
+    "obj": "1.2",
+    "q": "GuardDuty suspects that an EC2 instance is communicating with a C2 server over DNS. The instances use Amazon-provided DNS (Route 53 Resolver). The team needs a permanent record of all domains that instances in the VPC resolve. What should be enabled?",
+    "options": [
+      "Route 53 Resolver query logging for the VPC with a destination in S3 or CloudWatch Logs.",
+      "VPC Flow Logs with a filter for port 53.",
+      "Route 53 public hosted zone query logging.",
+      "CloudTrail data events for Route 53."
+    ],
+    "answer": 0,
+    "explain": "Resolver query logs record DNS queries from the VPC with the name, type, and response. Flow logs do not record traffic to the Amazon DNS server, public hosted zone logging records queries for your domains from the internet, and CloudTrail does not record DNS queries."
+  },
+  {
+    "obj": "1.2",
+    "q": "The network uses a hub-and-spoke design with an AWS Transit Gateway that connects 30 VPCs and a Site-to-Site VPN to the data center. The security team needs to see flows between VPCs and to the data center in one place, without configuring every spoke VPC. Which log source should be enabled?",
+    "options": [
+      "VPC Flow Logs in every spoke VPC.",
+      "CloudTrail network activity events.",
+      "Transit Gateway flow logs.",
+      "Route 53 Resolver query logs."
+    ],
+    "answer": 2,
+    "explain": "Transit Gateway flow logs record flows on the transit gateway itself, per attachment, including VPN. Per-VPC flow logs require configuring every spoke VPC, network activity events record API calls through VPC endpoints, and Resolver logs cover only DNS."
+  },
+  {
+    "obj": "1.2",
+    "q": "An Athena table over five years of CloudTrail logs in S3 is not partitioned. Every query for a single day scans terabytes of data and takes a long time. Which solution reduces query cost and time the MOST?",
+    "options": [
+      "Move old logs to S3 Glacier Deep Archive.",
+      "Increase the number of concurrent queries in the Athena workgroup.",
+      "Enable S3 Transfer Acceleration on the bucket.",
+      "Create a table with partition projection by date and filter by partition in queries."
+    ],
+    "answer": 3,
+    "explain": "Partition projection lets Athena read only the paths for the requested date, so much less data is scanned. Glacier objects are not directly queryable, concurrency does not reduce scanned bytes, and Transfer Acceleration speeds up uploads, not queries."
+  },
+  {
+    "obj": "1.2",
+    "q": "A SOC receives logs from multiple sources through Amazon Data Firehose into Amazon OpenSearch Service. Before indexing, every record must be parsed into common fields and enriched with the AWS account name and the IP address geolocation. What should be done with the LEAST infrastructure to maintain?",
+    "options": [
+      "Run Logstash on an EC2 Auto Scaling group between Firehose and OpenSearch.",
+      "Enable Firehose data transformation with a Lambda function that parses and enriches the records.",
+      "Enrich the data manually in OpenSearch Dashboards after indexing.",
+      "Use CloudWatch Logs Insights to parse the data before Firehose."
+    ],
+    "answer": 1,
+    "explain": "Firehose can pass every batch through a Lambda function for parsing and enrichment, with no servers. Logstash on EC2 requires maintenance, manual enrichment does not scale, and Logs Insights is a query tool, not a pipeline transformation."
+  },
+  {
+    "obj": "1.2",
+    "q": "SOC management wants a single dashboard that combines CloudWatch metrics, Athena query results over Security Lake, and data from OpenSearch Service, with sign-in through IAM Identity Center. The team does not want to maintain servers. Which service should be used?",
+    "options": [
+      "Amazon Managed Grafana.",
+      "CloudWatch dashboard.",
+      "Amazon QuickSight with manual CSV import.",
+      "OpenSearch Dashboards on an EC2 instance."
+    ],
+    "answer": 0,
+    "explain": "Managed Grafana is a managed service that combines multiple data sources (CloudWatch, Athena, OpenSearch) and supports IAM Identity Center. A CloudWatch dashboard does not support these sources in the same way, a CSV import is not live data, and your own server requires maintenance."
+  },
+  {
+    "obj": "1.2",
+    "q": "An engineer enabled AWS WAF web ACL logging to an S3 bucket named security-waf-logs, but the configuration cannot be saved. What is the MOST LIKELY cause?",
+    "options": [
+      "WAF logs can be sent only to CloudWatch Logs.",
+      "The destination bucket name must start with the prefix aws-waf-logs-.",
+      "The bucket must be in us-east-1 for all types of web ACLs.",
+      "S3 Block Public Access must be disabled on the bucket."
+    ],
+    "answer": 1,
+    "explain": "For all three WAF log destinations (CloudWatch Logs, S3, Firehose), the name must start with aws-waf-logs-. S3 is a supported destination, a regional web ACL does not require us-east-1, and Block Public Access has nothing to do with log delivery."
+  },
+  {
+    "obj": "1.2",
+    "q": "A marketing team hosts static files in an S3 bucket. They need a list of requests with the HTTP status code, referer, and response size for monthly reports. Delayed delivery without a completeness guarantee is acceptable, and the cost must be minimal. Which solution fits?",
+    "options": [
+      "CloudTrail data events for the bucket.",
+      "A CloudTrail Lake event data store.",
+      "S3 server access logs to another bucket.",
+      "VPC Flow Logs for the S3 VPC endpoint."
+    ],
+    "answer": 2,
+    "explain": "Server access logs contain HTTP details (status, referer, bytes), you pay only for storage, and delivery is best effort, which is acceptable here. Data events are charged per event and focus on identity, CloudTrail Lake is expensive and closed to new customers, and flow logs have no HTTP details."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Order the steps for rolling out an organization trail with immutable logs in the Log Archive account.",
+    "options": [
+      "Create an organization trail from the management account with log file validation enabled.",
+      "In the Log Archive account, create an S3 bucket with Object Lock (compliance mode) and a default retention period.",
+      "Run aws cloudtrail validate-logs and verify delivery from multiple accounts.",
+      "Add a bucket policy and a KMS key policy that allow cloudtrail.amazonaws.com with the trail's aws:SourceArn."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Object Lock must be enabled when the bucket is created, then the policies are added so that CloudTrail may write and encrypt, and then the trail is created, which validates the destination immediately. Finally, delivery and integrity are verified."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Match the investigation question with the log source that answers it.",
+    "options": [
+      "Which domain did the instance resolve just before the suspicious outbound traffic?",
+      "Which requests were blocked by a SQL injection rule on a CloudFront distribution?",
+      "Who deleted an IAM role in the production account?",
+      "How many bytes left a spoke VPC for the data center through the transit gateway?",
+      "From which IP addresses were SSH attempts on an instance's network interface rejected?"
+    ],
+    "targets": ["VPC Flow Logs", "ELB access logs", "AWS WAF logs", "Route 53 Resolver query logs", "S3 server access logs", "Transit Gateway flow logs", "CloudTrail management events"],
+    "answer": [3, 2, 6, 5, 0],
+    "explain": "DNS queries are in Resolver query logs, blocked web requests in WAF logs, deleting a role is a management event in CloudTrail, flows through the transit gateway are in TGW flow logs, and rejected attempts on an ENI are in VPC Flow Logs. ELB and S3 access logs are not relevant here."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Match the log analysis requirement with the MOST APPROPRIATE service.",
+    "options": [
+      "An ad hoc query over a Lambda function's log group for the last 30 minutes.",
+      "A SQL query over three years of CloudTrail logs in S3.",
+      "Full-text search and Sigma detectors for a SOC in near real time.",
+      "Parsing and enriching every record during delivery through Firehose.",
+      "A single dashboard over CloudWatch, Athena, and OpenSearch sources."
+    ],
+    "targets": ["AWS Lambda", "Amazon Managed Grafana", "Amazon Athena", "CloudWatch Logs Insights", "Amazon OpenSearch Service", "Amazon Macie"],
+    "answer": [3, 2, 4, 0, 1],
+    "explain": "Logs Insights is for quick queries over log groups, Athena for SQL over S3, OpenSearch for search and Security Analytics detectors, Lambda as a Firehose transformation for enrichment, and Managed Grafana for a dashboard over multiple sources. Macie does not analyze logs."
+  },
+  {
+    "obj": "1.2",
+    "q": "Based on this CloudTrail record, who made the call and where do you look next for the source?",
+    "lang": "json",
+    "snippet": "{\n  \"eventTime\": \"2026-10-27T02:41:09Z\",\n  \"eventSource\": \"iam.amazonaws.com\",\n  \"eventName\": \"CreateUser\",\n  \"sourceIPAddress\": \"198.51.100.23\",\n  \"userAgent\": \"aws-cli/2.17.0\",\n  \"userIdentity\": {\n    \"type\": \"AssumedRole\",\n    \"arn\": \"arn:aws:sts::111122223333:assumed-role/ci-deploy-role/gh-run-8812\",\n    \"accessKeyId\": \"ASIAEXAMPLE7Q2RSTUV\",\n    \"sessionContext\": {\n      \"sessionIssuer\": { \"type\": \"Role\", \"userName\": \"ci-deploy-role\" },\n      \"attributes\": { \"creationDate\": \"2026-10-27T02:38:51Z\", \"mfaAuthenticated\": \"false\" }\n    }\n  },\n  \"requestParameters\": { \"userName\": \"support-backup\" },\n  \"eventType\": \"AwsApiCall\"\n}",
+    "options": [
+      "The IAM user ci-deploy-role with a long-term access key; deactivate that key",
+      "Someone using temporary credentials of the ci-deploy-role role (session gh-run-8812); you find the session source in the AssumeRole (or AssumeRoleWithWebIdentity) event that issued the ASIA… key",
+      "The CloudFormation service on behalf of a user, because the userAgent is aws-cli",
+      "The root user of account 111122223333, because MFA was not used"
+    ],
+    "answer": 1,
+    "explain": "type AssumedRole, an assumed-role/... ARN and a key starting with ASIA mean temporary STS credentials of a role; sessionIssuer says which role. To find out who assumed the role, look for AssumeRole/AssumeRoleWithWebIdentity with the same accessKeyId in responseElements (around 02:38:51). It is suspicious that a CI role creates an IAM user from an IP address that is not a CI runner; this looks like stolen credentials and persistence."
+  }
+]

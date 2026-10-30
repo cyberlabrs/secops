@@ -1,0 +1,16 @@
+{
+  "title": "Upravljanje sigurnosnim programom",
+  "summary": "GRC artefakti, upravljanje rizikom (SLE, ALE, ARO), rizik trećih strana, compliance i privatnost, audit i penetraciono testiranje te program sigurnosne svijesti.",
+  "minutes": 120,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.2",
+    "5.3",
+    "5.4",
+    "5.5",
+    "5.6"
+  ],
+  "title_en": "Security program management",
+  "summary_en": "GRC artifacts, risk management (SLE, ALE, ARO), third-party risk, compliance and privacy, audits and penetration testing, and the security awareness program."
+}

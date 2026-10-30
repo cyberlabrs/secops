@@ -1,0 +1,310 @@
+[
+  {
+    "obj": "3.6",
+    "q": "The legal department requires that electronic contracts with partners include proof that the partner cannot later deny having sent the document. Which solution BEST meets this?",
+    "options": [
+      "HMAC-SHA256 with a key agreed with the partner",
+      "A digital signature with the partner's private key, with a certificate issued by a trusted CA",
+      "AES-256-GCM encryption of the document",
+      "A SHA-256 hash of the document sent by email"
+    ],
+    "answer": 1,
+    "explain": "Only a digital signature provides non-repudiation, because only the signer holds the private key, and the certificate binds the key to an identity. HMAC uses a shared key, so either party can produce the same MAC. AES provides confidentiality, and a hash alone has no link to identity."
+  },
+  {
+    "obj": "3.6",
+    "q": "An organization with 200 employees wants each pair of employees to have a unique symmetric key. How many keys are needed, and what does this say about scalability?",
+    "options": [
+      "400 keys; symmetric cryptography scales well",
+      "200 keys; one per user",
+      "19,900 keys; that is why asymmetric cryptography or a KDC is used for distribution",
+      "39,800 keys; that is why ECB is used"
+    ],
+    "answer": 2,
+    "explain": "n(n−1)/2 = 200 × 199 / 2 = 19,900. The number grows quadratically, so in practice asymmetric key exchange (hybrid approach) or a central KDC (Kerberos) is used. 2n = 400 would be the number of keys with asymmetric cryptography."
+  },
+  {
+    "obj": "3.6",
+    "q": "Bob wants to send Alice a message that only she can read and that proves it is from Bob. Which order of key usage is CORRECT?",
+    "options": [
+      "Bob signs with his private key, then encrypts with Alice's public key",
+      "Bob signs with Alice's private key, then encrypts with his public key",
+      "Bob encrypts with his private key and nothing more",
+      "Bob encrypts with Alice's public key and signs with Alice's public key"
+    ],
+    "answer": 0,
+    "explain": "The signature is made with the sender's private key (verified with Bob's public key), and confidentiality is achieved by encrypting with the recipient's public key (only Alice's private key decrypts). Bob never has Alice's private key."
+  },
+  {
+    "obj": "3.6",
+    "q": "A manufacturer of IoT sensors with limited processing power and battery needs asymmetric cryptography for device authentication. Which choice is MOST appropriate?",
+    "options": [
+      "RSA with a 4096-bit key",
+      "3DES",
+      "Diffie-Hellman without authentication",
+      "ECC (e.g., ECDSA or EdDSA on a 256-bit curve)"
+    ],
+    "answer": 3,
+    "explain": "ECC provides the same security level as RSA with much shorter keys and lower computational requirements, which is ideal for resource-constrained devices. 3DES is symmetric and withdrawn, and DH without authentication is vulnerable to MITM."
+  },
+  {
+    "obj": "3.6",
+    "q": "An organization stores data that must remain confidential even after a cryptographically relevant quantum computer appears. What is the FIRST step in preparing?",
+    "options": [
+      "Immediately replace all algorithms with ML-KEM without testing",
+      "Create a cryptographic inventory (algorithms, keys, certificates, dependencies) and plan for crypto agility",
+      "Double the length of RSA keys and nothing more",
+      "Wait for vendors to solve the problem themselves"
+    ],
+    "answer": 1,
+    "explain": "Without an inventory, the organization does not know where it uses vulnerable algorithms or which data has a long lifetime. An inventory and crypto agility enable a planned, hybrid migration to PQC. Longer RSA keys do not protect against Shor's algorithm."
+  },
+  {
+    "obj": "3.6",
+    "q": "Which NIST standard defines a quantum-resistant key encapsulation mechanism intended to replace classical key exchange?",
+    "options": [
+      "FIPS 204 (ML-DSA)",
+      "FIPS 205 (SLH-DSA)",
+      "FIPS 203 (ML-KEM)",
+      "FIPS 197 (AES)"
+    ],
+    "answer": 2,
+    "explain": "FIPS 203 defines ML-KEM (Kyber) for key encapsulation. FIPS 204 and 205 define post-quantum digital signatures, and FIPS 197 is the symmetric AES."
+  },
+  {
+    "obj": "3.6",
+    "q": "A team encrypts a database with a key stored in a configuration file on the same server, accessed by the same administrators as the database. What is the BEST recommendation?",
+    "options": [
+      "Move the keys to a KMS or HSM, separate from the data, with key access restricted to a different role and usage logged",
+      "Change the algorithm from AES-256 to RSA",
+      "Encrypt the configuration file with the same key",
+      "Extend the cryptoperiod to reduce the number of rotations"
+    ],
+    "answer": 0,
+    "explain": "If an attacker who compromises the server obtains both the key and the data, encryption does not protect. Separating keys (KMS/HSM), separation of duties and audit are basic key management practices. Changing the algorithm does not solve the key storage problem."
+  },
+  {
+    "obj": "3.6",
+    "q": "An encryption key has passed its cryptoperiod. What is CORRECT according to NIST SP 800-57?",
+    "options": [
+      "The key is destroyed immediately together with all the data",
+      "The key continues to be used to encrypt new data until someone replaces it",
+      "The key is published because it is no longer sensitive",
+      "The key moves to the post-operational phase: it is not used for new operations, but may decrypt existing data until it is re-encrypted or destroyed"
+    ],
+    "answer": 3,
+    "explain": "After the cryptoperiod, the key must no longer protect new data, but it may be needed to decrypt or verify older data (post-operational). Premature destruction would make the data inaccessible."
+  },
+  {
+    "obj": "3.6",
+    "q": "In a PKI hierarchy, which component verifies the identity of the certificate requester but does NOT sign certificates itself?",
+    "options": [
+      "Root CA",
+      "Registration Authority (RA)",
+      "OCSP responder",
+      "Issuing CA"
+    ],
+    "answer": 1,
+    "explain": "The RA performs identity verification and forwards the request to the CA, which signs the certificate. The OCSP responder provides certificate revocation status."
+  },
+  {
+    "obj": "3.6",
+    "q": "The private key of a production web server has been stolen. The certificate is valid for another 10 months. What is the FIRST step?",
+    "options": [
+      "Renew the certificate with the same key pair",
+      "Wait for the certificate to expire",
+      "Revoke the certificate and issue a new one with a new key pair",
+      "Enable HSTS on the server"
+    ],
+    "answer": 2,
+    "explain": "A compromised key means the attacker can impersonate the server. Revocation (CRL/OCSP) and a new key pair are mandatory. Renewing with the same key does not solve the problem, and HSTS does not help against an attacker who holds a valid key."
+  },
+  {
+    "obj": "3.6",
+    "q": "To protect the root CA key, an organization wants no single individual to be able to activate the key. Which combination is BEST?",
+    "options": [
+      "Root CA offline in an HSM with M-of-N access control (e.g., 3 of 5 cards)",
+      "Root CA online for easier certificate issuance",
+      "A password for the root key known only to the CISO",
+      "A backup of the root key on a USB drive in the administrator's drawer"
+    ],
+    "answer": 0,
+    "explain": "An offline root in an HSM reduces exposure, and an M-of-N quorum achieves dual control and split knowledge. The other options introduce a single point of trust or weak physical protection."
+  },
+  {
+    "obj": "3.6",
+    "q": "An application encrypts files with AES in ECB mode. An auditor notices that patterns from the original images are visible in the ciphertext as well. Which recommendation is BEST?",
+    "options": [
+      "Increase the key from 128 to 256 bits while keeping ECB mode",
+      "Switch to DES",
+      "Add compression after encryption",
+      "Switch to an authenticated mode such as AES-GCM with a unique nonce"
+    ],
+    "answer": 3,
+    "explain": "ECB encrypts identical plaintext blocks into identical ciphertext blocks, so it reveals patterns regardless of key length. GCM with a unique nonce hides patterns and adds an integrity check."
+  },
+  {
+    "obj": "3.7",
+    "q": "An attacker has intercepted a large number of encrypted messages but has no corresponding plaintext and no access to the encryption system. Which cryptanalysis model describes the situation?",
+    "options": [
+      "Known plaintext",
+      "Chosen plaintext",
+      "Ciphertext only",
+      "Chosen ciphertext"
+    ],
+    "answer": 2,
+    "explain": "The attacker has only ciphertexts, which is the ciphertext-only model and the hardest for the attacker. Known plaintext implies known pairs, and the chosen models imply access to encryption or decryption."
+  },
+  {
+    "obj": "3.7",
+    "q": "A server returns different error messages for invalid padding and for an invalid MAC during decryption, which allows an attacker to gradually uncover the content. Which type of attack is possible and what is the BEST defense?",
+    "options": [
+      "Frequency analysis; a longer key",
+      "Chosen ciphertext (padding oracle); AEAD mode and uniform, generic constant-time error handling",
+      "Brute force; account lockout",
+      "Birthday attack; SHA-3"
+    ],
+    "answer": 1,
+    "explain": "The attacker sends chosen ciphertexts and infers the plaintext from the responses (oracle), which is a chosen-ciphertext attack. AEAD (e.g., GCM) verifies integrity before decryption, and uniform errors reveal no information."
+  },
+  {
+    "obj": "3.7",
+    "q": "Researchers measured a smart card's power consumption during signing and reconstructed the private key from the patterns. Which control BEST reduces this risk?",
+    "options": [
+      "A longer RSA key",
+      "More frequent rotation of the user's password",
+      "TLS 1.3 between the card and the reader",
+      "Hardware resistant to side-channel analysis: constant-time implementations, masking and noise in power consumption"
+    ],
+    "answer": 3,
+    "explain": "This is a side-channel (power analysis) attack on the implementation, not on the algorithm. A longer key does not prevent leakage through physical characteristics; countermeasures in hardware and implementation are needed."
+  },
+  {
+    "obj": "3.7",
+    "q": "An attacker subjects an HSM to sudden voltage changes to cause a computation error and derive the key from the faulty result. Which protection is MOST relevant?",
+    "options": [
+      "Tamper-responsive hardware that detects power anomalies, and checking results before output",
+      "A longer cryptoperiod",
+      "Encrypting backups",
+      "Certificate pinning"
+    ],
+    "answer": 0,
+    "explain": "Fault injection is prevented by detecting manipulation (voltage, clock, temperature), zeroizing keys on tampering, and checking the correctness of a result before it is released. The other options do not affect a physical attack on the device."
+  },
+  {
+    "obj": "3.7",
+    "q": "The incident response team discovers that an attacker is moving laterally using NTLM hashes of the local administrator, which is the same on all workstations. Which control BEST prevents a recurrence?",
+    "options": [
+      "A longer domain administrator password",
+      "Unique, automatically rotated local admin passwords (LAPS) with Credential Guard and restricted admin rights",
+      "Encrypting workstation disks",
+      "Blocking ICMP"
+    ],
+    "answer": 1,
+    "explain": "Pass-the-hash uses a stolen hash instead of the password. The same local password everywhere enables lateral movement; LAPS makes it unique, Credential Guard protects hashes in memory, and least privilege reduces exposure."
+  },
+  {
+    "obj": "3.7",
+    "q": "After a domain controller compromise, the team suspects the attacker obtained the KRBTGT account hash and can issue their own TGTs. What is the key recovery step?",
+    "options": [
+      "Change all users' passwords once",
+      "Disable Kerberos and use only NTLM",
+      "Reset the KRBTGT account password twice (allowing time for replication) and investigate the scope of the compromise",
+      "Restart the domain controller"
+    ],
+    "answer": 2,
+    "explain": "A golden ticket attack uses the KRBTGT key. Double rotation invalidates both the current and the previous key, so forged tickets stop being valid. Switching to NTLM worsens security, and a restart does not change the key."
+  },
+  {
+    "obj": "3.7",
+    "q": "Ransomware encrypted the file servers and the backup that was mounted as a network drive. Which control would help recovery the MOST?",
+    "options": [
+      "Longer encryption keys for the file servers",
+      "Paying the ransom",
+      "Antivirus with daily signature updates",
+      "Offline or immutable backups with regularly tested recovery"
+    ],
+    "answer": 3,
+    "explain": "Ransomware uses strong cryptography against the victim, so decryption without the key is unrealistic. Recovery is made possible by a backup that the attacker cannot modify or delete. Paying is not recommended and does not guarantee recovery."
+  },
+  {
+    "obj": "3.7",
+    "q": "The CFO receives a video call in which the \"CEO\" urgently requests a payment to a vendor. It is later established that the call was a deepfake. Which control is BEST for prevention?",
+    "options": [
+      "A process that, for such requests, requires verification through a different, previously known channel and approval by two people",
+      "A deepfake detection tool on all computers",
+      "Encrypting video calls",
+      "Banning video calls in the company"
+    ],
+    "answer": 0,
+    "explain": "A process control (out-of-band verification and dual approval) does not depend on the success of detection, which lags behind generation technology. Encrypting calls does not confirm identity, and banning calls is not acceptable for the business."
+  },
+  {
+    "obj": "3.7",
+    "q": "A data science team discovers that part of a public dataset for training a fraud detection model was intentionally altered so that the model misses certain transactions. What is the threat called and which control is MOST relevant?",
+    "options": [
+      "Adversarial input; API rate limiting",
+      "Model poisoning; verifying the provenance and integrity of training data and validating the model before production",
+      "Deepfake; video watermarking",
+      "Timing attack; constant-time code"
+    ],
+    "answer": 1,
+    "explain": "Data/model poisoning changes the model's behavior through poisoned training data. Key are the provenance and integrity of datasets (signatures, hashes) and model testing. Adversarial input deceives an already trained model in operation."
+  },
+  {
+    "obj": "3.7",
+    "q": "An attacker on public Wi-Fi tries to intercept the TLS sessions of mobile banking app users by presenting their own certificate. Which control in the application BEST prevents this attack?",
+    "options": [
+      "Traffic compression",
+      "A longer session timeout",
+      "Strict certificate validation with certificate pinning",
+      "Base64 encoding of data"
+    ],
+    "answer": 2,
+    "explain": "An AitM attack relies on the client accepting a fake certificate. Strict chain validation and pinning of a specific key prevent a substituted certificate from being accepted. Encoding is not encryption."
+  },
+  {
+    "obj": "3.6",
+    "type": "match",
+    "q": "Match each security requirement with the cryptographic mechanism that BEST meets it.",
+    "options": [
+      "Non-repudiation of a signed payment order",
+      "Integrity and authentication of messages between two services that share a secret key",
+      "Storing user passwords in a database",
+      "Agreeing on a session key with forward secrecy over the internet",
+      "Encrypting large amounts of data with integrity checking"
+    ],
+    "targets": [
+      "AES-GCM",
+      "ECDHE",
+      "Digital signature (ECDSA)",
+      "Argon2 with salt",
+      "HMAC-SHA256"
+    ],
+    "answer": [2, 4, 3, 1, 0],
+    "explain": "Non-repudiation comes from a digital signature, a shared secret and integrity are HMAC, passwords are stored with a slow hash and salt, ephemeral ECDHE provides PFS, and AES-GCM is AEAD for large amounts of data."
+  },
+  {
+    "obj": "3.6",
+    "type": "order",
+    "q": "Order the steps of creating and verifying a digital signature from first to last.",
+    "options": [
+      "The recipient verifies the signature with the sender's public key",
+      "The sender signs the hash with their private key",
+      "The recipient compares the computed hash with the hash obtained from the signature",
+      "The sender computes the hash of the message",
+      "The recipient computes the hash of the received message"
+    ],
+    "answer": [3, 1, 4, 0, 2],
+    "explain": "The sender hashes the message and signs the hash with the private key. The recipient hashes the received message, verifies the signature with the sender's public key and compares the values; a match confirms integrity and origin."
+  },
+  {
+    "obj": "3.6",
+    "type": "spot",
+    "q": "Excerpt from a service that stores user passwords and encrypts database records. Mark the lines with a wrong cryptographic choice or poor key management.",
+    "snippet": "import hashlib, os\nfrom cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes\n\nKEY = bytes.fromhex(\"8f1c2a9d4b7e06f3a1c95d2e7b408f6a3c19e5d7024b8a6f1e3c7d9b05a2e03b\")  # key in code\n\ndef hash_password(pw: str) -> str:\n    return hashlib.md5(pw.encode()).hexdigest()\n\ndef encrypt(data: bytes) -> bytes:\n    enc = Cipher(algorithms.AES(KEY), modes.ECB()).encryptor()\n    return enc.update(pad(data)) + enc.finalize()\n\ndef file_digest(path: str) -> str:\n    return hashlib.sha256(open(path, \"rb\").read()).hexdigest()",
+    "lang": "python",
+    "answer": [3, 6, 9],
+    "explain": "Line 4: the key is written in source code, so anyone with access to the repository, build or backup has it, and rotation requires a new release; keep the key in a KMS/HSM or vault, with access control and rotation. Line 7: MD5 is a fast hash with known collisions and no salt, so passwords are easy to crack (rainbow tables, GPUs); for passwords use a slow salted hash (Argon2, bcrypt, scrypt, PBKDF2). Line 10: ECB encrypts every block independently, so identical plaintext produces identical ciphertext and reveals patterns, and it provides no integrity; use AES-GCM (AEAD) with a unique nonce. SHA-256 for file integrity checking (line 14) is a correct choice."
+  }
+]

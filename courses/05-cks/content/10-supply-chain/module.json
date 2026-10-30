@@ -1,0 +1,12 @@
+{
+  "title": "Supply chain: SBOM, skeniranje, dozvoljeni registriji, potpisi",
+  "summary": "SBOM (SPDX/CycloneDX), skeniranje slika Trivyjem, dozvoljeni registriji kroz ValidatingAdmissionPolicy i ImagePolicyWebhook, digest umjesto taga i potpisivanje slika cosignom.",
+  "minutes": 90,
+  "domain": 5,
+  "objectives": [
+    "5.2",
+    "5.3"
+  ],
+  "title_en": "Supply chain: SBOM, scanning, permitted registries, signatures",
+  "summary_en": "SBOMs (SPDX/CycloneDX), image scanning with Trivy, permitted registries via ValidatingAdmissionPolicy and ImagePolicyWebhook, digests instead of tags, and image signing with cosign."
+}

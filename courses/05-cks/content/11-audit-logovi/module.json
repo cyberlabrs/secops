@@ -1,0 +1,11 @@
+{
+  "title": "Audit logovi",
+  "summary": "Audit Policy (stages, nivoi, redoslijed pravila), uključivanje auditinga u static Pod kube-apiservera i istraga pristupa Secretima kroz JSON logove sa jq.",
+  "minutes": 90,
+  "domain": 6,
+  "objectives": [
+    "6.5"
+  ],
+  "title_en": "Audit logs",
+  "summary_en": "Audit Policy (stages, levels, rule order), enabling auditing in the kube-apiserver static Pod, and investigating Secret access through JSON logs with jq."
+}

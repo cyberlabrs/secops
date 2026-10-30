@@ -1,0 +1,239 @@
+[
+  {
+    "obj": "1.2",
+    "q": "Kompanija ima AWS Organizations sa 80 naloga i poseban Log Archive nalog. Zahtjev: API aktivnost svih postojećih i budućih naloga mora se bilježiti u bucket u Log Archive nalogu, a administratori članova ne smiju moći ugasiti ili izmijeniti to logovanje. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "U svakom nalogu napraviti trail preko CloudFormation StackSeta i dodati SCP koja zabranjuje cloudtrail:DeleteTrail.",
+      "Iz management naloga napraviti multi-Region organization trail koji piše u bucket u Log Archive nalogu, uz bucket policy koja dozvoljava cloudtrail.amazonaws.com sa aws:SourceArn tog traila.",
+      "Uključiti CloudTrail Event history u svim nalozima i izvoziti ga jednom dnevno u Log Archive nalog.",
+      "U Log Archive nalogu napraviti trail i dodati članove kao izvore preko bucket policyja."
+    ],
+    "answer": 1,
+    "explain": "Organization trail automatski obuhvata sve postojeće i nove naloge, a članovi ga ne mogu mijenjati ni brisati. StackSet po nalogu radi, ali je više održavanja i lokalni administratori mogu mijenjati trail dok ih SCP ne spriječi. Event history čuva samo 90 dana management eventa, a trail u Log Archive nalogu ne može bilježiti druge naloge."
+  },
+  {
+    "obj": "1.2",
+    "q": "Revizor traži dokaz da CloudTrail log fajlovi u S3 nisu izmijenjeni niti obrisani nakon isporuke. Šta sigurnosni tim treba uključiti i koristiti?",
+    "options": [
+      "S3 Versioning na bucketu i poređenje verzija objekata.",
+      "SSE-KMS šifrovanje bucketa customer managed ključem.",
+      "CloudTrail Insights za trail.",
+      "CloudTrail log file integrity validation i provjeru komandom aws cloudtrail validate-logs."
+    ],
+    "answer": 3,
+    "explain": "Validacija pravi potpisane digest fajlove sa SHA-256 hashevima, pa validate-logs dokazuje da li je fajl izmijenjen ili obrisan. Versioning čuva stare verzije, ali ne daje kriptografski dokaz; KMS štiti povjerljivost, a Insights prati anomalije u API pozivima."
+  },
+  {
+    "obj": "1.2",
+    "q": "Bucket sa medicinskim nalazima mora imati zapis o svakom čitanju i brisanju objekta, sa IAM identitetom pozivaoca. Ostali bucketi u nalogu ne smiju povećati troškove logovanja. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Uključiti CloudTrail data events za S3 sa advanced event selectorom ograničenim na ARN tog bucketa.",
+      "Uključiti CloudTrail management events za read i write operacije.",
+      "Uključiti S3 server access logs za sve buckete u nalogu.",
+      "Uključiti VPC Flow Logs za VPC u kojem radi aplikacija."
+    ],
+    "answer": 0,
+    "explain": "GetObject i DeleteObject su data events; advanced event selector ih ograničava na jedan bucket pa troškovi ne rastu za ostale. Management events ne bilježe operacije nad objektima, server access logs za sve buckete su preširoki i best effort, a flow logs ne znaju za IAM identitet."
+  },
+  {
+    "obj": "1.2",
+    "q": "Sigurnosni tim želi automatski saznati kada broj poziva TerminateInstances ili broj AccessDenied grešaka u nalogu značajno odstupi od uobičajenog, bez ručnog određivanja pragova. Šta treba uključiti?",
+    "options": [
+      "AWS Config pravilo za EC2 instance.",
+      "Metric filter sa fiksnim pragom za TerminateInstances.",
+      "CloudTrail Insights za API call rate i API error rate na trailu.",
+      "GuardDuty Runtime Monitoring."
+    ],
+    "answer": 2,
+    "explain": "CloudTrail Insights uči baseline broja API poziva i grešaka i pravi Insights događaj kada se pojavi odstupanje. Metric filter traži fiksni prag, Config prati konfiguraciju, a Runtime Monitoring gleda procese na hostu."
+  },
+  {
+    "obj": "1.2",
+    "q": "Kompanija želi centralizovati CloudTrail, VPC Flow, Route 53 Resolver i WAF logove iz svih naloga i Regiona u jedan nalog, u otvorenoj normalizovanoj šemi. Vanjski SIEM provajder treba da preuzima nove podatke kako stižu, a interni analitičari da ih upituju Athenom. Koje rješenje ispunjava zahtjeve uz NAJMANJE razvoja?",
+    "options": [
+      "Kopirati sve logove u jedan S3 bucket i napisati Glue ETL poslove koji ih pretvaraju u zajednički JSON format.",
+      "Poslati sve logove u Security Hub CSPM i dati SIEM-u pristup nalazima.",
+      "Uključiti Amazon Security Lake sa delegated administratorom i rollup Regionom, napraviti data access subscriber za SIEM i query access za analitičare.",
+      "Poslati sve logove u CloudWatch Logs jednog naloga i dati SIEM-u IAM korisnika sa pravom čitanja."
+    ],
+    "answer": 2,
+    "explain": "Security Lake prikuplja te izvore, normalizuje ih u OCSF/Parquet i nudi subscribere: data access za SIEM i query access preko Lake Formation za Athena upite. Vlastiti ETL je mnogo razvoja, Security Hub CSPM prima nalaze a ne sirove logove, a IAM korisnik za vanjski SIEM je loša praksa i ne daje normalizaciju."
+  },
+  {
+    "obj": "1.2",
+    "q": "SOC koristi SIEM koji prima podatke iz Kinesis Data Streams u centralnom security nalogu. Aplikacioni logovi iz 50 naloga nalaze se u CloudWatch Logs. Logovi moraju stizati u SIEM skoro u realnom vremenu. Šta treba uraditi?",
+    "options": [
+      "U security nalogu napraviti CloudWatch Logs destination iza Kinesis Data Streams sa destination policyjem za organizaciju, a u izvornim nalozima subscription filtere prema toj destinaciji.",
+      "U svakom nalogu zakazati CreateExportTask u S3 bucket security naloga svakih sat vremena.",
+      "Uključiti CloudWatch cross-account observability i dati SIEM-u pristup monitoring nalogu.",
+      "Instalirati SIEM agenta na svaku EC2 instancu i Lambda funkciju."
+    ],
+    "answer": 0,
+    "explain": "Cross-account subscription filter prema CloudWatch Logs destinaciji šalje logove u stream skoro u realnom vremenu. Export task je batch i spor, cross-account observability omogućava pregled ali ne isporuku u SIEM, a agenti na Lambdi nisu moguće ni održivo rješenje."
+  },
+  {
+    "obj": "1.2",
+    "q": "VPC Flow Logs (default format) šalju se u CloudWatch Logs. Analitičar mora za nekoliko minuta saznati koje izvorne IP adrese su imale najviše odbijenih pokušaja na port 22 u posljednjem satu. Koji pristup je NAJBRŽI?",
+    "options": [
+      "Izvesti log grupu u S3 i napraviti Athena tabelu.",
+      "Napraviti metric filter i sačekati da se podaci pojave u metrikama.",
+      "Uključiti Amazon Detective i pregledati profil instance.",
+      "Pokrenuti CloudWatch Logs Insights upit koji filtrira action = REJECT i dstPort = 22 i grupiše po srcAddr."
+    ],
+    "answer": 3,
+    "explain": "Logs Insights radi direktno nad log grupom i automatski prepoznaje polja default flow log formata, pa je odgovor dostupan odmah. Izvoz u S3 i Athena traže pripremu, metric filter ne radi retroaktivno, a Detective nije alat za ad hoc upite."
+  },
+  {
+    "obj": "1.2",
+    "q": "Instance u privatnim subnetima izlaze na internet preko NAT gatewaya. U postojećim flow logovima tim vidi samo IP adresu NAT gatewaya i ne može odrediti koja instanca je slala podatke, niti da li je odredište bio S3. Koja promjena rješava problem?",
+    "options": [
+      "Promijeniti agregacioni interval sa 10 minuta na 1 minut.",
+      "Napraviti novi flow log sa custom formatom koji uključuje pkt-srcaddr, pkt-dstaddr i pkt-dst-aws-service.",
+      "Uključiti Route 53 Resolver query logs.",
+      "Uključiti VPC Traffic Mirroring na NAT gatewayu."
+    ],
+    "answer": 1,
+    "explain": "Polja pkt-srcaddr i pkt-dstaddr (verzija 3) daju originalne adrese paketa, a pkt-dst-aws-service (verzija 5) govori da li odredište pripada AWS servisu. Interval ne mijenja polja, DNS logovi ne pokazuju tokove, a Traffic Mirroring se ne može uključiti na NAT gatewayu."
+  },
+  {
+    "obj": "1.2",
+    "q": "GuardDuty sumnja da EC2 instanca komunicira sa C2 serverom preko DNS-a. Instance koriste Amazon-provided DNS (Route 53 Resolver). Tim treba trajni zapis o svim domenama koje instance u VPC-u razrješavaju. Šta treba uključiti?",
+    "options": [
+      "Route 53 Resolver query logging za VPC sa odredištem u S3 ili CloudWatch Logs.",
+      "VPC Flow Logs sa filterom za port 53.",
+      "Route 53 public hosted zone query logging.",
+      "CloudTrail data events za Route 53."
+    ],
+    "answer": 0,
+    "explain": "Resolver query logs bilježe DNS upite iz VPC-a sa imenom, tipom i odgovorom. Flow logs ne bilježe saobraćaj prema Amazon DNS serveru, public hosted zone logging bilježi upite za tvoje domene sa interneta, a CloudTrail ne bilježi DNS upite."
+  },
+  {
+    "obj": "1.2",
+    "q": "Mreža koristi hub-and-spoke dizajn sa AWS Transit Gatewayem koji povezuje 30 VPC-ova i Site-to-Site VPN prema data centru. Sigurnosni tim treba vidjeti tokove između VPC-ova i prema data centru na jednom mjestu, bez konfigurisanja svakog spoke VPC-a. Koji izvor logova treba uključiti?",
+    "options": [
+      "VPC Flow Logs u svakom spoke VPC-u.",
+      "CloudTrail network activity events.",
+      "Transit Gateway flow logs.",
+      "Route 53 Resolver query logs."
+    ],
+    "answer": 2,
+    "explain": "Transit Gateway flow logs bilježe tokove na samom transit gatewayu, po attachmentu, uključujući VPN. Flow logs po VPC-u traže konfiguraciju svakog spoke VPC-a, network activity events bilježe API pozive kroz VPC endpointe, a Resolver logovi samo DNS."
+  },
+  {
+    "obj": "1.2",
+    "q": "Athena tabela nad pet godina CloudTrail logova u S3 nije particionisana. Svaki upit za jedan dan skenira terabajte podataka i traje dugo. Koje rješenje NAJVIŠE smanjuje cijenu i vrijeme upita?",
+    "options": [
+      "Premjestiti stare logove u S3 Glacier Deep Archive.",
+      "Povećati broj paralelnih upita u Athena workgroupu.",
+      "Uključiti S3 Transfer Acceleration na bucketu.",
+      "Napraviti tabelu sa partition projection po datumu i u upitima filtrirati po particiji."
+    ],
+    "answer": 3,
+    "explain": "Partition projection omogućava Atheni da čita samo putanje za traženi datum, pa se skenira mnogo manje podataka. Glacier objekti nisu direktno upitljivi, paralelizam ne smanjuje skenirane bajtove, a Transfer Acceleration ubrzava upload, ne upite."
+  },
+  {
+    "obj": "1.2",
+    "q": "SOC prima logove iz više izvora preko Amazon Data Firehose u Amazon OpenSearch Service. Prije indeksiranja svaki zapis mora biti parsiran u zajednička polja i obogaćen nazivom AWS naloga i geolokacijom IP adrese. Šta treba uraditi uz NAJMANJE infrastrukture za održavanje?",
+    "options": [
+      "Pokrenuti Logstash na EC2 Auto Scaling grupi između Firehose i OpenSearch.",
+      "Uključiti Firehose data transformation sa Lambda funkcijom koja parsira i obogaćuje zapise.",
+      "Obogatiti podatke ručno u OpenSearch Dashboards nakon indeksiranja.",
+      "Koristiti CloudWatch Logs Insights da parsira podatke prije Firehose."
+    ],
+    "answer": 1,
+    "explain": "Firehose može svaki batch provući kroz Lambda funkciju za parsiranje i obogaćivanje, bez servera. Logstash na EC2 traži održavanje, ručno obogaćivanje ne skalira, a Logs Insights je alat za upite, ne za transformaciju u pipelineu."
+  },
+  {
+    "obj": "1.2",
+    "q": "Uprava SOC-a želi jedan dashboard koji kombinuje CloudWatch metrike, rezultate Athena upita nad Security Lake i podatke iz OpenSearch Service, uz prijavu preko IAM Identity Center. Tim ne želi održavati servere. Koji servis treba koristiti?",
+    "options": [
+      "Amazon Managed Grafana.",
+      "CloudWatch dashboard.",
+      "Amazon QuickSight sa ručnim CSV uvozom.",
+      "OpenSearch Dashboards na EC2 instanci."
+    ],
+    "answer": 0,
+    "explain": "Managed Grafana je managed servis koji spaja više izvora podataka (CloudWatch, Athena, OpenSearch) i podržava IAM Identity Center. CloudWatch dashboard nema ove izvore na isti način, CSV uvoz nije živ podatak, a vlastiti server traži održavanje."
+  },
+  {
+    "obj": "1.2",
+    "q": "Inženjer je uključio logovanje AWS WAF web ACL-a prema S3 bucketu imena security-waf-logs, ali konfiguracija se ne može sačuvati. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "WAF logovi se mogu slati samo u CloudWatch Logs.",
+      "Ime odredišnog bucketa mora počinjati prefiksom aws-waf-logs-.",
+      "Bucket mora biti u us-east-1 za sve vrste web ACL-ova.",
+      "Na bucketu mora biti isključen S3 Block Public Access."
+    ],
+    "answer": 1,
+    "explain": "Za sva tri odredišta WAF logova (CloudWatch Logs, S3, Firehose) ime mora počinjati sa aws-waf-logs-. S3 je podržano odredište, regionalni web ACL ne traži us-east-1, a Block Public Access nema veze sa isporukom logova."
+  },
+  {
+    "obj": "1.2",
+    "q": "Marketing tim hostuje statičke fajlove u S3 bucketu. Treba im spisak zahtjeva sa HTTP status kodom, refererom i veličinom odgovora za mjesečne izvještaje. Isporuka sa zakašnjenjem i bez garancije potpunosti je prihvatljiva, a cijena mora biti minimalna. Koje rješenje odgovara?",
+    "options": [
+      "CloudTrail data events za bucket.",
+      "CloudTrail Lake event data store.",
+      "S3 server access logs prema drugom bucketu.",
+      "VPC Flow Logs za VPC endpoint za S3."
+    ],
+    "answer": 2,
+    "explain": "Server access logs sadrže HTTP detalje (status, referer, bajtove), plaća se samo storage i isporuka je best effort, što je ovdje prihvatljivo. Data events se plaćaju po događaju i fokusirani su na identitet, CloudTrail Lake je skup i zatvoren za nove korisnike, a flow logs nemaju HTTP detalje."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Poredaj korake za uvođenje organization traila sa nepromjenjivim logovima u Log Archive nalogu.",
+    "options": [
+      "Napraviti organization trail iz management naloga sa uključenom log file validation.",
+      "U Log Archive nalogu napraviti S3 bucket sa Object Lock (compliance mode) i podrazumijevanom retencijom.",
+      "Pokrenuti aws cloudtrail validate-logs i provjeriti isporuku iz više naloga.",
+      "Dodati bucket policy i KMS key policy koje dozvoljavaju cloudtrail.amazonaws.com uz aws:SourceArn traila."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Object Lock se mora uključiti pri pravljenju bucketa, zatim se dodaju politike da CloudTrail smije pisati i šifrovati, pa se pravi trail koji odmah validira odredište. Na kraju se provjerava isporuka i integritet."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Upari pitanje iz istrage sa izvorom logova koji na njega odgovara.",
+    "options": [
+      "Koji domen je instanca razriješila neposredno prije sumnjivog odlaznog saobraćaja?",
+      "Koji zahtjevi su blokirani SQL injection pravilom na CloudFront distribuciji?",
+      "Ko je obrisao IAM rolu u produkcijskom nalogu?",
+      "Koliko bajtova je otišlo iz spoke VPC-a prema data centru kroz transit gateway?",
+      "Sa kojih IP adresa su odbijeni SSH pokušaji na mrežni interfejs instance?"
+    ],
+    "targets": ["VPC Flow Logs", "ELB access logs", "AWS WAF logs", "Route 53 Resolver query logs", "S3 server access logs", "Transit Gateway flow logs", "CloudTrail management events"],
+    "answer": [3, 2, 6, 5, 0],
+    "explain": "DNS upiti su u Resolver query logs, blokirani web zahtjevi u WAF logovima, brisanje role je management event u CloudTrailu, tokovi kroz transit gateway u TGW flow logs, a odbijeni pokušaji na ENI u VPC Flow Logs. ELB i S3 access logs ovdje nisu relevantni."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Upari zahtjev za analizu logova sa NAJPRIKLADNIJIM servisom.",
+    "options": [
+      "Ad hoc upit nad log grupom Lambda funkcije u posljednjih 30 minuta.",
+      "SQL upit nad tri godine CloudTrail logova u S3.",
+      "Full-text pretraga i Sigma detektori za SOC skoro u realnom vremenu.",
+      "Parsiranje i obogaćivanje svakog zapisa tokom isporuke kroz Firehose.",
+      "Jedan dashboard nad CloudWatch, Athena i OpenSearch izvorima."
+    ],
+    "targets": ["AWS Lambda", "Amazon Managed Grafana", "Amazon Athena", "CloudWatch Logs Insights", "Amazon OpenSearch Service", "Amazon Macie"],
+    "answer": [3, 2, 4, 0, 1],
+    "explain": "Logs Insights je za brze upite nad log grupama, Athena za SQL nad S3, OpenSearch za pretragu i Security Analytics detektore, Lambda kao Firehose transformacija za obogaćivanje, a Managed Grafana za dashboard nad više izvora. Macie ne analizira logove."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na osnovu ovog CloudTrail zapisa, ko je napravio poziv i gdje dalje tražiš izvor?",
+    "lang": "json",
+    "snippet": "{\n  \"eventTime\": \"2026-10-27T02:41:09Z\",\n  \"eventSource\": \"iam.amazonaws.com\",\n  \"eventName\": \"CreateUser\",\n  \"sourceIPAddress\": \"198.51.100.23\",\n  \"userAgent\": \"aws-cli/2.17.0\",\n  \"userIdentity\": {\n    \"type\": \"AssumedRole\",\n    \"arn\": \"arn:aws:sts::111122223333:assumed-role/ci-deploy-role/gh-run-8812\",\n    \"accessKeyId\": \"ASIAEXAMPLE7Q2RSTUV\",\n    \"sessionContext\": {\n      \"sessionIssuer\": { \"type\": \"Role\", \"userName\": \"ci-deploy-role\" },\n      \"attributes\": { \"creationDate\": \"2026-10-27T02:38:51Z\", \"mfaAuthenticated\": \"false\" }\n    }\n  },\n  \"requestParameters\": { \"userName\": \"support-backup\" },\n  \"eventType\": \"AwsApiCall\"\n}",
+    "options": [
+      "IAM korisnik ci-deploy-role sa dugoročnim access ključem; deaktiviraj taj ključ",
+      "Neko ko koristi privremene kredencijale role ci-deploy-role (sesija gh-run-8812); izvor sesije tražiš u AssumeRole (ili AssumeRoleWithWebIdentity) događaju koji je izdao ključ ASIA…",
+      "AWS servis CloudFormation u ime korisnika, jer je userAgent aws-cli",
+      "Root korisnik naloga 111122223333, jer MFA nije korišten"
+    ],
+    "answer": 1,
+    "explain": "type AssumedRole, ARN assumed-role/... i ključ koji počinje sa ASIA znače privremene STS kredencijale role; sessionIssuer kaže koja je rola. Da saznaš ko je rolu preuzeo, traži AssumeRole/AssumeRoleWithWebIdentity sa istim accessKeyId u responseElements (oko 02:38:51). Sumnjivo je što CI rola pravi IAM korisnika sa IP adrese koja nije CI runner; to liči na ukradene kredencijale i perzistenciju."
+  }
+]

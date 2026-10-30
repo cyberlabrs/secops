@@ -1,0 +1,271 @@
+{
+  "code": "CCSP",
+  "badge": "CCSP",
+  "order": 10,
+  "title": "ISC2 CCSP: Certified Cloud Security Professional",
+  "subtitle": "Trening za CCSP po ISC2 outlineu od 1. 8. 2026: 6 domena (arhitektura, podaci, platforma, aplikacije, operacije, pravo i rizik), uključujući nove teme o AI/ML, sa pitanjima u ISC2 stilu i CAT simulacijom.",
+  "lab": {
+    "image": "kurs-devsecops-lab:1",
+    "caps": []
+  },
+  "exam": {
+    "size": 125,
+    "minutes": 180,
+    "pass": 700,
+    "scaleMin": 0,
+    "scaleMax": 1000,
+    "note": "Pravi CCSP je CAT (adaptivni) ispit: 100–150 pitanja (oko 25 se ne boduje), 3 sata, prolaz 700/1000, kod Pearson VUE. Uslov za titulu je 5 godina IT iskustva (3 u sigurnosti, 1 u CCSP domenama); bez toga postaješ Associate of ISC2. Ova simulacija ima fiksnih 125 pitanja.",
+    "domains": [
+      {
+        "n": 1,
+        "name": "Cloud Concepts, Architecture and Design",
+        "weight": 17
+      },
+      {
+        "n": 2,
+        "name": "Cloud Data Security",
+        "weight": 20
+      },
+      {
+        "n": 3,
+        "name": "Cloud Platform and Infrastructure Security",
+        "weight": 17
+      },
+      {
+        "n": 4,
+        "name": "Cloud Application Security",
+        "weight": 16
+      },
+      {
+        "n": 5,
+        "name": "Cloud Security Operations",
+        "weight": 17
+      },
+      {
+        "n": 6,
+        "name": "Legal, Risk and Compliance",
+        "weight": 13
+      }
+    ],
+    "note_en": "The real CCSP is a CAT (adaptive) exam: 100–150 questions (about 25 are unscored), 3 hours, passing score 700/1000, delivered at Pearson VUE. Earning the credential requires 5 years of IT experience (3 in security, 1 in the CCSP domains); without it you become an Associate of ISC2. This simulation has a fixed 125 questions."
+  },
+  "objectives": [
+    {
+      "id": "1.1",
+      "en": "Understand cloud computing concepts",
+      "bs": "Koncepti cloud computinga"
+    },
+    {
+      "id": "1.2",
+      "en": "Describe cloud reference architecture",
+      "bs": "Referentna arhitektura clouda"
+    },
+    {
+      "id": "1.3",
+      "en": "Understand security concepts relevant to cloud computing",
+      "bs": "Sigurnosni koncepti u cloudu"
+    },
+    {
+      "id": "1.4",
+      "en": "Understand design principles of secure cloud computing",
+      "bs": "Principi dizajna sigurnog clouda"
+    },
+    {
+      "id": "1.5",
+      "en": "Evaluate Cloud Service Providers (CSP)",
+      "bs": "Procjena cloud provajdera (CSP)"
+    },
+    {
+      "id": "1.6",
+      "en": "Comprehend Artificial Intelligence (AI)/Machine Learning (ML)",
+      "bs": "Vještačka inteligencija i mašinsko učenje (AI/ML)"
+    },
+    {
+      "id": "2.1",
+      "en": "Describe cloud data concepts",
+      "bs": "Koncepti podataka u cloudu"
+    },
+    {
+      "id": "2.2",
+      "en": "Design and implement cloud data storage architectures",
+      "bs": "Arhitekture skladištenja podataka"
+    },
+    {
+      "id": "2.3",
+      "en": "Design and apply data security technologies and strategies",
+      "bs": "Tehnologije i strategije zaštite podataka"
+    },
+    {
+      "id": "2.4",
+      "en": "Implement data discovery",
+      "bs": "Otkrivanje podataka (data discovery)"
+    },
+    {
+      "id": "2.5",
+      "en": "Plan and implement data classification",
+      "bs": "Klasifikacija podataka"
+    },
+    {
+      "id": "2.6",
+      "en": "Design and implement Information Rights Management (IRM)",
+      "bs": "Information Rights Management (IRM)"
+    },
+    {
+      "id": "2.7",
+      "en": "Plan and implement data retention, deletion and archiving policies",
+      "bs": "Politike čuvanja, brisanja i arhiviranja"
+    },
+    {
+      "id": "2.8",
+      "en": "Design and implement auditability, traceability and accountability of data events",
+      "bs": "Auditabilnost, sljedivost i odgovornost za događaje nad podacima"
+    },
+    {
+      "id": "2.9",
+      "en": "Comprehend data protection of Artificial Intelligence (AI) and Machine Learning (ML) data",
+      "bs": "Zaštita AI/ML podataka"
+    },
+    {
+      "id": "3.1",
+      "en": "Comprehend cloud infrastructure components",
+      "bs": "Komponente cloud infrastrukture"
+    },
+    {
+      "id": "3.2",
+      "en": "Design a secure data center",
+      "bs": "Dizajn sigurnog data centra"
+    },
+    {
+      "id": "3.3",
+      "en": "Analyze risks associated with cloud infrastructure and platforms",
+      "bs": "Rizici cloud infrastrukture i platformi"
+    },
+    {
+      "id": "3.4",
+      "en": "Plan and implementation of security controls",
+      "bs": "Planiranje i implementacija sigurnosnih kontrola"
+    },
+    {
+      "id": "3.5",
+      "en": "Plan Business Continuity (BC) and Disaster Recovery (DR)",
+      "bs": "Kontinuitet poslovanja i oporavak od katastrofe (BC/DR)"
+    },
+    {
+      "id": "4.1",
+      "en": "Advocate training and awareness for application security",
+      "bs": "Obuka i svijest o sigurnosti aplikacija"
+    },
+    {
+      "id": "4.2",
+      "en": "Describe the Secure Software Development Life Cycle (SDLC) process",
+      "bs": "Proces sigurnog SDLC-a"
+    },
+    {
+      "id": "4.3",
+      "en": "Apply the Secure Software Development Life Cycle (SDLC)",
+      "bs": "Primjena sigurnog SDLC-a"
+    },
+    {
+      "id": "4.4",
+      "en": "Apply cloud software assurance and validation",
+      "bs": "Osiguranje i validacija cloud softvera"
+    },
+    {
+      "id": "4.5",
+      "en": "Use verified secure software",
+      "bs": "Upotreba provjerenog sigurnog softvera"
+    },
+    {
+      "id": "4.6",
+      "en": "Comprehend and apply the specifics of cloud application architecture",
+      "bs": "Specifičnosti arhitekture cloud aplikacija"
+    },
+    {
+      "id": "4.7",
+      "en": "Design appropriate Identity and Access Management (IAM) solutions",
+      "bs": "IAM rješenja"
+    },
+    {
+      "id": "5.1",
+      "en": "Build and implement physical and logical infrastructure for cloud environment",
+      "bs": "Izgradnja fizičke i logičke infrastrukture"
+    },
+    {
+      "id": "5.2",
+      "en": "Operate and maintain physical and logical infrastructure for cloud environment",
+      "bs": "Rad i održavanje fizičke i logičke infrastrukture"
+    },
+    {
+      "id": "5.3",
+      "en": "Implement operational controls and standards (e.g., National Institute Of Standards And Technology (NIST), International Organization For Standardization (ISO), Health Insurance Portability and Accountability Act (HIPPA), Control Objectives For Information And Related Technology (COBIT), Center For Internet Security (CIS) Controls, Comittee Of Sponsoring Organizations (COSO), Information Technology Infrastructure Library (ITIL) International Organization For Standardization/International Electrotechnical Commission (ISO/IEC) 20000-1)",
+      "bs": "Operativne kontrole i standardi (NIST, ISO, COBIT, CIS, ITIL…)"
+    },
+    {
+      "id": "5.4",
+      "en": "Support digital forensics",
+      "bs": "Podrška digitalnoj forenzici"
+    },
+    {
+      "id": "5.5",
+      "en": "Manage communication with relevant parties",
+      "bs": "Komunikacija sa relevantnim stranama"
+    },
+    {
+      "id": "5.6",
+      "en": "Manage security operations",
+      "bs": "Upravljanje sigurnosnim operacijama"
+    },
+    {
+      "id": "6.1",
+      "en": "Articulate legal requirements and unique risks within the cloud environment",
+      "bs": "Pravni zahtjevi i specifični rizici clouda"
+    },
+    {
+      "id": "6.2",
+      "en": "Understand privacy requirements",
+      "bs": "Zahtjevi privatnosti"
+    },
+    {
+      "id": "6.3",
+      "en": "Understand audit processes, methodologies, and required adaptations for a cloud environment",
+      "bs": "Audit procesi i prilagođavanje cloudu"
+    },
+    {
+      "id": "6.4",
+      "en": "Understand implications of cloud to enterprise risk management",
+      "bs": "Uticaj clouda na upravljanje rizikom preduzeća"
+    },
+    {
+      "id": "6.5",
+      "en": "Understand outsourcing and cloud contract design",
+      "bs": "Outsourcing i ugovori za cloud"
+    }
+  ],
+  "sources": [
+    {
+      "title": "CCSP Exam Outline (od 1. 8. 2026)",
+      "url": "https://www.isc2.org/certifications/ccsp/ccsp-certification-exam-outline",
+      "title_en": "CCSP Exam Outline (effective August 1, 2026)"
+    },
+    {
+      "title": "ISC2 CAT",
+      "url": "https://www.isc2.org/certifications/computerized-adaptive-testing"
+    },
+    {
+      "title": "CSA Cloud Controls Matrix",
+      "url": "https://cloudsecurityalliance.org/research/cloud-controls-matrix"
+    },
+    {
+      "title": "NIST SP 800-145 (definicija clouda)",
+      "url": "https://csrc.nist.gov/pubs/sp/800/145/final",
+      "title_en": "NIST SP 800-145 (definition of cloud computing)"
+    },
+    {
+      "title": "ISO/IEC 17788/17789 (cloud vokabular i referentna arhitektura)",
+      "url": "https://www.iso.org/standard/60544.html",
+      "title_en": "ISO/IEC 17788/17789 (cloud vocabulary and reference architecture)"
+    }
+  ],
+  "title_en": "ISC2 CCSP: Certified Cloud Security Professional",
+  "subtitle_en": "Training for the CCSP based on the ISC2 exam outline effective August 1, 2026: 6 domains (architecture, data, platform, applications, operations, legal and risk), including the new AI/ML topics, with ISC2-style questions and a CAT simulation."
+}

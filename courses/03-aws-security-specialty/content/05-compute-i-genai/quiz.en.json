@@ -1,0 +1,241 @@
+[
+  {
+    "obj": "3.2",
+    "q": "A company launches hundreds of EC2 instances from its own AMI. The security team requires every AMI to be hardened according to STIG guidelines, to contain the latest patches, and for a new AMI to be built automatically and scanned for vulnerabilities every week before distribution to three Regions. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Run Packer on a dedicated EC2 instance through a cron job and copy the AMI to the Regions with an AWS CLI script",
+      "Create an EC2 Image Builder pipeline with a STIG component, a schedule, Inspector scanning enabled, and a distribution configuration for three Regions",
+      "Use a user data script that installs patches and applies STIG settings every time an instance launches",
+      "Use the AWS Config rule approved-amis-by-id and manually build a new AMI when the rule reports noncompliance"
+    ],
+    "answer": 1,
+    "explain": "EC2 Image Builder is a managed service that performs the build, hardening components (including STIG), Inspector scanning, and multi-Region distribution on a schedule. Packer and cron require maintaining your own infrastructure, user data slows down launches and does not produce a verified image, and Config only detects."
+  },
+  {
+    "obj": "3.2",
+    "q": "An application on ECS Fargate needs to read objects from an S3 bucket. The task starts successfully and the image is pulled from a private ECR, but the application gets AccessDenied when reading from S3. What should be changed?",
+    "options": [
+      "Add s3:GetObject to the task execution role",
+      "Add s3:GetObject to the instance profile of the ECS container instance",
+      "Add ECR pull permissions to the task role",
+      "Add s3:GetObject to the task role defined in the task definition"
+    ],
+    "answer": 3,
+    "explain": "The task role grants permissions to the application code in the container. The task execution role is used by the ECS agent to pull images, send logs, and read secrets, and Fargate has no container instance or instance profile."
+  },
+  {
+    "obj": "3.2",
+    "q": "Services from multiple teams run on the same nodes in an EKS cluster. Each service needs access only to its own DynamoDB table. Currently all permissions are on the node IAM role. Which solution applies least privilege with the LEAST operational overhead?",
+    "options": [
+      "Use EKS Pod Identity associations that bind each Kubernetes service account to a separate IAM role, and restrict pods' access to the node's IMDS",
+      "Create a separate node group for each team with its own node role",
+      "Generate an IAM access key for each service and store it in a Kubernetes Secret object",
+      "Add a Kubernetes NetworkPolicy that allows traffic only to the DynamoDB endpoint"
+    ],
+    "answer": 0,
+    "explain": "Pod Identity (or IRSA) gives each service account its own role, and blocking IMDS prevents pods from taking the node role. Separate node groups are expensive and coarse, static keys violate best practice, and a NetworkPolicy does not perform IAM authorization."
+  },
+  {
+    "obj": "3.2",
+    "q": "A penetration test showed that a web application on EC2 has an SSRF vulnerability through which an attacker can read http://169.254.169.254/latest/meta-data/iam/security-credentials/. The team cannot fix the code immediately. Which control MOST QUICKLY prevents credential theft in this way?",
+    "options": [
+      "Remove the instance profile and put an access key in the application's configuration file",
+      "Add a security group rule that blocks outbound traffic to 169.254.169.254",
+      "Set HttpTokens=required (IMDSv2) on the instance and a hop limit of 1",
+      "Enable GuardDuty and wait for a credential exfiltration finding"
+    ],
+    "answer": 2,
+    "explain": "IMDSv2 requires a PUT request for a session token, which a typical SSRF (GET) cannot perform. A security group does not control link-local IMDS traffic, a static key is worse, and GuardDuty only detects after the theft."
+  },
+  {
+    "obj": "3.2",
+    "q": "The security team wants to continuously detect known CVEs in container images in Amazon ECR and in Lambda function dependencies, including automatic rescanning when a new CVE is published. Which solution meets the requirement?",
+    "options": [
+      "Enable ECR basic scanning on push and Lambda code signing",
+      "Enable GuardDuty Runtime Monitoring for ECS and Lambda",
+      "Enable Amazon Inspector with ECR enhanced scanning and Lambda standard scanning",
+      "Run Trivy once a day from a CodeBuild project over all images"
+    ],
+    "answer": 2,
+    "explain": "Inspector enhanced scanning reassesses images and Lambda functions when a new CVE appears, with no extra maintenance. Basic scanning has no continuous monitoring, code signing does not look for vulnerabilities, GuardDuty Runtime Monitoring tracks behavior, and CodeBuild with Trivy requires its own maintenance."
+  },
+  {
+    "obj": "3.2",
+    "q": "An audit found that developers sometimes hardcode API keys and write injection-vulnerable code in Lambda functions. The company wants to automatically find these problems in the code of functions that are already deployed. Which solution meets the requirement?",
+    "options": [
+      "Enable Amazon Inspector Lambda code scanning (together with Lambda standard scanning)",
+      "Enable AWS Lambda code signing with an AWS Signer profile",
+      "Enable GuardDuty Lambda Protection",
+      "Enable Amazon Macie on the S3 bucket where the code is packaged"
+    ],
+    "answer": 0,
+    "explain": "Lambda code scanning analyzes the function's own code and finds injection, hardcoded secrets, and weak cryptography. Code signing only confirms the package origin, GuardDuty Lambda Protection monitors the functions' network activity, and Macie looks for sensitive data in S3, not code vulnerabilities."
+  },
+  {
+    "obj": "3.2",
+    "q": "A company uses EKS and ECS on Fargate. The security team must get an alarm when an unknown binary runs in a container, a reverse shell opens, or a crypto miner starts. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Amazon Inspector ECR enhanced scanning",
+      "VPC Flow Logs with CloudWatch Logs Insights queries",
+      "AWS Config rules for ECS task definitions",
+      "GuardDuty Runtime Monitoring with the automatically managed security agent for EKS and ECS Fargate"
+    ],
+    "answer": 3,
+    "explain": "Runtime Monitoring observes processes, files, and network events inside containers and produces findings such as a new binary or crypto mining. Inspector looks for static vulnerabilities, Flow Logs do not see processes, and Config checks configuration."
+  },
+  {
+    "obj": "3.2",
+    "q": "An organization has 40 accounts with Windows and Linux EC2 instances in two Regions. Critical security patches must be installed automatically on Sunday between 02:00 and 04:00, and compliance status must be visible centrally. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "An EventBridge schedule that triggers a Lambda function which connects to the instances over SSH and runs updates",
+      "A Systems Manager Patch Manager patch policy via Quick Setup for the entire organization, with a custom patch baseline and a schedule in a maintenance window",
+      "Amazon Inspector with automatic vulnerability remediation",
+      "A user data script that installs patches on every reboot"
+    ],
+    "answer": 1,
+    "explain": "A patch policy in Quick Setup centrally defines the baseline, schedule, and operation for multiple accounts and Regions, and the results go to Compliance. Inspector finds vulnerabilities but does not install patches, and the SSH and user data solutions are manual and have no central reporting."
+  },
+  {
+    "obj": "3.2",
+    "q": "EC2 instances in a private subnet without a NAT gateway must be accessible to administrators through Session Manager. The agent is installed and the instance profile has AmazonSSMManagedInstanceCore, but the instances do not appear as managed nodes. What is the cause?",
+    "options": [
+      "The interface VPC endpoints for ssm, ssmmessages, and ec2messages are missing",
+      "The security group does not allow inbound traffic on port 22",
+      "A gateway VPC endpoint for Systems Manager is missing",
+      "The instances do not have an Elastic IP address"
+    ],
+    "answer": 0,
+    "explain": "The SSM Agent must reach the SSM service outbound; without NAT, interface endpoints for ssm, ssmmessages, and ec2messages provide that. Session Manager needs neither port 22 nor a public IP, and gateway endpoints exist only for S3 and DynamoDB."
+  },
+  {
+    "obj": "3.2",
+    "q": "A company wants to retire its bastion host. Administrators must access Linux instances without port 22 open to the internet, every command must be recorded, and access must be controlled with IAM policies based on the instance tag. Which solution meets the requirements?",
+    "options": [
+      "EC2 Instance Connect with public IP addresses on the instances",
+      "AWS Client VPN and per-user SSH keys",
+      "Systems Manager Session Manager with session logging to S3 and CloudWatch Logs and the IAM condition ssm:resourceTag",
+      "A bastion in an Auto Scaling group with SSH logs in CloudWatch"
+    ],
+    "answer": 2,
+    "explain": "Session Manager requires no inbound ports, logs the entire session, and supports IAM conditions on the instance tag. Instance Connect with a public IP opens port 22, and VPN and bastion still require key management and do not provide a command audit."
+  },
+  {
+    "obj": "3.2",
+    "q": "A team must use SSH (not Session Manager) to instances in a private subnet, without a bastion host, without public IP addresses, and without long-lived SSH keys on laptops. Which solution meets the requirements?",
+    "options": [
+      "A NAT gateway and SSH keys distributed through Secrets Manager",
+      "An EC2 Instance Connect Endpoint in the VPC with IAM permissions to push a one-time public key",
+      "A Network Load Balancer with a TCP listener on port 22",
+      "A Site-to-Site VPN with static keys in authorized_keys"
+    ],
+    "answer": 1,
+    "explain": "An EC2 Instance Connect Endpoint enables SSH to private instances without a public IP or bastion, and Instance Connect pushes a short-lived key controlled by IAM. NAT is only for outbound traffic, an NLB on 22 exposes SSH, and a VPN with static keys does not meet the requirement."
+  },
+  {
+    "obj": "3.2",
+    "q": "Developers want to get findings about security vulnerabilities, secrets, and IaC errors directly in the IDE while writing code, with suggested fixes. The company has used Amazon CodeGuru Security until now. Which solution should be chosen?",
+    "options": [
+      "Continue with CodeGuru Security because it is the only AWS SAST service",
+      "Amazon Inspector EC2 scanning",
+      "An AWS Config conformance pack for developer accounts",
+      "Amazon Q Developer code review (security scanning) in the IDE"
+    ],
+    "answer": 3,
+    "explain": "Amazon Q Developer performs SAST, secret detection, IaC, and SCA checks in the IDE with suggested fixes. AWS ended support for CodeGuru Security on November 20, 2025 and lists Q Developer and Inspector as replacements, while Inspector EC2 and Config do not scan code in the IDE."
+  },
+  {
+    "obj": "3.2",
+    "q": "A company is building a customer support chatbot on Amazon Bedrock. Responses must never contain payment card numbers or email addresses, but the rest of the response should be shown to the user. Which solution meets the requirement with the LEAST development?",
+    "options": [
+      "A Bedrock guardrail with a sensitive information filter that masks the card and email PII types in the response",
+      "Amazon Macie on the S3 bucket with the knowledge base documents",
+      "A Lambda function with custom regular expressions that processes every response",
+      "A denied topic in the guardrail for the payments topic"
+    ],
+    "answer": 0,
+    "explain": "A sensitive information filter can mask PII in the response and return the rest of the text. Macie works only on S3 data, a custom Lambda requires development and maintenance, and a denied topic would block the entire topic instead of masking."
+  },
+  {
+    "obj": "3.2",
+    "q": "A Bedrock agent has an action group with a Lambda function whose role has ec2:* and s3:*. A user inserted an instruction into a document the agent reads, and the agent deleted EC2 instances. Which TWO measures reduce the risk the MOST? (Choose TWO.)",
+    "options": [
+      "Restrict the Lambda function's role to exactly the required actions and resources",
+      "Increase the model temperature so responses are more varied",
+      "Enable user confirmation (human-in-the-loop) for the agent's destructive actions",
+      "Enable model invocation logging as the only control",
+      "Move the agent to another Region"
+    ],
+    "answer": [0, 2],
+    "explain": "This is Excessive Agency (LLM06) caused by indirect prompt injection: least privilege on the role and confirmation for risky actions limit the damage. Logging only helps the investigation, and temperature and Region have nothing to do with authorization."
+  },
+  {
+    "obj": "3.2",
+    "q": "The platform team wants to ensure that no developer can invoke Bedrock models without the approved guardrail version 3. Which solution meets the requirement?",
+    "options": [
+      "Enable model invocation logging and review the logs weekly",
+      "Set the guardrail as the default in the Bedrock console",
+      "Add to the developers' IAM policies a Deny on bedrock:InvokeModel and bedrock:Converse when bedrock:GuardrailIdentifier is not the ARN of the approved guardrail version 3",
+      "Create a VPC endpoint policy that allows only bedrock:ApplyGuardrail"
+    ],
+    "answer": 2,
+    "explain": "The bedrock:GuardrailIdentifier condition makes it possible to deny an inference call that does not specify the guardrail. Logging only detects, and an endpoint policy that allows only ApplyGuardrail would block inference calls entirely."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Match the risk from the OWASP Top 10 for LLM Applications 2025 with the MOST APPROPRIATE control.",
+    "options": [
+      "LLM01 Prompt Injection",
+      "LLM02 Sensitive Information Disclosure",
+      "LLM06 Excessive Agency",
+      "LLM09 Misinformation",
+      "LLM10 Unbounded Consumption"
+    ],
+    "targets": [
+      "Contextual grounding check in Bedrock Guardrails",
+      "Throttling and quotas on the API, a token limit per request",
+      "Prompt attack filter in Bedrock Guardrails",
+      "A least privilege role for the action group and user confirmation",
+      "PII masking in the sensitive information filter",
+      "S3 Object Lock on logs"
+    ],
+    "answer": [2, 4, 3, 0, 1],
+    "explain": "The prompt attack filter blocks prompt injection, the sensitive information filter handles PII leakage, least privilege and confirmation address excessive agency, the grounding check addresses misinformation, and throttling and limits address unbounded consumption. Object Lock is not a control for LLM risks."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Match the requirement with the IAM mechanism that correctly addresses it.",
+    "options": [
+      "Code in a Lambda function needs to write to a DynamoDB table.",
+      "The ECS agent needs to pull an image from a private ECR and read a secret for an environment variable.",
+      "An application on an EC2 instance needs to read from an S3 bucket.",
+      "A pod in EKS needs access to an SQS queue, and the other pods on the node must not have it.",
+      "A CodeBuild project needs to push to ECR on your behalf."
+    ],
+    "targets": [
+      "Instance profile",
+      "Service role for CodeBuild",
+      "EKS Pod Identity association",
+      "Lambda execution role",
+      "ECS task execution role",
+      "Lambda resource-based policy"
+    ],
+    "answer": [3, 4, 0, 2, 1],
+    "explain": "Lambda code uses the execution role; a resource-based policy on the function controls who may invoke it. The ECS agent uses the task execution role, EC2 uses an instance profile, a pod uses Pod Identity (or IRSA), and a service acting on your behalf uses a service role."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Put the steps of a secure CI/CD flow for a container image in the correct order.",
+    "options": [
+      "Push the image to ECR and run an Amazon Inspector enhanced scan",
+      "Deploy to ECS/EKS",
+      "SAST plus secret and IaC scanning in a CodeBuild step",
+      "A gate that stops the pipeline if there are critical findings",
+      "Commit the code to the repository"
+    ],
+    "answer": [4, 2, 0, 3, 1],
+    "explain": "The code is committed first, then the build runs SAST/IaC/secret scanning, the image is pushed and scanned in ECR, the gate reads the findings, and only then comes the deployment. The gate must come before the deployment to stop a vulnerable image."
+  }
+]

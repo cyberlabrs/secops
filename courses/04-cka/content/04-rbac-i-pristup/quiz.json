@@ -1,0 +1,269 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Zadatak: ServiceAccount deployer u namespaceu ci treba da kreira i ažurira Deploymente, samo u namespaceu ci. Rola deploy-manager (Role u ci) već postoji. Koja komanda je ispravna?",
+    "options": [
+      "kubectl create rolebinding deployer-rb -n ci --role=deploy-manager --serviceaccount=ci:deployer",
+      "kubectl create rolebinding deployer-rb -n ci --role=deploy-manager --serviceaccount=deployer",
+      "kubectl create clusterrolebinding deployer-rb --role=deploy-manager --serviceaccount=ci:deployer",
+      "kubectl create rolebinding deployer-rb -n ci --role=deploy-manager --user=deployer"
+    ],
+    "answer": 0,
+    "explain": "--serviceaccount traži format namespace:ime, a RoleBinding u ci daje prava samo u ci. Bez namespacea kubectl odbija flag, ClusterRoleBinding ne može referencirati Role, a --user=deployer veže korisnika deployer, ne ServiceAccount."
+  },
+  {
+    "obj": "1.1",
+    "q": "Korisnik jana izvršava `kubectl get pods -n dev` i radi, ali `kubectl logs web-7d9f -n dev` vraća: pods \"web-7d9f\" is forbidden: User \"jana\" cannot get resource \"pods/log\". Šta treba dodati u njenu Role?",
+    "options": [
+      "verb watch na resurs pods",
+      "resurs pods/log sa verbom get",
+      "resurs pods/exec sa verbom create",
+      "verb logs na resurs pods"
+    ],
+    "answer": 1,
+    "explain": "kubectl logs čita subresurs pods/log verbom get; pravo na pods ga ne uključuje. pods/exec služi za kubectl exec, a verb logs ne postoji."
+  },
+  {
+    "obj": "1.1",
+    "q": "Napravio si ClusterRoleBinding koja veže ClusterRole view za grupu ops. Sada treba da vežeš istu grupu za ClusterRole edit. Pokušaj `kubectl edit clusterrolebinding ops-view` i izmjena roleRef.name u edit pada. Zašto?",
+    "options": [
+      "Grupe se mogu vezati samo RoleBindingom",
+      "ClusterRole edit je agregirana i ne može se koristiti u bindingu",
+      "roleRef je immutable; binding se mora obrisati i napraviti ponovo",
+      "Treba koristiti kubectl patch umjesto kubectl edit"
+    ],
+    "answer": 2,
+    "explain": "roleRef se ne može mijenjati nakon kreiranja, bez obzira na alat (edit, patch, apply). Agregirane role se normalno koriste u bindinzima, a grupe se mogu vezati i ClusterRoleBindingom."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koja komanda provjerava da li ServiceAccount monitor iz namespacea observability smije da lista Nodeove?",
+    "options": [
+      "kubectl auth can-i list nodes --as=monitor -n observability",
+      "kubectl auth can-i list nodes --as=serviceaccount:observability:monitor",
+      "kubectl auth can-i list nodes --serviceaccount=observability:monitor",
+      "kubectl auth can-i list nodes --as=system:serviceaccount:observability:monitor"
+    ],
+    "answer": 3,
+    "explain": "Korisničko ime ServiceAccounta je system:serviceaccount:<ns>:<ime>. --as=monitor provjerava običnog korisnika monitor, prefiks bez system: nije ispravan, a auth can-i nema flag --serviceaccount."
+  },
+  {
+    "obj": "1.1",
+    "q": "U namespaceu team-a postoji RoleBinding koja veže ClusterRole edit za korisnika marko. Šta marko može?",
+    "options": [
+      "Mijenjati većinu namespaced objekata samo u namespaceu team-a",
+      "Mijenjati većinu namespaced objekata u svim namespaceovima, jer je rola ClusterRole",
+      "Ništa, jer RoleBinding može referencirati samo Role",
+      "Mijenjati objekte u team-a i čitati Nodeove, jer edit sadrži cluster-scoped pravila"
+    ],
+    "answer": 0,
+    "explain": "ClusterRole vezana RoleBindingom daje svoja pravila samo u namespaceu bindinga. Za sve namespaceove trebao bi ClusterRoleBinding, a cluster-scoped resursi (Node) se RoleBindingom ne mogu dodijeliti."
+  },
+  {
+    "obj": "1.1",
+    "q": "Role sadrži: apiGroups [\"\"], resources [\"configmaps\"], resourceNames [\"app-config\"], verbs [\"get\",\"list\"]. Korisnik izvršava `kubectl get configmaps -n dev` i dobija Forbidden, a `kubectl get configmap app-config -n dev` radi. Zašto?",
+    "options": [
+      "configmaps pripadaju API grupi v1, a ne \"\"",
+      "list sa resourceNames je dozvoljen samo ako zahtjev ima field selector metadata.name=app-config",
+      "resourceNames važi samo za ClusterRole",
+      "verb list zahtijeva i watch"
+    ],
+    "answer": 1,
+    "explain": "Pravilo sa resourceNames pokriva list samo ako klijent filtrira po imenu (--field-selector metadata.name=app-config); običan list svih ConfigMapa je odbijen. Core grupa se piše kao \"\", a resourceNames radi i u Role."
+  },
+  {
+    "obj": "1.1",
+    "q": "Kreirao si CSR objekat za korisnika jana. `kubectl get csr jana` pokazuje CONDITION Pending. Koji je sljedeći korak?",
+    "options": [
+      "kubectl get csr jana -o jsonpath='{.status.certificate}' | base64 -d > jana.crt",
+      "kubectl config set-credentials jana --client-key=jana.key --client-certificate=jana.csr",
+      "kubectl certificate approve jana",
+      "openssl x509 -req -in jana.csr -CA /etc/kubernetes/pki/ca.crt -out jana.crt"
+    ],
+    "answer": 2,
+    "explain": "Dok CSR nije odobren, status.certificate je prazan, pa preuzimanje ne daje ništa. CSR fajl nije sertifikat, a ručno potpisivanje opensslom zaobilazi CSR API koji zadatak traži (i treba ključ CA)."
+  },
+  {
+    "obj": "1.1",
+    "q": "CSR manifest za korisnički sertifikat ima `signerName: kubernetes.io/kube-apiserver-client` i `usages: [\"digital signature\", \"key encipherment\", \"server auth\"]`. Nakon approve sertifikat se ne izdaje. Šta je pogrešno?",
+    "options": [
+      "signerName treba biti kubernetes.io/kubelet-serving",
+      "Nedostaje expirationSeconds, koje je obavezno",
+      "Ključ mora biti ECDSA, ne RSA",
+      "usages mora sadržati client auth; server auth nije dozvoljen za ovaj signer"
+    ],
+    "answer": 3,
+    "explain": "Signer kube-apiserver-client dozvoljava samo digital signature, key encipherment i client auth, i client auth je obavezan. kubelet-serving je za serving sertifikate kubeleta, a expirationSeconds je opcion."
+  },
+  {
+    "obj": "1.1",
+    "q": "Zašto je opasno izdati korisniku sertifikat sa subjektom /CN=ana/O=system:masters?",
+    "options": [
+      "Grupa system:masters je vezana za cluster-admin i ta prava se ne mogu oduzeti brisanjem RBAC bindinga",
+      "Sertifikat sa O poljem API server odbija kao nevažeći",
+      "ana bi postala ServiceAccount u namespaceu kube-system",
+      "Takav sertifikat važi samo za kubelet, pa ana ne može koristiti kubectl"
+    ],
+    "answer": 0,
+    "explain": "O polje postaje grupa; system:masters ima puni pristup i zaobilazi RBAC provjere, pa jedini lijek je opoziv/istek sertifikata. O polje je normalan način dodjele grupa, a sertifikat ne pravi ServiceAccount."
+  },
+  {
+    "obj": "1.1",
+    "q": "Pod u namespaceu ci koristi ServiceAccount builder. RoleBinding u ci ima subjects: kind ServiceAccount, name builder, namespace default. Aplikacija dobija forbidden. Uzrok?",
+    "options": [
+      "ServiceAccount se ne može koristiti kao subjekt RoleBindinga",
+      "subjects[].namespace pokazuje na default, pa binding važi za SA default:builder, a ne ci:builder",
+      "Pod mora imati automountServiceAccountToken: false",
+      "RoleBinding mora biti u namespaceu default"
+    ],
+    "answer": 1,
+    "explain": "ServiceAccount je identifikovan namespaceom i imenom; ovdje je vezan nepostojeći default:builder. Isključivanje automount-a bi aplikaciji oduzelo token, a binding je ispravno u ci."
+  },
+  {
+    "obj": "1.1",
+    "q": "ServiceAccount web ima automountServiceAccountToken: false, a Pod koji ga koristi ima spec.automountServiceAccountToken: true. Šta se dešava?",
+    "options": [
+      "Token se ne montira, jer je ServiceAccount podešavanje strože",
+      "Pod se odbija u admission fazi zbog konflikta",
+      "Token se montira, jer polje u Pod specu ima prednost",
+      "Montira se samo ca.crt bez tokena"
+    ],
+    "answer": 2,
+    "explain": "Kad je vrijednost postavljena i na SA i na Podu, odlučuje Pod spec. Nema konflikta ni djelimičnog montiranja."
+  },
+  {
+    "obj": "1.1",
+    "q": "Treba ti token za ServiceAccount ci-bot (namespace ci) koji važi 2 sata, za test iz terminala. Klaster je v1.35. Koja komanda je ispravna?",
+    "options": [
+      "kubectl get secret -n ci -o jsonpath='{.items[0].data.token}' | base64 -d",
+      "kubectl create token ci-bot -n ci --expiration=2h",
+      "kubectl create secret token ci-bot -n ci --duration=2h",
+      "kubectl create token ci-bot -n ci --duration=2h"
+    ],
+    "answer": 3,
+    "explain": "kubectl create token koristi TokenRequest API, a trajanje se zadaje flagom --duration. Od v1.24 SA nema automatski Secret sa tokenom, flag --expiration ne postoji, a ni podkomanda create secret token."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koje dvije tvrdnje o agregiranoj ClusterRole monitoring sa aggregationRule.clusterRoleSelectors (matchLabels rbac.kurs.local/aggregate-to-monitoring: \"true\") su tačne? (Izaberi DVA.)",
+    "options": [
+      "Pravila dodaješ tako što napraviš novu ClusterRole sa labelom rbac.kurs.local/aggregate-to-monitoring: \"true\"",
+      "Ručno dodata pravila u rules role monitoring ostaju trajno",
+      "Control plane automatski popunjava rules role monitoring",
+      "Agregirana rola se može vezati samo ClusterRoleBindingom",
+      "Agregacija radi i sa Role objektima u namespaceu"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Kontroler skuplja pravila iz ClusterRole sa odgovarajućom labelom i prepisuje rules agregirane role, pa ručne izmjene nestaju. Agregirana rola se može vezati i RoleBindingom (npr. edit), a agregacija radi samo sa ClusterRole."
+  },
+  {
+    "obj": "1.1",
+    "q": "Developer treba da radi `kubectl exec` u Podove namespacea dev. Šta mu minimalno treba u Role?",
+    "options": [
+      "get na pods i create na pods/exec",
+      "update na pods",
+      "exec na pods",
+      "get na pods/exec i patch na pods"
+    ],
+    "answer": 0,
+    "explain": "kubectl exec prvo dohvata Pod (get pods), a zatim radi POST na subresurs pods/exec, što je verb create. Verb exec ne postoji, a update/patch na pods ne daje exec."
+  },
+  {
+    "obj": "1.1",
+    "q": "Nakon izmjene /etc/kubernetes/manifests/kube-apiserver.yaml dodao si `--enable-admission-plugins=NodeRestriction,PodNodeSelector`. Šta se dešava sa podrazumijevano uključenim pluginovima (npr. ServiceAccount, ResourceQuota)?",
+    "options": [
+      "Isključeni su, jer lista zamjenjuje podrazumijevanu",
+      "Ostaju uključeni; flag dodaje pluginove na podrazumijevanu listu",
+      "Ostaju uključeni samo ako se navedu i u --admission-control-config-file",
+      "kube-apiserver ne startuje jer se lista mora navesti u cijelosti"
+    ],
+    "answer": 1,
+    "explain": "--enable-admission-plugins dodaje pluginove pored podrazumijevanih; isključivanje se radi sa --disable-admission-plugins. Config fajl služi za konfiguraciju pojedinih pluginova, ne za uključivanje podrazumijevanih."
+  },
+  {
+    "obj": "1.1",
+    "type": "order",
+    "q": "Poredaj korake za dodavanje korisnika jana preko CSR API-ja i njegovo korišćenje u kubeconfigu.",
+    "options": [
+      "kubectl certificate approve jana",
+      "openssl genrsa -out jana.key 3072 i openssl req -new -key jana.key -subj \"/CN=jana/O=dev\" -out jana.csr",
+      "kubectl config set-credentials jana --client-key=jana.key --client-certificate=jana.crt --embed-certs=true",
+      "kubectl apply CertificateSigningRequest sa base64 CSR-om, signerName kubernetes.io/kube-apiserver-client i usages client auth",
+      "kubectl get csr jana -o jsonpath='{.status.certificate}' | base64 -d > jana.crt",
+      "kubectl config set-context jana --cluster=kubernetes --user=jana"
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      4,
+      2,
+      5
+    ],
+    "explain": "Prvo ključ i CSR lokalno, pa CSR objekat u klasteru, odobravanje, preuzimanje sertifikata iz status.certificate, zatim kredencijali i na kraju kontekst koji ih povezuje sa klasterom."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari poruku greške ili simptom sa najvjerovatnijim uzrokom.",
+    "options": [
+      "error: You must be logged in to the server (Unauthorized)",
+      "User \"jana\" cannot list resource \"deployments\" in API group \"apps\" in the namespace \"prod\"",
+      "CSR je Approved, ali status.certificate je prazan",
+      "kubectl apply postojećeg ClusterRoleBindinga sa novim roleRef.name vraća grešku: cannot change roleRef"
+    ],
+    "targets": [
+      "roleRef je immutable",
+      "Pogrešan usages ili signerName pa signer ne izdaje sertifikat",
+      "Sertifikat ili token nije prihvaćen (istekao ili potpisan drugim CA)",
+      "Nema bindinga za prod ili rola nema apiGroups apps",
+      "Admission kontroler NodeRestriction odbija zahtjev"
+    ],
+    "answer": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "401 je problem autentifikacije, 403 sa punim opisom je RBAC (nedostaje binding ili pravilo), CSR bez sertifikata nakon odobrenja ukazuje na signer koji ne prihvata zahtjev, a roleRef se ne može mijenjati. NodeRestriction se odnosi na kubelete."
+  },
+  {
+    "obj": "1.1",
+    "q": "Želiš brzo vidjeti sva prava korisnika jana u namespaceu dev. Koja komanda?",
+    "options": [
+      "kubectl describe user jana -n dev",
+      "kubectl get rolebindings -n dev --user=jana",
+      "kubectl auth whoami --as=jana -n dev",
+      "kubectl auth can-i --list --as=jana -n dev"
+    ],
+    "answer": 3,
+    "explain": "auth can-i --list ispisuje sve dozvoljene resurse i verbove za subjekat u namespaceu. User objekat ne postoji, get nema filter --user, a auth whoami samo prikazuje identitet."
+  },
+  {
+    "obj": "1.1",
+    "q": "Na kubeadm klasteru neko je uklonio NodeRestriction iz kube-apiserver manifesta. Koji je rizik?",
+    "options": [
+      "Podovi više ne dobijaju ServiceAccount token",
+      "Kompromitovan kubelet sa jednog čvora može mijenjati druge Node objekte i Podove na drugim čvorovima",
+      "kube-scheduler više ne može da zakazuje Podove",
+      "RBAC prestaje da važi za korisnike"
+    ],
+    "answer": 1,
+    "explain": "NodeRestriction ograničava kubelet na njegov Node objekat i Podove vezane za njegov čvor. Tokene ubacuje ServiceAccount admission plugin, a RBAC je autorizacija i ne zavisi od ovog plugina."
+  },
+  {
+    "obj": "1.1",
+    "type": "spot",
+    "q": "ServiceAccount ci-deployer iz namespacea staging treba da čita i ažurira Deploymente u staging, ali kubectl auth can-i update deployments -n staging --as=system:serviceaccount:staging:ci-deployer vraća no. Klikni redove sa greškom.",
+    "lang": "yaml",
+    "snippet": "apiVersion: rbac.authorization.k8s.io/v1\nkind: Role\nmetadata: {name: deployer, namespace: staging}\nrules:\n- apiGroups: [\"\"]\n  resources: [\"deployments\"]\n  verbs: [\"get\", \"list\", \"update\", \"patch\"]\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind: RoleBinding\nmetadata: {name: deployer-ci, namespace: staging}\nsubjects:\n- {kind: ServiceAccount, name: ci-deployer, namespace: default}\nroleRef: {kind: Role, name: deployer, apiGroup: rbac.authorization.k8s.io}",
+    "answer": [
+      4,
+      12
+    ],
+    "explain": "Red 5: Deploymenti su u API grupi apps, a \"\" je core grupa (pods, services, secrets), pa pravilo ne pokriva deployments; treba apiGroups: [\"apps\"]. Red 13: subject je ServiceAccount ci-deployer iz namespacea default, a ne staging, pa binding važi za pogrešan nalog; treba namespace: staging. Imperativno: kubectl create role ... --verb=get,list,update,patch --resource=deployments.apps."
+  }
+]

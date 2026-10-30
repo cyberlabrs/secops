@@ -1,0 +1,298 @@
+[
+  {
+    "obj": "6.1",
+    "q": "A new CISO wants the organization to commission a penetration test of the entire infrastructure. What should be done FIRST?",
+    "options": [
+      "Launch an automated scan of all IP ranges to speed up the test.",
+      "Notify all employees that the test will be performed.",
+      "Obtain written management approval and agree on the scope and rules of engagement.",
+      "Choose the tools the testers will use."
+    ],
+    "answer": 2,
+    "explain": "Without written management permission and a defined scope, the test is unauthorized access. The rules of engagement define what is allowed, when, who the contacts are and how data is handled. Technical steps come afterwards."
+  },
+  {
+    "obj": "6.1",
+    "q": "A bank must show the regulator that its controls are effective, and the regulator requires an assessment that the organization cannot steer in either scope or conclusions. Which type of assessment fits BEST?",
+    "options": [
+      "An internal assessment by the IT team",
+      "An external assessment that is outside of organization control",
+      "A self-assessment by department managers",
+      "An assessment performed by the internal red team"
+    ],
+    "answer": 1,
+    "explain": "An external assessment (outside of organization control) provides the greatest independence and credibility with the regulator. Internal assessments and self-assessments are useful for improvement, but lack the required independence."
+  },
+  {
+    "obj": "6.1",
+    "q": "An organization wants to perform a penetration test of its workloads at a public IaaS provider. What is MOST important to check before the test?",
+    "options": [
+      "The provider's testing policy and the boundaries of the shared responsibility model, so that only what the organization is responsible for is tested, and in a permitted way",
+      "Whether the provider has a SOC 3 report",
+      "Whether the test can include a DoS attack on the provider's hypervisor",
+      "Whether the provider uses IPv6"
+    ],
+    "answer": 0,
+    "explain": "Location changes the strategy: in the cloud you may test only your part of the environment and in accordance with the provider's policy (notice, prohibited tests such as DoS). Testing the provider's infrastructure without permission is unauthorized."
+  },
+  {
+    "obj": "6.1",
+    "q": "An assessment program ran monthly scans for a year, but an incident showed that the entire OT segment had never been included. Which element of the strategy was missing?",
+    "options": [
+      "Responsible disclosure",
+      "Exception handling",
+      "Synthetic transactions",
+      "Validation of the strategy, including coverage analysis against the asset inventory"
+    ],
+    "answer": 3,
+    "explain": "The strategy must be designed and validated: do the tests really cover all critical assets. Coverage analysis against the inventory would have revealed that the OT segment was missing."
+  },
+  {
+    "obj": "6.2",
+    "q": "An organization wants to regularly, every month, identify known vulnerabilities on all servers with the least risk to production and the fewest false positives. Which approach is BEST?",
+    "options": [
+      "A monthly black box penetration test",
+      "Credentialed (authenticated) vulnerability scanning",
+      "Non-credentialed scanning from the internet",
+      "A double-blind red team exercise"
+    ],
+    "answer": 1,
+    "explain": "Vulnerability assessment is intended for regular, broad identification of known vulnerabilities. Credentialed scanning sees installed software and configuration, so it is more accurate and has fewer false positives. Pentests and red teaming are deeper, less frequent and riskier."
+  },
+  {
+    "obj": "6.2",
+    "q": "Management wants to find out whether the SOC really detects and responds to an attack, without the analysts knowing that a test is being performed. Which test is MOST appropriate?",
+    "options": [
+      "A blind test, where the SOC knows about the test and the tester has no information",
+      "A white box test with full documentation",
+      "A double-blind test, where neither the SOC nor the tester has advance information about the details",
+      "A targeted test with full SOC cooperation"
+    ],
+    "answer": 2,
+    "explain": "A double-blind test checks both resilience and the actual detection and response capability because the defenders do not know about the test. In a blind test the SOC knows the test is being performed, so it does not measure the real reaction."
+  },
+  {
+    "obj": "6.2",
+    "q": "An e-commerce team wants to know whether the ordering process works at night too, when there are almost no customers, and to get an alert before customers complain. What is the BEST choice?",
+    "options": [
+      "Real User Monitoring",
+      "Monthly log review",
+      "Static code analysis",
+      "Synthetic transactions that periodically execute a scripted purchase"
+    ],
+    "answer": 3,
+    "explain": "Synthetic transactions are predefined transactions executed periodically that detect a problem even without real users. RUM depends on real users, so it gives no signal at night."
+  },
+  {
+    "obj": "6.2",
+    "q": "A team writes a test that verifies a customer cannot change an item's price by modifying a parameter in the request and cannot see someone else's order by changing the ID. What is this type of testing called?",
+    "options": [
+      "Misuse case testing",
+      "Regression testing",
+      "Synthetic transaction",
+      "Load testing"
+    ],
+    "answer": 0,
+    "explain": "A misuse (abuse) case describes how a malicious actor would abuse a function; tests confirm that the system rejects it. Automated scanners usually do not find such business logic flaws."
+  },
+  {
+    "obj": "6.2",
+    "q": "Application tests execute 92% of code lines, but only 61% of conditional branches. What is the MOST accurate conclusion?",
+    "options": [
+      "The application is sufficiently tested because statement coverage is above 90%.",
+      "A significant portion of logic paths is untested; branch coverage is a stricter measure and points to uncovered cases, including error handling.",
+      "Branch coverage is always higher than statement coverage, so the measurements are wrong.",
+      "Coverage analysis is not relevant to security."
+    ],
+    "answer": 1,
+    "explain": "Coverage analysis measures how much has been tested. Branch coverage requires every decision branch to be executed, so it is stricter than statement coverage. Uncovered branches are often exactly the error and edge-case paths."
+  },
+  {
+    "obj": "6.2",
+    "q": "An organization wants to continuously, every week, check whether EDR and SIEM rules detect known attacker techniques mapped to MITRE ATT&CK, without engaging a human team. What is MOST appropriate?",
+    "options": [
+      "An annual penetration test",
+      "Fagan inspection",
+      "Automated attack simulations (BAS)",
+      "A compliance check against a CIS benchmark"
+    ],
+    "answer": 2,
+    "explain": "Attack simulations (in the 2024 outline, breach attack simulations) safely and repeatably execute attacker techniques and measure whether controls detect and block them. A pentest is less frequent and relies on people, and a compliance check verifies configuration, not detection."
+  },
+  {
+    "obj": "6.3",
+    "q": "Management asks for the BEST evidence that the backup process really enables recovery. What should be presented?",
+    "options": [
+      "Results of periodic restore tests, including measured recovery time versus the RTO",
+      "A report that all backup jobs in the last 30 days completed successfully",
+      "The contract with the backup software vendor",
+      "The backup policy approved by management"
+    ],
+    "answer": 0,
+    "explain": "A backup that has not been restored has not been proven. A successful backup job does not guarantee that the data is readable and that recovery can be performed within the RTO. The policy and contract are administrative evidence, not evidence of effectiveness."
+  },
+  {
+    "obj": "6.3",
+    "q": "Which of the following metrics is the BEST example of a key risk indicator (KRI) rather than a KPI?",
+    "options": [
+      "The percentage of employees who completed annual training",
+      "Average incident closure time in the last quarter",
+      "The number of patches applied last month",
+      "A growing number of servers on an operating system no longer supported by the vendor, with an escalation threshold"
+    ],
+    "answer": 3,
+    "explain": "A KRI is an early signal of rising risk, tied to risk appetite and an escalation threshold. The other examples measure past process performance (KPI)."
+  },
+  {
+    "obj": "6.3",
+    "q": "The CISO wants to show that the awareness program really reduces risk. Which data is MOST convincing?",
+    "options": [
+      "The number of presentations held",
+      "The trend of a falling click rate and a rising reporting rate in phishing simulations over time",
+      "The percentage of employees who signed the policy",
+      "The number of e-mail warnings sent"
+    ],
+    "answer": 1,
+    "explain": "Training effectiveness is measured by a change in behavior, not by activities. Fewer clicks and more reports show that employees recognize and report threats."
+  },
+  {
+    "obj": "6.3",
+    "q": "Of 4,000 endpoints, 260 have no active EDR agent. The KRI threshold is: green below 2%, yellow 2–5%, red above 5% with escalation to the CISO. What is the correct conclusion?",
+    "options": [
+      "The value is 6.5%, red, so the risk is escalated to the CISO.",
+      "The value is 2.6%, yellow, so only monitoring is needed.",
+      "The value is 0.65%, green.",
+      "The value is 65%, which indicates a wrong inventory."
+    ],
+    "answer": 0,
+    "explain": "260 / 4,000 = 0.065 = 6.5%, which is above the 5% threshold, so according to the defined threshold the risk is escalated."
+  },
+  {
+    "obj": "6.4",
+    "q": "A pentest discovered a critical vulnerability in a legacy manufacturing control system that cannot be patched for the next two years. What is the BEST course of action?",
+    "options": [
+      "Shut down the system immediately, regardless of production.",
+      "Ignore the finding because it cannot be fixed anyway.",
+      "A formal exception: risk assessment, compensating controls, risk owner approval, an expiration date and periodic review.",
+      "Remove the finding from the report so management will not worry."
+    ],
+    "answer": 2,
+    "explain": "Exception handling is formal risk acceptance with compensating controls, approved at the appropriate level, with an expiration date and recorded in the risk register. Shutting down without analysis endangers the business, and hiding findings is unethical."
+  },
+  {
+    "obj": "6.4",
+    "q": "A scanner reported three findings: RCE (CVSS 9.8) on an isolated test server with no data, an authentication bypass (CVSS 8.1) on a public portal with personal data that is being actively exploited, and an outdated TLS version (CVSS 5.3) on an internal API. Which finding should be remediated FIRST?",
+    "options": [
+      "The RCE on the test server, because it has the highest CVSS",
+      "The outdated TLS, because it is the easiest to fix",
+      "All at the same time, without priority",
+      "The authentication bypass on the public portal"
+    ],
+    "answer": 3,
+    "explain": "Priority is determined by risk: internet exposure, personal data and active exploitation make the portal finding the greatest business risk, even though its CVSS is not the highest."
+  },
+  {
+    "obj": "6.4",
+    "q": "During an engagement at a client, a consultant discovers a serious, publicly unknown vulnerability in a commercial product used by thousands of organizations. What is the MOST appropriate thing to do?",
+    "options": [
+      "Immediately publish all details on a blog so everyone is warned.",
+      "Notify the client according to the contract and the vendor through coordinated disclosure, with a reasonable deadline for the fix before public disclosure.",
+      "Tell no one, because the vulnerability is not in the client's system.",
+      "Sell the information to the highest bidder."
+    ],
+    "answer": 1,
+    "explain": "Responsible (coordinated) disclosure, in the 2024 outline ethical disclosure, protects users: the vendor gets time to fix it, and the public is informed once protection exists. Full disclosure exposes users before a patch, and staying silent leaves the risk in place. Obligations to the client and the ISC2 Code of Ethics are respected."
+  },
+  {
+    "obj": "6.4",
+    "q": "The CISO is preparing a report on testing results for the board of directors. What should be the FOCUS of the report?",
+    "options": [
+      "A complete list of all 14,000 vulnerabilities with CVE identifiers",
+      "Detailed technical steps to reproduce each finding",
+      "Business risk, trends, remediation status against deadlines and the decisions required from management",
+      "A list of tools used in testing"
+    ],
+    "answer": 2,
+    "explain": "The report is tailored to the audience. Management needs an executive summary with business risk, trend and required decisions (resources, risk acceptance). Technical details go to the teams doing remediation."
+  },
+  {
+    "obj": "6.5",
+    "q": "An organization cannot perform its own audit of a SaaS provider's data center. Which evidence is BEST for assessing the operating effectiveness of the provider's security controls?",
+    "options": [
+      "A SOC 3 report published on the provider's website",
+      "A SOC 1 Type I report",
+      "A marketing whitepaper on the provider's security",
+      "A SOC 2 Type II report for the relevant period, with a check of exceptions and complementary user entity controls"
+    ],
+    "answer": 3,
+    "explain": "SOC 2 covers the security Trust Services Criteria, and Type II tests operating effectiveness over a period. SOC 3 is a summary without details, SOC 1 relates to financial reporting, and Type I only to design at a point in time."
+  },
+  {
+    "obj": "6.5",
+    "q": "To whom should the internal audit of IT controls report in order to maintain independence?",
+    "options": [
+      "The audit committee or the highest governing body",
+      "The IT director whose controls it audits",
+      "The system administrator",
+      "The sales director"
+    ],
+    "answer": 0,
+    "explain": "Internal audit must be independent of the area it audits. Reporting to the audit committee ensures this; reporting to the IT director creates a conflict of interest."
+  },
+  {
+    "obj": "6.5",
+    "q": "An auditor wants the STRONGEST evidence that former employees' accounts are really disabled. Which evidence-gathering technique is strongest?",
+    "options": [
+      "An interview with the IAM administrator",
+      "Re-performance: a sample of former employees from the HR system and checking the state of their accounts in the directory",
+      "A review of the written offboarding procedure",
+      "A statement from the IT manager that the procedure is followed"
+    ],
+    "answer": 1,
+    "explain": "Evidence the auditor produces personally from an independent source (HR) by comparing it with the actual state is the strongest. Interviews and statements are the weakest, and a procedure shows design, not execution."
+  },
+  {
+    "obj": "6.5",
+    "q": "A company is planning an audit of a hybrid environment (on-prem AD synchronized with a cloud IdP, applications on both sides). What should be specifically included in the scope?",
+    "options": [
+      "Only on-prem systems, because the cloud is the provider's responsibility",
+      "Only the cloud, because on-prem is outdated",
+      "The connections and trust between environments (synchronization, federation, VPN), consistency of controls on both sides and the division of responsibility with the provider",
+      "A physical inspection of the cloud provider's data center"
+    ],
+    "answer": 2,
+    "explain": "In a hybrid environment the risk lies at the boundaries and in inconsistent controls. The organization remains responsible for its part in the cloud (configuration, IAM, data), and relies on attestations for the provider's part."
+  },
+  {
+    "obj": "6.2",
+    "type": "order",
+    "q": "Order the phases of a penetration test per NIST SP 800-115 from first to last.",
+    "options": [
+      "Attack",
+      "Reporting",
+      "Planning",
+      "Discovery"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Planning (scope, rules, approval), Discovery (reconnaissance and vulnerability identification), Attack (exploitation attempts and additional discovery), Reporting (findings and recommendations)."
+  },
+  {
+    "obj": "6.5",
+    "type": "match",
+    "q": "Match the need with the report that BEST satisfies it.",
+    "options": [
+      "The customer's external financial auditor needs evidence of the payroll provider's controls",
+      "The security team needs detailed evidence that the provider's security controls operated throughout the whole year",
+      "A prospective customer wants publicly available, concise evidence without signing an NDA",
+      "Evidence is needed that the controls were well designed on a specific day, before the first observation period"
+    ],
+    "targets": [
+      "SOC 2 Type I",
+      "SOC 2 Type II",
+      "SOC 3",
+      "SOC 1"
+    ],
+    "answer": [3, 1, 2, 0],
+    "explain": "SOC 1 relates to controls relevant to financial reporting. SOC 2 Type II shows operating effectiveness over a period. SOC 3 is a public summary. Type I shows design at a point in time."
+  }
+]

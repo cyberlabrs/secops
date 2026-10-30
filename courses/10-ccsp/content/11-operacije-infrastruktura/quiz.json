@@ -1,0 +1,292 @@
+[
+  {
+    "obj": "5.1",
+    "q": "Finansijska institucija u javnom cloudu mora čuvati ključeve za potpisivanje transakcija u FIPS 140 Level 3 validiranom uređaju nad kojim samo ona ima administrativnu kontrolu. Koje rješenje NAJBOLJE ispunjava zahtjev?",
+    "options": [
+      "Multi-tenant KMS servis sa ključevima kojima upravlja CSP.",
+      "vTPM na svakoj virtuelnoj mašini koja potpisuje transakcije.",
+      "Dedicated (single-tenant) cloud HSM sa ulogama kojima upravlja institucija.",
+      "Ključevi u secrets manageru šifrovani default ključem."
+    ],
+    "answer": 2,
+    "explain": "Dedicated cloud HSM daje FIPS 140 Level 3 zaštitu i isključivu administrativnu kontrolu kupca. Multi-tenant KMS ne daje isključivu kontrolu, vTPM služi za integritet i identitet jedne mašine, a secrets manager nije HSM."
+  },
+  {
+    "obj": "5.1",
+    "q": "Cloud provajder želi osigurati da se osjetljivi workloadi kupaca raspoređuju samo na hostove čiji boot lanac nije izmijenjen. Koja tehnologija to NAJBOLJE omogućava?",
+    "options": [
+      "TPM sa measured bootom i atestacijom hosta prije raspoređivanja.",
+      "HSM u svakom racku.",
+      "Enkripcija diskova na hostu.",
+      "Antivirus na hipervizoru."
+    ],
+    "answer": 0,
+    "explain": "TPM mjeri komponente boota u PCR registre, pa se integritet hosta može atestirati i koristiti za trusted compute pools. HSM čuva ključeve, enkripcija diskova ne dokazuje integritet boota, a antivirus nije mehanizam atestacije."
+  },
+  {
+    "obj": "5.1",
+    "q": "Novi cloud servis interno kreira storage sa javnim pristupom isključenim, enkripcijom uključenom i logovanjem aktivnim, bez ikakve akcije korisnika. Koji princip ovo opisuje?",
+    "options": [
+      "Defense in depth",
+      "Security through obscurity",
+      "Least functionality",
+      "Secure by default"
+    ],
+    "answer": 3,
+    "explain": "Secure by default znači da je početno stanje sigurno bez dodatne konfiguracije. Defense in depth je slojevitost kontrola, least functionality isključivanje nepotrebnih funkcija, a obscurity nije princip sigurnosti."
+  },
+  {
+    "obj": "5.1",
+    "q": "Organizacija gradi privatni cloud za produkcijske multitenant workloade. Koji tip hipervizora je NAJPRIKLADNIJI i zašto?",
+    "options": [
+      "Type 2, jer je jednostavniji za instalaciju na postojeći OS.",
+      "Type 1, jer radi direktno na hardveru i ima manju napadnu površinu.",
+      "Type 2, jer izoluje VM-ove kroz host OS.",
+      "Svejedno je, jer izolaciju obezbjeđuju VLAN-ovi."
+    ],
+    "answer": 1,
+    "explain": "Type 1 (bare metal) hipervizor nema opšti OS ispod sebe, pa je manja napadna površina i bolje performanse; zato ga koriste data centri i CSP-ovi. Type 2 ovisi o sigurnosti host OS-a, a VLAN-ovi ne rješavaju izolaciju na nivou hipervizora."
+  },
+  {
+    "obj": "5.1",
+    "q": "Tim za privatni cloud brine zbog side-channel napada preko dijeljenog CPU keša između VM-ova različitih kupaca. Koja kombinacija mjera NAJBOLJE smanjuje ovaj rizik?",
+    "options": [
+      "Veći broj vCPU-a po VM-u i više memorije.",
+      "Odvojeni VLAN-ovi za svakog kupca.",
+      "Enkripcija svih diskova VM-ova.",
+      "Ažuran mikrokod i hipervizor, core scheduling ili dedicated hostovi za osjetljive workloade, i isključena deduplikacija memorije između VM-ova."
+    ],
+    "answer": 3,
+    "explain": "Side-channel rizik se smanjuje patchovanjem mikrokoda i hipervizora, izolacijom na nivou jezgara ili hostova i isključivanjem dijeljenja memorijskih stranica. Mrežna segmentacija i enkripcija diskova ne utiču na dijeljeni CPU keš."
+  },
+  {
+    "obj": "5.1",
+    "q": "IaaS kupac na sve VM-ove instalira agent za upravljanje koji omogućava izvršavanje komandi iz management planea. Koji je NAJVAŽNIJI sigurnosni aspekt ovog toolseta?",
+    "options": [
+      "Agent troši dodatni CPU, pa treba povećati veličinu instanci.",
+      "Agent se ne smije ažurirati jer može pokvariti VM.",
+      "Ko god ima ovlast za izvršavanje komandi kroz agent praktično ima root pristup gostu, pa te ovlasti treba strogo ograničiti, a agent držati ažurnim.",
+      "Agent treba instalirati samo na Windows gostima."
+    ],
+    "answer": 2,
+    "explain": "Guest toolset je privilegovan kanal između management planea i gosta; ovlast za pokretanje komandi kroz njega je ekvivalent administratorskog pristupa. Zato su least privilege, logovanje i ažurnost ključni. Ostale opcije su netačne ili nebitne."
+  },
+  {
+    "obj": "5.2",
+    "q": "Revizija otkriva da 60 Linux i Windows servera ima SSH i RDP otvorene prema internetu. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Zatvoriti direktne portove i omogućiti pristup samo kroz bastion ili managed session servis sa MFA, autorizacijom po identitetu i logovanjem sesija.",
+      "Prebaciti SSH i RDP na nestandardne portove.",
+      "Uvesti kompleksnije lozinke za sve lokalne naloge.",
+      "Uključiti IDS koji alarmira na brute force pokušaje."
+    ],
+    "answer": 0,
+    "explain": "Centralizovan pristup kroz bastion ili identity-aware session servis uklanja izloženost i daje MFA i trag. Nestandardni portovi su obscurity, lozinke ne rješavaju izloženost protokola, a IDS samo otkriva napade."
+  },
+  {
+    "obj": "5.2",
+    "q": "Sigurnosni tim želi spriječiti da napadač na mreži lažnim odgovorima preusmjeri korisnike na pogrešnu IP adresu za domen kompanije. Koja tehnologija to NAJBOLJE rješava?",
+    "options": [
+      "DNS over HTTPS",
+      "DNSSEC",
+      "DHCP snooping",
+      "VLAN segmentacija"
+    ],
+    "answer": 1,
+    "explain": "DNSSEC potpisuje DNS zapise, pa resolver može provjeriti autentičnost i integritet odgovora i odbaciti lažne (cache poisoning). DoH šifruje upite radi privatnosti, ali ne potpisuje zapise u zoni; DHCP snooping štiti od rogue DHCP-a; VLAN segmentacija ne rješava lažne DNS odgovore."
+  },
+  {
+    "obj": "5.2",
+    "q": "Tim planira uvesti IPS inline ispred kritične produkcijske aplikacije. Šta je NAJBOLJI pristup uvođenju?",
+    "options": [
+      "Odmah uključiti blokiranje sa svim potpisima da se maksimizira zaštita.",
+      "Postaviti IPS u fail-open mod i nikad ne uključiti blokiranje.",
+      "Prvo pokrenuti IPS u detekcijskom modu, analizirati lažne pozitive i podesiti pravila, pa zatim uključiti blokiranje kroz change proces.",
+      "Zamijeniti IPS honeypotom jer ne utiče na produkciju."
+    ],
+    "answer": 2,
+    "explain": "IPS je inline, pa lažni pozitivi blokiraju legitiman saobraćaj; zato se uvodi postepeno: detekcija, tuning, pa blokiranje. Trenutno blokiranje rizikuje prekid usluge, trajni detekcijski mod gubi svrhu IPS-a, a honeypot ima drugu namjenu."
+  },
+  {
+    "obj": "5.2",
+    "q": "Pravna služba pita da li honeypot smije biti postavljen u mreži kompanije. Šta je ispravno razumijevanje?",
+    "options": [
+      "Honeypot je uvijek nezakonit jer predstavlja entrapment.",
+      "Honeypot smije sadržati stvarne podatke klijenata da bi bio uvjerljiv.",
+      "Honeypot treba biti povezan sa produkcijskom mrežom da bi napadač lakše došao do njega.",
+      "Honeypot je prihvatljiv kao enticement (privlačenje napadača koji već ima namjeru), mora biti izolovan i ne smije aktivno navoditi na krivično djelo."
+    ],
+    "answer": 3,
+    "explain": "Enticement je pravno prihvatljiv, entrapment nije. Honeypot mora biti izolovan od produkcije i ne smije sadržati stvarne osjetljive podatke. Ostale opcije su netačne ili opasne."
+  },
+  {
+    "obj": "5.2",
+    "q": "Skeniranje usklađenosti pokazuje da 30% Linux instanci odstupa od CIS baselinea jer administratori mijenjaju postavke ručno. Šta je NAJBOLJA dugoročna mjera?",
+    "options": [
+      "Mjesečno se prijaviti na svaki server i ručno vratiti postavke.",
+      "Ugraditi baseline u golden image i konfiguracijski menadžment, kontinuirano pratiti usklađenost i automatski remedirati ili zamijeniti instance.",
+      "Ukinuti CIS baseline jer ga je teško održavati.",
+      "Uvesti disciplinske mjere za administratore."
+    ],
+    "answer": 1,
+    "explain": "Hardening je ciklus baseline, implementacija, monitoring i remedijacija, a automatizacija sprečava drift. Ručni rad ne skalira, ukidanje baselinea povećava rizik, a disciplinske mjere ne rješavaju procesni problem."
+  },
+  {
+    "obj": "5.2",
+    "q": "Objavljena je kritična ranjivost sa aktivnim iskorištavanjem, a proizvođač još nije izdao zakrpu za sistem izložen internetu. Šta je NAJBOLJI korak?",
+    "options": [
+      "Primijeniti kompenzacione kontrole (npr. WAF pravilo, ograničenje pristupa, isključivanje ranjive funkcije), dokumentovati rizik i pratiti izlazak zakrpe.",
+      "Čekati zakrpu i ne mijenjati ništa da se izbjegne prekid usluge.",
+      "Trajno ugasiti sistem.",
+      "Primijeniti neslužbenu zakrpu sa foruma direktno u produkciji."
+    ],
+    "answer": 0,
+    "explain": "Kada zakrpa ne postoji, rizik se smanjuje kompenzacionim kontrolama i formalno dokumentuje. Čekanje ostavlja aktivno iskorištavanu ranjivost otvorenom, trajno gašenje je nesrazmjerno, a neprovjerena zakrpa bez testiranja i change procesa uvodi novi rizik."
+  },
+  {
+    "obj": "5.2",
+    "q": "Administrator privatnog clouda treba zamijeniti memoriju na jednom hostu u klasteru bez prekida usluge za VM-ove na njemu. Šta treba uraditi PRVO?",
+    "options": [
+      "Isključiti host i pustiti HA da restartuje VM-ove.",
+      "Napraviti snapshot svih VM-ova na hostu.",
+      "Isključiti DRS za cijeli klaster.",
+      "Staviti host u maintenance mode da se VM-ovi live-migriraju na druge hostove."
+    ],
+    "answer": 3,
+    "explain": "Maintenance mode premješta VM-ove live migracijom bez prekida i sprečava nove workloade na hostu. Isključivanje hosta i oslanjanje na HA izaziva restart (prekid), snapshot nije mehanizam premještanja, a gašenje DRS-a onemogućava automatsku migraciju."
+  },
+  {
+    "obj": "5.2",
+    "q": "Dva redundantna VM-a kritične baze su nakon kvara jednog fizičkog hosta oba postala nedostupna. Koja konfiguracija je NAJVJEROVATNIJE nedostajala?",
+    "options": [
+      "Anti-affinity pravilo koje sprečava da redundantni VM-ovi rade na istom hostu.",
+      "Enkripcija memorije VM-ova.",
+      "Veći broj vCPU-a.",
+      "Thin provisioning diskova."
+    ],
+    "answer": 0,
+    "explain": "Bez anti-affinity pravila scheduler može staviti oba redundantna VM-a na isti host, pa kvar hosta obara obje kopije. Enkripcija memorije, vCPU-i i thin provisioning ne utiču na raspodjelu po hostovima."
+  },
+  {
+    "obj": "5.2",
+    "q": "Monitoring pokazuje da je nekoliko instanci danima na 100% CPU-a bez povećanja broja korisničkih zahtjeva, uz neobične izlazne konekcije. Šta je NAJVJEROVATNIJE objašnjenje koje treba istražiti?",
+    "options": [
+      "Normalno ponašanje autoskaliranja.",
+      "Kvar ventilatora na hostovima CSP-a.",
+      "Kompromitovane instance koje rade kriptominer.",
+      "Nedostatak memorije u bazi."
+    ],
+    "answer": 2,
+    "explain": "Trajno visok CPU bez poslovnog opterećenja i izlazne konekcije prema nepoznatim adresama su klasičan indikator kriptominera. Autoskaliranje dodaje instance, kvar hardvera CSP-a se ne bi manifestovao ovako, a problem memorije baze ne objašnjava izlazni saobraćaj."
+  },
+  {
+    "obj": "5.2",
+    "q": "Ransomware je šifrovao produkcijske servere i backupe, jer su backupi bili u istom nalogu i napadač je imao administratorske kredencijale. Koja mjera bi NAJVIŠE spriječila gubitak backupa?",
+    "options": [
+      "Češći snapshotovi u istom nalogu.",
+      "Antivirus na backup serveru.",
+      "Kopiranje backupa na drugi disk istog servera.",
+      "Nepromjenjivi (immutable) backupi u odvojenom nalogu sa odvojenim kredencijalima, uz redovno testiranje restorea."
+    ],
+    "answer": 3,
+    "explain": "Immutable backup u odvojenom nalogu ne može obrisati ni administrator produkcije, što je ključ zaštite od ransomwarea i kompromitovanih naloga. Češći snapshotovi i kopije na istom sistemu dijele istu tačku kompromisa, a antivirus ne štiti od legitimnih admin kredencijala."
+  },
+  {
+    "obj": "5.3",
+    "q": "Odbor direktora traži okvir koji povezuje IT ciljeve sa poslovnim ciljevima i razdvaja governance od managementa, a koriste ga i interni revizori. Koji okvir je NAJPRIKLADNIJI?",
+    "options": [
+      "ITIL 4",
+      "COBIT 2019",
+      "CIS Controls",
+      "ISO/IEC 27017"
+    ],
+    "answer": 1,
+    "explain": "COBIT je ISACA okvir za governance i upravljanje IT-om, koji usklađuje IT sa poslovnim ciljevima i razdvaja governance od managementa. ITIL je operativna praksa za IT usluge, CIS Controls su tehničke mjere, a ISO 27017 su cloud sigurnosne kontrole."
+  },
+  {
+    "obj": "5.3",
+    "q": "Veliki klijent traži od cloud provajdera certifikat koji dokazuje da ima formalan, auditovan sistem upravljanja IT uslugama. Šta provajder treba dobiti?",
+    "options": [
+      "ITIL 4 Foundation certifikate za sve zaposlene.",
+      "COSO atestaciju.",
+      "ISO/IEC 20000-1 certifikaciju.",
+      "CIS Benchmark izvještaj."
+    ],
+    "answer": 2,
+    "explain": "ISO/IEC 20000-1 je certifikabilni standard za service management sistem organizacije. ITIL certifikati su za pojedince, COSO je okvir interne kontrole, a CIS Benchmark je konfiguracijski baseline."
+  },
+  {
+    "obj": "5.3",
+    "q": "Isti incident (pad aplikacije zbog popunjenog diska sa logovima) ponavlja se svake sedmice i svaki put ga helpdesk riješi brisanjem logova. Koji ITSM proces treba aktivirati?",
+    "options": [
+      "Problem management, da se pronađe i ukloni korijenski uzrok.",
+      "Incident management sa bržim eskalacijama.",
+      "Release management.",
+      "Service level management."
+    ],
+    "answer": 0,
+    "explain": "Ponavljajući incidenti traže problem management i root cause analysis (npr. rotacija logova, kapacitet). Incident management vraća uslugu i već to radi, release i SLM ne rješavaju uzrok."
+  },
+  {
+    "obj": "5.3",
+    "q": "Tokom noći je objavljena kritična ranjivost, a administrator želi odmah primijeniti zakrpu na produkcijske servere. Šta je ispravan postupak prema operativnim standardima?",
+    "options": [
+      "Primijeniti zakrpu odmah bez ikakve evidencije, jer je hitno.",
+      "Sačekati redovni sedmični CAB sastanak.",
+      "Odbiti zakrpu dok proizvođač ne izda drugu verziju.",
+      "Pokrenuti emergency change sa ubrzanim odobrenjem (npr. ECAB), primijeniti zakrpu i naknadno kompletirati dokumentaciju."
+    ],
+    "answer": 3,
+    "explain": "Hitne promjene idu kroz emergency change proces: ubrzano odobrenje, primjena i naknadna dokumentacija. Zaobilaženje procesa uništava kontrolu i trag, čekanje redovnog CAB-a ostavlja kritičnu ranjivost otvorenom, a odbijanje zakrpe nema osnova."
+  },
+  {
+    "obj": "5.3",
+    "q": "Mala organizacija bez zrelog sigurnosnog programa traži praktičan, prioritizovan skup sigurnosnih mjera od kojih može početi. Šta je NAJBOLJA preporuka?",
+    "options": [
+      "NIST SP 800-53 Rev. 5 u punom obimu (high baseline).",
+      "CIS Controls, počevši od Implementation Group 1.",
+      "COSO Internal Control – Integrated Framework.",
+      "HIPAA Security Rule."
+    ],
+    "answer": 1,
+    "explain": "CIS Controls su prioritizovane, a IG1 je osnovni skup mjera upravo za manje organizacije. Puni 800-53 high baseline je pretežak za početak, COSO je okvir interne kontrole, a HIPAA je zakon za zdravstvene podatke, ne opšti početni program."
+  },
+  {
+    "obj": "5.2",
+    "type": "order",
+    "q": "Poredaj korake patch management procesa od prvog do posljednjeg.",
+    "options": [
+      "Testiranje zakrpe u neprodukcijskom okruženju",
+      "Verifikacija skeniranjem i dokumentacija",
+      "Inventar sistema i softvera",
+      "Odobrenje kroz change management",
+      "Procjena i prioritizacija po riziku",
+      "Postepeni deploy u produkciju uz plan rollbacka"
+    ],
+    "answer": [2, 4, 0, 3, 5, 1],
+    "explain": "Bez inventara ne znaš šta patchovati. Zatim se ranjivosti prioritizuju po riziku, zakrpa testira, odobrava kroz change management, postepeno uvodi u produkciju i na kraju verifikuje i dokumentuje."
+  },
+  {
+    "obj": "5.3",
+    "type": "match",
+    "q": "Upari svaki okvir ili standard sa NAJTAČNIJIM opisom.",
+    "options": [
+      "COSO",
+      "ITIL 4",
+      "ISO/IEC 27001",
+      "CIS Benchmarks",
+      "HIPAA",
+      "NIST CSF 2.0"
+    ],
+    "targets": [
+      "Konkretne hardening konfiguracije za proizvode",
+      "US zakon o zaštiti zdravstvenih podataka",
+      "Okvir interne kontrole, čest u finansijskom izvještavanju i SOX-u",
+      "Certifikabilni standard za sistem upravljanja informacionom sigurnošću",
+      "Skup najboljih praksi za upravljanje IT uslugama",
+      "Okvir sa funkcijama Govern, Identify, Protect, Detect, Respond, Recover"
+    ],
+    "answer": [2, 4, 3, 0, 1, 5],
+    "explain": "COSO je okvir interne kontrole, ITIL skup ITSM praksi, ISO/IEC 27001 certifikabilni ISMS standard, CIS Benchmarks konkretne konfiguracije, HIPAA zakon o PHI, a NIST CSF 2.0 okvir sa šest funkcija uključujući novu Govern."
+  }
+]

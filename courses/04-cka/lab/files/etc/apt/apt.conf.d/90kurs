@@ -1,0 +1,2 @@
+// zadrži postojeće konfiguracione fajlove (kubelet drop-in) bez interaktivnog pitanja
+Dpkg::Options { "--force-confdef"; "--force-confold"; };

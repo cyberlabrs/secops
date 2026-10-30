@@ -1,0 +1,11 @@
+{
+  "title": "Kontrole, rizik i upravljanje ranjivostima",
+  "title_en": "Controls, risk, and vulnerability management",
+  "summary": "Tipovi kontrola (administrative, technical, physical) i funkcije (preventative, detective, responsive, corrective), inherent i residual rizik, risk appetite, strategije accept/transfer/avoid/mitigate, politike, governance i SLO rokovi ispravke, SAST, DAST, OWASP SAMM i rizik trećih strana (supply chain, SCA, SBOM, VEX).",
+  "summary_en": "Control types (administrative, technical, physical) and functions (preventative, detective, responsive, corrective), inherent and residual risk, risk appetite, accept/transfer/avoid/mitigate strategies, policies, governance, and remediation SLOs, SAST, DAST, OWASP SAMM, and third-party risk (supply chain, SCA, SBOM, VEX).",
+  "minutes": 60,
+  "domain": 2,
+  "objectives": [
+    "2.4"
+  ]
+}

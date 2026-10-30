@@ -1,0 +1,325 @@
+[
+  {
+    "obj": "2.2",
+    "q": "An analyst receives output with lines such as `Discovered open port 3389/tcp on 203.0.113.44` for an entire /16 range scanned in a few minutes. Which tool was MOST likely used?",
+    "options": [
+      "Masscan",
+      "Nikto",
+      "Checkov",
+      "Recon-ng"
+    ],
+    "answer": 0,
+    "explain": "Masscan is an asynchronous port scanner for huge ranges and prints exactly `Discovered open port ... on ...`. Nikto scans web servers, Checkov scans IaC code, and Recon-ng is an OSINT framework."
+  },
+  {
+    "obj": "2.2",
+    "q": "A tool's output contains: `[git-config] [http] [medium] https://app.example.com/.git/config`. Which tool produced this finding?",
+    "options": [
+      "Masscan",
+      "Nuclei",
+      "Prowler",
+      "Maltego"
+    ],
+    "answer": 1,
+    "explain": "Nuclei prints findings in the form `[template-id] [protocol] [severity] URL`. Prowler gives PASS/FAIL per cloud check, Masscan only open ports, and Maltego a graph of OSINT links."
+  },
+  {
+    "obj": "2.2",
+    "q": "A DevOps team wants to detect publicly readable S3 buckets and Security Groups open to 0.0.0.0/0 directly from the code, before `terraform apply`. Which tool is BEST?",
+    "options": [
+      "Burp Suite",
+      "Angry IP Scanner",
+      "Checkov",
+      "Caldera"
+    ],
+    "answer": 2,
+    "explain": "Checkov performs static analysis of IaC (Terraform, CloudFormation, K8s) and reports rules such as CKV_AWS_20. Burp tests web applications, Angry IP Scanner maps the network, and Caldera emulates an adversary."
+  },
+  {
+    "obj": "2.2",
+    "q": "The SOC wants to verify whether Sigma and EDR rules actually detect PowerShell techniques mapped to MITRE ATT&CK (e.g., T1059.001) by running small, controlled tests on a test host. Which tool fits BEST?",
+    "options": [
+      "OpenVAS",
+      "ScoutSuite",
+      "Nikto",
+      "Atomic Red Team"
+    ],
+    "answer": 3,
+    "explain": "Atomic Red Team is a BAS library of tests mapped to ATT&CK techniques, intended for verifying detection. OpenVAS looks for vulnerabilities, ScoutSuite audits cloud configuration, and Nikto scans web servers."
+  },
+  {
+    "obj": "2.2",
+    "q": "To review the configuration of three cloud providers (AWS, Azure, GCP) via read-only API access, with an HTML report per service, the team chooses an open-source tool. Which one is it MOST likely?",
+    "options": [
+      "ScoutSuite",
+      "Masscan",
+      "Metasploit Framework",
+      "Nikto"
+    ],
+    "answer": 0,
+    "explain": "ScoutSuite is a multi-cloud tool for assessing security configuration via API, and it produces an HTML report. The other tools don't read cloud API configuration."
+  },
+  {
+    "obj": "2.2",
+    "q": "A threat intel analyst must visually display the links between domains, email addresses, IP addresses, and people associated with a phishing campaign. Which tool is BEST?",
+    "options": [
+      "Trivy",
+      "Maltego",
+      "Nessus",
+      "ZAP"
+    ],
+    "answer": 1,
+    "explain": "Maltego is an OSINT link analysis tool that displays entities and transforms as a graph. Trivy scans images, Nessus scans hosts, and ZAP scans web applications."
+  },
+  {
+    "obj": "2.3",
+    "q": "Which CVSS v3.1 vector represents the MOST dangerous combination of exploitability metrics?",
+    "options": [
+      "AV:L/AC:L/PR:L/UI:N",
+      "AV:N/AC:H/PR:H/UI:R",
+      "AV:N/AC:L/PR:N/UI:N",
+      "AV:P/AC:L/PR:N/UI:N"
+    ],
+    "answer": 2,
+    "explain": "An attack from the network (AV:N), low complexity (AC:L), no privileges (PR:N), and no user (UI:N) means anyone on the internet can automatically exploit the vulnerability. The other combinations require local or physical access, privileges, or interaction."
+  },
+  {
+    "obj": "2.3",
+    "q": "A vendor publishes a CVSS 4.0 vector with `SC:H/SI:H/SA:H`. What do these metrics mean?",
+    "options": [
+      "High confidentiality, integrity, and availability requirements in the organization",
+      "Scope is changed, as in CVSS 3.1",
+      "The vulnerability has an impact on people's physical safety",
+      "High impact on the systems BEHIND the vulnerable system (subsequent systems)"
+    ],
+    "answer": 3,
+    "explain": "In CVSS 4.0 Scope was removed; impact is scored separately for the vulnerable system (VC/VI/VA) and for subsequent systems (SC/SI/SA). The organization's requirements are CR/IR/AR, and Safety is a separate value in the environmental and supplemental metrics."
+  },
+  {
+    "obj": "2.3",
+    "q": "Which statement BEST describes an EPSS score of 0.03 with a percentile of 0.89?",
+    "options": [
+      "The estimated probability of exploitation in the next 30 days is 3%, which is higher than for 89% of CVEs",
+      "The CVE was exploited in 3% of organizations in the last year",
+      "The vulnerability's severity is 0.03 on a 0–1 scale, so it is negligible",
+      "89% of all attacks use this CVE"
+    ],
+    "answer": 0,
+    "explain": "EPSS is the probability of exploitation in the wild in the next 30 days, and the percentile shows its relative position among all CVEs. EPSS doesn't measure severity; CVSS does."
+  },
+  {
+    "obj": "2.3",
+    "q": "An analyst has four findings. Which one should be fixed FIRST?",
+    "options": [
+      "CVSS 9.8, EPSS 0.01, on an isolated lab server with no network",
+      "CVSS 7.5, in CISA KEV, on an internet-facing VPN gateway",
+      "CVSS 8.8, EPSS 0.05, on an internal file server",
+      "CVSS 5.3, self-signed certificate on the intranet"
+    ],
+    "answer": 1,
+    "explain": "Confirmed active exploitation (KEV) on an internet-exposed system is the greatest real risk. A higher CVSS on an isolated system with no path for an attacker has a lower likelihood, although it shouldn't be forgotten."
+  },
+  {
+    "obj": "2.3",
+    "q": "A patch for a critical vulnerability in MRI machine software must not be applied until the manufacturer recertifies the device (about 6 months). Which TWO measures are BEST? Choose TWO.",
+    "options": [
+      "Implement compensating controls such as segmentation and strict ACL rules",
+      "Install the patch immediately because the vulnerability is critical",
+      "Remove the finding from the scanner as a false positive",
+      "Document a formal exception with a risk owner and an expiration date"
+    ],
+    "answer": [
+      0,
+      3
+    ],
+    "explain": "When a patch must not be applied, risk is reduced with compensating controls and formally accepted through an exception with an owner and a deadline. An unapproved patch violates the device's certification, and the finding is not a false positive."
+  },
+  {
+    "obj": "2.3",
+    "q": "A CVE in the CISA KEV catalog has `knownRansomwareCampaignUse: \"Known\"`. What does this mean for prioritization?",
+    "options": [
+      "The vulnerability is theoretical and doesn't require a quick response",
+      "The vulnerability has a CVSS of 10.0",
+      "The vulnerability has been confirmed as used in ransomware campaigns, which increases the urgency of remediation",
+      "CISA has issued a patch for the vulnerability"
+    ],
+    "answer": 2,
+    "explain": "The field shows that exploitation of the vulnerability is linked to ransomware campaigns, which, together with active exploitation, raises priority further. KEV says nothing about the CVSS score, and patches are issued by vendors, not CISA."
+  },
+  {
+    "obj": "2.3",
+    "q": "After the team has applied a patch for a critical finding, what is the BEST way to confirm the fix?",
+    "options": [
+      "An email from the administrator saying the patch is installed",
+      "Closing the ticket after the SLA deadline expires",
+      "Lowering the CVSS score in the report",
+      "A rescan (preferably credentialed) showing the finding no longer exists"
+    ],
+    "answer": 3,
+    "explain": "Validation of remediation means independent verification, most often a rescan and a version check. An administrator's statement is not proof, and a vulnerability's CVSS score doesn't change because a patch was applied."
+  },
+  {
+    "obj": "2.3",
+    "q": "What does the CVSS 4.0 label **CVSS-BT** tell you about the score?",
+    "options": [
+      "The score includes Base and Threat metrics",
+      "The score includes Base and Temporal metrics from version 3.1",
+      "The score was calculated only by the vendor (Base) and tested (Tested)",
+      "The score includes Base, Threat, and Environmental metrics"
+    ],
+    "answer": 0,
+    "explain": "CVSS 4.0 nomenclature: B = Base, T = Threat, E = Environmental. CVSS-BT is Base + Threat (Exploit Maturity), and CVSS-BTE also includes environmental context."
+  },
+  {
+    "obj": "2.3",
+    "q": "In the CISA SSVC tree, a vulnerability has Exploitation = Active, Automatable = Yes, Technical Impact = Total, and the system is Essential to the mission. What is the MOST likely decision?",
+    "options": [
+      "Track",
+      "Act",
+      "Track*",
+      "Attend"
+    ],
+    "answer": 1,
+    "explain": "Active exploitation, automatability, total control, and the system's key role yield the highest decision, Act: involve leadership and fix as soon as possible. Track and Track* are for standard deadlines, and Attend for an accelerated but not the most urgent response."
+  },
+  {
+    "obj": "2.3",
+    "q": "Two vulnerabilities have a CVSS of 8.1. The first has an EPSS of 0.72, the second 0.004. Neither is in KEV, and both hosts are internal with similar value. What is the BEST conclusion?",
+    "options": [
+      "They have the same priority because the CVSS is the same",
+      "The second takes priority because a lower EPSS means higher severity",
+      "The vulnerability with EPSS 0.72 takes priority because exploitation is much more likely",
+      "Neither should be fixed until it enters KEV"
+    ],
+    "answer": 2,
+    "explain": "When severity and context are similar, EPSS differentiates the likelihood of attack. Waiting for KEV means reacting only after attacks have begun."
+  },
+  {
+    "obj": "2.3",
+    "q": "A web application team keeps getting new SQL injection findings from DAST after every release. Which mitigation strategy addresses the ROOT CAUSE?",
+    "options": [
+      "Add a new WAF rule for each finding",
+      "Accept the risk through an exception",
+      "Reduce the frequency of DAST scanning",
+      "Secure coding best practices (parameterized queries) with SAST in the CI pipeline"
+    ],
+    "answer": 3,
+    "explain": "Recurring findings of the same class (CWE-89) indicate a problem with how code is written. Parameterized queries and SAST address them at the source; a WAF is a compensating, temporary measure."
+  },
+  {
+    "obj": "2.3",
+    "q": "Which TWO situations MOST likely lead to a FALSE NEGATIVE scan result? Choose TWO.",
+    "options": [
+      "The scanner reports a vulnerable version from the banner even though the patch was backported",
+      "The scanner credentials have expired, so the credentialed scan falls back to non-credentialed checks",
+      "The scanner's plugin feed hasn't been updated for three months",
+      "A finding is reported on a host that has since been decommissioned"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Without credentials the scanner can't see local vulnerabilities, and without an up-to-date feed it doesn't know about new CVEs; in both cases the vulnerability exists but isn't reported. A banner with a backport and a decommissioned host produce false positives."
+  },
+  {
+    "obj": "2.3",
+    "q": "A vulnerability on a mail gateway is in KEV, with `forensicTriage: \"Yes\"`. The team has applied the patch. What should be done NEXT?",
+    "options": [
+      "Check whether the system was compromised before the patch (IOCs, logs, unknown accounts, web shells)",
+      "Close the ticket because the patch has been applied",
+      "Change the CVSS score to Low",
+      "Remove the gateway from the scanning program"
+    ],
+    "answer": 0,
+    "explain": "With actively exploited vulnerabilities, the attacker may have gotten in before the patch; a patch doesn't remove existing access. The KEV forensicTriage field indicates exactly that a compromise check is needed."
+  },
+  {
+    "obj": "2.3",
+    "type": "order",
+    "q": "Order the findings from HIGHEST to LOWEST remediation priority.",
+    "options": [
+      "CVSS 10.0, EPSS 0.99, KEV, on an isolated (air-gapped) build server",
+      "CVSS 6.1, EPSS 0.001, reflected XSS on an internal wiki page",
+      "CVSS 9.8, EPSS 0.94, KEV, on an internet-facing VPN gateway",
+      "CVSS 7.8, EPSS 0.20, KEV, local privilege escalation on internal workstations",
+      "CVSS 8.1, EPSS 0.40, not in KEV, on a public web store with cardholder data"
+    ],
+    "answer": [
+      2,
+      4,
+      3,
+      0,
+      1
+    ],
+    "explain": "First the exposed and actively exploited VPN, then the exposed PCI store with a high EPSS, then the KEV privilege escalation on numerous internal hosts, then the isolated build server (serious, but with no path for an attacker), and finally the low-likelihood internal XSS."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Match each output or description with the tool that MOST likely produced it.",
+    "options": [
+      "`Discovered open port 443/tcp on 10.0.5.12`",
+      "`Check: CKV_AWS_20 ... FAILED for resource: aws_s3_bucket.reports`",
+      "`+ /: The X-Content-Type-Options header is not set.`",
+      "`FAIL iam_root_mfa_enabled us-east-1 MFA is not enabled for root account.`",
+      "Entity graph: domain → email → person → phone",
+      "A result with a QoD (Quality of Detection) field of 80%"
+    ],
+    "targets": [
+      "Nikto",
+      "OpenVAS",
+      "Checkov",
+      "Masscan",
+      "Maltego",
+      "Prowler"
+    ],
+    "answer": [
+      3,
+      2,
+      0,
+      5,
+      4,
+      1
+    ],
+    "explain": "Masscan prints `Discovered open port`, Checkov `CKV_` rules, Nikto lines with `+`, Prowler PASS/FAIL cloud checks, Maltego link graphs, and OpenVAS (Greenbone) provides QoD with each result."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Match the CVSS metric with its meaning.",
+    "options": [
+      "AT:P (v4.0)",
+      "UI:A (v4.0)",
+      "E:U (v4.0)",
+      "S:C (v3.1)",
+      "MAV:L (v3.1/v4.0)",
+      "AU:Y (v4.0)"
+    ],
+    "targets": [
+      "The impact crosses the boundary of the vulnerable component",
+      "The organization has made the vulnerable system reachable only locally",
+      "Success depends on specific conditions in the vulnerable system",
+      "The attack can be automated across multiple targets",
+      "The victim must consciously and actively participate",
+      "No publicly known exploitation attempts or PoC"
+    ],
+    "answer": [
+      2,
+      4,
+      5,
+      0,
+      1,
+      3
+    ],
+    "explain": "AT (Attack Requirements) Present means conditions in the vulnerable system; UI:A is active user interaction; E:U is Unreported exploit maturity; S:C in 3.1 is Scope Changed; MAV is the modified attack vector from the environmental group; AU:Y is the supplemental Automatable metric."
+  },
+  {
+    "obj": "2.3",
+    "type": "spot",
+    "q": "This is the decision table after triage of scanner findings. Mark the lines where the analyst's decision is wrong given CVSS, EPSS, KEV and exposure.",
+    "snippet": "ID  Host (exposure)    Finding                       CVSS  EPSS  KEV  Decision\nF1  web01 (internet)   Missing X-Frame-Options        4.3  0.00  no   Accept, review in 90 days\nF2  vpn01 (internet)   CVE-2024-3400 PAN-OS cmd inj  10.0  0.94  yes  Defer to Q1 patch window\nF3  db02 (internal)    CVE-2023-0286 OpenSSL          7.4  0.01  no   Patch in 30-day cycle\nF4  web02 (internet)   CVE-2021-41773 Apache 2.4.49   7.5  0.94  yes  False positive (banner), suppressed\nF5  hr-app (internal)  TLS 1.0 enabled                5.9  0.00  no   Disable TLS 1.0, rescan after change\nF6  lab07 (isolated)   CVE-2023-48795 SSH Terrapin    5.9  0.01  no   Isolated VLAN, decommission 2026-11-06",
+    "lang": "text",
+    "answer": [2, 4],
+    "explain": "Line 3: CVE-2024-3400 on an internet-facing VPN appliance has CVSS 10.0, a high EPSS and is in the CISA KEV catalog (actively exploited); deferring it to a quarterly window is unacceptable, it needs an emergency patch or mitigation and a compromise check. Line 5: the finding was declared a false positive based only on the banner and suppressed without verification; for a KEV vulnerability on an internet host, verify the real version (package, backport advisory, credentialed scan) and record the reason and date. The other decisions match the risk: a low finding accepted with review, an internal medium/high finding in the normal cycle, disabling TLS 1.0 with a rescan, and a compensating control for a host being retired."
+  }
+]

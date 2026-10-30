@@ -1,0 +1,133 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Regionalna banka želi informacije o kampanjama koje u posljednje vrijeme ciljaju upravo finansijski sektor, uz mogućnost da i sama dijeli svoja iskustva sa sličnim organizacijama. Koji izvor je NAJPRIKLADNIJI?",
+    "options": ["OSINT pretraga društvenih mreža", "Interni SIEM logovi", "ISAC za finansijski sektor", "Dark web forumi"],
+    "answer": 2,
+    "explain": "ISAC (npr. FS-ISAC) je zajednica organizacija iste industrije koje dijele obavještajne podatke o prijetnjama relevantnim za taj sektor. OSINT je opšti i nefiltriran, interni logovi pokazuju samo ono što se već desilo tebi."
+  },
+  {
+    "obj": "2.1",
+    "q": "SOC želi da SIEM i firewall automatski i kontinuirano uvoze nove zlonamjerne IP adrese, domene i hasheve od partnera, u standardizovanom formatu. Šta treba koristiti?",
+    "options": ["Threat feed preko STIX/TAXII", "Mjesečni PDF izvještaj o prijetnjama", "CVSS kalkulator", "MITRE ATT&CK matricu"],
+    "answer": 0,
+    "explain": "STIX opisuje podatke o prijetnjama, a TAXII je protokol za njihovu automatsku razmjenu, što je osnova mašinski čitljivih threat feedova. PDF izvještaj nije automatizovan, CVSS ocjenjuje ranjivosti, a ATT&CK je baza tehnika, ne feed indikatora."
+  },
+  {
+    "obj": "2.1",
+    "q": "Skener je pronašao dvije ranjivosti: CVSS 9.8 na internom test serveru bez pristupa sa interneta, i CVSS 7.5 na javnom VPN uređaju, za koju postoji javni exploit i nalazi se na CISA KEV listi. Koju treba PRVO sanirati i zašto?",
+    "options": ["9.8, jer je CVSS ocjena uvijek odlučujuća", "Obje istovremeno, jer su obje iznad 7.0", "Nijednu dok se ne izračuna environmental score", "7.5 na VPN uređaju, jer su vjerovatnoća i izloženost znatno veće"],
+    "answer": 3,
+    "explain": "Prioritizacija uzima u obzir likelihood (aktivno iskorištavanje, KEV, javni exploit), izloženost i važnost sistema, a ne samo CVSS base score. Javni VPN uređaj sa aktivno iskorištavanom ranjivošću je veći realni rizik od izolovanog test servera."
+  },
+  {
+    "obj": "2.1",
+    "q": "Izvještaj skenera kontejnera navodi „CVE-2024-3094“. Šta ova oznaka predstavlja?",
+    "options": ["Ocjenu ozbiljnosti ranjivosti", "Jedinstveni javni identifikator poznate ranjivosti", "Potpis malvera za antivirus", "Broj zakrpe koju izdaje proizvođač"],
+    "answer": 1,
+    "explain": "CVE je jedinstveni identifikator i kratak opis javno poznate ranjivosti. Ocjenu ozbiljnosti daje CVSS (npr. u NVD bazi), a zakrpe i potpisi su odvojeni od CVE oznake."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Poredaj faze životnog ciklusa threat intelligence-a od prve do posljednje.",
+    "options": ["Analysis", "Collection", "Dissemination", "Requirements / direction", "Feedback", "Processing"],
+    "answer": [3, 1, 5, 0, 2, 4],
+    "explain": "Prvo se definiše šta treba znati (requirements), zatim se podaci prikupljaju (collection), obrađuju i normalizuju (processing), analiziraju (analysis), dostavljaju korisnicima (dissemination), a povratna informacija (feedback) usmjerava sljedeći ciklus."
+  },
+  {
+    "obj": "2.2",
+    "q": "Nakon kontroverzne odluke kompanije o zatvaranju fabrike, njen sajt je preko noći izmijenjen porukom protiv odluke, uz DDoS napad i objavu internih e-mailova. Ko je NAJVJEROVATNIJE odgovoran?",
+    "options": ["Organizovani kriminal", "Državno sponzorisani akter", "Haktivista", "Konkurent"],
+    "answer": 2,
+    "explain": "Javna poruka, deface, DDoS i curenje podataka vezano za društveni ili politički stav tipični su za haktiviste sa ideološkom motivacijom. Organizovani kriminal bi tražio novac, a državni akter bi radio tiho."
+  },
+  {
+    "obj": "2.2",
+    "q": "Istraga otkriva da je napadač bio prisutan u mreži ministarstva 14 mjeseci, koristio prilagođen malver i jedan zero-day, i tiho iznosio dokumente. Koji akter i motivacija NAJBOLJE odgovaraju?",
+    "options": ["State-sponsored, espionage", "Unskilled attacker, notoriety", "Insider, revenge", "Hacktivist, ideological"],
+    "answer": 0,
+    "explain": "Dugotrajno tiho prisustvo, prilagođeni alati i zero-day ukazuju na visoke resurse i sofisticiranost, tipično za državno sponzorisanu APT grupu sa ciljem špijunaže. Ostali akteri rijetko imaju takve resurse ili bi bili glasniji."
+  },
+  {
+    "obj": "2.2",
+    "q": "Dan nakon što je otpušten, sistem administrator je preko servisnog naloga koji niko nije ugasio obrisao produkcione backupe. Koji akter i motivacija su u pitanju?",
+    "options": ["Competitor, intellectual property", "Insider, revenge", "Organized crime, extortion", "Accidental, none"],
+    "answer": 1,
+    "explain": "Bivši zaposleni koji koristi postojeći pristup i znanje je insajder, a motivacija je osveta. Pouka je da offboarding mora ugasiti i servisne naloge i dijeljene tajne kojima je osoba imala pristup."
+  },
+  {
+    "obj": "2.2",
+    "q": "Logovi pokazuju hiljade zahtjeva sa potpisom poznatog besplatnog alata za skeniranje, sa default user-agent stringom i bez ikakvog prilagođavanja meti. Napad nije uspio. Koji tip aktera je NAJVJEROVATNIJE iza ovoga?",
+    "options": ["State-sponsored", "Crime syndicate", "Insider", "Unskilled attacker"],
+    "answer": 3,
+    "explain": "Upotreba gotovih alata bez prilagođavanja i bez razumijevanja mete tipična je za unskilled attackera sa niskom sofisticiranošću. Državni akteri i kriminalne grupe prilagođavaju alate i izbjegavaju bučne potpise."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Upari svakog aktera sa njegovom NAJTIPIČNIJOM motivacijom.",
+    "options": ["Ransomware grupa koja traži plaćanje u kriptovaluti", "Konkurentska firma koja potplati inženjera za izvorni kod", "Grupa koja napada vodovod da izazove paniku", "Bug bounty istraživač koji prijavi ranjivost proizvođaču", "Student koji skenira univerzitetsku mrežu „da vidi šta ima“"],
+    "targets": ["Ethical", "Financial / extortion", "General curiosity", "Intellectual property", "Fear / chaos"],
+    "answer": [1, 3, 4, 0, 2],
+    "explain": "Ransomware grupa traži novac i iznuđuje. Konkurent cilja intelektualnu svojinu. Napad na kritičnu infrastrukturu radi panike je fear/chaos (terorista). Odgovorno prijavljivanje ranjivosti je etička motivacija, a skeniranje iz znatiželje je general curiosity."
+  },
+  {
+    "obj": "2.3",
+    "q": "EDR pokazuje da je napadač nakon pristupa koristio PowerShell, WMI i certutil za preuzimanje fajlova i kretanje kroz mrežu, bez pokretanja ijednog novog izvršnog fajla. Kako se zove ova tehnika?",
+    "options": ["Watering hole", "Supply chain napad", "Living-off-the-land", "Logic bomb"],
+    "answer": 2,
+    "explain": "Living-off-the-land znači zloupotrebu legitimnih alata koji su već prisutni na sistemu, što otežava detekciju zasnovanu na potpisima. Watering hole i supply chain opisuju način početnog ulaza, a logic bomb je zlonamjerni kod sa okidačem."
+  },
+  {
+    "obj": "2.3",
+    "q": "Napadači su kompromitovali alat za udaljeno upravljanje (RMM) jednog IT outsourcing dobavljača i preko njega istovremeno pokrenuli ransomware kod desetina njegovih klijenata. Koji vektor je iskorišten?",
+    "options": ["Supply chain preko managed service providera", "Message-based preko e-maila", "Remote access preko RDP-a", "Physical preko access passa"],
+    "answer": 0,
+    "explain": "MSP ima privilegovan pristup mnogim klijentima, pa kompromitacija MSP-a ili njegovog alata postaje supply chain vektor prema svima njima. Klijenti nisu direktno napadnuti e-mailom ili RDP-om."
+  },
+  {
+    "obj": "2.3",
+    "q": "Napadač je kompromitovao sajt lokalnog strukovnog udruženja inženjera, koji zaposleni ciljane firme često posjećuju, i tamo postavio exploit za pregledač. Koja je ovo tehnika?",
+    "options": ["Spear phishing", "Typosquatting", "Pharming", "Watering hole"],
+    "answer": 3,
+    "explain": "Watering hole cilja sajt koji žrtve same posjećuju, umjesto da im napadač šalje poruke. Spear phishing je ciljana poruka, typosquatting koristi slično ime domena, a pharming preusmjerava korisnike manipulacijom DNS-a."
+  },
+  {
+    "obj": "2.3",
+    "q": "Korisnik otvara stranicu sa porukom „Potvrdite da niste robot“ i uputstvom da pritisne Win+R, zalijepi tekst iz clipboarda i pritisne Enter. Nakon toga se pokreće infostealer. Koji vektor je NAJPRECIZNIJE opisan?",
+    "options": ["Malicious USB", "Image-based, lažna CAPTCHA", "Attachment-based, RTF dokument", "Signal-based, NFC"],
+    "answer": 1,
+    "explain": "Lažna CAPTCHA (tehnika poznata kao ClickFix) navodi korisnika da sam pokrene zlonamjernu komandu. Nema priloga, USB-a niti bežičnog signala."
+  },
+  {
+    "obj": "2.3",
+    "q": "Infostealer je sa laptopa developera ukrao sadržaj pregledača. Napadač se nakon toga prijavio u korporativni SaaS bez unosa lozinke i bez MFA upita. Šta je NAJVJEROVATNIJE ukradeno?",
+    "options": ["Lista instaliranih ekstenzija", "Istorija pretraživanja", "Aktivni session token / kolačić sesije", "Root certifikat iz trust store-a"],
+    "answer": 2,
+    "explain": "Session token predstavlja već autentifikovanu sesiju, pa njegovim korišćenjem napadač preskače lozinku i MFA. Zato se preporučuju kratak vijek sesija, vezivanje tokena za uređaj i ponovna provjera kod rizičnih akcija."
+  },
+  {
+    "obj": "2.3",
+    "q": "Ransomware je ušao preko Windows servera sa RDP-om izloženim direktno na internet. Koje DVIJE mjere NAJBOLJE smanjuju ovaj vektor? Izaberi DVA.",
+    "options": ["Ukloniti direktno izlaganje i pristup omogućiti samo preko VPN-a, ZTNA-a ili bastion hosta", "Promijeniti RDP port sa 3389 na 3390", "Dodati natpis upozorenja na login ekran", "Zahtijevati MFA za udaljeni pristup"],
+    "answer": [0, 3],
+    "explain": "Uklanjanje direktnog izlaganja i MFA zaustavljaju brute force i upotrebu ukradenih lozinki. Promjena porta je samo prikrivanje koje skeneri brzo otkriju, a natpis je deterrent bez stvarne zaštite."
+  },
+  {
+    "obj": "2.3",
+    "q": "Napadač je ušao u data centar tako što je kopirao RFID karticu zaposlenog dok je ovaj stajao u redu u kafiću. Koji vektor je iskorišten?",
+    "options": ["Supply chain", "Physical, access passes", "Network, infrastructure devices", "Human, watering hole"],
+    "answer": 1,
+    "explain": "Kloniranje propusnice je fizički vektor koji cilja access passes. Odbrana uključuje kartice sa jačom kriptografijom, zaštitne futrole, access vestibule i provjeru uz PIN ili biometriju."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Upari svaki scenarij sa kategorijom vektora napada.",
+    "options": ["Letak na parkingu sa QR kodom za „novi parking sistem“", "Poruka u Teamsu od „IT helpdeska“ iz eksternog tenanta", "Word dokument sa VBA makroom u prilogu fakture", "USB stick sa natpisom „Plate 2026“ ostavljen u kantini", "Printer sa default lozinkom koristi se kao ulaz u mrežu", "PLC u fabrici kojim se upravlja preko protokola bez autentifikacije", "Presretanje Bluetooth veze slušalica direktora"],
+    "targets": ["Message-based", "Attachment-based", "IoT-based", "Image-based", "Signal-based", "External media-based", "OT-based"],
+    "answer": [3, 0, 1, 5, 2, 6, 4],
+    "explain": "QR kod je image-based, Teams poruka je message-based (collaboration tools), makro u dokumentu je attachment-based, ostavljen USB je external media, printer je IoT, PLC je OT, a Bluetooth je signal-based vektor."
+  }
+]

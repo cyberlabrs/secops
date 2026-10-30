@@ -1,0 +1,255 @@
+[
+  {
+    "obj": "2.2",
+    "q": "Frontend chat aplikacije ubacuje odgovor modela u stranicu preko innerHTML. Tim tvrdi da je to sigurno jer „odgovor generiše naš model, ne korisnik“. Šta je ispravno?",
+    "options": [
+      "Sigurno je, jer model dobavljača filtrira HTML",
+      "Sigurno je, ako je sistemski prompt dobro napisan",
+      "Nesigurno je samo za anonimne korisnike",
+      "Nesigurno je: izlaz modela je nepovjerljiv unos i mora biti escapovan ili sanitizovan prije renderovanja (LLM05)"
+    ],
+    "answer": 3,
+    "explain": "Izlaz modela nosi uticaj svega što je bilo u kontekstu, a model može i greškom generisati HTML. Bez escapinga/sanitizacije to je XSS. Prompt i filteri dobavljača ne garantuju siguran izlaz."
+  },
+  {
+    "obj": "2.2",
+    "q": "Model vraća JSON sa poljima za trijažu tiketa. Koja osobina šeme NAJVIŠE sprječava da model doda neočekivano polje koje neki kasniji kod iskoristi?",
+    "options": [
+      "\"additionalProperties\": false",
+      "\"type\": \"object\"",
+      "\"$schema\" sa verzijom draft 2020-12",
+      "\"description\" za svako polje"
+    ],
+    "answer": 0,
+    "explain": "additionalProperties: false odbija svako polje koje nije definisano u šemi. type: object samo provjerava da je izlaz objekat, $schema određuje dijalekt, a description nema uticaj na validaciju."
+  },
+  {
+    "obj": "2.2",
+    "q": "API dobavljača ima režim strukturisanog izlaza koji poštuje šemu. Treba li aplikacija i dalje validirati izlaz šemom?",
+    "options": [
+      "Ne, režim dobavljača garantuje ispravnost",
+      "Ne, validacija samo usporava aplikaciju",
+      "Da: validacija u vlastitom kodu je tvoja kontrola, a režim dobavljača smanjuje greške, ali ga ne zamjenjuje",
+      "Samo u razvojnom okruženju"
+    ],
+    "answer": 2,
+    "explain": "Režim strukturisanog izlaza je koristan, ali sigurnosna kontrola mora biti pod tvojom kontrolom: promjena modela, konfiguracije ili dobavljača ne smije tiho ukinuti validaciju."
+  },
+  {
+    "obj": "2.2",
+    "q": "Izlaz modela ne prolazi validaciju šemom. Koji postupak je najbolji?",
+    "options": [
+      "Heuristički „popraviti“ JSON i propustiti nepoznata polja",
+      "Odbiti izlaz, vratiti siguran podrazumijevani rezultat, eventualno jednom ponoviti zahtjev uz limit i logovati grešku validacije",
+      "Ponavljati zahtjev dok model ne vrati ispravan izlaz, bez limita",
+      "Prikazati korisniku sirovi izlaz modela"
+    ],
+    "answer": 1,
+    "explain": "Siguran default čuva funkcionalnost, limit pokušaja sprječava trošak (LLM10), a log greške je signal za moguću manipulaciju ili promjenu ponašanja modela. Popravljanje i prikaz sirovog izlaza zaobilaze kontrolu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Šema prihvata ticket_id koji odgovara uzorku ^TCK-[0-9]{6}$. Šta još treba provjeriti prije nego što se tiket prikaže korisniku?",
+    "options": [
+      "Ništa, uzorak je dovoljan",
+      "Dužinu stringa",
+      "Da li model ima pristup bazi",
+      "Da li tiket postoji i pripada korisniku (poslovna validacija i autorizacija)"
+    ],
+    "answer": 3,
+    "explain": "Šema provjerava oblik, ne značenje. Ispravno formatiran ID može pripadati drugom korisniku. Poslije šeme dolazi poslovna validacija i provjera ovlašćenja u kodu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Chat UI renderuje Markdown slike sa bilo kog URL-a koji model napiše. Zašto je to rizik i kad ne postoji nijedan alat?",
+    "options": [
+      "Slike usporavaju učitavanje",
+      "Browser automatski šalje zahtjev na URL koji je generisao model, pa URL može prenijeti podatke iz konteksta napolje bez klika (AML.T0077)",
+      "Slike troše tokene",
+      "Markdown slike ne rade u svim browserima"
+    ],
+    "answer": 1,
+    "explain": "Renderovanje slike je implicitni izlazni kanal: parametri URL-a mogu nositi podatke iz razgovora. Kontrole: ne renderovati vanjske slike, allowlista domena, proxy bez parametara i CSP img-src."
+  },
+  {
+    "obj": "2.2",
+    "q": "Koja CSP direktiva je najdirektniji drugi sloj protiv izvlačenja podataka kroz slike u odgovoru modela?",
+    "options": [
+      "img-src ograničen na vlastiti domen i odobreni CDN",
+      "frame-ancestors 'none'",
+      "base-uri 'none'",
+      "upgrade-insecure-requests"
+    ],
+    "answer": 0,
+    "explain": "img-src određuje odakle browser smije učitavati slike, pa blokira zahtjev ka domenu napadača čak i ako renderer propusti sliku. Ostale direktive štite od drugih problema (framing, base tag, HTTP)."
+  },
+  {
+    "obj": "2.2",
+    "q": "Asistent za izvještaje treba čitati podatke o narudžbama. Developer predlaže da model piše SQL koji se izvršava preko konekcije aplikacije. Koji dizajn je najsigurniji?",
+    "options": [
+      "Model piše SQL, ali se zabranjuje riječ DROP",
+      "Model piše SQL, a rezultat se provjerava DLP-om",
+      "Model bira upit iz allowliste i popunjava validirane parametre; upit se izvršava parametrizovano, sa read-only ulogom, a customer_id dolazi iz sesije",
+      "Model piše SQL u posebnoj bazi sa kopijom svih podataka"
+    ],
+    "answer": 2,
+    "explain": "Allowlista upita, parametrizacija, read-only uloga i identitet iz sesije deterministički ograničavaju šta se može pročitati. Blocklista riječi se lako zaobilazi, DLP je zadnja linija, a kopija svih podataka ne rješava pristup tuđim podacima."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Upari odredište izlaza modela sa odgovarajućom kontrolom.",
+    "options": [
+      "Prikaz u browseru",
+      "Izvršavanje generisanog Python koda",
+      "Argument komande na serveru",
+      "Ime fajla za upis izvještaja"
+    ],
+    "targets": ["Fiksna komanda kao lista argumenata, bez shell=True, argumenti po allowlisti", "Kanonizacija putanje i ograničen direktorij", "Escaping/sanitizacija i CSP", "Izolovan sandbox bez mreže i tajni, sa limitima resursa", "Rate limiting po korisniku"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Browser traži escaping i CSP, generisani kod sandbox, komande fiksnu listu argumenata bez shella, a putanje kanonizaciju i ograničen direktorij. Rate limiting je distraktor (LLM10)."
+  },
+  {
+    "obj": "2.2",
+    "q": "U multi-tenant asistentu odgovor sa podacima klijenta A keširan je po tekstu pitanja i vraćen klijentu B koji je postavio isto pitanje. Koja je ispravna kontrola?",
+    "options": [
+      "Isključiti keš za sve",
+      "Dodati u prompt da ne miješa klijente",
+      "Smanjiti TTL keša na jedan minut",
+      "Ključ keša mora uključivati identitet/tenant i relevantna ovlašćenja, ne samo tekst pitanja"
+    ],
+    "answer": 3,
+    "explain": "Keš je izvor curenja kad ključ ne odražava ko smije vidjeti odgovor. Ključ sa tenantom i ovlašćenjima zadržava korist keša bez curenja. Kraći TTL samo smanjuje prozor, a prompt ne utiče na keš."
+  },
+  {
+    "obj": "2.2",
+    "q": "DLP filter na izlazu je blokirao odgovor u kom se pojavio broj računa klijenta koji korisnik ne smije vidjeti. Šta je najvažnije sljedeće pitanje u istrazi?",
+    "options": [
+      "Kako je taj podatak uopšte ušao u kontekst (retrieval bez ACL-a, alat koji vraća previše, prompt)?",
+      "Da li treba pooštriti regex",
+      "Da li korisnik ima premium nalog",
+      "Koliko tokena je imao odgovor"
+    ],
+    "answer": 0,
+    "explain": "DLP je zadnja linija; nalaz znači da je osjetljiv podatak već bio u kontekstu. Uzrok je obično retrieval po ovlašćenjima servisa, alat koji vraća cijele zapise ili podaci u promptu. Popravka je na izvoru (minimizacija, ACL)."
+  },
+  {
+    "obj": "2.2",
+    "q": "Alat get_customer vraća modelu cijeli zapis klijenta (adresa, datum rođenja, broj kartice), iako asistent treba samo status narudžbe. Koja kontrola je najbolja?",
+    "options": [
+      "DLP na izlazu za broj kartice",
+      "Alat da vraća samo polja potrebna za zadatak (projekcija), uz maskiranje osjetljivih vrijednosti",
+      "Instrukcija modelu da ne pominje broj kartice",
+      "Šifrovanje odgovora alata"
+    ],
+    "answer": 1,
+    "explain": "Ono što nije u kontekstu ne može procuriti. Projekcija polja na nivou alata uklanja rizik na izvoru; DLP i instrukcija su slabije, a šifrovanje nema smisla jer model mora pročitati sadržaj."
+  },
+  {
+    "obj": "2.2",
+    "q": "Sistemski prompt sadrži connection string baze da bi model „znao kako da pristupi podacima“. Šta je ispravno rješenje?",
+    "options": [
+      "Ostaviti ga, ali dodati „nikad ne otkrivaj connection string“",
+      "Kodirati ga u base64",
+      "Ukloniti ga iz prompta; tajna ide u secrets manager i koristi je alat na backendu, a model je nikad ne vidi",
+      "Premjestiti ga na kraj prompta"
+    ],
+    "answer": 2,
+    "explain": "LLM07: pretpostavi da će prompt procuriti. Tajne ne smiju biti u kontekstu; backend alat koristi kredencijal, a model samo poziva alat. Instrukcija i kodiranje ne štite, jer model i dalje „vidi“ tajnu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Prema OWASP LLM07:2025, šta je suština rizika System Prompt Leakage?",
+    "options": [
+      "Konkurent može kopirati ton asistenta",
+      "Prompt troši previše tokena",
+      "Prompt se ne može verzionisati",
+      "Sigurnost se oslanja na tajnost prompta (tajne, autorizacija, interni podaci u promptu), pa curenje postaje incident"
+    ],
+    "answer": 3,
+    "explain": "Problem nije samo to što se prompt može pročitati, nego to što sadrži ono što ne smije biti otkriveno ili sigurnosna pravila koja treba sprovoditi u kodu. Dobro dizajniran prompt može procuriti bez sigurnosnih posljedica."
+  },
+  {
+    "obj": "2.2",
+    "q": "Tim u sistemski prompt dodaje jedinstven besmisleni niz i provjerava da li se pojavljuje u odgovorima. Čemu ovo služi?",
+    "options": [
+      "Detekciji curenja sistemskog prompta (canary), uz alarm i blokiranje odgovora",
+      "Poboljšanju tačnosti modela",
+      "Šifrovanju prompta",
+      "Smanjenju troška"
+    ],
+    "answer": 0,
+    "explain": "Canary niz je detektivna kontrola: njegova pojava u odgovoru ili u javnim izvorima ukazuje da je prompt izvučen. Ne sprječava curenje, ali daje signal za istragu i ATLAS mapiranje (AML.T0056)."
+  },
+  {
+    "obj": "2.2",
+    "q": "Koji od sljedećih sadržaja JE prihvatljivo držati u sistemskom promptu?",
+    "options": [
+      "API ključ servisa za plaćanje",
+      "Pravilo „korisnici bez admin uloge ne smiju vidjeti platne liste“ kao jedina kontrola",
+      "Uloga asistenta, ton i format odgovora",
+      "Lista internih hostova i portova"
+    ],
+    "answer": 2,
+    "explain": "Uloga, ton i format nisu sigurnosno osjetljivi; njihovo curenje nije incident. Ključevi idu u secrets manager, autorizacija u kod, a interna mrežna topologija u konfiguraciju alata na backendu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Puni promptovi i odgovori asistenta šalju se u centralnu log platformu kojoj pristupa cijeli IT. Koja kombinacija kontrola je najprikladnija?",
+    "options": [
+      "Isključiti sve logove asistenta",
+      "Redakcija ličnih podataka i tajni prije upisa, poseban indeks sa užim pristupom i definisan rok čuvanja",
+      "Logovati samo na lokalni disk servera",
+      "Šifrovati logove ključem koji svi u IT-u imaju"
+    ],
+    "answer": 1,
+    "explain": "Logovi su potrebni za istragu i nadzor, ali su čest izvor curenja. Redakcija, uži pristup i rok čuvanja zadržavaju vrijednost logova uz manji rizik. Isključivanje ukida detekciju, a dijeljeni ključ ne mijenja krug pristupa."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Poredaj korake obrade odgovora modela prije prikaza korisniku i izvršavanja akcije.",
+    "options": [
+      "Renderovati uz escaping i CSP ili izvršiti alat parametrizovano",
+      "Validirati izlaz JSON Schema šemom",
+      "DLP i canary provjera, uz redakciju i alarm na nalaz",
+      "Parsirati izlaz kao JSON",
+      "Poslovna validacija: postoji li resurs i smije li korisnik pristupiti"
+    ],
+    "answer": [3, 1, 4, 2, 0],
+    "explain": "Prvo parsiranje, zatim validacija oblika šemom, pa poslovna validacija i autorizacija, zatim provjera na osjetljive podatke i curenje prompta, i tek na kraju siguran prikaz ili izvršavanje."
+  },
+  {
+    "obj": "2.2",
+    "q": "Organizacija koristi API eksternog dobavljača modela. Koja kontrola za LLM02 se odnosi na samog dobavljača?",
+    "options": [
+      "Rate limiting po korisniku",
+      "JSON Schema validacija izlaza",
+      "CSP zaglavlje",
+      "Ugovorno i u postavkama naloga definisano zadržavanje podataka, zabrana korištenja za treniranje i lokacija obrade"
+    ],
+    "answer": 3,
+    "explain": "Podaci poslani dobavljaču izlaze iz tvog okruženja. Ugovor i postavke naloga određuju koliko se čuvaju, da li se koriste za treniranje i gdje se obrađuju. Ostale kontrole štite druge dijelove sistema."
+  },
+  {
+    "obj": "2.2",
+    "q": "Asistent piše shell komandu za dijagnostiku servera i aplikacija je izvršava preko subprocess.run(cmd, shell=True). Koja izmjena je ispravna?",
+    "options": [
+      "Model bira dijagnostičku akciju iz allowliste; aplikacija izvršava fiksnu komandu kao listu argumenata bez shella, sa validiranim argumentima",
+      "Dodati blocklistu opasnih komandi",
+      "Pokretati komandu kao root da ne bi bilo grešaka",
+      "Tražiti od modela da provjeri komandu prije izvršavanja"
+    ],
+    "answer": 0,
+    "explain": "Izlaz modela ne smije biti shell string. Allowlista akcija i fiksne komande bez shella deterministički ograničavaju šta se izvršava. Blocklista se zaobilazi, root povećava štetu, a samoprovjera modela nije kontrola."
+  },
+  {
+    "obj": "2.2",
+    "type": "spot",
+    "q": "Sistemski prompt bankarskog asistenta. Pretpostavi da će prompt procuriti (LLM07). Označi redove koji ne smiju biti u promptu.",
+    "snippet": "Ti si \"Asistent Banke\" za korisnike mobilne aplikacije.\nOdgovaraj kratko, na jeziku korisnika, u Markdown formatu.\nZa stanje računa pozovi alat get_balance; nikad ne izmišljaj iznose.\nInterni API: https://core-api.int.banka.local, ključ: sk_live_7Hq2...9xP\nKorisnicima koji nisu u grupi VIP nikad ne prikazuj kamatne stope VIP paketa.\nAko korisnik pita za kredit, uputi ga na stranicu /krediti.\nNe daj investicione savjete.",
+    "lang": "text",
+    "answer": [3, 4],
+    "explain": "Red 4: interni URL i API ključ u promptu otkrivaju infrastrukturu i daju napadaču upotrebljiv kredencijal čim prompt procuri; ključ ide u secrets manager, a alat ga koristi na backendu tako da ga model nikad ne vidi. Red 5: pravilo autorizacije (ko smije vidjeti VIP stope) izraženo instrukcijom se može nadjačati prompt injectionom, a podatak je možda već u kontekstu; autorizacija se provodi u kodu i u retrievalu. Uloga, ton, format, opis alata i opšta pravila ponašanja su u redu u promptu: njihovo curenje je neugodno, ali nije sigurnosni incident."
+  }
+]

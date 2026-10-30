@@ -1,0 +1,243 @@
+[
+  {
+    "obj": "1.3",
+    "q": "The Ingress shop in the shop namespace has spec.tls with secretName: shop-tls. You created the Secret with 'kubectl create secret tls shop-tls --cert=tls.crt --key=tls.key' without -n, and the current namespace is default. openssl s_client shows 'subject=CN=TRAEFIK DEFAULT CERT'. What is the cause?",
+    "options": [
+      "The Secret is in the default namespace, and the Ingress looks for the Secret only in its own namespace",
+      "The Secret must be of type Opaque",
+      "Traefik doesn't support self-signed certificates",
+      "The tls block is missing the field namespace: default"
+    ],
+    "answer": 0,
+    "explain": "secretName is always resolved in the Ingress's namespace, so the controller doesn't find the Secret and serves its default certificate. There is no namespace field in the tls block, and self-signed certificates and the kubernetes.io/tls type are fine."
+  },
+  {
+    "obj": "1.3",
+    "q": "Which command creates a Secret that an Ingress can use for TLS?",
+    "options": [
+      "kubectl -n shop create secret generic shop-tls --from-file=tls.crt --from-file=tls.key --type=Opaque",
+      "kubectl -n shop create configmap shop-tls --from-file=tls.crt --from-file=tls.key",
+      "kubectl -n shop create secret tls shop-tls --cert=tls.crt --key=tls.key",
+      "kubectl -n shop create secret docker-registry shop-tls --from-file=tls.crt"
+    ],
+    "answer": 2,
+    "explain": "create secret tls creates the kubernetes.io/tls type with the keys tls.crt and tls.key and checks that they are a pair. A ConfigMap is not a Secret, and generic/Opaque and docker-registry are the wrong types for TLS."
+  },
+  {
+    "obj": "1.3",
+    "q": "'curl --cacert tls.crt --resolve shop.example.com:31443:10.0.0.11 https://shop.example.com:31443/' returns 'no alternative certificate subject name matches target host name'. What do you fix?",
+    "options": [
+      "Add -k to curl because the certificate is self-signed",
+      "Create a new certificate with subjectAltName=DNS:shop.example.com and update the Secret",
+      "Change pathType to Exact",
+      "Add the host to spec.defaultBackend"
+    ],
+    "answer": 1,
+    "explain": "The error says the certificate's SAN doesn't contain the host name; clients look at the SAN, not just the CN. -k would just disable verification (a security flaw), and pathType and defaultBackend don't affect the certificate."
+  },
+  {
+    "obj": "1.3",
+    "q": "On a Traefik controller you need to redirect HTTP to HTTPS for the Ingress shop in the shop namespace. You created a Middleware redirect-https (redirectScheme: scheme: https) in the shop namespace. Which annotation on the Ingress is correct?",
+    "options": [
+      "nginx.ingress.kubernetes.io/ssl-redirect: \"true\"",
+      "traefik.ingress.kubernetes.io/router.middlewares: redirect-https",
+      "traefik.ingress.kubernetes.io/router.tls: \"true\"",
+      "traefik.ingress.kubernetes.io/router.middlewares: shop-redirect-https@kubernetescrd"
+    ],
+    "answer": 3,
+    "explain": "Traefik references a CRD middleware in the form <namespace>-<name>@kubernetescrd. The nginx annotation doesn't affect Traefik, a name without namespace and provider isn't found, and router.tls only enables TLS on the route, without a redirect."
+  },
+  {
+    "obj": "1.3",
+    "type": "order",
+    "q": "Order the steps to secure the existing Ingress shop (namespace shop) with the given tls.crt and tls.key.",
+    "options": [
+      "Add spec.tls with hosts: [shop.example.com] and secretName: shop-tls",
+      "Verify the certificate: openssl s_client -connect <node>:31443 -servername shop.example.com",
+      "Check the certificate's SAN: openssl x509 -in tls.crt -noout -ext subjectAltName",
+      "kubectl -n shop create secret tls shop-tls --cert=tls.crt --key=tls.key"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      1
+    ],
+    "explain": "First you check that the certificate covers the host, then create the Secret in the same namespace, add the tls block, and finally check what the server really sends."
+  },
+  {
+    "obj": "1.4",
+    "q": "Task: pods in the apps namespace must not access the cloud metadata service, and all other egress (including DNS) must work. Which policy (podSelector: {}, policyTypes: [Egress]) is correct?",
+    "options": [
+      "egress: [{to: [{ipBlock: {cidr: 169.254.169.254/32}}]}]",
+      "egress: []",
+      "egress: [{to: [{ipBlock: {cidr: 0.0.0.0/0, except: [169.254.169.254/32]}}]}]",
+      "egress: [{to: [{ipBlock: {cidr: 0.0.0.0/0}}]}, {to: [{ipBlock: {cidr: 169.254.169.254/32}}], ports: [{port: 0}]}]"
+    ],
+    "answer": 2,
+    "explain": "An ipBlock with except allows all addresses except the metadata address. The first option allows exactly the metadata address, egress: [] blocks everything including DNS, and NetworkPolicy has no deny rules, so an extra rule cannot take anything away."
+  },
+  {
+    "obj": "1.4",
+    "q": "The apps namespace has a policy deny-metadata (0.0.0.0/0 except 169.254.169.254/32), but the pod app=web still gets a response from 169.254.169.254. kubectl get netpol also shows a policy web-egress that has egress: [{}] for app=web. Why isn't metadata blocked?",
+    "options": [
+      "Policies are additive; web-egress allows all egress for app=web, so the except from the other policy has no effect",
+      "The newer policy always wins",
+      "except works only for Ingress",
+      "Pods must be restarted for the policy to take effect"
+    ],
+    "answer": 0,
+    "explain": "Traffic is allowed if any policy selecting the pod allows it, so egress: [{}] opens the metadata address too. There is no ordering, except works for egress as well, and policies take effect immediately."
+  },
+  {
+    "obj": "1.4",
+    "q": "Why is mandatory IMDSv2 with a hop limit of 1 an effective protection of an AWS node against pods?",
+    "options": [
+      "IMDSv2 encrypts responses so the pod cannot read the credentials",
+      "The token is obtained with a PUT request with a special header, and a response with hop limit 1 doesn't reach a container behind an extra network hop",
+      "IMDSv2 changes the metadata service address to 169.254.170.2",
+      "IMDSv2 automatically applies NetworkPolicy in every namespace"
+    ],
+    "answer": 1,
+    "explain": "A PUT with a header makes SSRF harder, and hop limit 1 prevents the token response from crossing the extra hop to the container. Responses aren't additionally encrypted, the address stays the same, and IMDSv2 has nothing to do with NetworkPolicy."
+  },
+  {
+    "obj": "1.4",
+    "q": "From the controlplane node you run 'curl -sk https://node01:10250/pods' and get a JSON list of all pods on the node. Which combination of kubelet settings is the cause?",
+    "options": [
+      "anonymous.enabled: false and authorization.mode: Webhook",
+      "anonymous.enabled: true and authorization.mode: Webhook",
+      "readOnlyPort: 0 and webhook.enabled: true",
+      "anonymous.enabled: true and authorization.mode: AlwaysAllow"
+    ],
+    "answer": 3,
+    "explain": "The anonymous request passes authentication, and AlwaysAllow doesn't check it, so it gets the data. With Webhook authorization it would get Forbidden for system:anonymous, and with anonymous access disabled Unauthorized; readOnlyPort refers to port 10255."
+  },
+  {
+    "obj": "1.4",
+    "q": "After fixing the kubelet on node01, 'curl -sk https://node01:10250/pods' returns: Forbidden (user=system:anonymous, verb=get, resource=nodes, subresource=proxy). The task requires anonymous requests to be rejected already at authentication. What is still missing?",
+    "options": [
+      "authorization.mode: Webhook",
+      "authentication.anonymous.enabled: false",
+      "readOnlyPort: 0",
+      "An RBAC Role that forbids nodes/proxy for system:anonymous"
+    ],
+    "answer": 1,
+    "explain": "Forbidden means the request was accepted as system:anonymous and rejected only at authorization. With anonymous.enabled: false the response would be Unauthorized (401). RBAC has no deny rules, and Webhook and readOnlyPort are other parts of the configuration."
+  },
+  {
+    "obj": "1.4",
+    "q": "Which command checks whether the kubelet's deprecated read-only port is disabled on node01?",
+    "options": [
+      "curl -s http://node01:10255/pods (you expect connection refused)",
+      "curl -sk https://node01:10250/healthz",
+      "curl -s http://node01:10248/healthz",
+      "curl -sk https://node01:6443/readyz"
+    ],
+    "answer": 0,
+    "explain": "The read-only API is HTTP on port 10255 and is disabled with readOnlyPort: 0. 10250 is the main HTTPS API, 10248 is the local healthz, and 6443 is the API server."
+  },
+  {
+    "obj": "1.4",
+    "q": "A user has a ClusterRole with rules: [{apiGroups: [''], resources: ['nodes/proxy'], verbs: ['get']}]. The kubelet uses authorization.mode: Webhook. What can the user realistically do?",
+    "options": [
+      "Only read node metrics",
+      "Nothing, because get is a read-only verb",
+      "Access all kubelet APIs through the proxy, including executing commands in containers on the node",
+      "Only see the list of nodes"
+    ],
+    "answer": 2,
+    "explain": "nodes/proxy covers all kubelet paths that don't have a dedicated subresource, including exec, and some WebSocket connections are authorized with the get verb. Metrics are nodes/metrics and nodes/stats, and listing nodes is list on nodes."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Match the node port with its component or purpose.",
+    "options": [
+      "10250",
+      "10255",
+      "2379",
+      "10259"
+    ],
+    "targets": [
+      "kube-scheduler (HTTPS, should listen on 127.0.0.1)",
+      "etcd client port",
+      "kubelet main API (HTTPS)",
+      "kube-apiserver",
+      "kubelet read-only API (HTTP, should be disabled)"
+    ],
+    "answer": [
+      2,
+      4,
+      1,
+      0
+    ],
+    "explain": "10250 is the kubelet API, 10255 the kubelet's deprecated read-only port, 2379 etcd for clients, and 10259 the scheduler. The API server listens on 6443, which isn't among the options."
+  },
+  {
+    "obj": "1.5",
+    "q": "You downloaded kubelet and kubelet.sha512 from dl.k8s.io for v1.35.0. Which command correctly verifies the file?",
+    "options": [
+      "sha512sum -c kubelet.sha512",
+      "echo \"$(cat kubelet.sha512) kubelet\" | sha256sum --check",
+      "sha512sum kubelet.sha512",
+      "echo \"$(cat kubelet.sha512)  kubelet\" | sha512sum --check"
+    ],
+    "answer": 3,
+    "explain": "The file from dl.k8s.io contains only the hash, so you add two spaces and the file name and pass it to sha512sum --check. sha512sum -c directly on that file reports an invalid format, sha256sum is the wrong algorithm, and the third command just hashes the hash file."
+  },
+  {
+    "obj": "1.5",
+    "q": "/opt/binaries contains kube-apiserver, kubelet and kubectl, and the task gives the expected SHA512 values for v1.35.0 linux/amd64. kubelet --version prints 'Kubernetes v1.35.0'. Is that sufficient proof that the kubelet is genuine?",
+    "options": [
+      "Yes, the version in the binary is signed",
+      "Yes, if the version matches kubectl get nodes",
+      "No, a modified binary can print any version; compare sha512sum with the given value",
+      "No, you need to run kube-bench run --targets node"
+    ],
+    "answer": 2,
+    "explain": "The version output is just text in the binary and an attacker can easily keep it. Integrity is proven by comparing the hash (or a signature), and kube-bench checks configuration, not the contents of binaries."
+  },
+  {
+    "obj": "1.5",
+    "q": "Which command quickly and reliably confirms that kubectl matches the given hash (the variable H contains the full expected SHA512)?",
+    "options": [
+      "sha512sum kubectl | grep -q \"$H\" && echo OK || echo MISMATCH",
+      "sha512sum kubectl | head -c 16",
+      "md5sum kubectl | grep -q \"$H\" && echo OK",
+      "ls -l kubectl | grep -q \"$H\" && echo OK"
+    ],
+    "answer": 0,
+    "explain": "Comparing the full SHA512 string gives a reliable result without eyeballing. The first 16 characters aren't enough, md5sum produces a different hash, and ls doesn't compute a hash."
+  },
+  {
+    "obj": "1.5",
+    "q": "You want to confirm not only that kubectl matches the published hash but also that it was published by the Kubernetes release process. What do you use?",
+    "options": [
+      "sha256sum --check kubectl.sha256",
+      "cosign verify-blob kubectl --signature kubectl.sig --certificate kubectl.cert --certificate-identity krel-staging@k8s-releng-prod.iam.gserviceaccount.com --certificate-oidc-issuer https://accounts.google.com",
+      "kubectl version --client --output=yaml",
+      "trivy fs kubectl"
+    ],
+    "answer": 1,
+    "explain": "cosign verify-blob checks the signature and the signer's identity from the certificate. A hash check doesn't tell who published the file, version output can be faked, and trivy looks for vulnerabilities, not authenticity."
+  },
+  {
+    "obj": "1.5",
+    "type": "order",
+    "q": "Order the steps for verifying the binaries in /opt/binaries against the given official SHA512 values for v1.35.0.",
+    "options": [
+      "Delete the files whose hash doesn't match",
+      "Compute sha512sum for each file",
+      "Determine the version and architecture the official values refer to",
+      "Compare the full hashes with the official values"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "Hashes only make sense for the same version and architecture. Then you compute, compare the full strings, and only then delete just the invalid files."
+  }
+]

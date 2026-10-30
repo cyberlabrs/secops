@@ -1,0 +1,13 @@
+{
+  "title": "Instalacija klastera kubeadm-om i HA kontrolna ravan",
+  "summary": "Podizanje klastera sa kubeadm init (flagovi i v1beta4 konfiguracija), instalacija CNI-ja, kubeadm join za worker i control plane čvorove, kubeadm reset i HA topologije sa load balancerom.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.2",
+    "1.3",
+    "1.5"
+  ],
+  "title_en": "Installing a cluster with kubeadm and an HA control plane",
+  "summary_en": "Bootstrapping a cluster with kubeadm init (flags and v1beta4 configuration), installing a CNI, kubeadm join for worker and control plane nodes, kubeadm reset, and HA topologies with a load balancer."
+}

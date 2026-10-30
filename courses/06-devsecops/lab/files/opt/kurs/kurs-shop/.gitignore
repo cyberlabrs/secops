@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+.gitlab-ci-local/
+node_modules/

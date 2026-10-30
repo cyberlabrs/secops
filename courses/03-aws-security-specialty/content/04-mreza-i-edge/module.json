@@ -1,0 +1,12 @@
+{
+  "title": "Mreža i edge: CloudFront, WAF, Shield, Network Firewall, hibridna povezanost",
+  "summary": "Kako izabrati i podesiti kontrole na rubu mreže (CloudFront OAC i signed URLs, AWS WAF sa managed pravilima, rate limitom, geo pravilima i JA3/JA4 fingerprintingom, Shield, S3 CORS, IoT politike) i u mreži (security grupe, NACL, Network Firewall, VPN, Direct Connect sa MACsec, Verified Access, segmentacija i otkrivanje nepotrebnog pristupa).",
+  "minutes": 120,
+  "domain": 3,
+  "objectives": [
+    "3.1",
+    "3.3"
+  ],
+  "title_en": "Network and edge: CloudFront, WAF, Shield, Network Firewall, hybrid connectivity",
+  "summary_en": "How to choose and configure controls at the network edge (CloudFront OAC and signed URLs, AWS WAF with managed rules, rate limiting, geo rules, and JA3/JA4 fingerprinting, Shield, S3 CORS, IoT policies) and inside the network (security groups, NACLs, Network Firewall, VPN, Direct Connect with MACsec, Verified Access, segmentation, and finding unintended access)."
+}

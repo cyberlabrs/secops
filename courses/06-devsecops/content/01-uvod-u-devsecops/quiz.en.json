@@ -1,0 +1,213 @@
+[
+  {
+    "obj": "1.1",
+    "q": "A team introduced SAST and immediately made it blocking. Within a week developers had added allow_failure: true in most repos. What should have been done differently?",
+    "options": [
+      "Run the tool in informational mode first, measure false positives, then block only new high-severity findings with an agreed exception process",
+      "Move SAST to a nightly pipeline so it doesn't bother developers",
+      "Forbid allow_failure in all .gitlab-ci.yml files using CODEOWNERS",
+      "Replace SAST with DAST because DAST has no false positives"
+    ],
+    "answer": 0,
+    "explain": "A gradual rollout (informational → blocking for new severe findings) with an exception process preserves developer trust. A nightly pipeline delays feedback, forbidding allow_failure doesn't fix the noise, and DAST doesn't replace SAST and also has false positives."
+  },
+  {
+    "obj": "1.1",
+    "q": "An auditor asks for evidence that the organization follows the NIST SSDF practice for verifying release integrity. Which pipeline artifact is the most direct evidence?",
+    "options": [
+      "The Semgrep SARIF report from the MR pipeline",
+      "The job log with unit test results",
+      "A cosign signature of the image and signature verification before deploy",
+      "The list of open findings in DefectDojo"
+    ],
+    "answer": 2,
+    "explain": "Verifying release integrity (the PS group, Protect the Software) is proven by an artifact signature and its verification. The Semgrep SARIF is evidence for code analysis (PW), unit tests are not a security control, and the findings list is evidence for RV."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match the pipeline activity with the NIST SSDF practice group it fits best.",
+    "options": [
+      "Protected branches and mandatory review for .gitlab-ci.yml",
+      "Semgrep and osv-scanner in every MR",
+      "Triage of a new CVE and root cause analysis so the class of bug does not recur",
+      "Defining the criterion \"a CRITICAL vulnerability blocks the release\" and training teams"
+    ],
+    "targets": ["RV (Respond to Vulnerabilities)", "PO (Prepare the Organization)", "PS (Protect the Software)", "PW (Produce Well-Secured Software)"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Protecting code from unauthorized changes is PS, analyzing code and components is PW, responding to vulnerabilities and root cause analysis are RV, and defining criteria, roles and training is PO."
+  },
+  {
+    "obj": "1.1",
+    "q": "The CISO wants an annual assessment of the whole software security program, including governance, education and incident management, with a target profile for next year. Which framework fits best?",
+    "options": [
+      "OWASP DSOMM",
+      "OWASP SAMM v2",
+      "OWASP Top 10 CI/CD Security Risks",
+      "NIST SP 800-218A"
+    ],
+    "answer": 1,
+    "explain": "SAMM v2 covers 5 business functions (including Governance and Operations) with 15 practices and 3 maturity levels, and is meant for program assessment. DSOMM focuses on technical DevSecOps activities, Top 10 CI/CD is a list of risks, and 800-218A is the SSDF profile for generative AI."
+  },
+  {
+    "obj": "1.1",
+    "q": "A platform team wants a concrete plan of \"which security activities we introduce in the pipeline next,\" grouped by areas such as Build and Deployment and Test and Verification. Which model should they use?",
+    "options": [
+      "NIST SSDF",
+      "OWASP SAMM v2",
+      "STRIDE",
+      "OWASP DSOMM"
+    ],
+    "answer": 3,
+    "explain": "DSOMM has the dimensions Build and Deployment, Culture and Organization, Implementation, Information Gathering and Test and Verification, with concrete activities per level. SSDF is a practice framework without levels, SAMM is an organizational model, and STRIDE is a threat classification."
+  },
+  {
+    "obj": "1.1",
+    "q": "A colleague claims: \"We have shift-left: SAST, SCA and image scanning in the MR. We don't need anything after deploy.\" Which scenario shows they are wrong?",
+    "options": [
+      "A developer commits a secret the pre-commit hook doesn't recognize",
+      "SAST reports a false positive in test code",
+      "A month after the release, a CVE is published for a library in an image already running in production",
+      "A merge request has too many findings so the reviewer rejects it"
+    ],
+    "answer": 2,
+    "explain": "A new CVE affects artifacts that have already passed every gate, so you need continuous scanning of the registry and production (shift-right). The other options are problems within shift-left controls, not an argument for controls after deploy."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which statement about NIST SSDF is correct as of October 2026?",
+    "options": [
+      "SSDF prescribes concrete tools, e.g. Semgrep for PW.7",
+      "The current final version is SP 800-218 (SSDF 1.1), and SP 800-218 Rev. 1 (SSDF 1.2) was published as a draft in December 2025",
+      "SSDF has five practice groups, the same as the SAMM business functions",
+      "SSDF has been replaced by OWASP DSOMM"
+    ],
+    "answer": 1,
+    "explain": "SP 800-218 v1.1 (February 2022) is the final version, and Rev. 1 (SSDF 1.2) is a draft from December 2025. SSDF doesn't prescribe tools, has four groups (PO, PS, PW, RV) and has not been replaced by any OWASP model."
+  },
+  {
+    "obj": "1.1",
+    "q": "You are introducing controls into 40 repos that have no security checks at all. What is a sensible FIRST control?",
+    "options": [
+      "DAST against all staging environments",
+      "Kyverno admission policies for signed images",
+      "SLSA L3 provenance for all builds",
+      "Secret detection (gitleaks) in the pipeline and a pre-commit hook"
+    ],
+    "answer": 3,
+    "explain": "Secret detection is cheap, fast and needs little tuning, while the damage from a leaked secret is large. DAST, signatures with admission control and SLSA L3 require much more infrastructure and come later."
+  },
+  {
+    "obj": "1.2",
+    "q": "In a threat modeling session for kurs-shop someone lists: \"debug=True in Flask reveals the stack trace and configuration to an attacker.\" Which STRIDE category is this?",
+    "options": [
+      "Information disclosure",
+      "Tampering",
+      "Repudiation",
+      "Spoofing"
+    ],
+    "answer": 0,
+    "explain": "Revealing the stack trace and configuration violates confidentiality, so it is Information disclosure. (The Werkzeug debugger can also give code execution, which would be Elevation of privilege, but the problem described is information leakage.)"
+  },
+  {
+    "obj": "1.2",
+    "q": "An attacker with write access to a feature branch modifies a Makefile that the test job calls, so the job sends environment variables to their server. Which STRIDE category and which trust boundary are violated?",
+    "options": [
+      "Denial of service; the boundary between the runner and the registry",
+      "Repudiation; the boundary between GitLab and Kubernetes",
+      "Tampering with code the pipeline executes, resulting in Information disclosure; the boundary between the repo and the runner that holds secrets",
+      "Spoofing; the boundary between the developer's laptop and GitLab"
+    ],
+    "answer": 2,
+    "explain": "Modifying a file the pipeline executes is tampering, and stealing the variables is information disclosure. The critical boundary is between the repo contents (which a less trusted person can change) and the runner that holds secrets. This is indirect Poisoned Pipeline Execution."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Match the problem in the kurs-shop repo with the control that first detects it in the pipeline.",
+    "options": [
+      "An f-string in a SQL query in app.py",
+      "requests 2.25.1 in requirements.txt",
+      "An SG with port 22 open to 0.0.0.0/0 in infra/main.tf",
+      "An AWS key in an old commit of config/settings.py"
+    ],
+    "targets": ["DAST (ZAP)", "Secret detection (gitleaks git)", "IaC scanning (Checkov)", "SAST (Semgrep)", "SCA (osv-scanner)"],
+    "answer": [3, 4, 2, 1],
+    "explain": "A vulnerable pattern in code is caught by SAST, an old dependency version by SCA, a Terraform misconfiguration by the IaC scanner, and a secret in history by a secret scanner that reads git history. DAST is a distractor: it is late and sees neither Terraform nor git history."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Order the controls by the stage in which they naturally run, from earliest to latest.",
+    "options": [
+      "Kyverno verifyImages in the cluster",
+      "gitleaks in a pre-commit hook",
+      "Trivy image on the built image",
+      "ZAP baseline against the staging environment",
+      "Semgrep in the merge request pipeline"
+    ],
+    "answer": [1, 4, 2, 3, 0],
+    "explain": "Pre-commit (secrets) → MR (SAST) → build (image scanning) → staging (DAST) → deploy (admission signature check). Each control sits in the earliest stage where it has something to check."
+  },
+  {
+    "obj": "1.2",
+    "q": "A team asks where to put DAST so it is \"as far left as possible.\" What is the earliest sensible place?",
+    "options": [
+      "In a pre-commit hook, over the source code",
+      "After deploy to a short-lived review or staging environment, in the same pipeline",
+      "In the MR pipeline before the build job, over the Dockerfile",
+      "Only once a year as part of a pentest"
+    ],
+    "answer": 1,
+    "explain": "DAST needs a running application, so the earliest place is after deploy to a review/staging environment. Pre-commit and the MR before the build have no running application, and a yearly pentest is not a pipeline control."
+  },
+  {
+    "obj": "1.2",
+    "q": "You want SAST, SCA and the IaC scan in the MR to start immediately, in parallel with the build, instead of waiting for the previous stage to finish. What do you add to those jobs?",
+    "options": [
+      "when: always",
+      "allow_failure: true",
+      "dependencies: []",
+      "needs: []"
+    ],
+    "answer": 3,
+    "explain": "needs: [] means the job has no dependencies and starts as soon as the pipeline starts, regardless of stage. when: always affects whether the job runs after a failure, allow_failure whether a failure blocks, and dependencies: [] only disables downloading artifacts."
+  },
+  {
+    "obj": "1.2",
+    "q": "An IaC gate script returns 0 (clean), 2 (only MEDIUM findings) and 1 (HIGH/CRITICAL). You want MEDIUM to be a yellow warning and HIGH to block. What do you write in the job?",
+    "options": [
+      "allow_failure: true",
+      "allow_failure:\n  exit_codes: [2]",
+      "rules:\n  - when: on_failure",
+      "allow_failure:\n  exit_codes: [1]"
+    ],
+    "answer": 1,
+    "explain": "allow_failure:exit_codes: [2] allows failure only for exit code 2, so MEDIUM yields a warning and code 1 blocks. allow_failure: true would never block, exit_codes: [1] would let HIGH through, and when: on_failure concerns whether the job runs, not its result."
+  },
+  {
+    "obj": "1.2",
+    "q": "You are running the existing kurs-shop pipeline locally in the lab and first want to see which jobs exist and in which stages. Which command?",
+    "options": [
+      "gitlab-ci-local --list",
+      "gitlab-runner list",
+      "gitlab-ci-local test",
+      "glab ci view"
+    ],
+    "answer": 0,
+    "explain": "gitlab-ci-local --list prints jobs with their stage and when condition without running them. gitlab-ci-local test would run the test job, gitlab-runner list shows registered runners, and glab ci view works against a real GitLab server, which doesn't exist in the lab."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Order the threat modeling steps according to the \"four questions\" approach.",
+    "options": [
+      "Verify the controls were implemented and repeat when the architecture changes",
+      "Draw a data flow diagram with trust boundaries",
+      "Decide on controls or risk acceptance",
+      "Walk through STRIDE for each trust boundary"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "What are we working on (diagram) → what can go wrong (STRIDE) → what are we going to do (controls) → did we do a good job (verification and iteration)."
+  }
+]

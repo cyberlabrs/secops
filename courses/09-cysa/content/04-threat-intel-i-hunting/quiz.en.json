@@ -1,0 +1,271 @@
+[
+  {
+    "obj": "1.4",
+    "q": "An investigation showed that the attacker was present in the network for 11 months, used custom malware and LOTL techniques and targeted exclusively research and development documentation. Which type of actor is MOST likely?",
+    "options": [
+      "Hacktivist",
+      "Unskilled attacker",
+      "APT",
+      "Unintentional insider"
+    ],
+    "answer": 2,
+    "explain": "Long-term stealthy presence, custom tools and a clear espionage goal are hallmarks of an APT. Hacktivists seek publicity, unskilled attackers use public tools and make noise, and an unintentional insider does not build persistence."
+  },
+  {
+    "obj": "1.4",
+    "q": "The SOC blocked the malware hash from a report, but the attacker came back two days later with a new version. Which type of detection would cause the attacker the MOST \"pain\" according to the Pyramid of Pain?",
+    "options": [
+      "Blocking the new hash",
+      "Blocking the C2 server's IP address",
+      "Blocking the C2 domain",
+      "Behavioral detection: an Office process launches PowerShell that downloads content from the internet"
+    ],
+    "answer": 3,
+    "explain": "The top of the pyramid is TTPs: behavioral detection forces the attacker to change how they operate, which is expensive. A hash is at the bottom (trivially changed), and IP addresses and domains are also cheap to replace."
+  },
+  {
+    "obj": "1.4",
+    "q": "The team wants to visually compare the techniques used by groups relevant to their sector with the techniques covered by existing detections, to set hunt priorities. What is BEST?",
+    "options": [
+      "An ATT&CK heat map with threat and coverage layers",
+      "A Cyber Kill Chain diagram",
+      "A list of IoCs from OTX",
+      "A CVSS calculator"
+    ],
+    "answer": 0,
+    "explain": "A heat map in the ATT&CK Navigator can show a layer of technique use by actors and a layer of detection coverage; the difference is the priorities. The Kill Chain is too coarse, an IoC list does not show techniques, and CVSS scores vulnerabilities."
+  },
+  {
+    "obj": "1.4",
+    "q": "The firewall started blocking legitimate CDN traffic after importing a feed of IP addresses. It turned out that the addresses were malicious 18 months ago. Which intel quality factor is the problem?",
+    "options": [
+      "Relevance",
+      "Timeliness",
+      "Attribution",
+      "Confidentiality"
+    ],
+    "answer": 1,
+    "explain": "Outdated IoCs no longer reflect reality: IP addresses get recycled, especially at cloud and CDN providers. This is a timeliness problem, and the solution is indicator aging (expiration) and source verification."
+  },
+  {
+    "obj": "1.4",
+    "q": "A hospital receives a free feed with IoCs of attacks on industrial PLC devices in the oil industry. The hospital has no OT environment. Which confidence factor is the WEAKEST?",
+    "options": [
+      "Accuracy",
+      "Timeliness",
+      "Relevance",
+      "Completeness"
+    ],
+    "answer": 2,
+    "explain": "Intel can be accurate and fresh, but if it does not apply to the organization's technology, sector or region, it is not relevant and only adds noise."
+  },
+  {
+    "obj": "1.4",
+    "q": "Which TWO sources are examples of OSINT? (Choose TWO.)",
+    "options": [
+      "Public CISA advisories and the KEV catalog",
+      "A paid commercial provider's feed under NDA",
+      "Certificate transparency logs",
+      "Internal EDR alerts"
+    ],
+    "answer": [0, 2],
+    "explain": "OSINT consists of publicly available sources, such as CISA publications and CT logs, in which new certificates for suspicious domains can be seen. A commercial feed under NDA is closed-source, and EDR alerts are an internal source."
+  },
+  {
+    "obj": "1.4",
+    "q": "Several banks want to automatically exchange structured indicators over an HTTPS API. Which combination of standards is BEST?",
+    "options": [
+      "Syslog and SNMP",
+      "SAML and OAuth",
+      "CVSS and EPSS",
+      "STIX for the format and TAXII for transport"
+    ],
+    "answer": 3,
+    "explain": "STIX 2.1 defines the format of intel objects (indicator, threat-actor, relationship), and TAXII 2.1 is the protocol for exchanging them. The other pairs are for logging, identity or vulnerability scoring."
+  },
+  {
+    "obj": "1.4",
+    "q": "A report is marked TLP:AMBER+STRICT. With whom may the analyst share it?",
+    "options": [
+      "Only within their own organization",
+      "With the entire sector community",
+      "Publicly on a blog",
+      "With the organization's clients without restriction"
+    ],
+    "answer": 0,
+    "explain": "TLP:AMBER+STRICT restricts sharing to the recipient's organization only. TLP:AMBER also allows clients on a need-to-know basis, TLP:GREEN the community, and TLP:CLEAR public disclosure."
+  },
+  {
+    "obj": "1.4",
+    "q": "Which of these indicators is behavioral rather than atomic?",
+    "options": [
+      "The domain update-check.example.net",
+      "The IP address 198.51.100.23",
+      "Excel launches cmd.exe, which creates a scheduled task and then calls out to a newly registered domain",
+      "The sender email address of a phishing message"
+    ],
+    "answer": 2,
+    "explain": "A behavioral indicator describes a combination of behaviors across multiple steps and is longer-lasting. A domain, an IP address and an email address are atomic indicators: they cannot be broken down further and the attacker changes them easily."
+  },
+  {
+    "obj": "1.4",
+    "q": "CISA publishes IoCs of a campaign today. What should the analyst do with them to determine whether the organization has ALREADY been hit?",
+    "options": [
+      "Only add them to the firewall block list",
+      "Retro-hunt through historical logs (DNS, proxy, EDR) for the campaign period",
+      "Forward them to the board as a strategic report",
+      "Wait for an alert from the SIEM"
+    ],
+    "answer": 1,
+    "explain": "Blocking protects against future connections but does not reveal past compromise. A retro-hunt searches historical data for the campaign period. That is why log retention matters for threat intel as well."
+  },
+  {
+    "obj": "1.4",
+    "q": "There were no alerts, but after a report about a group that uses WMI persistence, the team formulates an assumption and searches WMI event subscription records on all servers. What is this activity called?",
+    "options": [
+      "Incident response",
+      "Vulnerability scanning",
+      "Penetration testing",
+      "Hypothesis-driven threat hunting"
+    ],
+    "answer": 3,
+    "explain": "A proactive search without an alert, based on an assumption derived from intel, is hypothesis-driven threat hunting. Incident response starts with a confirmed incident, scanning looks for vulnerabilities, and a pentest simulates an attack."
+  },
+  {
+    "obj": "1.4",
+    "q": "A threat hunt discovered a previously unknown persistence technique on two servers. Besides escalating the incident, what is the MOST important lasting outcome of the hunt?",
+    "options": [
+      "Turn the finding into an automated detection and update coverage",
+      "Delete the logs used in the hunt to save space",
+      "Repeat the same hunt manually every week",
+      "Change the SIEM vendor"
+    ],
+    "answer": 0,
+    "explain": "A hunt should leave lasting value: a new rule that automatically catches the same technique, along with an updated heat map. Manual repetition does not scale, and deleting logs destroys evidence."
+  },
+  {
+    "obj": "1.4",
+    "q": "During threat modeling of a payment application, the team notices that a user can deny having initiated a transfer because actions are not recorded. Which STRIDE category is this?",
+    "options": [
+      "Spoofing",
+      "Tampering",
+      "Repudiation",
+      "Elevation of privilege"
+    ],
+    "answer": 2,
+    "explain": "Repudiation means a user can deny an action because there is no reliable proof. The controls are protected audit logs and digital signatures. Spoofing is impersonation, tampering is data modification, and elevation of privilege is gaining higher rights."
+  },
+  {
+    "obj": "1.4",
+    "q": "An attacker changed the amount in a request between the client and the API because the communication is not integrity-protected. Which STRIDE category does this represent?",
+    "options": [
+      "Information disclosure",
+      "Tampering",
+      "Denial of service",
+      "Repudiation"
+    ],
+    "answer": 1,
+    "explain": "Unauthorized modification of data in transit or at rest violates integrity and falls under Tampering. Protections are TLS, request signing (HMAC) and integrity verification on the server."
+  },
+  {
+    "obj": "1.4",
+    "q": "The SOC wants detection of lateral movement and credential theft with minimal false positives. Which control BEST achieves this?",
+    "options": [
+      "Lowering the failed logon threshold to 3",
+      "Honeytoken accounts and fake credentials that legitimate users never use",
+      "Blocking all SMB connections",
+      "Additional AV signatures"
+    ],
+    "answer": 1,
+    "explain": "No legitimate process uses a honeytoken, so any attempt to use one almost certainly means an attack. A lower threshold increases false alerts, blocking SMB breaks the business, and AV signatures do not see credential abuse."
+  },
+  {
+    "obj": "1.4",
+    "q": "An engineer in the administrative department has resigned. In the last two weeks they downloaded 15 times more documents than usual, including folders they had not accessed before, and they are using personal cloud storage. Which type of threat is MOST likely?",
+    "options": [
+      "Malicious insider",
+      "APT",
+      "Hacktivist",
+      "Unintentional insider"
+    ],
+    "answer": 0,
+    "explain": "Mass downloading outside the usual pattern, access to new folders and transfer to a personal cloud before leaving are classic indicators of a malicious insider. The investigation is conducted with HR and the legal department, supported by UEBA and DLP."
+  },
+  {
+    "obj": "1.4",
+    "q": "An analyst claims the attack was carried out by a specific state group because a comment in their language was found in the code. Why is this conclusion DANGEROUS?",
+    "options": [
+      "The language in code is always translated automatically",
+      "Attribution is never possible",
+      "ATT&CK does not contain state groups",
+      "Artifacts can be deliberately planted (false flag), so attribution requires multiple independent pieces of evidence"
+    ],
+    "answer": 3,
+    "explain": "Attackers plant false clues (language, time zones, other groups' tools) to mislead investigators. Reliable attribution combines TTPs, infrastructure, tools and targets, and still carries uncertainty."
+  },
+  {
+    "obj": "1.4",
+    "q": "The team wants to know which techniques of relevant actors affect their critical systems and which controls cover them, linking the threat model, inventory and ATT&CK. What is this activity called?",
+    "options": [
+      "Threat mapping",
+      "Penetration testing",
+      "Vulnerability scanning",
+      "A tabletop exercise"
+    ],
+    "answer": 0,
+    "explain": "Threat mapping links threats to assets and controls and shows coverage gaps. A pentest and scanning actively test systems, and a tabletop is an incident response exercise."
+  },
+  {
+    "obj": "1.4",
+    "type": "order",
+    "q": "Put the steps of the threat intelligence lifecycle in the correct order.",
+    "options": [
+      "Analysis",
+      "Dissemination",
+      "Planning and direction (requirements)",
+      "Feedback",
+      "Collection",
+      "Processing"
+    ],
+    "answer": [2, 4, 5, 0, 1, 3],
+    "explain": "First the requirements are defined (what we need to know), then data is collected, processed (normalization, deduplication) and analyzed, the result is disseminated to the right consumers, and feedback returns the process to new requirements."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Match each description with a threat intel or hunting concept.",
+    "options": [
+      "A fake file \"salaries_2026.xlsx\" on a share that alerts when opened",
+      "A commercial feed available only to subscribers",
+      "Hashes, IP addresses and domains are at the bottom, and TTPs at the top",
+      "Each IoC is assigned valid_until and confidence in a STIX object",
+      "The board receives a report on ransomware trends in the sector",
+      "Impersonating a service without mTLS"
+    ],
+    "targets": [
+      "Strategic intelligence",
+      "Pyramid of Pain",
+      "Cyber deception",
+      "Closed-source intelligence",
+      "Spoofing (STRIDE)",
+      "Timeliness and accuracy"
+    ],
+    "answer": [2, 3, 1, 5, 0, 4],
+    "explain": "The fake file is deception (a honeyfile), the paid feed is closed-source, the ordering from hash to TTP is the Pyramid of Pain, IoC expiration and confidence reflect timeliness and accuracy, the report for the board is strategic intel, and impersonation is Spoofing."
+  },
+  {
+    "obj": "1.4",
+    "type": "multi",
+    "q": "The SIEM collected these events from a domain controller. The svc_sql_backup account is a honey account with an SPN. Which TWO conclusions are correct?",
+    "snippet": "2026-10-21T02:14:07Z 4769 user=j.kovac svc=svc_web01      enc=0x17 client=10.0.6.44\n2026-10-21T02:14:07Z 4769 user=j.kovac svc=svc_mssql02    enc=0x17 client=10.0.6.44\n2026-10-21T02:14:08Z 4769 user=j.kovac svc=svc_backup     enc=0x17 client=10.0.6.44\n2026-10-21T02:14:08Z 4769 user=j.kovac svc=svc_sql_backup enc=0x17 client=10.0.6.44\n2026-10-21T02:14:09Z 4769 user=j.kovac svc=svc_sharepoint enc=0x17 client=10.0.6.44\n2026-10-21T02:14:09Z 4769 user=j.kovac svc=svc_exchange   enc=0x17 client=10.0.6.44\n# svc_sql_backup = honey account (no legitimate service uses it)",
+    "lang": "log",
+    "options": [
+      "This is Kerberoasting: one account requests service tickets (RC4, 0x17) for many service accounts within seconds to crack passwords offline",
+      "A ticket request for the honey account is a high-fidelity alert with very few false positives, because legitimate processes never use it",
+      "The attacker already has Domain Admin rights, because only administrators can request service tickets",
+      "Encryption type 0x17 means AES-256, so the stolen tickets are useless"
+    ],
+    "answer": [0, 1],
+    "explain": "Event 4769 from one account and host for six SPNs within two seconds, with RC4 (0x17), is the Kerberoasting pattern (ATT&CK T1558.003): the attacker extracts tickets and cracks service account passwords offline. A honey account with an SPN exists only as a lure, so any request for its ticket has very few false positives. Any domain account can request service tickets, so Domain Admin is not required, and 0x17 is RC4-HMAC (easier to crack), not AES (0x12). Next step: treat j.kovac and 10.0.6.44 as compromised and rotate the passwords of the targeted service accounts."
+  }
+]

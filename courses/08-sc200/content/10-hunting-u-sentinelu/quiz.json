@@ -1,0 +1,288 @@
+[
+  {
+    "obj": "3.2",
+    "q": "Imate Microsoft Sentinel workspace povezan sa Defender portalom. Na stranici Hunting ste pokrenuli sve hunting upite. Trebate brzo identifikovati upite čiji se broj rezultata u zadnja 24 sata najviše promijenio u odnosu na prethodni period. Šta trebate uraditi?",
+    "options": [
+      "Sortirati upite po koloni Results delta.",
+      "Filtrirati upite po vrijednosti N/A u koloni Results.",
+      "Dodati sve upite u favorites.",
+      "Otvoriti MITRE ATT&CK tactic bar i izabrati taktiku Initial access."
+    ],
+    "answer": 0,
+    "explain": "Results delta i Results delta percentage porede rezultate zadnja 24 h sa prethodnih 24–48 h i otkrivaju skokove. N/A označava upite bez potrebnog izvora podataka, favoriti se samo automatski pokreću, a tactic bar ne pokazuje promjenu volumena."
+  },
+  {
+    "obj": "3.2",
+    "q": "Analitičar u Sentinelu na stranici Hunting pokreće upit i u rezultatima pronalazi tri sumnjive prijave. Želi ih sačuvati zajedno sa upitom i kasnije od njih napraviti incident. Šta treba uraditi PRVO?",
+    "options": [
+      "Kreirati automation rule koja pravi incident.",
+      "Kreirati watchlist sa tri reda.",
+      "Označiti redove i izabrati Add bookmark.",
+      "Pretvoriti upit u NRT analytics pravilo."
+    ],
+    "answer": 2,
+    "explain": "Add bookmark čuva svaki označeni red zajedno sa upitom, tagovima, bilješkama i mapiranjem entiteta. Iz Bookmarks taba se zatim kroz Incident actions pravi novi incident ili se dodaje u postojeći."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tim želi KQL-om pretraživati sve bookmarke napravljene u zadnje dvije sedmice i spajati ih sa SigninLogs. Koju tabelu treba koristiti?",
+    "options": [
+      "SecurityIncident",
+      "HuntingBookmark",
+      "SecurityAlert",
+      "Watchlist"
+    ],
+    "answer": 1,
+    "explain": "Bookmarks se upisuju u tabelu HuntingBookmark u Log Analytics workspaceu, pa ih je moguće filtrirati, sažimati i spajati sa drugim podacima."
+  },
+  {
+    "obj": "3.2",
+    "q": "Analitičar radi na stranici Advanced hunting u Defender portalu i želi rezultat upita sačuvati kao bookmark. Šta je tačno?",
+    "options": [
+      "Bookmark se pravi iz menija Take actions.",
+      "Bookmark se pravi samo iz Microsoft Sentinel u Azure portalu.",
+      "Treba uključiti preview funkcije u Settings.",
+      "Bookmarks nisu dostupni u Advanced hunting; koristi se Microsoft Sentinel > Threat management > Hunting ili Link to incident."
+    ],
+    "answer": 3,
+    "explain": "Bookmarks ne postoje u Advanced hunting. Dostupni su na Sentinel Hunting stranici u Defender portalu. U advanced huntingu se kontekst čuva povezivanjem rezultata sa incidentom, sačuvanim upitima ili tagovima."
+  },
+  {
+    "obj": "3.2",
+    "q": "Ranije ste koristili Sentinel livestream da biste pratili nove pogotke hunting upita tokom aktivnog napada. Šta Microsoft sada preporučuje za isti scenarij? (Izaberi DVA.)",
+    "options": [
+      "KQL job u data lakeu koji periodično izvršava upit i čuva rezultat",
+      "Uključiti livestream u postavkama workspacea",
+      "Scheduled analytics rule nad istim upitom",
+      "Restore arhiviranih podataka",
+      "Dodati upit u favorites"
+    ],
+    "answer": [0, 2],
+    "explain": "Livestream više nije dostupan. Za automatizovano praćenje upita preporučuju se KQL jobs, analytics rules ili playbooks. Favoriti se pokreću samo pri otvaranju stranice, a restore služi za arhivu, ne za praćenje."
+  },
+  {
+    "obj": "3.2",
+    "q": "Imate 18 mjeseci firewall logova u Sentinel data lake tieru. Tokom istrage incidenta trebate jednom pretražiti sav taj period za jednu IP adresu i rezultat učiniti dostupnim u advanced huntingu i analytics pravilima. Rješenje mora imati NAJMANJE administrativnog napora. Šta trebate uraditi?",
+    "options": [
+      "Kreirati summary rule sa bin size 1440 minuta.",
+      "Kreirati jednokratni KQL job koji upisuje rezultat u novu tabelu u analytics tieru.",
+      "Promijeniti plan cijele tabele u Analytics na 18 mjeseci.",
+      "Kreirati hunting upit i dodati ga u favorites."
+    ],
+    "answer": 1,
+    "explain": "Jednokratni KQL job čita data lake do 12 godina unazad i rezultat upisuje u _KQL_CL tabelu u analytics tieru. Summary rule ne obrađuje istorijske podatke, prebacivanje cijele tabele je skupo, a hunting upit ne vidi data lake."
+  },
+  {
+    "obj": "3.2",
+    "q": "Kreirali ste KQL job koji treba da napravi novu custom tabelu u analytics tieru, ali job pada sa greškom dozvola. Vaš nalog ima potrebnu Entra ulogu za data lake. Šta trebate uraditi?",
+    "options": [
+      "Dodijeliti sebi ulogu Microsoft Sentinel Responder.",
+      "Promijeniti plan odredišne tabele u Basic.",
+      "Dodijeliti managed identityju data lakea (msg-resources-<guid>) ulogu Log Analytics Contributor na workspaceu.",
+      "Uključiti SummaryLogs dijagnostiku."
+    ],
+    "answer": 2,
+    "explain": "Za kreiranje novih custom tabela u analytics tieru sistemska managed identity data lakea mora imati Log Analytics Contributor na odredišnom workspaceu. Responder uloga i SummaryLogs nisu povezani sa upisom tabele."
+  },
+  {
+    "obj": "3.2",
+    "q": "KQL job je kreiran sa odredištem 'nova tabela' u Sentinel workspaceu (analytics tier) pod imenom FwDenied. Kako će se zvati tabela?",
+    "options": [
+      "FwDenied_CL",
+      "FwDenied_SRCH",
+      "FwDenied_SPRK",
+      "FwDenied_KQL_CL"
+    ],
+    "answer": 3,
+    "explain": "Tabele koje KQL job pravi u analytics tieru dobijaju sufiks _KQL_CL. U system tables (data lake) sufiks je _KQL. _CL je tipičan za summary rule, _SRCH za search job, a _SPRK je primjer iz notebooka."
+  },
+  {
+    "obj": "3.2",
+    "q": "Želite zakazati KQL job koji se izvršava svakih 30 minuta nad tabelom u data lakeu i ne propušta događaje koji kasne. Koji dio upita to NAJBOLJE rješava?",
+    "options": [
+      "let delay = 15m; let endTime = now() - delay; let startTime = endTime - lookback; ... | where TimeGenerated between (startTime .. endTime)",
+      "| where ingestion_time() > ago(30m)",
+      "| where TimeGenerated > ago(30m)",
+      "| externaldata(...) [@\"https://...\"]"
+    ],
+    "answer": 0,
+    "explain": "Novi podaci u data lakeu postaju dostupni sa kašnjenjem do 15 minuta, pa se prozor pomjera na now() - delay. ingestion_time() i externaldata() nisu podržani u data lake jobovima, a ago(30m) bez kašnjenja propušta kasne događaje."
+  },
+  {
+    "obj": "3.2",
+    "q": "Koje DVIJE funkcije neće raditi u upitu KQL joba u Sentinel data lakeu? (Izaberi DVA.)",
+    "options": [
+      "summarize",
+      "arg()",
+      "join",
+      "externaldata()",
+      "make_set()"
+    ],
+    "answer": [1, 3],
+    "explain": "U data lake jobovima su podržani svi operatori osim adx(), arg(), externaldata() i ingestion_time(); korisničke funkcije takođe nisu podržane. summarize, join i make_set rade normalno."
+  },
+  {
+    "obj": "3.2",
+    "q": "Imate Microsoft Sentinel workspace u koji svakog dana stiže 1 TB proxy logova u jeftinom tieru. Trebate analytics pravilo koje svakog sata poredi destinacije sa threat intelligence, uz NAJMANJI trošak. Šta trebate uraditi?",
+    "options": [
+      "Prebaciti proxy tabelu u Analytics plan i napraviti scheduled pravilo.",
+      "Pokretati search job svakog sata.",
+      "Kreirati summary rule sa bin size 60 minuta koja sažima podatke u _CL tabelu, i analytics pravilo nad tom tabelom.",
+      "Kreirati hunting upit i bookmarkovati rezultate."
+    ],
+    "answer": 2,
+    "explain": "Summary rule sažima obimne podatke iz jeftinog tiera u malu Analytics tabelu po rasporedu, a analytics pravilo radi nad sažetkom. Prebacivanje cijele tabele je skupo, search job je jednokratan, a hunting upit ne pravi alarme."
+  },
+  {
+    "obj": "3.2",
+    "q": "Kolega je napisao upit za summary rule sa bin size 60 minuta:\n\nAzureFirewall\n| where TimeGenerated > ago(1h)\n| summarize count() by SourceIp, DestinationIp\n\nŠta treba promijeniti?",
+    "options": [
+      "Ništa, upit je ispravan.",
+      "Ukloniti vremenski filter, jer opseg određuje bin size.",
+      "Zamijeniti summarize sa project.",
+      "Dodati union * da obuhvati sve tabele."
+    ],
+    "answer": 1,
+    "explain": "Summary rule upit ne treba vremenski filter: bin size određuje opseg, a dodatni filter se kombinuje sa binom i daje samo preklapanje. union * nije podržan, a summarize je upravo ono što smanjuje volumen."
+  },
+  {
+    "obj": "3.2",
+    "q": "Analitičar u tabeli koju puni summary rule želi filtrirati redove po početku agregacionog intervala. Koju kolonu treba koristiti?",
+    "options": [
+      "_RuleLastModifiedTime",
+      "_BinSize",
+      "_RuleName",
+      "_BinStartTime"
+    ],
+    "answer": 3,
+    "explain": "Summary rule dodaje kolone _RuleName, _RuleLastModifiedTime, _BinSize i _BinStartTime. Početak agregacionog intervala je _BinStartTime."
+  },
+  {
+    "obj": "3.2",
+    "q": "Koja tvrdnja o summary rules u Microsoft Sentinelu je TAČNA?",
+    "options": [
+      "Rezultat se upisuje u custom _CL tabelu sa Analytics planom, a bin size može biti od 20 minuta do 24 sata.",
+      "Summary rule može jednokratno obraditi podatke stare godinu dana.",
+      "Rezultat se upisuje u tabelu sa Auxiliary planom.",
+      "U upitu se mogu koristiti workspaces() i ADX() za spajanje više izvora."
+    ],
+    "answer": 0,
+    "explain": "Summary rule piše u _CL tabelu sa Analytics planom, bin size je 20, 30, 60, 120, 180, 360, 720 ili 1440 minuta. Obrađuje samo skorašnje podatke (bez backfilla), a cross-resource i cross-service izrazi nisu podržani."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tim treba nad 12 mjeseci SecurityEvent podataka iz data lakea istrenirati model za otkrivanje anomalnih prijava u Pythonu i rezultat upisati u novu tabelu. Šta trebate koristiti?",
+    "options": [
+      "Summary rule",
+      "Hunting upit u favorites",
+      "Notebook u VS Code sa Microsoft Sentinel ekstenzijom, MicrosoftSentinelProvider.read_table i save_as_table",
+      "Workbook sa time chartom"
+    ],
+    "answer": 2,
+    "explain": "Data lake notebooks rade PySpark nad data lakeom: read_table čita tabelu, save_as_table upisuje rezultat. Summary rule nema ML ni istoriju, a hunting upit i workbook nemaju Python."
+  },
+  {
+    "obj": "3.2",
+    "q": "Analitičar u data lake notebooku pokušava instalirati dodatnu Python biblioteku sa pip install, ali to ne uspijeva. Zašto?",
+    "options": [
+      "Treba izabrati Large runtime pool.",
+      "Treba uloga Microsoft Sentinel Contributor.",
+      "Treba uključiti GitHub Copilot ekstenziju.",
+      "Podržane su samo Azure Synapse libraries i Microsoft Sentinel Provider biblioteka; pip install i custom biblioteke nisu podržani."
+    ],
+    "answer": 3,
+    "explain": "Za data lake notebooks podržane su samo Azure Synapse libraries 3.4 i Sentinel Provider biblioteka. Veličina poola, uloge i Copilot to ne mijenjaju."
+  },
+  {
+    "obj": "3.2",
+    "q": "SOC želi da analitičari u Visual Studio Code pitanjima na prirodnom jeziku pronalaze relevantne tabele i izvršavaju KQL nad Sentinel data lakeom, bez poznavanja šeme. Rješenje mora koristiti NAJMANJE privilegije. Šta trebate uraditi?",
+    "options": [
+      "Dodati Sentinel MCP server (data exploration kolekciju) u VS Code i dodijeliti analitičarima ulogu Security Reader.",
+      "Instalirati MSTICPy u Azure Machine Learning i dodijeliti Owner na pretplati.",
+      "Kreirati summary rule za svaku tabelu i dodijeliti Microsoft Sentinel Contributor.",
+      "Dodijeliti analitičarima Global Administrator i koristiti Advanced hunting."
+    ],
+    "answer": 0,
+    "explain": "Data exploration kolekcija Sentinel MCP servera (search_tables, query_lake) radi sa klijentima kao GitHub Copilot u VS Code, a za listanje i pozivanje alata dovoljna je uloga Security Reader. Ostale opcije ne daju prirodni jezik ili daju previše privilegija."
+  },
+  {
+    "obj": "3.2",
+    "q": "Analitičar u VS Code preko Sentinel MCP servera poziva analyze_user_entity, ali dobija grešku autorizacije, iako search_tables i query_lake rade. Šta nedostaje?",
+    "options": [
+      "Uloga Log Analytics Contributor na workspaceu.",
+      "Uloga Security Copilot Contributor i dostupni Security Compute Units (SCU).",
+      "Onboarding na Defender for Endpoint.",
+      "Licenca Microsoft Entra ID P2."
+    ],
+    "answer": 1,
+    "explain": "Entity analyzer alati (analyze_user_entity, analyze_url_entity) troše SCU i traže ulogu Security Copilot Contributor. Ostali alati data exploration kolekcije rade sa Security Reader."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Poredaj korake rada sa Sentinel MCP data exploration alatima kada agent istražuje sumnjivog korisnika, od prvog do posljednjeg.",
+    "options": [
+      "query_lake – izvršiti KQL upit nad pronađenim tabelama",
+      "get_entity_analysis – preuzeti verdikt analize",
+      "list_sentinel_workspaces – dobiti ID-jeve workspaceova",
+      "analyze_user_entity – pokrenuti AI analizu korisnika",
+      "search_tables – pronaći relevantne tabele i šeme"
+    ],
+    "answer": [2, 4, 0, 3, 1],
+    "explain": "list_sentinel_workspaces se pokreće prvi jer ostali alati traže ID workspacea. Zatim search_tables nalazi tabele, query_lake izvršava upit, analyze_user_entity pokreće analizu i vraća ID, a get_entity_analysis preuzima rezultat."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Upari zahtjev sa funkcijom Microsoft Sentinel platforme koja ga NAJBOLJE ispunjava.",
+    "options": [
+      "Jednokratno pretražiti dvije godine logova u data lakeu i rezultat upisati u tabelu u analytics tieru.",
+      "Svakih 30 minuta sažimati obimne DNS logove u malu tabelu za analytics pravilo.",
+      "Sačuvati sumnjiv red iz rezultata hunting upita i od njega napraviti incident.",
+      "Python analiza sa ML modelom nad data lake tabelama.",
+      "Pitanja na prirodnom jeziku nad data lakeom iz GitHub Copilota."
+    ],
+    "targets": [
+      "Bookmark",
+      "Summary rule",
+      "KQL job",
+      "Notebook",
+      "Sentinel MCP server",
+      "Livestream"
+    ],
+    "answer": [2, 1, 0, 3, 4],
+    "explain": "Istorijska jednokratna pretraga data lakea je KQL job, periodično sažimanje je summary rule, čuvanje reda za incident je bookmark, Python/ML je notebook, a prirodni jezik iz AI klijenta je Sentinel MCP server. Livestream više nije dostupan."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Poredaj korake kreiranja zakazanog KQL joba u Defender portalu, od prvog do posljednjeg.",
+    "options": [
+      "Izabrati Scheduled job, frekvenciju i početak najmanje 30 minuta nakon kreiranja.",
+      "Unijeti Job name (bez # i -) i opis, izabrati odredišni workspace i tabelu.",
+      "Otvoriti Microsoft Sentinel > Data lake exploration > Jobs > Create job.",
+      "Pregledati detalje i izabrati Submit.",
+      "Napisati upit i izabrati izvorne workspaceove (Selected workspaces)."
+    ],
+    "answer": [2, 1, 4, 0, 3],
+    "explain": "Čarobnjak ide redom: Create job, detalji i odredište, upit i izvorni workspaceovi, raspored (start najmanje 30 min kasnije), pa Submit."
+  },
+  {
+    "type": "multi",
+    "obj": "3.2",
+    "q": "Hunting upit u Sentinelu vratio je ovaj rezultat. Koje DVIJE tvrdnje su tačne?",
+    "snippet": "SigninLogs\n| where TimeGenerated > ago(1d) and ResultType == \"50126\"\n| summarize Users = dcount(UserPrincipalName), Attempts = count() by IPAddress\n| where Users > 20\n| sort by Users desc\n// rezultat:\n// IPAddress        Users  Attempts\n// 203.0.113.45     412    418\n// 198.51.100.23    37     39",
+    "lang": "kql",
+    "options": [
+      "Obrazac odgovara password sprayu: jedna adresa, mnogo naloga, oko jedan pokušaj po nalogu",
+      "Obrazac odgovara klasičnom brute forceu: 418 lozinki nad jednim nalogom",
+      "Sljedeći korak je provjeriti uspješne prijave (ResultType 0) sa istih adresa i sačuvati nalaze kao bookmarke",
+      "ResultType 50126 znači da je korisnik odbio MFA zahtjev, pa su lozinke bile tačne"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Broj različitih korisnika gotovo jednak broju pokušaja znači jednu lozinku po nalogu preko stotina naloga: password spray (T1110.003), ne brute force nad jednim nalogom. 50126 je greška nevažećeg korisničkog imena ili lozinke, ne MFA. Hunt se nastavlja traženjem uspjeha sa istih adresa (da li je neka lozinka pogođena), a dokazi se bilježe bookmarkom, iz kojeg se može napraviti incident."
+  }
+]

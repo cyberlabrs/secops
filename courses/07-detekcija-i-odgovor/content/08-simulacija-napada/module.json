@@ -1,0 +1,12 @@
+{
+  "title": "Simulacija napada i purple teaming",
+  "summary": "Emulacija napadača iz odbrambenog ugla: Atomic Red Team, Stratus Red Team i MITRE Caldera, purple teaming proces, validacija detekcija i analiza praznina u pokrivenosti.",
+  "minutes": 75,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.2"
+  ],
+  "title_en": "Attack simulation and purple teaming",
+  "summary_en": "Adversary emulation from a defensive angle: Atomic Red Team, Stratus Red Team and MITRE Caldera, the purple teaming process, detection validation and coverage gap analysis."
+}

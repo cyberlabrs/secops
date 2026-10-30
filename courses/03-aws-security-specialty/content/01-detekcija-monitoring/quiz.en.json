@@ -1,0 +1,231 @@
+[
+  {
+    "obj": "1.1",
+    "q": "A company has 150 accounts in AWS Organizations and opens new accounts every week. The security team requires GuardDuty to be enabled in all existing and future accounts in the eu-central-1 and eu-west-1 Regions, and all findings to be visible from a single Security Tooling account. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Create a CloudFormation StackSet in every account that enables a GuardDuty detector and manually send invitations from the Security Tooling account.",
+      "Enable GuardDuty only in the management account, because it automatically analyzes the CloudTrail organization trail of all members.",
+      "From the management account, in both Regions, designate the Security Tooling account as the GuardDuty delegated administrator and enable auto-enable for all organization members there.",
+      "Create a Lambda function that EventBridge invokes on the CreateAccountResult event and that enables GuardDuty in the new account."
+    ],
+    "answer": 2,
+    "explain": "A delegated administrator with the auto-enable option automatically enables GuardDuty in existing and new members, and findings are aggregated in the admin account. GuardDuty is regional, so this is done in every Region. A StackSet with invitations and a Lambda function work but require more maintenance, and GuardDuty in the management account does not analyze other accounts."
+  },
+  {
+    "obj": "1.1",
+    "q": "An insurance company has a portal where clients upload PDF documents to an S3 bucket. Files infected with malware must not be available to the internal application that processes them. The team does not want to maintain its own scanning infrastructure. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Enable GuardDuty Malware Protection for S3 for the bucket with object tagging and add a bucket policy that denies s3:GetObject for objects whose scan tag is not NO_THREATS_FOUND.",
+      "Run a Lambda function with a ClamAV layer on the s3:ObjectCreated event and move infected files to a quarantine bucket.",
+      "Enable Amazon Macie automated sensitive data discovery for the bucket and block objects with findings.",
+      "Enable GuardDuty S3 Protection and use suspicious access findings to delete the objects."
+    ],
+    "answer": 0,
+    "explain": "Malware Protection for S3 is managed scanning of new objects; the result is written as a tag on the object, and a bucket policy blocks reads based on the tag. ClamAV in Lambda works, but you have to maintain it. Macie looks for sensitive data, not malware, and S3 Protection analyzes API activity (data events), not file contents."
+  },
+  {
+    "obj": "1.1",
+    "q": "A platform team runs multiple Amazon EKS clusters. The security team must detect when a cryptominer or reverse shell starts inside a container. Which solution meets the requirement?",
+    "options": [
+      "Enable EKS control plane logging (audit) and create a metric filter for exec commands.",
+      "Enable GuardDuty EKS Protection, which analyzes Kubernetes audit logs.",
+      "Enable Amazon Inspector scanning of the ECR images used by the clusters.",
+      "Enable GuardDuty Runtime Monitoring for EKS with the automatically managed GuardDuty agent."
+    ],
+    "answer": 3,
+    "explain": "Only Runtime Monitoring, through its agent, sees processes, files, and network connections inside a container. EKS Protection and audit logs see Kubernetes API calls, not what happens in the container, and Inspector finds known vulnerabilities in an image, not active behavior."
+  },
+  {
+    "obj": "1.1",
+    "q": "GuardDuty is enabled across the organization, with a delegated administrator in the Security Tooling account. The on-call team must receive an email within a few minutes for every finding with severity 7 or higher, from any member. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "In every member account, create a CloudWatch alarm on a GuardDuty finding-count metric and send the alarm to an SNS topic.",
+      "In the Security Tooling account, in every Region in use, create an EventBridge rule with source aws.guardduty and a numeric filter severity >= 7 that sends the event to an SNS topic with an email subscription.",
+      "Schedule a Lambda function that calls ListFindings in all accounts every 5 minutes and sends email through Amazon SES.",
+      "Enable finding export to S3 and create an S3 event notification that sends an email for every new object."
+    ],
+    "answer": 1,
+    "explain": "Member findings also arrive in the administrator account's EventBridge, so one rule per Region with a numeric filter on severity is the simplest option. GuardDuty does not publish such a metric for an alarm, a polling Lambda means more code and latency, and S3 export does not filter by severity and updates arrive with a delay."
+  },
+  {
+    "obj": "1.1",
+    "q": "An auditor requires the security team to be notified every time someone signs in or makes an API call as the root user of any account. A CloudTrail organization trail already exists and writes to S3. What should be done?",
+    "options": [
+      "Enable CloudTrail Insights and wait for an Insights event for root activity.",
+      "Configure the trail to send events to CloudWatch Logs, create a metric filter for userIdentity.type = Root, and a CloudWatch alarm that sends to SNS.",
+      "Create an Athena query over the trail bucket and run it manually every morning.",
+      "Enable IAM Access Analyzer for the organization and monitor findings for the root user."
+    ],
+    "answer": 1,
+    "explain": "A metric filter on the CloudTrail log group plus an alarm to SNS is the standard (CIS) way to get near real-time notification of root activity. Insights tracks deviations in the volume and error rate of API calls, not a specific user; an Athena query is not an alarm, and Access Analyzer does not track sign-ins."
+  },
+  {
+    "obj": "1.1",
+    "q": "All production EC2 instances have the tag Env=prod. Every instance, including new ones from Auto Scaling groups, must always have the CloudWatch agent installed and correctly configured. If someone manually changes the configuration, it must be restored. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Add the agent installation to the user data of all launch templates.",
+      "Run Systems Manager Run Command once with the AmazonCloudWatch-ManageAgent document on all instances.",
+      "Create a custom AWS Config rule that checks whether the agent sends metrics.",
+      "Create a Systems Manager State Manager association for the tag Env=prod that applies AmazonCloudWatch-ManageAgent on a schedule with the configuration from Parameter Store."
+    ],
+    "answer": 3,
+    "explain": "A State Manager association targets the tag, automatically covers new instances, and periodically restores the desired state. User data runs only at launch and does not fix later changes, Run Command is one-time, and a Config rule only reports noncompliance."
+  },
+  {
+    "obj": "1.1",
+    "q": "A company must check the CIS AWS Foundations Benchmark rules in all accounts of the organization and automatically fix S3 buckets that become public. The rules must be defined in one place as code. Which solution meets the requirements?",
+    "options": [
+      "Deploy an AWS Config organization conformance pack from the delegated admin account with rules and remediation via SSM Automation documents.",
+      "Enable Amazon Macie in all accounts and delete buckets with findings.",
+      "Enable AWS Trusted Advisor and review the security checks once a week.",
+      "In every account, create a Lambda function that reads the ACLs of all buckets every hour and changes them."
+    ],
+    "answer": 0,
+    "explain": "An organization conformance pack is a single template with Config rules and remediation that is automatically deployed to all accounts, and SSM Automation performs the fix. Macie looks for sensitive data, Trusted Advisor has no automatic remediation, and a Lambda function in every account is the largest operational burden."
+  },
+  {
+    "obj": "1.1",
+    "q": "Security Hub CSPM is enabled with a delegated administrator. The team wants the FSBP and CIS standards enabled in all accounts and all Regions, new accounts to get them automatically, and the ability to disable specific controls for the sandbox OU from one place. What should be used?",
+    "options": [
+      "Security Hub automation rules that suppress findings from sandbox accounts.",
+      "An AWS Config aggregator and manually enabling standards in every Region.",
+      "Security Hub central configuration with configuration policies applied to OUs from the delegated admin account.",
+      "A service control policy that denies securityhub:DisableSecurityHub."
+    ],
+    "answer": 2,
+    "explain": "Central configuration lets the delegated admin define which standards and controls to enable and apply that to OUs or accounts in all Regions, including new accounts. Automation rules modify findings, not configuration; a Config aggregator does not enable standards, and an SCP only prevents disabling."
+  },
+  {
+    "obj": "1.1",
+    "q": "A public API has clear daily and weekly seasonality in request volume. The team wants an alarm when the number of requests rises or drops unusually, but cannot determine a single fixed threshold. Which solution meets the requirement with the LEAST effort?",
+    "options": [
+      "A composite alarm combining two static alarms, one for day and one for night.",
+      "A Lambda function that computes the mean and standard deviation every 5 minutes and sends an SNS message.",
+      "A metric filter over access logs with a threshold of twice the average.",
+      "A CloudWatch alarm based on an anomaly detection model for the Count metric."
+    ],
+    "answer": 3,
+    "explain": "An anomaly detection alarm learns the expected range of the metric including seasonality and alarms when the value leaves the band. Static thresholds and a metric filter do not follow seasonality, and a custom Lambda function is unnecessary code."
+  },
+  {
+    "obj": "1.1",
+    "q": "An organization has 400 S3 buckets in 60 accounts. Management wants a continuous view of which buckets likely contain personal data, at a reasonable cost and without manually defining jobs for each bucket. Which solution meets the requirement?",
+    "options": [
+      "Enable Amazon Macie with a delegated administrator and automated sensitive data discovery for the organization.",
+      "Create a Macie sensitive data discovery job that scans all objects in all buckets every day.",
+      "Enable GuardDuty S3 Protection in all accounts.",
+      "Run Athena queries over S3 Inventory reports and look for file names that resemble PII."
+    ],
+    "answer": 0,
+    "explain": "Automated sensitive data discovery continuously samples objects and gives a sensitivity score per bucket, which is a cheaper overview of the entire organization. A daily job over all objects is expensive, S3 Protection tracks API activity, and file names do not reveal content."
+  },
+  {
+    "obj": "1.3",
+    "q": "A developer enabled CloudWatch execution logging at the INFO level on a REST API stage in Amazon API Gateway. The console reports an error that a CloudWatch Logs role ARN must be set in the account settings. What should be done?",
+    "options": [
+      "Add logs:PutLogEvents to the execution role of the Lambda function behind the API.",
+      "Create a log group named after the API before enabling logging.",
+      "Create an IAM role trusted by apigateway.amazonaws.com with the AmazonAPIGatewayPushToCloudWatchLogs policy and enter its ARN in the API Gateway account settings in that Region.",
+      "Add a resource policy to the API that allows logs.amazonaws.com."
+    ],
+    "answer": 2,
+    "explain": "REST API execution and access logs require an account- and Region-level role that API Gateway assumes to write to CloudWatch Logs. The Lambda role only affects the function's logs, the log group is created automatically, and the API resource policy controls who can call the API."
+  },
+  {
+    "obj": "1.3",
+    "q": "EC2 instances in a private subnet without a NAT gateway have the CloudWatch agent installed and an instance profile with CloudWatchAgentServerPolicy. The agent log shows connection timeout errors to the logs endpoint. How can the problem be solved with the least internet exposure?",
+    "options": [
+      "Add a public IP address to the instances and a route to an internet gateway.",
+      "Create interface VPC endpoints for CloudWatch Logs (and monitoring for metrics) with private DNS and a security group that allows HTTPS from the instances.",
+      "Create a gateway VPC endpoint for CloudWatch Logs.",
+      "Replace CloudWatchAgentServerPolicy with the CloudWatchAgentAdminPolicy policy."
+    ],
+    "answer": 1,
+    "explain": "The agent must reach the CloudWatch API; without internet access, an interface endpoint (PrivateLink) for logs and monitoring makes that possible. Gateway endpoints exist only for S3 and DynamoDB, a public IP exposes the instance, and permissions are not the problem because the error is a timeout."
+  },
+  {
+    "obj": "1.3",
+    "q": "An EventBridge rule for GuardDuty findings sends events to an SNS topic. The rule metrics show successful triggers (Invocations) but also FailedInvocations, and the email never arrives. The topic is encrypted with the AWS managed key aws/sns. What is the solution?",
+    "options": [
+      "Encrypt the topic with a customer managed KMS key whose key policy allows events.amazonaws.com the kms:GenerateDataKey* and kms:Decrypt actions.",
+      "Change the event pattern so that the source is aws.sns.",
+      "Add the sns:Subscribe permission to the rule's execution role.",
+      "Move the rule to us-east-1 because SNS notifications are sent only from there."
+    ],
+    "answer": 0,
+    "explain": "The key policy of an AWS managed key cannot be changed, so EventBridge cannot publish a message to a topic encrypted with aws/sns. A customer managed key with a permission for events.amazonaws.com solves the problem. The pattern is correct because the rule fires, sns:Subscribe is not needed, and SNS works in every Region."
+  },
+  {
+    "obj": "1.3",
+    "q": "A team created a new S3 bucket with default settings (Object Ownership: Bucket owner enforced) and enabled legacy standard logging into that bucket on a CloudFront distribution. Logs do not arrive. Which solution meets the requirement with the FEWEST changes to the bucket's security settings?",
+    "options": [
+      "Disable S3 Block Public Access on the bucket.",
+      "Enable CloudFront real-time logs to Kinesis Data Streams and write from there into the bucket.",
+      "Add a bucket policy that allows s3:PutObject for the principal cloudfront.amazonaws.com.",
+      "Switch the distribution to CloudFront standard logging (v2) with an S3 destination via CloudWatch vended logs delivery."
+    ],
+    "answer": 3,
+    "explain": "Legacy logging writes objects through ACLs, which are disabled when Object Ownership is Bucket owner enforced. Standard logging v2 delivers logs through the delivery.logs.amazonaws.com service and a bucket policy, so ACLs are not needed. Block Public Access is not the cause, real-time logs are more complex and more expensive, and cloudfront.amazonaws.com is not the principal that writes legacy logs."
+  },
+  {
+    "obj": "1.1",
+    "q": "The security team wants GuardDuty Extended Threat Detection to be able to generate attack sequence findings for Amazon EKS clusters that cover both RBAC changes and malicious processes in containers. Which TWO steps should be taken? (Choose TWO.)",
+    "options": [
+      "Enable EKS control plane logging to CloudWatch Logs.",
+      "Enable GuardDuty EKS Protection.",
+      "Enable VPC Flow Logs in the cluster VPCs.",
+      "Enable GuardDuty Runtime Monitoring for EKS.",
+      "Enable Amazon Inspector scanning of ECR repositories."
+    ],
+    "answer": [1, 3],
+    "explain": "EKS Protection provides signals from Kubernetes audit logs (RBAC, privileged pods), and Runtime Monitoring provides signals from containers (processes, reverse shell). GuardDuty reads audit and flow logs on its own, so they do not need to be enabled manually, and Inspector finds vulnerabilities, not attacks."
+  },
+  {
+    "obj": "1.1",
+    "type": "order",
+    "q": "Order the steps for rolling out GuardDuty in an organization with central notification, from first to last.",
+    "options": [
+      "In the delegated admin account, create an EventBridge rule for findings with severity >= 7 and an SNS target.",
+      "From the management account, designate the Security Tooling account as the GuardDuty delegated administrator in every Region.",
+      "Generate sample findings and verify that the notification arrives.",
+      "In the delegated admin account, enable auto-enable for all members and the required protection plans."
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "First the management account delegates administration, then the admin enables GuardDuty and plans in member accounts. Only when findings flow to the admin does it make sense to create the EventBridge rule, and finally the whole chain is tested with sample findings."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match the security team's requirement with the service that BEST meets it.",
+    "options": [
+      "Detect a cryptominer process in an ECS Fargate task.",
+      "Find credit card numbers in CSV files in S3.",
+      "Assess all accounts against the CIS AWS Foundations Benchmark with a score.",
+      "Visualize which API calls a role made in the hours around a finding and from which IP addresses.",
+      "Find known CVE vulnerabilities in images in ECR."
+    ],
+    "targets": ["Amazon Detective", "AWS Trusted Advisor", "Amazon Inspector", "GuardDuty Runtime Monitoring", "Amazon Macie", "AWS Security Hub CSPM"],
+    "answer": [3, 4, 5, 0, 2],
+    "explain": "Runtime Monitoring sees processes in a container, Macie finds sensitive data in S3, Security Hub CSPM runs checks against the CIS standard, Detective provides investigation and context around a finding, and Inspector finds CVEs in images. Trusted Advisor has neither a scored CIS standard nor the other capabilities."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match the symptom with the MOST LIKELY fix.",
+    "options": [
+      "A Lambda function runs, but there is no log group for it in CloudWatch Logs.",
+      "VPC Flow Logs to an S3 bucket encrypted with a customer managed KMS key stop arriving after SSE-KMS is introduced.",
+      "An EventBridge rule fires, but the target Lambda function never runs.",
+      "A Route 53 health check for a public web server always reports unhealthy, even though the page works from a browser."
+    ],
+    "targets": [
+      "Add a resource-based permission on the function for events.amazonaws.com",
+      "Allow the Route 53 health checker IP ranges in the security group",
+      "Add delivery.logs.amazonaws.com to the key policy with kms:GenerateDataKey*",
+      "Add logs:CreateLogStream and logs:PutLogEvents to the execution role",
+      "Increase the log group retention"
+    ],
+    "answer": [3, 2, 0, 1],
+    "explain": "A Lambda function without a log group means the execution role is not allowed to write to CloudWatch Logs. The log delivery service must be allowed to use the bucket's KMS key. EventBridge needs a resource policy on the function to invoke it. Health checkers come from AWS IP ranges that the security group must allow. Retention does not affect delivery."
+  }
+]

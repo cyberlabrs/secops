@@ -1,0 +1,206 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2026-10-21T04:12:37.551029+00:00",
+  "ArtifactName": "registry.shop.local/shop/storefront:2.3.1",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "Size": 312774656,
+    "OS": {
+      "Family": "debian",
+      "Name": "12.5"
+    },
+    "ImageID": "sha256:9e2b6c71f4a83d0c5b1e7f6a2d9c4b8e1f0a3c5d7b9e2f4a6c8d0b1e3f5a7c9d",
+    "RepoDigests": [
+      "registry.shop.local/shop/storefront@sha256:5c1f3e8a7b2d4c6e9f0a1b3c5d7e9f2a4b6c8d0e1f3a5b7c9d2e4f6a8b0c1d3e"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "os": "linux",
+      "config": {
+        "Entrypoint": [
+          "java",
+          "-jar",
+          "/app/storefront.jar"
+        ],
+        "WorkingDir": "/app",
+        "ExposedPorts": {
+          "8080/tcp": {}
+        }
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "registry.shop.local/shop/storefront:2.3.1 (debian 12.5)",
+      "Class": "os-pkgs",
+      "Type": "debian",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2024-2961",
+          "PkgName": "libc6",
+          "InstalledVersion": "2.36-9+deb12u4",
+          "FixedVersion": "2.36-9+deb12u7",
+          "Status": "fixed",
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-2961",
+          "Title": "glibc: Out of bounds write in iconv may lead to remote code execution",
+          "Severity": "HIGH",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 8.1
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2024-0727",
+          "PkgName": "libssl3",
+          "InstalledVersion": "3.0.11-1~deb12u2",
+          "FixedVersion": "3.0.13-1~deb12u1",
+          "Status": "fixed",
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-0727",
+          "Title": "openssl: denial of service via null dereference",
+          "Severity": "MEDIUM",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+              "V3Score": 5.5
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2023-45853",
+          "PkgName": "zlib1g",
+          "InstalledVersion": "1:1.2.13.dfsg-1",
+          "Status": "will_not_fix",
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-45853",
+          "Title": "zlib: integer overflow and resultant heap-based buffer overflow in zipOpenNewFileInZip4_6",
+          "Severity": "CRITICAL",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 9.8
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "Java",
+      "Class": "lang-pkgs",
+      "Type": "jar",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2021-44228",
+          "PkgName": "org.apache.logging.log4j:log4j-core",
+          "PkgPath": "app/storefront.jar/BOOT-INF/lib/log4j-core-2.14.1.jar",
+          "InstalledVersion": "2.14.1",
+          "FixedVersion": "2.15.0, 2.12.2",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-44228",
+          "Title": "log4j-core: Remote code execution in Log4j 2.x when logs contain an attacker-controlled string value",
+          "Severity": "CRITICAL",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 10.0
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2021-45046",
+          "PkgName": "org.apache.logging.log4j:log4j-core",
+          "PkgPath": "app/storefront.jar/BOOT-INF/lib/log4j-core-2.14.1.jar",
+          "InstalledVersion": "2.14.1",
+          "FixedVersion": "2.16.0, 2.12.2",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-45046",
+          "Title": "log4j-core: DoS in log4j 2.x with thread context message pattern and context lookup patterns (incomplete fix for CVE-2021-44228)",
+          "Severity": "CRITICAL",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 9.0
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2021-45105",
+          "PkgName": "org.apache.logging.log4j:log4j-core",
+          "PkgPath": "app/storefront.jar/BOOT-INF/lib/log4j-core-2.14.1.jar",
+          "InstalledVersion": "2.14.1",
+          "FixedVersion": "2.17.0, 2.12.3, 2.3.1",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-45105",
+          "Title": "log4j-core: DoS in log4j 2.x with Thread Context Map (MDC) input data contains a recursive lookup and context lookup pattern",
+          "Severity": "MEDIUM",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 5.9
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2021-44832",
+          "PkgName": "org.apache.logging.log4j:log4j-core",
+          "PkgPath": "app/storefront.jar/BOOT-INF/lib/log4j-core-2.14.1.jar",
+          "InstalledVersion": "2.14.1",
+          "FixedVersion": "2.17.1, 2.12.4, 2.3.2",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-44832",
+          "Title": "log4j-core: remote code execution via JDBC Appender",
+          "Severity": "MEDIUM",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.6
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2022-42003",
+          "PkgName": "com.fasterxml.jackson.core:jackson-databind",
+          "PkgPath": "app/storefront.jar/BOOT-INF/lib/jackson-databind-2.13.2.jar",
+          "InstalledVersion": "2.13.2",
+          "FixedVersion": "2.12.7.1, 2.13.4.2",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-42003",
+          "Title": "jackson-databind: deep wrapper array nesting wrt UNWRAP_SINGLE_VALUE_ARRAYS",
+          "Severity": "HIGH",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2022-42004",
+          "PkgName": "com.fasterxml.jackson.core:jackson-databind",
+          "PkgPath": "app/storefront.jar/BOOT-INF/lib/jackson-databind-2.13.2.jar",
+          "InstalledVersion": "2.13.2",
+          "FixedVersion": "2.13.4",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-42004",
+          "Title": "jackson-databind: use of deeply nested arrays",
+          "Severity": "HIGH",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

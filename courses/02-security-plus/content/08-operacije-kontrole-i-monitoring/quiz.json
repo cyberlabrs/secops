@@ -1,0 +1,352 @@
+[
+  {
+    "obj": "4.1",
+    "q": "DevSecOps tim želi saznati ako neko izvuče kod iz privatnog repozitorija i pokuša koristiti kredencijale iz njega. U repozitorij ubacuju lažni AWS access key koji nema nikakve dozvole, uz CloudTrail alarm na svaku njegovu upotrebu. Kako se zove ova tehnika?",
+    "options": [
+      "Honeypot",
+      "Canary account",
+      "Honeytoken",
+      "Honeyfile"
+    ],
+    "answer": 2,
+    "explain": "Honeytoken je lažni podatak ili kredencijal čija svaka upotreba znači kompromitaciju. Honeyfile je cijeli lažni fajl, canary account je lažni korisnički nalog, a honeypot je lažni sistem."
+  },
+  {
+    "obj": "4.1",
+    "q": "Kompanija mora zaustaviti poznate exploit pokušaje prema data centru u realnom vremenu, prije nego što stignu do servera. Koje rješenje NAJBOLJE ispunjava zahtjev?",
+    "options": [
+      "NIDS povezan na SPAN port",
+      "HIDS na svakom serveru",
+      "SIEM sa pravilima korelacije",
+      "NIPS postavljen inline"
+    ],
+    "answer": 3,
+    "explain": "Samo inline uređaj može blokirati saobraćaj prije nego što stigne do cilja, a to je NIPS. NIDS na SPAN portu i SIEM samo detektuju i alarmiraju, a HIDS radi tek na samom hostu."
+  },
+  {
+    "obj": "4.1",
+    "q": "Većina zaposlenih radi od kuće i ne koristi VPN za pristup internetu. Politika traži da se blokiraju malicious i gambling sajtovi na službenim laptopima bez obzira gdje se nalaze. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Agent-based content filter na laptopima",
+      "Centralizovani web proxy u data centru",
+      "Pravila na perimetarskom firewallu",
+      "DLP na email gateway-u"
+    ],
+    "answer": 0,
+    "explain": "Agent na uređaju filtrira saobraćaj gdje god se uređaj nalazi. Centralizovani proxy i perimetarski firewall vide samo saobraćaj koji prolazi kroz korporativnu mrežu, a DLP na emailu ne filtrira web kategorije."
+  },
+  {
+    "obj": "4.1",
+    "q": "SOC analitičar sumnja da je laptop u računovodstvu zaražen ransomware-om. Želi ga odmah odsjeći od mreže na daljinu, a zatim pregledati stablo procesa koji su se pokretali. Koji alat to omogućava?",
+    "options": [
+      "Antivirus sa ažurnim potpisima",
+      "EDR",
+      "NetFlow kolektor",
+      "UTM uređaj"
+    ],
+    "answer": 1,
+    "explain": "EDR prikuplja telemetriju sa endpointa (procesi, konekcije) i omogućava odgovor kao što je izolacija hosta. Klasični antivirus nema tu mogućnost istrage i odgovora, NetFlow daje samo mrežne metapodatke, a UTM je mrežni uređaj."
+  },
+  {
+    "obj": "4.1",
+    "q": "Mrežni tim želi da svaki uređaj priključen na port switcha u kancelariji mora dokazati identitet certifikatom prije nego dobije pristup mreži. Šta treba implementirati?",
+    "options": [
+      "Captive portal",
+      "Port mirroring",
+      "MAC filtering na AP-u",
+      "802.1X sa RADIUS serverom"
+    ],
+    "answer": 3,
+    "explain": "802.1X je port-based NAC: supplicant se autentikuje (npr. EAP-TLS certifikatom) preko authenticatora (switch) kod RADIUS servera. Captive portal je web prijava za goste, port mirroring kopira saobraćaj, a MAC adresa se lako lažira."
+  },
+  {
+    "obj": "4.1",
+    "q": "GitHub secret scanning je prijavio važeći produkcijski API ključ u commitu koji je pushovan u javni repozitorij prije dva sata. Šta treba uraditi PRVO?",
+    "options": [
+      "Prepisati git istoriju da se commit ukloni",
+      "Opozvati i rotirati ključ",
+      "Učiniti repozitorij privatnim",
+      "Dodati pre-commit hook za gitleaks"
+    ],
+    "answer": 1,
+    "explain": "Ključ treba smatrati kompromitovanim jer je mogao biti kopiran, pa je prvi korak opoziv i rotacija. Čišćenje istorije, skrivanje repozitorija i pre-commit hook su korisni, ali ne poništavaju već procurjeli ključ."
+  },
+  {
+    "obj": "4.1",
+    "q": "Napadači šalju lažne fakture sa adrese @firma.ba. DNS domena ima SPF zapis koji završava sa ~all i DMARC zapis sa p=none. Koje DVIJE izmjene NAJVIŠE smanjuju uspješnost spoofinga? Izaberi DVA.",
+    "options": [
+      "Dodati BIMI zapis sa logotipom",
+      "Promijeniti DMARC politiku na p=reject nakon analize izvještaja",
+      "Povećati TTL svih DNS zapisa",
+      "Promijeniti SPF kvalifikator na -all"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "DMARC p=reject govori primaocima da odbiju poruke koje padnu provjeru, a SPF -all daje hard fail umjesto soft faila. BIMI samo prikazuje logo (i zahtijeva DMARC enforcement), a TTL ne utiče na autentikaciju pošte."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari DNS TXT zapis sa mehanizmom email sigurnosti.",
+    "options": [
+      "_dmarc.firma.ba  \"v=DMARC1; p=quarantine; rua=mailto:dmarc@firma.ba\"",
+      "firma.ba  \"v=spf1 include:spf.protection.outlook.com -all\"",
+      "s1._domainkey.firma.ba  \"v=DKIM1; k=rsa; p=MIIBIjANBg...\"",
+      "default._bimi.firma.ba  \"v=BIMI1; l=https://firma.ba/logo.svg\""
+    ],
+    "targets": [
+      "SPF",
+      "DKIM",
+      "DMARC",
+      "BIMI"
+    ],
+    "answer": [
+      2,
+      0,
+      1,
+      3
+    ],
+    "explain": "DMARC je uvijek na _dmarc poddomenu i nosi politiku (p=) i adresu za izvještaje (rua=). SPF je na samom domenu i navodi dozvoljene pošiljaoce. DKIM javni ključ je na selektor._domainkey. BIMI je na default._bimi i pokazuje na logo."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari scenario sa NAJBOLJOM kontrolom.",
+    "options": [
+      "Kiosk u holu smije pokretati samo aplikaciju za prijavu posjetilaca.",
+      "Treba zaštititi staru web aplikaciju od SQL injection-a, a kod se ne može mijenjati.",
+      "Laptop bez posljednjih zakrpa mora automatski završiti u remedijacionoj VLAN-i.",
+      "Kompromitovan Apache proces ne smije čitati fajlove van /var/www ni kada radi kao root.",
+      "Svaki pokušaj prijave na nalog svc-backup-admin, koji niko ne koristi, mora izazvati alarm."
+    ],
+    "targets": [
+      "SELinux",
+      "Block list",
+      "Canary account",
+      "Web application firewall",
+      "UTM",
+      "NAC posture assessment",
+      "Application allow list"
+    ],
+    "answer": [
+      6,
+      3,
+      5,
+      0,
+      2
+    ],
+    "explain": "Kiosk fiksne namjene = allow list. SQLi bez izmjene koda = WAF. Neusklađen uređaj u karantin = NAC posture. Ograničenje procesa i kad je root = SELinux (MAC). Nalog koji niko ne koristi kao mamac = canary account. UTM i block list ovdje nisu najbolji izbor."
+  },
+  {
+    "obj": "4.2",
+    "q": "Kompanija je prodala stare servere na aukciji, a kupac je na diskovima pronašao podatke klijenata. Koja faza životnog ciklusa imovine je zakazala?",
+    "options": [
+      "Disposal/decommissioning",
+      "Acquisition/procurement",
+      "Assignment/accounting",
+      "Planning/scoping"
+    ],
+    "answer": 0,
+    "explain": "Sanitizacija ili uništavanje medija (uz certifikat o uništenju) dio je disposal/decommissioning faze. Ostale faze se bave nabavkom, evidencijom vlasništva i planiranjem, ne povlačenjem opreme."
+  },
+  {
+    "obj": "4.2",
+    "q": "Skener je pronašao kritičnu ranjivost na EC2 instanci, ali niko ne zna kojem timu instanca pripada, pa zakrpa čeka sedmicama. Koja praksa bi NAJBOLJE spriječila ovaj problem?",
+    "options": [
+      "Češće skeniranje ranjivosti",
+      "Uvođenje bug bounty programa",
+      "Obavezno tagovanje resursa vlasnikom i evidencija u inventaru",
+      "Prelazak na agentless skeniranje"
+    ],
+    "answer": 2,
+    "explain": "Assignment/accounting znači da svaka imovina ima jasnog vlasnika odgovornog za zakrpe. Češće ili drugačije skeniranje ne rješava pitanje ko popravlja, a bug bounty je kanal za prijavu ranjivosti spolja."
+  },
+  {
+    "obj": "4.3",
+    "type": "order",
+    "q": "Poredaj korake procesa upravljanja ranjivostima redom.",
+    "options": [
+      "Remediation (primjena zakrpe ili kompenzacione kontrole)",
+      "Reporting (izvještaj menadžmentu)",
+      "Identification (skeniranje, CSPM, code review)",
+      "Verification (ponovno skeniranje)",
+      "Prioritization (CVSS, izloženost, kritičnost imovine)"
+    ],
+    "answer": [
+      2,
+      4,
+      0,
+      3,
+      1
+    ],
+    "explain": "Prvo se ranjivosti pronalaze, zatim se procjenjuje šta je najhitnije, popravljaju se, popravka se potvrđuje rescanom i na kraju se o rezultatima izvještava. Ciklus se zatim ponavlja."
+  },
+  {
+    "obj": "4.3",
+    "q": "Skener je prijavio dvije ranjivosti sa istim CVSS ocjenom 8.1. Prva je na internom test serveru, a druga na javnom VPN gateway-u i nalazi se u CISA KEV katalogu aktivno eksploatisanih ranjivosti. Šta je NAJBOLJI pristup?",
+    "options": [
+      "Prvo popraviti VPN gateway jer je izložen internetu i aktivno se eksploatiše",
+      "Popraviti obje istovremeno jer imaju istu ocjenu",
+      "Prvo popraviti test server jer je to manje rizično za produkciju",
+      "Sačekati sljedeći redovni ciklus zakrpa za obje"
+    ],
+    "answer": 0,
+    "explain": "CVSS je samo polazna tačka; izloženost internetu i dokazana aktivna eksploatacija podižu prioritet. Ista ocjena ne znači isti rizik, a čekanje redovnog ciklusa za aktivno eksploatisanu ranjivost na perimetru je neprihvatljivo."
+  },
+  {
+    "obj": "4.3",
+    "q": "Organizacija koristi AWS i Azure i želi kontinuirano otkrivati javno dostupne storage buckete, security grupe otvorene prema 0.0.0.0/0 i root naloge bez MFA. Koji alat je NAJPRIKLADNIJI?",
+    "options": [
+      "IPAM",
+      "Network-based vulnerability scanner",
+      "SAST alat u CI pipelineu",
+      "CSPM"
+    ],
+    "answer": 3,
+    "explain": "CSPM kontinuirano provjerava cloud konfiguraciju naspram najboljih praksi i standarda. IPAM upravlja adresnim prostorom, mrežni skener traži ranjivosti servisa, a SAST analizira izvorni kod."
+  },
+  {
+    "obj": "4.3",
+    "q": "Admin je primijenio zakrpu za kritičnu ranjivost na web serverima. Šta je NAJBOLJI sljedeći korak?",
+    "options": [
+      "Zatvoriti tiket i poslati izvještaj",
+      "Ponovo skenirati servere da se potvrdi uklanjanje ranjivosti",
+      "Dodati izuzetak (exception) u skener",
+      "Pokrenuti novi penetracioni test cijele mreže"
+    ],
+    "answer": 1,
+    "explain": "Verification (rescan) potvrđuje da je ranjivost stvarno uklonjena prije zatvaranja i izvještavanja. Izuzetak se koristi kad se zakrpa NE može primijeniti, a puni pentest je preširok za potvrdu jedne zakrpe."
+  },
+  {
+    "obj": "4.3",
+    "q": "Istraživač je pronašao ranjivost na sajtu kompanije, ali ne zna kome da je prijavi i da li će biti tužen ako to uradi. Šta bi kompanija trebala objaviti da ovo riješi?",
+    "options": [
+      "Rezultate posljednjeg internog skeniranja",
+      "Interni izvještaj o ranjivostima",
+      "Responsible disclosure politiku sa kontaktom (npr. security.txt)",
+      "Listu CVE-ova koje je već popravila"
+    ],
+    "answer": 2,
+    "explain": "Politika odgovornog otkrivanja kaže kako i kome prijaviti, šta je dozvoljeno i da istraživač neće biti gonjen ako poštuje pravila; security.txt daje kontakt. Interni izvještaji i liste CVE-ova ne daju kanal za prijavu."
+  },
+  {
+    "obj": "4.4",
+    "q": "Analitičar želi utvrditi koji interni host je prošle noći poslao neuobičajeno veliku količinu podataka prema nepoznatoj IP adresi. Sadržaj paketa nije sačuvan. Koji izvor podataka je NAJKORISNIJI?",
+    "options": [
+      "NetFlow zapisi",
+      "SNMP trapovi sa switcheva",
+      "Rezultati vulnerability skenera",
+      "SCAP izvještaj o usklađenosti"
+    ],
+    "answer": 0,
+    "explain": "NetFlow/IPFIX bilježi metapodatke tokova: izvor, odredište, portove, vrijeme i količinu bajtova, što je tačno potrebno za otkrivanje eksfiltracije. SNMP trapovi javljaju stanje uređaja, a skener i SCAP se bave ranjivostima i konfiguracijom."
+  },
+  {
+    "obj": "4.4",
+    "q": "SOC tim prima više hiljada uzbuna dnevno iz SIEM-a. Većina su lažne, pa analitičari počinju ignorisati i važne. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Isključiti SIEM pravila koja najčešće okidaju",
+      "Zaposliti još analitičara",
+      "Smanjiti retenciju logova",
+      "Uraditi alert tuning: prilagoditi pragove, izuzeti poznatu legitimnu aktivnost i dodati kontekst"
+    ],
+    "answer": 3,
+    "explain": "Alert tuning smanjuje lažne pozitive i alert fatigue, a zadržava stvarne detekcije. Isključivanje pravila u cjelini stvara slijepe tačke, više ljudi ne rješava uzrok, a retencija ne utiče na broj uzbuna."
+  },
+  {
+    "obj": "4.4",
+    "q": "Revizija je otkrila da mrežni uređaji šalju podatke za nadzor sa community stringom „public“ u čistom tekstu. Šta treba preporučiti?",
+    "options": [
+      "Prebaciti syslog sa UDP na TCP",
+      "Preći na SNMPv3 sa autentikacijom i enkripcijom",
+      "Promijeniti community string u složeniju vrijednost i zadržati SNMPv2c",
+      "Zamijeniti SNMP NetFlow-om"
+    ],
+    "answer": 1,
+    "explain": "SNMPv3 uvodi autentikaciju i enkripciju; v1/v2c šalju community string u čistom tekstu, pa ni složeniji string ne pomaže protiv prisluškivanja. syslog i NetFlow služe drugim namjenama i ne zamjenjuju upravljanje uređajima."
+  },
+  {
+    "obj": "4.4",
+    "q": "Tim želi da novi NIDS sensor vidi sav saobraćaj koji prolazi kroz core switch, bez stavljanja uređaja inline. Šta treba konfigurisati na switchu?",
+    "options": [
+      "802.1X",
+      "VLAN trunking",
+      "Port mirroring (SPAN)",
+      "Rate limiting"
+    ],
+    "answer": 2,
+    "explain": "Port mirroring kopira saobraćaj sa izabranih portova na port senzora, pa NIDS pasivno analizira kopiju. 802.1X je autentikacija porta, trunking prenosi više VLAN-ova, a rate limiting ograničava zahtjeve."
+  },
+  {
+    "obj": "4.2",
+    "q": "Firma rashoduje 40 laptopa koji su sadržavali podatke klijenata. Šta je NAJVAŽNIJE uraditi prije nego što uređaji napuste firmu?",
+    "options": [
+      "Reinstalirati operativni sistem",
+      "Sanitizirati ili fizički uništiti diskove i dobiti certifikat o uništenju, pa ažurirati inventar",
+      "Obrisati korisničke naloge",
+      "Predati ih zaposlenima na korištenje kod kuće"
+    ],
+    "answer": 1,
+    "explain": "Faza disposal/decommissioning traži sanitizaciju (npr. kriptografsko brisanje ili uništenje medija) uz dokaz i ažuriran inventar. Reinstalacija OS-a ne briše pouzdano podatke sa diska."
+  },
+  {
+    "obj": "4.2",
+    "q": "Poredaj faze životnog ciklusa upravljanja imovinom od prve do posljednje.",
+    "type": "order",
+    "options": [
+      "Monitoring/asset tracking",
+      "Acquisition/procurement",
+      "Disposal/decommissioning",
+      "Planning/scoping",
+      "Assignment/accounting"
+    ],
+    "answer": [
+      3,
+      1,
+      4,
+      0,
+      2
+    ],
+    "explain": "Prvo se planira šta treba, zatim nabavlja, dodjeljuje vlasniku i evidentira, prati tokom upotrebe i na kraju bezbjedno rashoduje."
+  },
+  {
+    "obj": "4.2",
+    "q": "Tokom nabavke novog SaaS alata, koji korak NAJVIŠE doprinosi sigurnosti u fazi acquisition/procurement?",
+    "options": [
+      "Izbor najjeftinije ponude",
+      "Sigurnosna procjena dobavljača i ugovorni zahtjevi (npr. SSO, logovi, lokacija podataka) prije kupovine",
+      "Instalacija antivirusa",
+      "Kupovina na lični račun zaposlenog radi brzine"
+    ],
+    "answer": 1,
+    "explain": "Sigurnosni zahtjevi se najlakše postavljaju prije potpisa ugovora. Kupovina mimo procesa stvara shadow IT i imovinu koju niko ne prati."
+  },
+  {
+    "obj": "4.1",
+    "type": "spot",
+    "q": "Pravila rule-based firewalla se obrađuju odozgo nadolje, prvo poklapanje pobjeđuje. Klikni pravila koja krše zahtjeve iz komentara.",
+    "lang": "text",
+    "snippet": "# Zahtjevi: HTTPS sa interneta na web (10.0.1.10); SSH na web samo iz admin mreže 10.0.9.0/24;\n#           baza (10.0.2.20:5432) samo sa web servera; interni DNS (10.0.0.2) za cijelu 10.0.0.0/16\n#   AKCIJA  PROTO  IZVOR          ODREDIŠTE    PORT\n1   ALLOW   TCP    any            10.0.1.10    443\n2   ALLOW   TCP    any            10.0.1.10    22\n3   ALLOW   TCP    10.0.9.0/24    10.0.1.10    22\n4   ALLOW   TCP    10.0.1.10      10.0.2.20    5432\n5   ALLOW   TCP    10.0.0.0/16    10.0.2.20    5432\n6   ALLOW   UDP    10.0.0.0/16    10.0.0.2     53\n7   DENY    ANY    any            any          any",
+    "answer": [
+      4,
+      7
+    ],
+    "explain": "Pravilo 2 dozvoljava SSH na web server sa bilo koje adrese, pa pravilo 3 (samo admin mreža) gubi smisao; pravilo 2 treba obrisati. Pravilo 5 dozvoljava pristup bazi sa cijele 10.0.0.0/16, a zahtjev kaže samo sa web servera, što već radi pravilo 4; pravilo 5 treba obrisati. Pravila 1, 3, 4 i 6 odgovaraju zahtjevima, a pravilo 7 je eksplicitno zapisan implicit deny."
+  },
+  {
+    "obj": "4.1",
+    "q": "Korisnica je prijavila ovu poruku. Na osnovu zaglavlja, koja tvrdnja je tačna?",
+    "lang": "text",
+    "snippet": "Return-Path: <billing@paypa1-secure.com>\nReceived: from mail.paypa1-secure.com (unknown [185.234.72.19])\n        by mx1.firma.rs with ESMTPS id 4F2A1; Tue, 27 Oct 2026 08:14:52 +0200\nAuthentication-Results: mx1.firma.rs;\n        spf=pass smtp.mailfrom=paypa1-secure.com;\n        dkim=none;\n        dmarc=fail (p=REJECT) header.from=paypal.com\nFrom: \"PayPal Service\" <service@paypal.com>\nReply-To: <support@paypa1-secure.com>\nTo: <ana.markovic@firma.rs>\nSubject: Hitno: vaš račun je ograničen\nMessage-ID: <20261027061450.4F2A1@paypa1-secure.com>",
+    "options": [
+      "Poruka je legitimna jer SPF prolazi",
+      "From adresa je lažirana: poruka dolazi sa sličnog domena (paypa1-secure.com), SPF prolazi samo za taj domen, a DMARC pada jer nije usklađen sa domenom u From zaglavlju",
+      "DKIM potpis dokazuje da je poruku potpisao paypal.com",
+      "Poruka je izmijenjena u prenosu, zato DKIM pada"
+    ],
+    "answer": 1,
+    "explain": "SPF provjerava envelope-from (Return-Path), a to je napadačev typosquatting domen paypa1-secure.com, pa naravno prolazi. DKIM potpisa nema (dkim=none), pa ništa nije ni moglo biti izmijenjeno niti potpisano. DMARC traži da SPF ili DKIM prođu USKLAĐENO sa From domenom paypal.com, što ovdje nije slučaj, pa pada; po politici p=reject poruku je trebalo odbiti. Reply-To na lažni domen je još jedan znak phishinga."
+  }
+]

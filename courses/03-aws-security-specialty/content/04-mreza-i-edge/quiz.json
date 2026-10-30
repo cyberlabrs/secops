@@ -1,0 +1,260 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Kompanija servira statički sajt iz S3 bucketa preko Amazon CloudFront. Objekti su šifrovani SSE-KMS customer managed ključem. Korisnici ne smiju moći čitati objekte direktno iz S3, a S3 Block Public Access mora ostati uključen. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "Uključiti S3 static website hosting i dozvoliti s3:GetObject za sve uz uslov aws:Referer jednak domeni distribucije.",
+      "Koristiti Origin Access Identity (OAI) i preći na SSE-S3 jer OAI ne podržava KMS.",
+      "Koristiti Origin Access Control (OAC), bucket policy koja dozvoljava cloudfront.amazonaws.com uz AWS:SourceArn distribucije i dodati kms:Decrypt za isti principal i uslov u key policy.",
+      "Napraviti IAM korisnika za CloudFront i upisati njegove access ključeve u origin postavke."
+    ],
+    "answer": 2,
+    "explain": "OAC potpisuje zahtjeve prema S3, podržava SSE-KMS i radi uz uključen Block Public Access; bucket policy i key policy dozvoljavaju samo tu distribuciju. Website hosting sa Referer uslovom je javni pristup koji se lako lažira, OAI je zastario i ne podržava SSE-KMS, a CloudFront ne koristi IAM ključeve za S3."
+  },
+  {
+    "obj": "3.1",
+    "q": "Aplikacija radi na javnom ALB-u iza CloudFront distribucije sa AWS WAF web ACL-om. Penetration test je pokazao da napadač može zaobići CloudFront i WAF slanjem zahtjeva direktno na DNS ime ALB-a. Koje rješenje to sprečava uz NAJMANJE promjena aplikacije?",
+    "options": [
+      "Dozvoliti u security grupi ALB-a inbound samo iz managed prefix liste com.amazonaws.global.cloudfront.origin-facing i dodati custom origin header sa tajnom koju ALB listener pravilo provjerava.",
+      "Premjestiti WAF web ACL sa CloudFronta na ALB i ukloniti CloudFront.",
+      "Uključiti CloudFront geo restriction za sve države osim vlastite.",
+      "Uključiti Shield Advanced na ALB-u."
+    ],
+    "answer": 0,
+    "explain": "Prefix lista ograničava ALB na CloudFront IP adrese, a tajni header potvrđuje da zahtjev dolazi baš sa tvoje distribucije. Uklanjanje CloudFronta gubi edge zaštitu i keširanje, geo restriction ne sprečava direktan pristup ALB-u, a Shield Advanced štiti od DDoS-a, ne od zaobilaženja."
+  },
+  {
+    "obj": "3.1",
+    "q": "Streaming platforma servira plaćeni video preko CloudFronta kao HLS: svaki video ima stotine segmenata. Samo prijavljeni pretplatnici smiju preuzimati segmente, a URL-ovi u playlisti se ne smiju mijenjati. Šta treba koristiti?",
+    "options": [
+      "Signed URL za svaki segment, potpisan CloudFront key pairom root korisnika.",
+      "S3 presigned URL za svaki segment.",
+      "AWS WAF rate-based pravilo po IP adresi.",
+      "CloudFront signed cookies sa trusted key group."
+    ],
+    "answer": 3,
+    "explain": "Signed cookies daju pristup grupi fajlova bez mijenjanja URL-ova, a trusted key groups su preporučen način potpisivanja. Signed URL po segmentu mijenja svaki URL, key pair traži root korisnika, presigned URL zaobilazi CloudFront, a rate limit ne provjerava pretplatu."
+  },
+  {
+    "obj": "3.1",
+    "q": "Forma za plaćanje šalje broj kartice preko CloudFronta do ALB-a, a zatim kroz nekoliko mikroservisa do servisa za naplatu. Usklađenost traži da broj kartice može pročitati samo servis za naplatu, a ne ALB, logovi ni ostali mikroservisi. Koje rješenje to ispunjava?",
+    "options": [
+      "Postaviti viewer protocol policy na HTTPS only i origin protocol policy na HTTPS.",
+      "Uključiti CloudFront field-level encryption za polje sa brojem kartice, sa javnim ključem čiji privatni par ima samo servis za naplatu.",
+      "Šifrovati ALB access logove SSE-KMS ključem.",
+      "Dodati response headers policy sa Strict-Transport-Security."
+    ],
+    "answer": 1,
+    "explain": "Field-level encryption šifruje odabrano polje na edge lokaciji i samo vlasnik privatnog ključa ga može dešifrovati, bez obzira kroz koliko slojeva zahtjev prolazi. HTTPS štiti samo do terminacije TLS-a, šifrovanje logova ne sprečava da servisi vide podatak, a HSTS samo forsira HTTPS."
+  },
+  {
+    "obj": "3.1",
+    "q": "Login endpoint /login javne aplikacije iza ALB-a trpi brute-force pokušaje sa stotina IP adresa. Ostatak aplikacije ima legitimne korisnike sa velikim brojem zahtjeva. Tim želi ograničiti broj zahtjeva po IP adresi samo za login. Šta treba uraditi?",
+    "options": [
+      "Dodati NACL deny pravila za napadačke IP adrese.",
+      "Uključiti Shield Advanced automatic application layer DDoS mitigation.",
+      "Dodati rate-based pravilo u web ACL za cijelu aplikaciju sa niskim limitom.",
+      "Dodati WAF rate-based pravilo sa agregacijom po IP adresi i scope-down statementom koji obuhvata samo URI path /login."
+    ],
+    "answer": 3,
+    "explain": "Scope-down ograničava brojanje i akciju na /login, pa ostatak aplikacije nije pogođen. Limit za cijelu aplikaciju bi blokirao legitimne korisnike, NACL sa stotinama adresa nije održiv, a Shield L7 mitigacija cilja DDoS, ne ciljano ograničenje jednog endpointa."
+  },
+  {
+    "obj": "3.1",
+    "q": "E-commerce sajt bilježi pokušaje prijave sa kombinacijama korisničkih imena i lozinki ukradenim sa drugih sajtova (credential stuffing). Tim želi managed zaštitu login stranice koja prepoznaje kompromitovane kredencijale i sumnjive obrasce prijava, uz NAJMANJE razvoja. Šta treba koristiti?",
+    "options": [
+      "AWS WAF Bot Control na Common nivou.",
+      "AWS WAF Fraud Control account takeover prevention (ATP) managed rule group na login putanji.",
+      "Amazon GuardDuty sa uključenim S3 Protection.",
+      "AWS WAF Core rule set."
+    ],
+    "answer": 1,
+    "explain": "ATP je namijenjen login stranicama: provjerava kredencijale protiv baze ukradenih i prati neuspjele pokušaje. Bot Control Common prepoznaje poznate botove, ne ukradene kredencijale, Core rule set štiti od injection napada, a GuardDuty ne analizira HTTP prijave."
+  },
+  {
+    "obj": "3.1",
+    "q": "Scraper bot rotira hiljade IP adresa i mijenja User-Agent header, pa IP blokade i pravila po headeru ne pomažu. Analiza WAF logova na CloudFront distribuciji pokazuje da svi zahtjevi bota imaju isti JA4 otisak. Koje rješenje je NAJPRECIZNIJE?",
+    "options": [
+      "Dodati WAF string match pravilo nad JA4 fingerprint komponentom sa tim otiskom i akcijom Block, uz definisano fallback ponašanje.",
+      "Dodati sve viđene IP adrese u WAF IP set.",
+      "Uključiti CloudFront geo restriction za države iz kojih dolazi najviše zahtjeva.",
+      "Dodati regex pravilo koje blokira User-Agent vrijednosti bota."
+    ],
+    "answer": 0,
+    "explain": "JA4 otisak opisuje TLS klijenta i ostaje isti kad bot mijenja IP i User-Agent; WAF ga podržava na CloudFrontu i ALB-u uz fallback kada se ne može izračunati. IP set ne prati rotaciju, geo restriction pogađa legitimne korisnike, a User-Agent se lako mijenja."
+  },
+  {
+    "obj": "3.1",
+    "q": "Aplikacija iza CloudFronta smije biti dostupna samo iz zemalja EU. Izuzetak je partner u SAD-u sa poznatim fiksnim IP opsegom. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "CloudFront geo restriction sa allow listom EU država.",
+      "Route 53 geolocation routing koji korisnike van EU šalje na statičnu stranicu.",
+      "WAF web ACL sa pravilom koje blokira zahtjeve koji nisu iz EU geo match liste i nisu iz IP seta partnera.",
+      "NACL na subnetima origina sa IP opsezima EU država."
+    ],
+    "answer": 2,
+    "explain": "WAF može kombinovati geo match i IP set logikom AND/NOT, pa partner prolazi uprkos geografiji. CloudFront geo restriction ne podržava izuzetke po IP-u, Route 53 routing nije sigurnosna kontrola jer se origin i dalje može pozvati, a NACL ne vidi originalne klijentske adrese iza CloudFronta."
+  },
+  {
+    "obj": "3.1",
+    "q": "Organizacija sa 300 naloga želi da svaki ALB i API Gateway u svim nalozima, uključujući buduće, automatski ima web ACL sa AWS Core rule set i jednom third-party managed rule grupom iz AWS Marketplacea. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "CloudFormation StackSet koji pravi web ACL u svakom nalogu, uz ručno vezivanje za nove resurse.",
+      "AWS Firewall Manager WAF politika iz delegated admin naloga sa automatskom remedijacijom za odabrane tipove resursa.",
+      "AWS Config pravilo koje prijavljuje resurse bez web ACL-a.",
+      "Shield Advanced zaštita na svim resursima."
+    ],
+    "answer": 1,
+    "explain": "Firewall Manager centralno primjenjuje WAF politike, uključujući Marketplace pravila, na postojeće i nove resurse u organizaciji. StackSet ne veže web ACL automatski za nove resurse, Config samo prijavljuje, a Shield Advanced sam po sebi ne dodaje ta pravila."
+  },
+  {
+    "obj": "3.1",
+    "q": "Single-page aplikacija sa https://app.example.com treba direktno uploadovati fajlove u S3 bucket preko presigned URL-ova. Browser prijavljuje CORS grešku, a isti PUT zahtjev iz curl-a uspijeva. Šta treba uraditi?",
+    "options": [
+      "Dodati bucket policy koja dozvoljava s3:PutObject za Principal *.",
+      "Isključiti S3 Block Public Access.",
+      "Dodati CORS konfiguraciju sa AllowedOrigins [\"*\"] i AllowedMethods svim metodama.",
+      "Dodati CORS konfiguraciju na bucket sa AllowedOrigins https://app.example.com, AllowedMethods PUT i potrebnim headerima."
+    ],
+    "answer": 3,
+    "explain": "CORS greška znači da browser nije dobio dozvolu za cross-origin zahtjev; CORS pravilo sa tačnim originom i metodom to rješava, a pristup i dalje kontroliše presigned URL. Javna bucket policy i gašenje Block Public Access otvaraju bucket, a wildcard origin je nepotrebno širok."
+  },
+  {
+    "obj": "3.1",
+    "q": "Proizvođač ima 50.000 IoT uređaja u AWS IoT Core, svaki sa vlastitim X.509 certifikatom i registrovan kao thing. Svaki uređaj smije se spojiti samo pod svojim imenom i objavljivati samo na topic devices/<ime-thinga>/telemetry. Koje rješenje to ispunjava uz NAJMANJE upravljanja politikama?",
+    "options": [
+      "Napraviti posebnu IoT politiku za svaki uređaj sa njegovim imenom upisanim u ARN.",
+      "Jedna IoT politika sa iot:* na resursu * zakačena za sve certifikate.",
+      "Jedna IoT politika sa policy varijablom ${iot:Connection.Thing.ThingName} u ARN-ovima za iot:Connect i iot:Publish, zakačena za sve certifikate.",
+      "IAM politika za svaki uređaj sa dozvolom iot:Publish."
+    ],
+    "answer": 2,
+    "explain": "Policy varijabla se pri evaluaciji zamjenjuje imenom thinga povezanog sa konekcijom, pa jedna politika daje najmanje privilegije svakom uređaju. 50.000 politika je teško održavati, iot:* na * je preširoko, a uređaji se ne autentikuju IAM politikama."
+  },
+  {
+    "obj": "3.3",
+    "q": "Aplikacija ima app sloj u Auto Scaling grupi i PostgreSQL bazu na EC2. Baza mora primati konekcije na portu 5432 samo od instanci app sloja, a broj i IP adrese tih instanci se stalno mijenjaju. Koje rješenje ispunjava zahtjev uz NAJMANJE održavanja?",
+    "options": [
+      "U security grupi baze dozvoliti port 5432 sa izvorom security grupe app sloja.",
+      "U NACL subneta baze dodati allow pravilo za svaku IP adresu app instance preko Lambda funkcije.",
+      "U security grupi baze dozvoliti port 5432 iz cijelog VPC CIDR-a.",
+      "Postaviti AWS Network Firewall između subneta sa pravilima po IP adresi."
+    ],
+    "answer": 0,
+    "explain": "Referenciranje security grupe automatski obuhvata sve instance sa tom grupom, bez obzira na IP adrese. Lambda koja mijenja NACL je krhka, VPC CIDR je preširok, a Network Firewall sa IP pravilima je nepotrebno složen za ovaj zahtjev."
+  },
+  {
+    "obj": "3.3",
+    "q": "Threat intel tim je identifikovao zlonamjerni opseg 198.51.100.0/24 koji skenira javne subnete. Tim želi brzo blokirati sav saobraćaj iz tog opsega prema svim instancama u tim subnetima, bez izmjene desetina security grupa. Šta treba uraditi?",
+    "options": [
+      "Dodati u NACL javnih subneta inbound deny pravilo za 198.51.100.0/24 sa brojem manjim od postojećih allow pravila.",
+      "Dodati deny pravilo za 198.51.100.0/24 u svaku security grupu.",
+      "Ukloniti internet gateway iz VPC-a.",
+      "Uključiti GuardDuty i sačekati nalaz."
+    ],
+    "answer": 0,
+    "explain": "NACL podržava deny pravila na nivou subneta i evaluira ih po broju, pa pravilo sa manjim brojem pobjeđuje allow pravila. Security grupe nemaju deny pravila, uklanjanje IGW-a ruši aplikaciju, a GuardDuty detektuje, ne blokira."
+  },
+  {
+    "obj": "3.3",
+    "q": "Kompanija ima 40 VPC-ova povezanih Transit Gatewayem. Svi izlazni HTTPS saobraćaj prema internetu smije ići samo prema odobrenim domenama (npr. github.com, *.amazonaws.com), uz centralno upravljanje pravilima i logovanje. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Security grupe u svim VPC-ovima sa egress pravilima prema IP adresama odobrenih domena.",
+      "Route 53 Resolver query logging i ručni pregled logova svake sedmice.",
+      "Centralizovani inspection VPC sa AWS Network Firewall i stateful domain list allowlist pravilima (TLS SNI i HTTP Host), sa egress saobraćajem svih VPC-ova rutiranim kroz Transit Gateway.",
+      "AWS WAF web ACL na NAT gatewayima."
+    ],
+    "answer": 2,
+    "explain": "Network Firewall razumije domene preko TLS SNI i HTTP Host i centralno filtrira egress svih spoke VPC-ova. Security grupe rade samo sa IP adresama koje se mijenjaju, logovanje DNS-a ne blokira, a WAF se ne može vezati za NAT gateway."
+  },
+  {
+    "obj": "3.3",
+    "q": "Banka ima dedicated AWS Direct Connect konekciju od 100 Gbps. Regulator traži šifrovanje saobraćaja na toj vezi, a IPsec VPN tuneli ne mogu dati potrebnu propusnost. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Site-to-Site VPN preko public VIF-a.",
+      "AWS Client VPN za sve servere u data centru.",
+      "Prebaciti se na hosted konekciju od 10 Gbps.",
+      "Uključiti MACsec na dedicated konekciji sa CKN/CAK ključem na MACsec-capable ruteru, u modu must_encrypt."
+    ],
+    "answer": 3,
+    "explain": "MACsec šifruje L2 link između rutera i DX uređaja punom brzinom i podržan je na dedicated konekcijama od 10, 100 i 400 Gbps na odabranim lokacijama; must_encrypt ne pušta nešifrovan saobraćaj. VPN tuneli imaju ograničenu propusnost, Client VPN je za korisnike, a hosted konekcije ne podržavaju MACsec."
+  },
+  {
+    "obj": "3.3",
+    "q": "Vanjski izvođači trebaju SSH i RDP pristup određenim instancama u privatnim subnetima. Kompanija ne želi VPN i traži da svaki pristup provjeri identitet iz IAM Identity Center i stanje uređaja iz Jamf-a. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Bastion host u javnom subnetu sa SSH ključevima za svakog izvođača.",
+      "AWS Verified Access sa network CIDR ili network interface TCP endpointima, IAM Identity Center i Jamf trust providerima, Cedar politikom i Connectivity Client aplikacijom na uređajima izvođača.",
+      "AWS Client VPN sa certifikatima za svakog izvođača.",
+      "Security grupe koje dozvoljavaju SSH i RDP sa kućnih IP adresa izvođača."
+    ],
+    "answer": 1,
+    "explain": "Verified Access ocjenjuje svaki pristup prema identitetu i stanju uređaja, a TCP endpointi uz Connectivity Client podržavaju SSH i RDP bez VPN-a. Bastion i otvaranje portova ne provjeravaju uređaj i šire površinu napada, a Client VPN je upravo VPN koji ne žele."
+  },
+  {
+    "obj": "3.3",
+    "q": "Sigurnosni tim mora kontinuirano i sistematski otkrivati nepotreban mrežni pristup u 50 VPC-ova: instance čiji su portovi dostupni sa interneta i puteve koji krše pravilo da dev VPC ne smije doći do prod VPC-a. Koja DVA servisa to NAJBOLJE ispunjavaju? (Izaberi DVA.)",
+    "options": [
+      "Network Access Analyzer sa Network Access Scope-ovima za puteve sa interneta i između dev i prod.",
+      "VPC Reachability Analyzer za svaki par instanci.",
+      "AWS Trusted Advisor provjera nekorištenih Elastic IP adresa.",
+      "Amazon Inspector EC2 skeniranje sa network reachability nalazima.",
+      "VPC Traffic Mirroring na svim instancama."
+    ],
+    "answer": [0, 3],
+    "explain": "Network Access Analyzer pronalazi sve puteve koji krše definisanu namjeru, a Inspector kontinuirano prijavljuje portove dostupne sa interneta. Reachability Analyzer je point-to-point dijagnostika, Trusted Advisor ovdje nije relevantan, a Traffic Mirroring kopira saobraćaj, ne analizira pristup."
+  },
+  {
+    "obj": "3.3",
+    "type": "match",
+    "q": "Upari opis sa mrežnom kontrolom.",
+    "options": [
+      "Stateless, numerisana allow i deny pravila na nivou subneta.",
+      "Stateful, samo allow pravila na nivou ENI-ja, izvor može biti druga grupa.",
+      "Suricata IPS pravila, domain liste i centralna inspekcija preko Transit Gatewaya.",
+      "Transparentno umetanje third-party virtualnih firewalla uz GENEVE enkapsulaciju.",
+      "Blokiranje SQL injectiona u HTTP zahtjevima prema ALB-u."
+    ],
+    "targets": ["AWS WAF", "Security group", "AWS Shield Advanced", "Network ACL", "Gateway Load Balancer", "AWS Network Firewall"],
+    "answer": [3, 1, 5, 4, 0],
+    "explain": "NACL je stateless na subnetu sa deny pravilima, security grupa stateful sa allow pravilima i referencama grupa, Network Firewall koristi Suricata i domain liste, GWLB ubacuje third-party appliance preko GENEVE-a, a WAF filtrira L7 napade. Shield Advanced je DDoS zaštita."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Upari prijetnju sa NAJPRIKLADNIJOM edge kontrolom.",
+    "options": [
+      "UDP reflection DDoS napad na javne endpointe.",
+      "Scraping botovi koji se predstavljaju kao browseri.",
+      "SQL injection pokušaji u query parametrima.",
+      "Korisnici pristupaju S3 objektima direktno, mimo CloudFronta.",
+      "Licenca dozvoljava prikazivanje sadržaja samo u tri države."
+    ],
+    "targets": ["CloudFront geo restriction", "Origin Access Control", "AWS WAF Bot Control", "S3 CORS konfiguracija", "AWS WAF SQL database managed rule group", "AWS Shield"],
+    "answer": [5, 2, 4, 1, 0],
+    "explain": "L3/L4 DDoS ublažava Shield, botove WAF Bot Control, SQL injection WAF managed pravila, direktan pristup S3 sprečava OAC, a jednostavno ograničenje po državama CloudFront geo restriction. CORS nije kontrola pristupa."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Poredaj korake za uvođenje centralizovane inspekcije sa AWS Network Firewall i Transit Gatewayem.",
+    "options": [
+      "Podesiti rutiranje: spoke VPC-ovi i TGW route tabele šalju saobraćaj na inspection attachment, a u inspection VPC-u TGW subnet ide na firewall endpoint i nazad.",
+      "Napraviti AWS Network Firewall u firewall subnetima sa tom politikom.",
+      "Provjeriti tok saobraćaja kroz Network Firewall flow i alert logove.",
+      "Napraviti inspection VPC sa firewall i TGW subnetima u svakoj AZ i firewall policy sa stateful rule grupama.",
+      "Povezati inspection VPC na Transit Gateway i uključiti appliance mode na tom attachmentu."
+    ],
+    "answer": [3, 1, 4, 0, 2],
+    "explain": "Prvo se pripreme VPC i politika, zatim se pravi firewall (nastaju endpointi). Inspection VPC se veže na TGW sa appliance modeom za simetrično rutiranje, tek onda se mijenjaju rute da saobraćaj ide kroz firewall, a na kraju se tok provjerava u logovima."
+  },
+  {
+    "obj": "3.3",
+    "type": "spot",
+    "q": "Instance aplikacije su u privatnom subnetu iza ALB-a i treba da primaju saobraćaj samo od njega, a administracija ide kroz Session Manager. Klikni pravila koja krše segmentaciju.",
+    "lang": "text",
+    "snippet": "SecurityGroup: sg-0app (app-servers)  # iza ALB-a (sg-0alb); admin pristup samo kroz SSM\nDirection  Protocol  Port   Source / Destination       Description\nInbound    TCP       8080   sg-0alb                    ALB saobraćaj i health check\nInbound    TCP       22     0.0.0.0/0                  privremeno za debug\nInbound    TCP       8080   0.0.0.0/0                  direktan test\nOutbound   TCP       443    pl-6ea54007 (S3)           preuzimanje artefakata\nOutbound   TCP       5432   sg-0db                     baza\nOutbound   TCP       443    sg-0vpce                   SSM interface endpointi",
+    "answer": [3, 4],
+    "explain": "Inbound 22 sa 0.0.0.0/0 otvara SSH cijelom svijetu (čim instanca dobije javnu adresu ili postane dostupna preko drugog puta), a SSM ga uopšte ne traži; pravilo treba obrisati. Inbound 8080 sa 0.0.0.0/0 zaobilazi ALB (i WAF na njemu); izvor treba biti samo sg-0alb, što prvo pravilo već radi. Outbound pravila prema S3 prefix listi, bazi i SSM endpointima su usko ograničena referencama."
+  }
+]

@@ -1,0 +1,266 @@
+[
+  {
+    "obj": "4.3",
+    "q": "You created PV pv-x (500Mi, RWO, hostPath, no storageClassName). Then you created a 200Mi RWO PVC without the storageClassName field. In the cluster, local-path is marked as the default class. The PVC became Bound, but to PV pvc-7c1e..., not to pv-x. Why?",
+    "options": [
+      "pv-x is too large for a 200Mi request, so the controller skips it",
+      "hostPath PVs cannot be bound to a PVC, only directly to a Pod",
+      "The omitted storageClassName received the name of the default class local-path, so the provisioner created a new PV",
+      "A PVC always binds to a dynamic PV first, and static PVs are used only when the provisioner fails"
+    ],
+    "answer": 2,
+    "explain": "The DefaultStorageClass admission plugin writes the default class into a PVC without storageClassName, and pv-x has no class, so they do not match. To bind to pv-x you need storageClassName: \"\" (and optionally volumeName). A larger PV is allowed, and a hostPath PV binds normally."
+  },
+  {
+    "obj": "4.1",
+    "q": "You created PVC data with storageClassName: local-path. k get pvc shows Pending, and k describe pvc data shows the event: waiting for first consumer to be created before binding. What is the correct next step?",
+    "options": [
+      "Create a Pod that uses PVC data; the PVC will then be bound",
+      "Change the volumeBindingMode of class local-path to Immediate with k edit sc",
+      "Manually create a PV with storageClassName: local-path",
+      "Delete the PVC and create it again with volumeName"
+    ],
+    "answer": 0,
+    "explain": "The class uses WaitForFirstConsumer: the provisioner waits for the scheduler to pick a node for a Pod that uses the PVC. This is not an error. volumeBindingMode cannot be changed on an existing class, and a manual PV is not needed."
+  },
+  {
+    "obj": "4.2",
+    "q": "A Deployment with 3 replicas uses the same PVC (RWO, cloud CSI disk). Two Pods on node node01 are running, and the Pod scheduled on controlplane is stuck in ContainerCreating with the event Multi-Attach error for volume. What is the cause?",
+    "options": [
+      "The PVC is in a different namespace than the third Pod",
+      "ReadWriteOnce allows mounting from only one node, and the third Pod is on another node",
+      "ReadWriteOnce allows only one Pod, so the other two Pods are failing as well",
+      "Reclaim policy Delete does not allow sharing the volume"
+    ],
+    "answer": 1,
+    "explain": "RWO is a per-node restriction: several Pods on the same node may use the volume, but not a Pod on another node. For multiple nodes you need RWX storage or a StatefulSet with a PVC per replica. The single-Pod restriction is RWOP."
+  },
+  {
+    "obj": "4.2",
+    "q": "Task: the database must never run in two Pods at the same time, not even on the same node. The volume comes from a CSI driver. Which access mode should be set in the PVC?",
+    "options": [
+      "ReadWriteOnce",
+      "ReadOnlyMany",
+      "ReadWriteMany",
+      "ReadWriteOncePod"
+    ],
+    "answer": 3,
+    "explain": "ReadWriteOncePod (GA since v1.29, CSI only) guarantees that exactly one Pod in the cluster uses the volume. RWO allows several Pods on the same node, and ROX and RWX allow multiple nodes."
+  },
+  {
+    "obj": "4.3",
+    "q": "PV pv-log has reclaim policy Retain. You deleted the PVC that was using it and created a new PVC with the same requirements. The new PVC is Pending, and k get pv shows pv-log in the Released state. What should you do?",
+    "options": [
+      "Change the reclaim policy to Recycle",
+      "Restart kube-controller-manager",
+      "Remove spec.claimRef from the PV, e.g. k patch pv pv-log --type=json -p '[{\"op\":\"remove\",\"path\":\"/spec/claimRef\"}]'",
+      "Increase the PV capacity so it differs from the old one"
+    ],
+    "answer": 2,
+    "explain": "A Released PV still has a claimRef pointing to the deleted PVC, so it does not bind to the new one. Once the claimRef is removed, the PV becomes Available. Recycle is deprecated and does not bring back an already Released PV, and restarting the controller does not remove the claimRef."
+  },
+  {
+    "obj": "4.1",
+    "q": "The cluster has the default class local-path. The task requires the new class fast to become the only default class. Which pair of commands is correct?",
+    "options": [
+      "k annotate sc local-path storageclass.kubernetes.io/is-default-class- and k annotate sc fast storageclass.kubernetes.io/is-default-class=true --overwrite",
+      "k label sc local-path default- and k label sc fast default=true",
+      "k patch sc fast -p '{\"spec\":{\"default\":true}}' and k delete sc local-path",
+      "k annotate sc fast kubernetes.io/default-storage-class=true and k annotate sc local-path kubernetes.io/default-storage-class=false"
+    ],
+    "answer": 0,
+    "explain": "The default class is determined by the annotation storageclass.kubernetes.io/is-default-class: \"true\". You remove it from the old class (name followed by a trailing dash) and add it to the new one. No label or spec.default field exists for this purpose, and deleting the old class was not requested."
+  },
+  {
+    "obj": "4.3",
+    "q": "A PVC requests 50Mi, RWO, storageClassName: manual. The only matching PV has a capacity of 100Mi and the same class. What does the CAPACITY column in k get pvc show after binding?",
+    "options": [
+      "50Mi, because the PVC gets exactly what it requests",
+      "Nothing, the PVC stays Pending because the capacity must be identical",
+      "50Mi, and the rest of the PV becomes a new 50Mi PV",
+      "100Mi, because the PVC gets the whole PV"
+    ],
+    "answer": 3,
+    "explain": "The PV must have at least as much capacity as the PVC requests, and the binding is 1:1, so the PVC gets the whole PV and shows its capacity. A PV is not split and does not have to be the same size."
+  },
+  {
+    "obj": "4.1",
+    "q": "k patch pvc data -p '{\"spec\":{\"resources\":{\"requests\":{\"storage\":\"5Gi\"}}}}' returns the error: only dynamically provisioned pvc can be resized and the storageclass that provisions the pvc must support resize. The PVC was dynamically provisioned from class standard-csi. What needs to change?",
+    "options": [
+      "Increase spec.capacity.storage on the PV",
+      "Set allowVolumeExpansion: true on StorageClass standard-csi",
+      "Change volumeBindingMode to Immediate",
+      "Add the annotation volume.kubernetes.io/resize=true to the PVC"
+    ],
+    "answer": 1,
+    "explain": "Expansion is allowed only if the class has allowVolumeExpansion: true. Changing the capacity on the PV does not expand the volume and can prevent automatic expansion, and volumeBindingMode and the made-up annotation have nothing to do with it."
+  },
+  {
+    "obj": "4.3",
+    "q": "PVC data is 2Gi, and the class allows expansion. A colleague tries to shrink it to 1Gi. What happens?",
+    "options": [
+      "The API server rejects the change, because shrinking a PVC is not supported",
+      "The PVC shrinks, and data beyond 1Gi is deleted",
+      "A new 1Gi PV is created and the data is copied",
+      "The change goes through, but the PVC enters the Lost state"
+    ],
+    "answer": 0,
+    "explain": "Kubernetes does not support shrinking a PVC below its current size, and validation rejects such a change. When expanding, a new PV is never created; the existing volume is expanded instead."
+  },
+  {
+    "obj": "4.2",
+    "q": "A Pod uses hostPath /data/app with type: DirectoryOrCreate and was running on controlplane. After it was deleted, the Deployment recreated it on node01 and the application does not see the old files. What is the cause?",
+    "options": [
+      "DirectoryOrCreate deletes the directory contents on every start",
+      "hostPath requires a PVC, and without it the data lives only in memory",
+      "hostPath reads the path from the node the Pod runs on, so node01 has its own (new, empty) /data/app",
+      "The reclaim policy of a hostPath volume is Delete"
+    ],
+    "answer": 2,
+    "explain": "hostPath is tied to the node: on node01, DirectoryOrCreate created an empty directory. DirectoryOrCreate does not delete existing content, and an inline hostPath volume has no reclaim policy because it is not a PV."
+  },
+  {
+    "obj": "4.2",
+    "q": "A PVC has volumeMode: Block and is Bound. The Pod using it does not start, and the container has volumeMounts with mountPath: /data. What needs to change in the container?",
+    "options": [
+      "Add readOnly: true to volumeMounts",
+      "Change mountPath to /dev/data",
+      "Add subPath: block",
+      "Replace volumeMounts with volumeDevices and specify a devicePath, e.g. /dev/xvda"
+    ],
+    "answer": 3,
+    "explain": "A Block volume is given to the container as a raw device through volumeDevices.devicePath, not through volumeMounts. readOnly and subPath apply to Filesystem mounts."
+  },
+  {
+    "obj": "4.3",
+    "q": "A PVC has storageClassName: local-path and selector.matchLabels: tier: logs. No PV with that label exists. What will happen?",
+    "options": [
+      "local-path will create a PV and add the label tier: logs to it",
+      "The PVC stays Pending, because a PVC with a non-empty selector cannot get a dynamic PV",
+      "The selector is ignored when a class is specified",
+      "The PVC binds to any Available PV of the same class"
+    ],
+    "answer": 1,
+    "explain": "The documentation states that a PVC with a non-empty selector cannot have a PV dynamically provisioned for it. The selector is used to choose among static PVs and is not ignored."
+  },
+  {
+    "obj": "4.1",
+    "q": "In a cluster with three zones, a PVC is created from a class with volumeBindingMode: Immediate. The Pod that uses it stays Pending: volume node affinity conflict. What class change prevents this problem for new PVCs?",
+    "options": [
+      "A new class with volumeBindingMode: WaitForFirstConsumer, so the volume is created only after the scheduler picks a node",
+      "allowVolumeExpansion: true",
+      "reclaimPolicy: Retain",
+      "Add the parameter zone: any to parameters"
+    ],
+    "answer": 0,
+    "explain": "With Immediate, the disk is created before the Pod is scheduled and can end up in a zone where the Pod cannot run. WaitForFirstConsumer delays provisioning until a node is selected. The other fields do not affect topology, and parameters depend on the provisioner."
+  },
+  {
+    "obj": "4.3",
+    "q": "You run k delete pvc data while the Pod using it is still running. The command hangs, and k get pvc shows Terminating. What is the reason?",
+    "options": [
+      "The reclaim policy is Retain, so the PVC may not be deleted",
+      "The PV is in the Failed state",
+      "The kubernetes.io/pvc-protection finalizer protects the PVC while a Pod uses it; deletion completes once the Pod is deleted",
+      "A PVC can be deleted only with --force --grace-period=0"
+    ],
+    "answer": 2,
+    "explain": "Storage Object in Use Protection does not allow deleting a PVC that a Pod is using, so the PVC waits in Terminating. The reclaim policy determines the fate of the PV after the PVC is deleted; it does not block the deletion itself."
+  },
+  {
+    "obj": "4.3",
+    "q": "PVC app-data in namespace default must bind to exactly the existing PV pv-data, which has no storageClassName. The cluster has a default class. Which two PVC fields ensure this? (Choose TWO.)",
+    "options": [
+      "storageClassName: local-path",
+      "storageClassName: \"\"",
+      "persistentVolumeReclaimPolicy: Retain",
+      "volumeName: pv-data",
+      "claimRef: pv-data"
+    ],
+    "answer": [1, 3],
+    "explain": "An empty string prevents the default class from being written in and requests a PV without a class, and volumeName selects exactly that PV. persistentVolumeReclaimPolicy and claimRef are PV fields, not PVC fields, and local-path does not match a PV without a class."
+  },
+  {
+    "obj": "4.3",
+    "type": "order",
+    "q": "A dynamic PV (reclaim policy Delete) contains important data. You need to delete the old PVC and give the same data to a new PVC. Put the steps in order.",
+    "options": [
+      "Create a new PVC with volumeName: <PV name> and the same class",
+      "Delete the old PVC (and the Pod that uses it)",
+      "Change the PV's persistentVolumeReclaimPolicy to Retain",
+      "Remove spec.claimRef from the PV so it becomes Available",
+      "Check that the new PVC and the PV are in the Bound state"
+    ],
+    "answer": [2, 1, 3, 0, 4],
+    "explain": "Retain comes first, otherwise deleting the PVC also deletes the disk. After the deletion, the PV is Released with the old claimRef; removing the claimRef makes it Available, so the new PVC binds to it through volumeName."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Match each requirement with the setting that satisfies it.",
+    "options": [
+      "Several Pods on different nodes write to the same shared directory",
+      "Only one Pod in the entire cluster may use the volume",
+      "After the PVC is deleted, the disk and data must remain for manual inspection",
+      "After the PVC is deleted, the cloud disk should be deleted automatically",
+      "Several nodes read the same set of static files, nobody writes"
+    ],
+    "targets": [
+      "Reclaim policy Delete",
+      "ReadOnlyMany",
+      "ReadWriteMany",
+      "Reclaim policy Recycle",
+      "ReadWriteOncePod",
+      "Reclaim policy Retain",
+      "ReadWriteOnce"
+    ],
+    "answer": [2, 4, 5, 0, 1],
+    "explain": "RWX for writing from several nodes, RWOP for a single Pod, Retain keeps the PV in the Released state, Delete deletes the storage, ROX for reading from several nodes. Recycle is deprecated, and RWO is a per-node restriction."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Match each StorageClass field with what it controls.",
+    "options": [
+      "provisioner",
+      "volumeBindingMode",
+      "allowVolumeExpansion",
+      "reclaimPolicy",
+      "parameters"
+    ],
+    "targets": [
+      "Whether a user may increase the size of PVCs of this class",
+      "What happens to a dynamically provisioned PV when the PVC is deleted",
+      "When the volume is created: immediately or after a node is chosen for the Pod",
+      "Which class is the default in the cluster",
+      "Who creates the volume (e.g. rancher.io/local-path or a CSI driver)",
+      "Provisioner-specific settings, e.g. disk type or IOPS"
+    ],
+    "answer": [4, 2, 0, 1, 5],
+    "explain": "The default class is determined not by a field but by the storageclass.kubernetes.io/is-default-class annotation, so that target is a distractor. The other fields map directly to the descriptions."
+  },
+  {
+    "obj": "4.3",
+    "q": "Pod web in namespace default is Pending with the message persistentvolumeclaim \"data\" not found. k get pvc -A shows PVC data in namespace app, Bound. What is the fix?",
+    "options": [
+      "Add claimName: app/data to the Pod",
+      "Create the PVC in namespace default or run the Pod in namespace app",
+      "Create a ClusterRole that grants access to PVCs from other namespaces",
+      "Delete the PV, because it is bound to the wrong namespace"
+    ],
+    "answer": 1,
+    "explain": "A PVC is namespaced, and a Pod can use only a PVC from its own namespace. claimName does not accept a namespace prefix, and RBAC does not change this rule. The PV is cluster-scoped and is not the cause."
+  },
+  {
+    "obj": "4.2",
+    "q": "ConfigMap app-config is mounted as a volume at /etc/app/app.conf with subPath: app.conf. After k edit cm app-config, the file in the container does not change even after several minutes. Why?",
+    "options": [
+      "ConfigMap volumes are never updated, only Secret volumes are",
+      "You need to set defaultMode: 0644",
+      "The kubelet updates ConfigMap volumes only on the control plane node",
+      "Volumes mounted with subPath do not receive updates; restart the Pod or mount the whole directory"
+    ],
+    "answer": 3,
+    "explain": "The kubelet periodically updates projected ConfigMap and Secret files, but not those mounted via subPath. defaultMode only changes the file permissions."
+  }
+]

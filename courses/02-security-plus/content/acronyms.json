@@ -1,0 +1,532 @@
+[
+ {
+  "a": "AAA",
+  "en": "Authentication, Authorization, and Accounting",
+  "bs": "autentikacija, autorizacija i evidencija: ko si, šta smiješ, šta si uradio"
+ },
+ {
+  "a": "AI",
+  "en": "Artificial Intelligence",
+  "bs": "vještačka inteligencija"
+ },
+ {
+  "a": "ALE",
+  "en": "Annualized Loss Expectancy",
+  "bs": "očekivani godišnji gubitak: ALE = SLE × ARO"
+ },
+ {
+  "a": "AML/CTF",
+  "en": "Anti-money Laundering/Counter-terrorism Financing",
+  "bs": "sprečavanje pranja novca i finansiranja terorizma"
+ },
+ {
+  "a": "APT",
+  "en": "Advanced Persistent Threat",
+  "bs": "napredna, dugotrajna prijetnja; tipično državno sponzorisana grupa"
+ },
+ {
+  "a": "ARO",
+  "en": "Annualized Rate of Occurrence",
+  "bs": "koliko puta godišnje se očekuje da se događaj desi"
+ },
+ {
+  "a": "AUP",
+  "en": "Acceptable Use Policy",
+  "bs": "politika prihvatljive upotrebe IT resursa"
+ },
+ {
+  "a": "BEC",
+  "en": "Business Email Compromise",
+  "bs": "prevara preko kompromitovanog ili lažnog poslovnog emaila (npr. lažna faktura)"
+ },
+ {
+  "a": "BIMI",
+  "en": "Brand Indicators for Message Identification",
+  "bs": "prikaz logotipa pošiljaoca uz email koji prolazi DMARC"
+ },
+ {
+  "a": "BIOS",
+  "en": "Basic Input/Output System",
+  "bs": "firmware koji pokreće računar (danas uglavnom UEFI)"
+ },
+ {
+  "a": "BYOD",
+  "en": "Bring Your Own Device",
+  "bs": "korištenje ličnih uređaja za posao"
+ },
+ {
+  "a": "CAB",
+  "en": "Change Advisory Board",
+  "bs": "tijelo koje odobrava promjene"
+ },
+ {
+  "a": "CAPTCHA",
+  "en": "Completely Automated Public Turing test to tell Computers and Humans Apart",
+  "bs": "test koji razlikuje ljude od botova"
+ },
+ {
+  "a": "CI/CD",
+  "en": "Continuous Integration and Continuous Deployment",
+  "bs": "kontinuirana integracija i isporuka"
+ },
+ {
+  "a": "CIA",
+  "en": "Confidentiality, Integrity, and Availability",
+  "bs": "povjerljivost, integritet, dostupnost"
+ },
+ {
+  "a": "CRL",
+  "en": "Certificate Revocation List",
+  "bs": "lista opozvanih certifikata koju objavljuje CA"
+ },
+ {
+  "a": "CSPM",
+  "en": "Cloud Security Posture Management",
+  "bs": "alati koji stalno provjeravaju konfiguraciju clouda (npr. javni bucketi)"
+ },
+ {
+  "a": "CSR",
+  "en": "Certificate Signing Request",
+  "bs": "zahtjev za potpis certifikata, sadrži javni ključ i podatke o subjektu"
+ },
+ {
+  "a": "CVE",
+  "en": "Common Vulnerabilities and Exposures",
+  "bs": "jedinstveni identifikator konkretne ranjivosti"
+ },
+ {
+  "a": "CVSS",
+  "en": "Common Vulnerability Scoring System",
+  "bs": "ocjena ozbiljnosti ranjivosti 0–10"
+ },
+ {
+  "a": "CWE",
+  "en": "Common Weakness Enumeration",
+  "bs": "katalog vrsta slabosti (npr. CWE-89 SQL injection)"
+ },
+ {
+  "a": "DDoS",
+  "en": "Distributed Denial of Service",
+  "bs": "napad uskraćivanja usluge sa mnogo izvora"
+ },
+ {
+  "a": "DoS",
+  "en": "Denial of Service",
+  "bs": "napad uskraćivanja usluge"
+ },
+ {
+  "a": "DHCP",
+  "en": "Dynamic Host Configuration Protocol",
+  "bs": "automatska dodjela IP adresa"
+ },
+ {
+  "a": "DKIM",
+  "en": "DomainKeys Identified Mail",
+  "bs": "kriptografski potpis emaila; javni ključ je u DNS-u"
+ },
+ {
+  "a": "DLP",
+  "en": "Data Loss Prevention",
+  "bs": "sprečavanje curenja podataka (sadržaj u mreži, na endpointu, u cloudu)"
+ },
+ {
+  "a": "DMARC",
+  "en": "Domain-based Message Authentication, Reporting, and Conformance",
+  "bs": "politika šta raditi sa mailom koji ne prođe SPF/DKIM, plus izvještaji"
+ },
+ {
+  "a": "DNS",
+  "en": "Domain Name System",
+  "bs": "prevođenje imena u IP adrese"
+ },
+ {
+  "a": "EDR",
+  "en": "Endpoint Detection and Response",
+  "bs": "detekcija i odgovor na endpointu (ponašanje, izolacija hosta)"
+ },
+ {
+  "a": "EOI",
+  "en": "Expression of Interest",
+  "bs": "iskazivanje interesa dobavljača, rana faza nabavke"
+ },
+ {
+  "a": "GBIC",
+  "en": "Gigabit Interface Converter",
+  "bs": "modul za priključenje medija na mrežnu opremu (prethodnik SFP-a)"
+ },
+ {
+  "a": "gMSA",
+  "en": "Group Managed Service Account",
+  "bs": "Windows servisni nalog sa automatski rotiranom lozinkom"
+ },
+ {
+  "a": "HIDS",
+  "en": "Host-based Intrusion Detection System",
+  "bs": "detekcija upada na samom hostu"
+ },
+ {
+  "a": "HIPS",
+  "en": "Host-based Intrusion Prevention System",
+  "bs": "sprečavanje upada na samom hostu"
+ },
+ {
+  "a": "HR",
+  "en": "Human Resources",
+  "bs": "ljudski resursi"
+ },
+ {
+  "a": "IaC",
+  "en": "Infrastructure as Code",
+  "bs": "infrastruktura opisana kodom (Terraform, Bicep, CloudFormation)"
+ },
+ {
+  "a": "IDS",
+  "en": "Intrusion Detection System",
+  "bs": "sistem za otkrivanje upada (samo alarmira)"
+ },
+ {
+  "a": "IP",
+  "en": "Internet Protocol",
+  "bs": "internet protokol"
+ },
+ {
+  "a": "IPFIX",
+  "en": "Internet Protocol Flow Information Export",
+  "bs": "standard za izvoz podataka o tokovima saobraćaja (nasljednik NetFlow-a)"
+ },
+ {
+  "a": "IPS",
+  "en": "Intrusion Prevention System",
+  "bs": "sistem za sprečavanje upada (inline, blokira)"
+ },
+ {
+  "a": "IPSec",
+  "en": "Internet Protocol Security",
+  "bs": "šifrovanje i autentikacija na IP sloju (VPN tuneli)"
+ },
+ {
+  "a": "LAN",
+  "en": "Local Area Network",
+  "bs": "lokalna mreža"
+ },
+ {
+  "a": "LDAP",
+  "en": "Lightweight Directory Access Protocol",
+  "bs": "protokol za pristup imeniku (npr. Active Directory); LDAPS je šifrovana varijanta"
+ },
+ {
+  "a": "LLM",
+  "en": "Large Language Model",
+  "bs": "veliki jezički model"
+ },
+ {
+  "a": "LMS",
+  "en": "Learning Management System",
+  "bs": "sistem za upravljanje obukama"
+ },
+ {
+  "a": "MDM",
+  "en": "Mobile Device Management",
+  "bs": "centralno upravljanje mobilnim uređajima"
+ },
+ {
+  "a": "MFA",
+  "en": "Multifactor Authentication",
+  "bs": "višefaktorska autentikacija"
+ },
+ {
+  "a": "MOA",
+  "en": "Memorandum of Agreement",
+  "bs": "sporazum sa konkretnim obavezama strana"
+ },
+ {
+  "a": "MOU",
+  "en": "Memorandum of Understanding",
+  "bs": "izjava o namjeri saradnje, obično neobavezujuća"
+ },
+ {
+  "a": "MSA",
+  "en": "Master Service Agreement",
+  "bs": "okvirni ugovor koji važi za buduće poslove"
+ },
+ {
+  "a": "MTBF",
+  "en": "Mean Time Between Failures",
+  "bs": "prosječno vrijeme između kvarova (pouzdanost)"
+ },
+ {
+  "a": "MTTR",
+  "en": "Mean Time to Repair",
+  "bs": "prosječno vrijeme popravke"
+ },
+ {
+  "a": "NDA",
+  "en": "Non-disclosure Agreement",
+  "bs": "ugovor o povjerljivosti"
+ },
+ {
+  "a": "NFC",
+  "en": "Near-field Communication",
+  "bs": "bežična komunikacija na nekoliko centimetara (plaćanje, kartice)"
+ },
+ {
+  "a": "NIC",
+  "en": "Network Interface Card",
+  "bs": "mrežna kartica"
+ },
+ {
+  "a": "NIDS",
+  "en": "Network-based Intrusion Detection System",
+  "bs": "mrežni IDS, analizira kopiju saobraćaja"
+ },
+ {
+  "a": "NIPS",
+  "en": "Network-based Intrusion Prevention System",
+  "bs": "mrežni IPS, inline"
+ },
+ {
+  "a": "NVD",
+  "en": "National Vulnerability Database",
+  "bs": "NIST-ova baza ranjivosti (CVSS, CPE)"
+ },
+ {
+  "a": "OAuth",
+  "en": "Open Authorization",
+  "bs": "okvir za delegiranu autorizaciju (access tokeni)"
+ },
+ {
+  "a": "OCSP",
+  "en": "Online Certificate Status Protocol",
+  "bs": "online provjera statusa jednog certifikata; stapling ga ubrzava"
+ },
+ {
+  "a": "OS",
+  "en": "Operating System",
+  "bs": "operativni sistem"
+ },
+ {
+  "a": "OT",
+  "en": "Operational Technology",
+  "bs": "industrijski sistemi (SCADA, PLC)"
+ },
+ {
+  "a": "OTP",
+  "en": "One-time Password",
+  "bs": "jednokratna lozinka (TOTP, HOTP)"
+ },
+ {
+  "a": "PDF",
+  "en": "Portable Document Format",
+  "bs": "format dokumenta, čest vektor napada"
+ },
+ {
+  "a": "PIR",
+  "en": "Post-incident Reporting",
+  "bs": "izvještaj nakon incidenta"
+ },
+ {
+  "a": "PKI",
+  "en": "Public Key Infrastructure",
+  "bs": "infrastruktura javnog ključa: CA, certifikati, opoziv"
+ },
+ {
+  "a": "QR",
+  "en": "Quick Response",
+  "bs": "QR kod; quishing je phishing preko QR koda"
+ },
+ {
+  "a": "RCS",
+  "en": "Rich Communication Services",
+  "bs": "nasljednik SMS-a sa naprednim porukama"
+ },
+ {
+  "a": "RF",
+  "en": "Radio Frequency",
+  "bs": "radio frekvencija"
+ },
+ {
+  "a": "RFC",
+  "en": "Request for Comments",
+  "bs": "dokumenti koji definišu internet standarde"
+ },
+ {
+  "a": "RFI",
+  "en": "Request for Information",
+  "bs": "zahtjev za informacije od dobavljača"
+ },
+ {
+  "a": "RFP",
+  "en": "Request for Proposal",
+  "bs": "zahtjev za ponudu sa rješenjem"
+ },
+ {
+  "a": "RFQ",
+  "en": "Request for Quote",
+  "bs": "zahtjev za cijenu kad je rješenje poznato"
+ },
+ {
+  "a": "ROI",
+  "en": "Return on Investment",
+  "bs": "povrat investicije"
+ },
+ {
+  "a": "RPO",
+  "en": "Recovery Point Objective",
+  "bs": "koliko podataka (u vremenu) smiješ izgubiti"
+ },
+ {
+  "a": "RPS",
+  "en": "Redundant Power Supply",
+  "bs": "redundantno napajanje u uređaju"
+ },
+ {
+  "a": "RTF",
+  "en": "Rich Text Format",
+  "bs": "format dokumenta, može nositi zlonamjerne objekte"
+ },
+ {
+  "a": "RTO",
+  "en": "Recovery Time Objective",
+  "bs": "za koliko vremena sistem mora ponovo raditi"
+ },
+ {
+  "a": "SaaS",
+  "en": "Software as a Service",
+  "bs": "softver kao usluga"
+ },
+ {
+  "a": "SAML",
+  "en": "Security Assertions Markup Language",
+  "bs": "XML standard za SSO između IdP-a i SP-a"
+ },
+ {
+  "a": "SCAP",
+  "en": "Security Content Automation Protocol",
+  "bs": "standardi za automatizovanu provjeru konfiguracije i ranjivosti"
+ },
+ {
+  "a": "SELinux",
+  "en": "Security-enhanced Linux",
+  "bs": "MAC (mandatory access control) za Linux"
+ },
+ {
+  "a": "SFP",
+  "en": "Small Form-factor Pluggable",
+  "bs": "mali utični modul za optiku/bakar na switchu"
+ },
+ {
+  "a": "SIEM",
+  "en": "Security Information and Event Management",
+  "bs": "centralno prikupljanje, korelacija i alarmiranje logova"
+ },
+ {
+  "a": "SLE",
+  "en": "Single Loss Expectancy",
+  "bs": "gubitak od jednog događaja: vrijednost imovine × faktor izloženosti"
+ },
+ {
+  "a": "SMS",
+  "en": "Short Message Service",
+  "bs": "SMS poruke; smishing je phishing preko SMS-a"
+ },
+ {
+  "a": "SNMP",
+  "en": "Simple Network Management Protocol",
+  "bs": "nadzor mrežnih uređaja; SNMPv3 ima autentikaciju i šifrovanje"
+ },
+ {
+  "a": "SOAR",
+  "en": "Security Orchestration, Automation, and Response",
+  "bs": "automatizacija odgovora pomoću playbookova"
+ },
+ {
+  "a": "SOC",
+  "en": "Security Operations Center",
+  "bs": "centar za sigurnosne operacije"
+ },
+ {
+  "a": "SOP",
+  "en": "Standard Operating Procedure",
+  "bs": "standardna operativna procedura"
+ },
+ {
+  "a": "SOW",
+  "en": "Statement of Work",
+  "bs": "opis posla: obim, isporuke, rokovi"
+ },
+ {
+  "a": "SPF",
+  "en": "Sender Policy Framework",
+  "bs": "DNS zapis koji kaže koji serveri smiju slati mail za domen"
+ },
+ {
+  "a": "SQL",
+  "en": "Structured Query Language",
+  "bs": "jezik za upite nad bazama"
+ },
+ {
+  "a": "SSE",
+  "en": "Security Service Edge",
+  "bs": "sigurnosni servisi iz clouda: SWG, CASB, ZTNA"
+ },
+ {
+  "a": "SSO",
+  "en": "Single Sign-on",
+  "bs": "jedna prijava za više aplikacija"
+ },
+ {
+  "a": "TLS",
+  "en": "Transport Layer Security",
+  "bs": "šifrovanje saobraćaja u prenosu"
+ },
+ {
+  "a": "TOC",
+  "en": "Time-of-check",
+  "bs": "trenutak provjere u race condition (TOCTOU) ranjivosti"
+ },
+ {
+  "a": "TOU",
+  "en": "Time-of-use",
+  "bs": "trenutak upotrebe u race condition (TOCTOU) ranjivosti"
+ },
+ {
+  "a": "UPS",
+  "en": "Uninterruptible Power Supply",
+  "bs": "neprekidno napajanje (baterija) za kratke prekide"
+ },
+ {
+  "a": "USB",
+  "en": "Universal Serial Bus",
+  "bs": "USB; zlonamjerni USB je vektor napada"
+ },
+ {
+  "a": "UTM",
+  "en": "Unified Threat Management",
+  "bs": "uređaj koji objedinjuje firewall, IPS, AV, filter sadržaja"
+ },
+ {
+  "a": "VNC",
+  "en": "Virtual Network Computing",
+  "bs": "protokol za udaljeni desktop"
+ },
+ {
+  "a": "VPN",
+  "en": "Virtual Private Network",
+  "bs": "šifrovani tunel preko javne mreže"
+ },
+ {
+  "a": "WAF",
+  "en": "Web Application Firewall",
+  "bs": "firewall za HTTP (L7), štiti web aplikacije"
+ },
+ {
+  "a": "WIPS",
+  "en": "Wireless Intrusion Prevention System",
+  "bs": "otkriva i blokira lažne pristupne tačke i bežične napade"
+ },
+ {
+  "a": "XDR",
+  "en": "Extended Detection and Response",
+  "bs": "EDR proširen na mrežu, email, identitet i cloud"
+ }
+]

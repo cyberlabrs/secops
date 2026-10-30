@@ -1,0 +1,12 @@
+{
+  "title": "MLOps sigurnost, AI-BOM i krađa modela",
+  "summary": "Sigurnost ML pipelinea i MLOps platformi (granice povjerenja, identiteti, gate za promociju modela), AI-BOM u CycloneDX formatu te krađa modela, ekstrakcija preko API-ja i napadi na privatnost (ATLAS AML.T0024) sa odbranama: kontrola pristupa, kvote, minimalan izlaz, telemetrija i differential privacy.",
+  "minutes": 75,
+  "domain": 4,
+  "objectives": [
+    "4.2",
+    "4.3"
+  ],
+  "title_en": "MLOps security, AI-BOM and model theft",
+  "summary_en": "Securing ML pipelines and MLOps platforms (trust boundaries, identities, a model promotion gate), the AI-BOM in CycloneDX format, plus model theft, extraction via the API and privacy attacks (ATLAS AML.T0024) with defenses: access control, quotas, minimal output, telemetry and differential privacy."
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Sigurnost imovine i podataka",
+  "summary": "Klasifikacija podataka i imovine, zahtjevi rukovanja, sanitizacija po NIST SP 800-88, vlasništvo i inventar, uloge nad podacima (owner, controller, processor, custodian), retention i remanence, EOL/EOS, data states, scoping i tailoring, DRM, DLP, CASB i CNAPP.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.2",
+    "2.3",
+    "2.4",
+    "2.5",
+    "2.6"
+  ],
+  "title_en": "Asset and Data Security",
+  "summary_en": "Data and asset classification, handling requirements, sanitization per NIST SP 800-88, ownership and inventory, data roles (owner, controller, processor, custodian), retention and remanence, EOL/EOS, data states, scoping and tailoring, DRM, DLP, CASB and CNAPP."
+}

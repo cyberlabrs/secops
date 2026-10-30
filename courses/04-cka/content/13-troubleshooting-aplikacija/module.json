@@ -1,0 +1,13 @@
+{
+  "title": "Troubleshooting aplikacija, logova, resursa i mreže",
+  "summary": "Praćenje potrošnje sa metrics-serverom i kubectl top, rad sa logovima, dijagnoza stanja Podova i exit kodova, kubectl debug i troubleshooting servisa, DNS-a i NetworkPolicy-ja.",
+  "minutes": 90,
+  "domain": 5,
+  "objectives": [
+    "5.3",
+    "5.4",
+    "5.5"
+  ],
+  "title_en": "Troubleshooting applications, logs, resources and networking",
+  "summary_en": "Monitoring usage with metrics-server and kubectl top, working with logs, diagnosing Pod states and exit codes, kubectl debug, and troubleshooting Services, DNS and NetworkPolicies."
+}

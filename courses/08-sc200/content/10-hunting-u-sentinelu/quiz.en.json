@@ -1,0 +1,288 @@
+[
+  {
+    "obj": "3.2",
+    "q": "You have a Microsoft Sentinel workspace connected to the Defender portal. On the Hunting page you ran all hunting queries. You need to quickly identify the queries whose number of results in the last 24 hours changed the most compared to the previous period. What should you do?",
+    "options": [
+      "Sort the queries by the Results delta column.",
+      "Filter the queries by the N/A value in the Results column.",
+      "Add all queries to favorites.",
+      "Open the MITRE ATT&CK tactic bar and select the Initial access tactic."
+    ],
+    "answer": 0,
+    "explain": "Results delta and Results delta percentage compare the results of the last 24 h with the previous 24–48 h and reveal spikes. N/A marks queries without the required data source, favorites only run automatically, and the tactic bar doesn't show a change in volume."
+  },
+  {
+    "obj": "3.2",
+    "q": "An analyst runs a query on the Hunting page in Sentinel and finds three suspicious sign-ins in the results. They want to save them together with the query and later create an incident from them. What should they do FIRST?",
+    "options": [
+      "Create an automation rule that creates an incident.",
+      "Create a watchlist with three rows.",
+      "Select the rows and choose Add bookmark.",
+      "Turn the query into an NRT analytics rule."
+    ],
+    "answer": 2,
+    "explain": "Add bookmark saves each selected row together with the query, tags, notes and entity mapping. From the Bookmarks tab, Incident actions are then used to create a new incident or add to an existing one."
+  },
+  {
+    "obj": "3.2",
+    "q": "The team wants to use KQL to search all bookmarks created in the last two weeks and join them with SigninLogs. Which table should be used?",
+    "options": [
+      "SecurityIncident",
+      "HuntingBookmark",
+      "SecurityAlert",
+      "Watchlist"
+    ],
+    "answer": 1,
+    "explain": "Bookmarks are written to the HuntingBookmark table in the Log Analytics workspace, so they can be filtered, summarized and joined with other data."
+  },
+  {
+    "obj": "3.2",
+    "q": "An analyst is working on the Advanced hunting page in the Defender portal and wants to save a query result as a bookmark. What is correct?",
+    "options": [
+      "A bookmark is created from the Take actions menu.",
+      "A bookmark is created only from Microsoft Sentinel in the Azure portal.",
+      "Preview features need to be enabled in Settings.",
+      "Bookmarks are not available in Advanced hunting; use Microsoft Sentinel > Threat management > Hunting or Link to incident."
+    ],
+    "answer": 3,
+    "explain": "Bookmarks don't exist in Advanced hunting. They are available on the Sentinel Hunting page in the Defender portal. In advanced hunting, context is preserved by linking results to an incident, with saved queries or tags."
+  },
+  {
+    "obj": "3.2",
+    "q": "You previously used Sentinel livestream to track new hits of a hunting query during an active attack. What does Microsoft now recommend for the same scenario? (Choose TWO.)",
+    "options": [
+      "A KQL job in the data lake that periodically runs the query and saves the result",
+      "Enable livestream in the workspace settings",
+      "A scheduled analytics rule over the same query",
+      "Restore of archived data",
+      "Add the query to favorites"
+    ],
+    "answer": [0, 2],
+    "explain": "Livestream is no longer available. For automated query monitoring, KQL jobs, analytics rules or playbooks are recommended. Favorites run only when the page is opened, and restore is for the archive, not for monitoring."
+  },
+  {
+    "obj": "3.2",
+    "q": "You have 18 months of firewall logs in the Sentinel data lake tier. During an incident investigation you need to search that entire period once for one IP address and make the result available in advanced hunting and analytics rules. The solution must have the LEAST administrative effort. What should you do?",
+    "options": [
+      "Create a summary rule with a bin size of 1440 minutes.",
+      "Create a one-time KQL job that writes the result to a new table in the analytics tier.",
+      "Change the plan of the entire table to Analytics for 18 months.",
+      "Create a hunting query and add it to favorites."
+    ],
+    "answer": 1,
+    "explain": "A one-time KQL job reads the data lake up to 12 years back and writes the result to a _KQL_CL table in the analytics tier. A summary rule doesn't process historical data, moving the entire table is expensive, and a hunting query doesn't see the data lake."
+  },
+  {
+    "obj": "3.2",
+    "q": "You created a KQL job that should create a new custom table in the analytics tier, but the job fails with a permissions error. Your account has the required Entra role for the data lake. What should you do?",
+    "options": [
+      "Assign yourself the Microsoft Sentinel Responder role.",
+      "Change the destination table plan to Basic.",
+      "Assign the data lake managed identity (msg-resources-<guid>) the Log Analytics Contributor role on the workspace.",
+      "Enable SummaryLogs diagnostics."
+    ],
+    "answer": 2,
+    "explain": "To create new custom tables in the analytics tier, the data lake system-assigned managed identity must have Log Analytics Contributor on the destination workspace. The Responder role and SummaryLogs are unrelated to writing the table."
+  },
+  {
+    "obj": "3.2",
+    "q": "A KQL job was created with the destination 'new table' in the Sentinel workspace (analytics tier) named FwDenied. What will the table be called?",
+    "options": [
+      "FwDenied_CL",
+      "FwDenied_SRCH",
+      "FwDenied_SPRK",
+      "FwDenied_KQL_CL"
+    ],
+    "answer": 3,
+    "explain": "Tables that a KQL job creates in the analytics tier get the _KQL_CL suffix. In system tables (data lake) the suffix is _KQL. _CL is typical for a summary rule, _SRCH for a search job, and _SPRK is an example from a notebook."
+  },
+  {
+    "obj": "3.2",
+    "q": "You want to schedule a KQL job that runs every 30 minutes over a table in the data lake and doesn't miss late-arriving events. Which part of the query BEST solves this?",
+    "options": [
+      "let delay = 15m; let endTime = now() - delay; let startTime = endTime - lookback; ... | where TimeGenerated between (startTime .. endTime)",
+      "| where ingestion_time() > ago(30m)",
+      "| where TimeGenerated > ago(30m)",
+      "| externaldata(...) [@\"https://...\"]"
+    ],
+    "answer": 0,
+    "explain": "New data in the data lake becomes available with a delay of up to 15 minutes, so the window is shifted to now() - delay. ingestion_time() and externaldata() are not supported in data lake jobs, and ago(30m) without a delay misses late events."
+  },
+  {
+    "obj": "3.2",
+    "q": "Which TWO functions will not work in a KQL job query in the Sentinel data lake? (Choose TWO.)",
+    "options": [
+      "summarize",
+      "arg()",
+      "join",
+      "externaldata()",
+      "make_set()"
+    ],
+    "answer": [1, 3],
+    "explain": "Data lake jobs support all operators except adx(), arg(), externaldata() and ingestion_time(); user-defined functions are also not supported. summarize, join and make_set work normally."
+  },
+  {
+    "obj": "3.2",
+    "q": "You have a Microsoft Sentinel workspace that receives 1 TB of proxy logs every day in a cheap tier. You need an analytics rule that compares destinations with threat intelligence every hour, at the LOWEST cost. What should you do?",
+    "options": [
+      "Move the proxy table to the Analytics plan and create a scheduled rule.",
+      "Run a search job every hour.",
+      "Create a summary rule with a bin size of 60 minutes that summarizes the data into a _CL table, and an analytics rule over that table.",
+      "Create a hunting query and bookmark the results."
+    ],
+    "answer": 2,
+    "explain": "A summary rule summarizes high-volume data from a cheap tier into a small Analytics table on a schedule, and the analytics rule runs over the summary. Moving the entire table is expensive, a search job is one-time, and a hunting query doesn't create alerts."
+  },
+  {
+    "obj": "3.2",
+    "q": "A colleague wrote a summary rule query with a bin size of 60 minutes:\n\nAzureFirewall\n| where TimeGenerated > ago(1h)\n| summarize count() by SourceIp, DestinationIp\n\nWhat needs to be changed?",
+    "options": [
+      "Nothing, the query is correct.",
+      "Remove the time filter, because the range is determined by the bin size.",
+      "Replace summarize with project.",
+      "Add union * to cover all tables."
+    ],
+    "answer": 1,
+    "explain": "A summary rule query doesn't need a time filter: the bin size determines the range, and an additional filter is combined with the bin and yields only the overlap. union * is not supported, and summarize is exactly what reduces the volume."
+  },
+  {
+    "obj": "3.2",
+    "q": "In a table populated by a summary rule, an analyst wants to filter rows by the start of the aggregation interval. Which column should be used?",
+    "options": [
+      "_RuleLastModifiedTime",
+      "_BinSize",
+      "_RuleName",
+      "_BinStartTime"
+    ],
+    "answer": 3,
+    "explain": "A summary rule adds the columns _RuleName, _RuleLastModifiedTime, _BinSize and _BinStartTime. The start of the aggregation interval is _BinStartTime."
+  },
+  {
+    "obj": "3.2",
+    "q": "Which statement about summary rules in Microsoft Sentinel is TRUE?",
+    "options": [
+      "The result is written to a custom _CL table with the Analytics plan, and the bin size can be from 20 minutes to 24 hours.",
+      "A summary rule can process year-old data in a single run.",
+      "The result is written to a table with the Auxiliary plan.",
+      "workspaces() and ADX() can be used in the query to combine multiple sources."
+    ],
+    "answer": 0,
+    "explain": "A summary rule writes to a _CL table with the Analytics plan; the bin size is 20, 30, 60, 120, 180, 360, 720 or 1440 minutes. It processes only recent data (no backfill), and cross-resource and cross-service expressions are not supported."
+  },
+  {
+    "obj": "3.2",
+    "q": "The team needs to train a model in Python over 12 months of SecurityEvent data from the data lake to detect anomalous sign-ins and write the result to a new table. What should you use?",
+    "options": [
+      "Summary rule",
+      "A hunting query in favorites",
+      "A notebook in VS Code with the Microsoft Sentinel extension, MicrosoftSentinelProvider.read_table and save_as_table",
+      "A workbook with a time chart"
+    ],
+    "answer": 2,
+    "explain": "Data lake notebooks run PySpark over the data lake: read_table reads a table, save_as_table writes the result. A summary rule has no ML or history, and a hunting query and a workbook have no Python."
+  },
+  {
+    "obj": "3.2",
+    "q": "In a data lake notebook, an analyst tries to install an additional Python library with pip install, but it fails. Why?",
+    "options": [
+      "The Large runtime pool needs to be selected.",
+      "The Microsoft Sentinel Contributor role is needed.",
+      "The GitHub Copilot extension needs to be enabled.",
+      "Only Azure Synapse libraries and the Microsoft Sentinel Provider library are supported; pip install and custom libraries are not supported."
+    ],
+    "answer": 3,
+    "explain": "For data lake notebooks only Azure Synapse libraries 3.4 and the Sentinel Provider library are supported. The pool size, roles and Copilot don't change that."
+  },
+  {
+    "obj": "3.2",
+    "q": "The SOC wants analysts in Visual Studio Code to find relevant tables and run KQL over the Sentinel data lake with natural-language questions, without knowing the schema. The solution must use the LEAST privileges. What should you do?",
+    "options": [
+      "Add the Sentinel MCP server (data exploration collection) to VS Code and assign the analysts the Security Reader role.",
+      "Install MSTICPy in Azure Machine Learning and assign Owner on the subscription.",
+      "Create a summary rule for each table and assign Microsoft Sentinel Contributor.",
+      "Assign the analysts Global Administrator and use Advanced hunting."
+    ],
+    "answer": 0,
+    "explain": "The data exploration collection of the Sentinel MCP server (search_tables, query_lake) works with clients such as GitHub Copilot in VS Code, and the Security Reader role is enough to list and call the tools. The other options don't provide natural language or grant too many privileges."
+  },
+  {
+    "obj": "3.2",
+    "q": "An analyst in VS Code calls analyze_user_entity through the Sentinel MCP server but gets an authorization error, even though search_tables and query_lake work. What is missing?",
+    "options": [
+      "The Log Analytics Contributor role on the workspace.",
+      "The Security Copilot Contributor role and available Security Compute Units (SCU).",
+      "Onboarding to Defender for Endpoint.",
+      "A Microsoft Entra ID P2 license."
+    ],
+    "answer": 1,
+    "explain": "The entity analyzer tools (analyze_user_entity, analyze_url_entity) consume SCUs and require the Security Copilot Contributor role. The other data exploration collection tools work with Security Reader."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Order the steps of working with the Sentinel MCP data exploration tools when an agent investigates a suspicious user, from first to last.",
+    "options": [
+      "query_lake – run a KQL query over the tables found",
+      "get_entity_analysis – retrieve the analysis verdict",
+      "list_sentinel_workspaces – get the workspace IDs",
+      "analyze_user_entity – start the AI analysis of the user",
+      "search_tables – find relevant tables and schemas"
+    ],
+    "answer": [2, 4, 0, 3, 1],
+    "explain": "list_sentinel_workspaces runs first because the other tools require the workspace ID. Then search_tables finds the tables, query_lake runs the query, analyze_user_entity starts the analysis and returns an ID, and get_entity_analysis retrieves the result."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Match each requirement with the Microsoft Sentinel platform feature that BEST fulfills it.",
+    "options": [
+      "Search two years of logs in the data lake once and write the result to a table in the analytics tier.",
+      "Summarize high-volume DNS logs every 30 minutes into a small table for an analytics rule.",
+      "Save a suspicious row from a hunting query result and create an incident from it.",
+      "Python analysis with an ML model over data lake tables.",
+      "Natural-language questions over the data lake from GitHub Copilot."
+    ],
+    "targets": [
+      "Bookmark",
+      "Summary rule",
+      "KQL job",
+      "Notebook",
+      "Sentinel MCP server",
+      "Livestream"
+    ],
+    "answer": [2, 1, 0, 3, 4],
+    "explain": "A historical one-time search of the data lake is a KQL job, periodic summarization is a summary rule, saving a row for an incident is a bookmark, Python/ML is a notebook, and natural language from an AI client is the Sentinel MCP server. Livestream is no longer available."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Order the steps of creating a scheduled KQL job in the Defender portal, from first to last.",
+    "options": [
+      "Select Scheduled job, the frequency and a start at least 30 minutes after creation.",
+      "Enter the Job name (without # and -) and a description, select the destination workspace and table.",
+      "Open Microsoft Sentinel > Data lake exploration > Jobs > Create job.",
+      "Review the details and select Submit.",
+      "Write the query and select the source workspaces (Selected workspaces)."
+    ],
+    "answer": [2, 1, 4, 0, 3],
+    "explain": "The wizard goes in order: Create job, details and destination, query and source workspaces, schedule (start at least 30 min later), then Submit."
+  },
+  {
+    "type": "multi",
+    "obj": "3.2",
+    "q": "A hunting query in Sentinel returned this result. Which TWO statements are true?",
+    "snippet": "SigninLogs\n| where TimeGenerated > ago(1d) and ResultType == \"50126\"\n| summarize Users = dcount(UserPrincipalName), Attempts = count() by IPAddress\n| where Users > 20\n| sort by Users desc\n// result:\n// IPAddress        Users  Attempts\n// 203.0.113.45     412    418\n// 198.51.100.23    37     39",
+    "lang": "kql",
+    "options": [
+      "The pattern matches password spraying: one address, many accounts, about one attempt per account",
+      "The pattern matches classic brute force: 418 passwords against one account",
+      "The next step is to check successful sign-ins (ResultType 0) from the same addresses and save findings as bookmarks",
+      "ResultType 50126 means the user denied the MFA prompt, so the passwords were correct"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "A distinct user count almost equal to the attempt count means one password per account across hundreds of accounts: password spraying (T1110.003), not brute force against one account. 50126 is the invalid username or password error, not MFA. The hunt continues by looking for successes from the same addresses (was any password guessed), and evidence is recorded with a bookmark, from which an incident can be created."
+  }
+]

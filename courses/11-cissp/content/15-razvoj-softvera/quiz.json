@@ -1,0 +1,305 @@
+[
+  {
+    "obj": "8.1",
+    "q": "Organizacija razvija novi sistem za obradu zdravstvenih podataka. Projektni menadžer želi da sigurnosni tim uključi „kada kod bude spreman za testiranje“. Koji je NAJBOLJI savjet savjetnika za sigurnost?",
+    "options": [
+      "Prihvatiti plan, jer je pentest prije produkcije dovoljan za regulisane podatke.",
+      "Uvesti WAF ispred aplikacije kako bi se nadoknadilo kasno uključivanje.",
+      "Uključiti sigurnost već u fazi iniciranja i zahtjeva: klasifikacija podataka, regulatorni i sigurnosni zahtjevi, pa threat modeling u dizajnu.",
+      "Tražiti da se razvoj radi po Waterfallu, jer Agile nije pogodan za zdravstvene podatke."
+    ],
+    "answer": 2,
+    "explain": "Sigurnost je najjeftinija i najefikasnija kada se ugradi od početka (zahtjevi, dizajn). Pentest i WAF su verifikacione ili kompenzacione kontrole. Metodologija sama po sebi nije problem."
+  },
+  {
+    "obj": "8.1",
+    "q": "Sistem je prošao tehničku procjenu sigurnosnih kontrola. Ko donosi odluku da se sistem pusti u rad uz preostali rizik?",
+    "options": [
+      "Ovlašteni predstavnik menadžmenta (Authorizing Official) kroz akreditaciju/authorization.",
+      "Tim za testiranje koji je proveo certification.",
+      "Vođa razvojnog tima, jer najbolje poznaje sistem.",
+      "Eksterni revizor koji je pregledao dokumentaciju."
+    ],
+    "answer": 0,
+    "explain": "Certification je tehnička procjena; accreditation (authorization u NIST RMF) je formalna odluka menadžmenta da prihvata preostali rizik. Rizik prihvata menadžment, ne testeri ni developeri."
+  },
+  {
+    "obj": "8.1",
+    "q": "Organizacija mjeri svoje razvojne procese kvantitativno i koristi metrike za kontrolu kvaliteta, ali još nema sistematski program kontinuiranog poboljšanja. Na kom je nivou originalnog CMM-a?",
+    "options": [
+      "Nivo 2 – Repeatable",
+      "Nivo 3 – Defined",
+      "Nivo 5 – Optimizing",
+      "Nivo 4 – Managed"
+    ],
+    "answer": 3,
+    "explain": "Nivo 3 je standardizovan i dokumentovan proces, nivo 4 (Managed; u CMMI Quantitatively Managed) uvodi kvantitativno mjerenje, a nivo 5 kontinuirano poboljšanje na osnovu metrika."
+  },
+  {
+    "obj": "8.1",
+    "q": "Pojavila se kritična ranjivost u široko korištenoj biblioteci za logovanje. Uprava traži odgovor u roku od sat vremena: koje naše aplikacije sadrže pogođenu verziju? Koja prethodno uvedena praksa NAJVIŠE pomaže?",
+    "options": [
+      "Godišnji penetracioni test svih aplikacija.",
+      "Održavan SBOM za svako izdanje, u mašinski čitljivom formatu.",
+      "Ugovorna klauzula o pravu na reviziju dobavljača.",
+      "WAF pravila za poznate napade."
+    ],
+    "answer": 1,
+    "explain": "SBOM (SPDX, CycloneDX) daje inventar komponenti i verzija po izdanju, pa se izloženost utvrđuje brzo. Pentest i WAF ne daju inventar, a pravo na reviziju je spor ugovorni mehanizam."
+  },
+  {
+    "obj": "8.2",
+    "q": "Organizacija razvija novi mrežni servis koji parsira nepovjerljive binarne formate. Analiza ranijih incidenata pokazuje da su većina ozbiljnih grešaka bili buffer overflow i use-after-free. Koja je NAJBOLJA strateška odluka?",
+    "options": [
+      "Nastaviti sa C-om, ali uvesti godišnji pentest.",
+      "Uključiti ASLR na serverima, što eliminiše ovu klasu grešaka.",
+      "Pisati novi servis u memory-safe jeziku i za postojeći C kod zadržati kompajlerske zaštite i strogi review.",
+      "Prebaciti servis na interpretirani jezik kako bi izvorni kod bio dostupan za reviziju."
+    ],
+    "answer": 2,
+    "explain": "Memory-safe jezici sprečavaju cijelu klasu grešaka upravljanja memorijom. ASLR i slične zaštite otežavaju iskorištavanje, ali ne uklanjaju greške. Pentest samo mjeri, a vidljivost koda ne znači memory safety."
+  },
+  {
+    "obj": "8.2",
+    "q": "Tim želi alat koji tokom QA testova, preko agenta unutar pokrenute aplikacije, prati tok podataka i prijavljuje ranjivost sa tačnom linijom koda i malo lažnih pozitiva. Koju tehniku opisuje?",
+    "options": [
+      "SAST",
+      "DAST",
+      "RASP",
+      "IAST"
+    ],
+    "answer": 3,
+    "explain": "IAST koristi agenta u aplikaciji tokom testiranja i kombinuje prednosti SAST-a (lokacija u kodu) i DAST-a (runtime kontekst). RASP je sličan agent, ali u produkciji i blokira napade."
+  },
+  {
+    "obj": "8.2",
+    "q": "Revizija pokazuje da CI/CD pipeline koristi statični cloud ključ sa administratorskim pravima, sačuvan kao varijabla dostupna svim granama. Šta je NAJBOLJA korektivna mjera?",
+    "options": [
+      "Zamijeniti ga kratkotrajnim kredencijalima (OIDC federacija) sa najmanjim potrebnim pravima po okruženju i ograničiti produkcijske kredencijale na zaštićene grane.",
+      "Rotirati ključ svakih 90 dana.",
+      "Šifrovati varijablu u pipelineu.",
+      "Premjestiti ključ u repozitorij kako bi bio verzionisan."
+    ],
+    "answer": 0,
+    "explain": "Pipeline je privilegovan sistem: least privilege, kratkotrajni kredencijali i ograničenje na zaštićene grane rješavaju uzrok. Rotacija i šifrovanje ne smanjuju preširoka prava i izloženost svim granama; tajna u repozitoriju je gora."
+  },
+  {
+    "obj": "8.2",
+    "q": "Developer je u IDE instalirao ekstenziju nepoznatog izdavača koja ima pristup radnom prostoru. Koji je NAJVEĆI rizik i odgovarajuća kontrola?",
+    "options": [
+      "Pad performansi IDE-a; kontrola je jači hardver.",
+      "Kršenje licence; kontrola je pravni pregled.",
+      "Krađa koda i tajni iz radnog okruženja; kontrola je odobrena lista ekstenzija i upravljani razvojni endpointi.",
+      "Pogrešno formatiranje koda; kontrola je linter."
+    ],
+    "answer": 2,
+    "explain": "IDE ekstenzije imaju pristup izvornom kodu, tajnama i kredencijalima, pa su vektor napada na lanac snabdijevanja. Kontrola je upravljanje dozvoljenim ekstenzijama i zaštićena razvojna okruženja."
+  },
+  {
+    "obj": "8.2",
+    "q": "U bazi sa više nivoa klasifikacije, korisnik nižeg nivoa pokušava upisati zapis sa ključem koji već postoji na višem nivou. Sistem kreira odvojen zapis za niži nivo kako se ne bi otkrilo postojanje povjerljivog zapisa. Kako se zove ova tehnika?",
+    "options": [
+      "Encapsulation",
+      "Polymorphism",
+      "Aggregation",
+      "Polyinstantiation"
+    ],
+    "answer": 3,
+    "explain": "Polyinstantiation omogućava više instanci istog zapisa sa različitim vrijednostima po nivou klasifikacije i sprečava inference. Encapsulation je skrivanje podataka u objektu, polymorphism različito ponašanje istog poziva."
+  },
+  {
+    "obj": "8.3",
+    "q": "Tokom revizije utvrđeno je da je u produkciji pokrenuta verzija aplikacije čiji hash ne odgovara nijednom odobrenom izdanju. Koji je PRVI korak?",
+    "options": [
+      "Odmah vratiti posljednje odobreno izdanje i zatvoriti nalaz.",
+      "Tretirati kao potencijalni sigurnosni incident: sačuvati dokaze i kroz logove promjena utvrditi ko je, kada i kako izvršio neovlaštenu promjenu.",
+      "Ažurirati evidenciju izdanja da odgovara stanju u produkciji.",
+      "Uputiti upozorenje razvojnom timu da poštuje proceduru."
+    ],
+    "answer": 1,
+    "explain": "Neodobren artefakt u produkciji može biti kompromitacija lanca snabdijevanja. Prvo se čuvaju dokazi i analizira trag promjena; vraćanje bez analize uništava dokaze, a usklađivanje evidencije legalizuje neovlaštenu promjenu."
+  },
+  {
+    "obj": "8.3",
+    "q": "DAST je pronašao kritičnu SQL injection ranjivost u aplikaciji koja donosi prihod. Trajna ispravka zahtijeva tri sedmice. Šta je NAJBOLJI pristup?",
+    "options": [
+      "Primijeniti kompenzacionu kontrolu (virtual patch na WAF-u, pojačan monitoring), dokumentovati privremeni rizik koji prihvata vlasnik aplikacije i ispraviti kod u dogovorenom roku.",
+      "Ugasiti aplikaciju dok se ne ispravi kod.",
+      "Prihvatiti rizik na nivou sigurnosnog tima i ispraviti u sljedećem kvartalu.",
+      "Postaviti WAF pravilo i zatvoriti nalaz kao riješen."
+    ],
+    "answer": 0,
+    "explain": "Odluka balansira poslovanje i rizik: kompenzaciona kontrola odmah, formalno prihvatanje privremenog rizika od strane vlasnika i trajna ispravka. Gašenje je nesrazmjerno, sigurnosni tim nije vlasnik rizika, a WAF nije trajna popravka."
+  },
+  {
+    "obj": "8.3",
+    "q": "CISO želi metriku koja najbolje pokazuje da li se efikasnost programa sigurnosti softvera poboljšava kroz vrijeme. Koju bira?",
+    "options": [
+      "Ukupan broj sigurnosnih alata u pipelineu.",
+      "Broj linija koda skeniranih mjesečno.",
+      "Prosječno vrijeme otklanjanja (MTTR) ranjivosti po ozbiljnosti i trend ponavljanja istih klasa grešaka.",
+      "Broj developera koji su prisustvovali obuci."
+    ],
+    "answer": 2,
+    "explain": "Efikasnost se mjeri ishodom: koliko brzo se rizik otklanja i da li se iste klase grešaka ponavljaju. Broj alata, skeniranih linija ili prisutnih na obuci su metrike aktivnosti, ne efikasnosti."
+  },
+  {
+    "obj": "8.3",
+    "q": "Developer je zaobišao neuspjeli sigurnosni quality gate da bi isporučio hitnu ispravku. Šta proces upravljanja promjenama treba da osigura?",
+    "options": [
+      "Da se takve promjene tehnički onemoguće bez izuzetka, čak i u hitnim slučajevima.",
+      "Da izuzetak bude odobren, zabilježen sa obrazloženjem i rokom, i naknadno revidiran.",
+      "Da developer bude disciplinski kažnjen.",
+      "Da se gate trajno ukloni jer usporava isporuku."
+    ],
+    "answer": 1,
+    "explain": "Hitne promjene su dozvoljene, ali moraju imati trag: odobrenje, obrazloženje, rok i naknadnu reviziju. Apsolutna zabrana ugrožava poslovanje, a uklanjanje gate-a ili kazna ne rješavaju proces."
+  },
+  {
+    "obj": "8.4",
+    "q": "Organizacija planira kupiti specijalizovan COTS sistem od malog dobavljača; sistem je ključan za poslovanje. Koja ugovorna kontrola NAJBOLJE štiti od rizika da dobavljač prestane poslovati?",
+    "options": [
+      "Pravo na reviziju dobavljača.",
+      "SLA sa penalima za nedostupnost.",
+      "Common Criteria sertifikat proizvoda.",
+      "Source code escrow kod nezavisne treće strane."
+    ],
+    "answer": 3,
+    "explain": "Escrow daje kupcu izvorni kod ako dobavljač propadne ili prestane podršku, čime se štiti kontinuitet. Penali i pravo na reviziju ne pomažu kada dobavljač više ne postoji, a sertifikat se odnosi na sigurnost proizvoda."
+  },
+  {
+    "obj": "8.4",
+    "q": "Prije nabavke nove enterprise CRM usluge (managed service), šta treba da bude PRVI korak?",
+    "options": [
+      "Definisati sigurnosne i regulatorne zahtjeve i provesti procjenu dobavljača (due diligence).",
+      "Potpisati ugovor i uraditi pentest nakon implementacije.",
+      "Osloniti se na marketinšku dokumentaciju dobavljača o sigurnosti.",
+      "Migrirati testne podatke da se provjeri funkcionalnost."
+    ],
+    "answer": 0,
+    "explain": "Zahtjevi i due diligence (SOC 2 Type II, ISO/IEC 27001, upitnici) dolaze prije potpisivanja. Testiranje nakon ugovora ostavlja malo poluge, a marketing nije dokaz."
+  },
+  {
+    "obj": "8.4",
+    "q": "Tim koristi stotine open source paketa, uključujući tranzitivne zavisnosti. Pravna služba brine zbog copyleft licenci, a sigurnost zbog poznatih CVE-ova. Koja kontrola rješava OBA problema?",
+    "options": [
+      "SAST",
+      "DAST",
+      "Software Composition Analysis (SCA)",
+      "Fuzzing"
+    ],
+    "answer": 2,
+    "explain": "SCA pravi inventar komponenti trećih strana i provjerava ih prema bazama poznatih ranjivosti i licenci. SAST analizira vlastiti kod, DAST pokrenutu aplikaciju, a fuzzing traži greške u obradi ulaza."
+  },
+  {
+    "obj": "8.4",
+    "q": "Organizacija prelazi na FaaS (serverless) platformu. Za šta je organizacija i dalje odgovorna?",
+    "options": [
+      "Za zakrpe operativnog sistema i runtimea na kojem se funkcija izvršava.",
+      "Za kod funkcije, njene zavisnosti, IAM permisije funkcije i podatke koje obrađuje.",
+      "Ni za šta, jer serverless prenosi svu sigurnosnu odgovornost na provajdera.",
+      "Samo za fizičku sigurnost data centra."
+    ],
+    "answer": 1,
+    "explain": "U FaaS modelu provajder upravlja runtimeom i izvršnim okruženjem, a kupac ostaje odgovoran za kod, zavisnosti, permisije i podatke. Podaci i pristup su uvijek na kupcu."
+  },
+  {
+    "obj": "8.4",
+    "q": "Organizacija je outsourcingom naručila razvoj custom aplikacije. Koja kombinacija ugovornih odredbi NAJBOLJE upravlja rizikom treće strane?",
+    "options": [
+      "Fiksna cijena i rok isporuke.",
+      "Garancija da dobavljač koristi Agile metodologiju.",
+      "Obaveza da dobavljač ima vlastiti SOC.",
+      "Sigurnosni zahtjevi i standard kodiranja, pravo na code review i testiranje, vlasništvo nad kodom (IP) i obaveza otklanjanja ranjivosti u roku."
+    ],
+    "answer": 3,
+    "explain": "Rizik custom softvera treće strane se kontroliše ugovorom: zahtjevi, pravo na verifikaciju, IP i obaveze otklanjanja. Cijena, metodologija ili vlastiti SOC dobavljača ne garantuju sigurnost isporučenog koda."
+  },
+  {
+    "obj": "8.5",
+    "q": "Code review otkriva da aplikacija gradi SQL upite spajanjem stringova sa korisničkim ulazom. Šta je PRIMARNA preporučena odbrana?",
+    "options": [
+      "Parametrizovani upiti (prepared statements), uz nalog baze sa najmanjim pravima.",
+      "Filtriranje apostrofa i specijalnih znakova iz ulaza.",
+      "WAF pravila za SQL injection.",
+      "Šifrovanje baze podataka u mirovanju."
+    ],
+    "answer": 0,
+    "explain": "Parametrizacija razdvaja kod od podataka i uklanja uzrok injekcije. Denylist filtriranje se zaobilazi, WAF je dodatni sloj, a šifrovanje u mirovanju ne utiče na injekciju."
+  },
+  {
+    "obj": "8.5",
+    "q": "API vraća podatke o računu na osnovu ID-ja u URL-u. Testiranje pokazuje da autentifikovani korisnik promjenom ID-ja vidi tuđe račune. Kako se zove slabost i koja je ispravna kontrola?",
+    "options": [
+      "Slaba autentifikacija; uvesti MFA.",
+      "Broken Object Level Authorization (BOLA/IDOR); provjeriti na serveru da li korisnik smije pristupiti svakom traženom objektu.",
+      "Nedostatak rate limitinga; uvesti kvote.",
+      "SSRF; uvesti allowlistu odredišta."
+    ],
+    "answer": 1,
+    "explain": "Korisnik je autentifikovan, ali nedostaje autorizacija na nivou objekta (BOLA, prvo mjesto OWASP API Top 10). MFA i rate limiting ne rješavaju provjeru vlasništva nad objektom."
+  },
+  {
+    "obj": "8.5",
+    "q": "Prilikom greške u autorizacionom servisu aplikacija dozvoljava pristup „da ne bi prekinula rad korisnika“. Koji princip sigurnog kodiranja je prekršen?",
+    "options": [
+      "Economy of mechanism",
+      "Open design",
+      "Fail secure (fail-safe defaults)",
+      "Least common mechanism"
+    ],
+    "answer": 2,
+    "explain": "Fail secure / fail-safe defaults: kada kontrola zakaže, podrazumijevano je odbijanje pristupa. Napomena: kod fizičke sigurnosti i ljudskih života (npr. vrata pri požaru) prioritet je fail-safe za ljude, ali to nije slučaj ovdje."
+  },
+  {
+    "obj": "8.5",
+    "q": "Tokom revizije koda pronađen je nedokumentovan put za prijavu koji zaobilazi autentifikaciju, a developer kaže da služi „za brzo održavanje“. Šta je ovo i šta treba uraditi?",
+    "options": [
+      "Logic bomb; ukloniti ga nakon isteka uslova.",
+      "Covert channel; nadzirati mrežni saobraćaj.",
+      "Prihvatljiva praksa ako je lozinka jaka.",
+      "Maintenance hook (backdoor); ukloniti prije produkcije i pojačati obavezni code review."
+    ],
+    "answer": 3,
+    "explain": "Maintenance hook ili backdoor zaobilazi kontrole i mora se ukloniti prije produkcije; obavezni peer review je kontrola koja ga otkriva. Logic bomb se aktivira pod uslovom, covert channel je neovlašten prenos informacija."
+  },
+  {
+    "obj": "8.1",
+    "type": "order",
+    "q": "Poredaj sigurnosne aktivnosti prema fazi SDLC-a u kojoj se prvo izvode, od najranije do najkasnije.",
+    "options": [
+      "DAST i pentest pokrenute aplikacije",
+      "Threat modeling arhitekture",
+      "Sanitizacija podataka i ukidanje naloga i ključeva",
+      "Definisanje sigurnosnih zahtjeva i abuse cases",
+      "SAST i peer code review",
+      "Patch management i monitoring"
+    ],
+    "answer": [3, 1, 4, 0, 5, 2],
+    "explain": "Zahtjevi (sigurnosni zahtjevi, abuse cases) → dizajn (threat modeling) → razvoj (SAST, review) → testiranje (DAST, pentest) → rad i održavanje (zakrpe, monitoring) → povlačenje (sanitizacija, ukidanje pristupa)."
+  },
+  {
+    "obj": "8.2",
+    "type": "match",
+    "q": "Upari opis sa tehnikom testiranja ili zaštite aplikacije.",
+    "options": [
+      "Analiza izvornog koda bez izvršavanja, rano u IDE-u ili CI-ju.",
+      "Testiranje pokrenute aplikacije spolja, bez pristupa kodu.",
+      "Agent u produkciji detektuje i blokira napad iznutra aplikacije.",
+      "Slanje neočekivanih i nasumičnih ulaza radi otkrivanja rušenja i grešaka u parsiranju.",
+      "Agent tokom QA testova prati tok podataka i pokazuje liniju koda."
+    ],
+    "targets": ["IAST", "Fuzzing", "SAST", "RASP", "DAST", "SCA"],
+    "answer": [2, 4, 3, 1, 0],
+    "explain": "SAST analizira kod bez izvršavanja, DAST pokrenutu aplikaciju spolja, RASP štiti u produkciji, fuzzing šalje neočekivane ulaze, IAST koristi agenta tokom testova. SCA (komponente trećih strana) je distraktor."
+  },
+  {
+    "obj": "8.5",
+    "type": "spot",
+    "q": "Code review Flask API endpointa za fakture. Prijavljeni korisnik smije vidjeti samo svoje fakture. Označi redove sa sigurnosnim propustima.",
+    "snippet": "@app.route(\"/api/invoices/<invoice_id>\")\n@login_required\ndef get_invoice(invoice_id):\n    user = current_user()\n    sql = f\"SELECT * FROM invoices WHERE id = '{invoice_id}'\"\n    row = db.execute(sql).fetchone()\n    if row is None:\n        abort(404)\n    return jsonify(dict(row))\n\n@app.errorhandler(Exception)\ndef on_error(e):\n    return {\"error\": traceback.format_exc()}, 500",
+    "lang": "python",
+    "answer": [4, 12],
+    "explain": "Red 5: upit se sastavlja f-stringom od ulaza iz URL-a, što je SQL injection; uz to upit ne filtrira po vlasniku, pa svaki prijavljeni korisnik može promjenom ID-ja čitati tuđe fakture (IDOR/BOLA). Ispravno: parametrizovan upit sa uslovom vlasništva, npr. WHERE id = ? AND owner_id = ?, sa user.id iz sesije. Red 13: handler grešaka vraća klijentu kompletan stack trace (putanje, upiti, verzije biblioteka); korisniku vratiti generičku poruku, a detalje upisati u interni log."
+  }
+]

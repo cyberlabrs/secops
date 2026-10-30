@@ -1,0 +1,247 @@
+[
+  {
+    "obj": "2.5",
+    "q": "Pod api is Pending. Events: 0/2 nodes are available: 1 Insufficient cpu, 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }. The Pod requests requests.cpu: 4, and node01 has 2 CPUs. Which change fixes the problem without touching the control-plane node?",
+    "options": [
+      "Increase limits.cpu to 8",
+      "Reduce requests.cpu so it fits into the free allocatable on node01",
+      "Add nodeSelector kubernetes.io/hostname: node01",
+      "Set priorityClassName: system-node-critical"
+    ],
+    "answer": 1,
+    "explain": "The scheduler compares requests with the free allocatable; node01 cannot take 4 CPUs. Limits do not affect the filter, a nodeSelector does not add resources, and the system classes are reserved for cluster components."
+  },
+  {
+    "obj": "2.5",
+    "q": "A Pod has one container with resources.limits: cpu: 500m, memory: 256Mi and no requests field. What will status.qosClass be?",
+    "options": [
+      "BestEffort, because requests are not specified",
+      "Burstable, because only limits are set",
+      "Burstable, because CPU and memory have different values",
+      "Guaranteed, because requests are automatically set to the limits values"
+    ],
+    "answer": 3,
+    "explain": "When only limits are given, requests get the same values, so requests = limits for CPU and memory and the class is Guaranteed. CPU and memory do not have to be equal to each other."
+  },
+  {
+    "obj": "2.5",
+    "q": "Namespace dev has a ResourceQuota with limits.memory: 4Gi. You create Deployment web with 3 replicas and no resources. kubectl get deploy shows READY 0/3, and kubectl get pods shows no Pods at all. What is most likely?",
+    "options": [
+      "The ReplicaSet cannot create Pods because the quota requires limits.memory; the FailedCreate error is in kubectl describe rs",
+      "The scheduler rejects the Pods with the message Insufficient memory",
+      "The Pods are Pending and must be looked up with kubectl get pods -A",
+      "The kubelet on node01 rejects the Pods with OutOfmemory"
+    ],
+    "answer": 0,
+    "explain": "The quota is enforced in admission: a Pod without limits.memory is rejected and never created, and the error is visible on the ReplicaSet. The scheduler and kubelet never see a Pod that was not created."
+  },
+  {
+    "obj": "2.5",
+    "q": "Pods of various applications without tolerations are running on node01. You run kubectl taint nodes node01 maintenance=true:NoExecute. What happens to those Pods?",
+    "options": [
+      "They keep running, and only new Pods are not scheduled on node01",
+      "They keep running until the node is restarted",
+      "They are evicted from the node; Pods under controllers are recreated wherever they fit",
+      "They are evicted only after 300 seconds because of the default toleration"
+    ],
+    "answer": 2,
+    "explain": "NoExecute evicts existing Pods that do not tolerate it. Existing Pods staying is the NoSchedule behavior, and the default 300s applies only to the not-ready and unreachable taints."
+  },
+  {
+    "obj": "2.5",
+    "q": "node01 has the taint gpu=true:NoSchedule and the label gpu=true. Pod ml must run EXCLUSIVELY on node01. What must be in the Pod spec? (Choose TWO.)",
+    "options": [
+      "a toleration with key: gpu, value: \"true\", effect: NoSchedule",
+      "a priorityClassName with a high value",
+      "a toleration with effect: NoExecute and tolerationSeconds: 0",
+      "resources.requests with nvidia.com/gpu: 0",
+      "nodeSelector: gpu: \"true\" (or an equivalent node affinity)"
+    ],
+    "answer": [0, 4],
+    "explain": "A toleration only allows entry to a node with a taint, but does not push the Pod there; for that you need a nodeSelector or node affinity. Priority and a NoExecute toleration do not determine the node."
+  },
+  {
+    "obj": "2.5",
+    "q": "A task requires that Pods can also be scheduled on the controlplane node of a kubeadm cluster. Which command removes the relevant taint?",
+    "options": [
+      "kubectl uncordon controlplane",
+      "kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoSchedule-",
+      "kubectl label nodes controlplane node-role.kubernetes.io/control-plane-",
+      "kubectl taint nodes controlplane node-role.kubernetes.io/control-plane:NoExecute-"
+    ],
+    "answer": 1,
+    "explain": "kubeadm sets the node-role.kubernetes.io/control-plane taint with the NoSchedule effect, and the trailing dash removes it. uncordon removes the unschedulable state, a label is not a taint, and a taint with the NoExecute effect does not exist on the node."
+  },
+  {
+    "obj": "2.5",
+    "q": "In the lab cluster (controlplane with the default taint, node01 without a taint) you create a Deployment with 3 replicas and a requiredDuringSchedulingIgnoredDuringExecution podAntiAffinity on its own label app=web, topologyKey: kubernetes.io/hostname. What is the result?",
+    "options": [
+      "3 Pods Running on node01",
+      "2 Pods Running (one on each node), 1 Pending",
+      "The Deployment is rejected at creation because replicas is larger than the number of nodes",
+      "1 Pod Running on node01, 2 Pods Pending"
+    ],
+    "answer": 3,
+    "explain": "A required anti-affinity by hostname allows at most one replica per node, and controlplane is excluded because of the taint, so only node01 remains. Validation does not compare replicas with the number of nodes."
+  },
+  {
+    "obj": "2.5",
+    "q": "A Pod has a required nodeAffinity with two nodeSelectorTerms: the first requires disk In [ssd], the second requires zone In [zone-a]. Which nodes may the scheduler put the Pod on?",
+    "options": [
+      "Nodes that have disk=ssd OR zone=zone-a",
+      "Only nodes that have both disk=ssd and zone=zone-a",
+      "Only nodes matching the first term; the second is ignored",
+      "Any node, preferring those that match the terms"
+    ],
+    "answer": 0,
+    "explain": "Multiple nodeSelectorTerms are combined with OR, and multiple matchExpressions within one term with AND. A preference without a requirement is how preferred rules behave."
+  },
+  {
+    "obj": "2.5",
+    "q": "node01 has the taint dedicated=db:NoSchedule. You create a Pod with spec.nodeName: node01 and no tolerations. What happens?",
+    "options": [
+      "The Pod stays Pending with the message untolerated taint",
+      "The API server rejects the Pod because it has no toleration",
+      "The Pod starts on node01, because nodeName bypasses the scheduler, and NoSchedule is checked only by the scheduler",
+      "The scheduler moves the Pod to controlplane"
+    ],
+    "answer": 2,
+    "explain": "With nodeName the Pod goes directly to the kubelet, without the scheduler's filters, so the NoSchedule taint has no effect (NoExecute would evict it). The API server does not check taints."
+  },
+  {
+    "obj": "2.5",
+    "q": "The cluster is full. Pod report has priorityClassName batch-urgent (value: 900000, preemptionPolicy: Never) and stays Pending, even though Pods with priority 0 are running on node01. Why?",
+    "options": [
+      "Preemption works only for the system-cluster-critical and system-node-critical classes",
+      "preemptionPolicy: Never means the Pod jumps ahead in the queue but does not evict other Pods",
+      "The priority value must be greater than 1000000 for preemption",
+      "A PriorityClass applies only to Pods created before the class itself"
+    ],
+    "answer": 1,
+    "explain": "With preemptionPolicy: Never the Pod waits for room to free up and never evicts lower-priority Pods. Preemption works for user classes, and the value does not need to be that large."
+  },
+  {
+    "obj": "2.5",
+    "q": "Pods with limits.memory: 2Gi are running in namespace dev. Then you create a LimitRange with max.memory: 1Gi for Container. What happens?",
+    "options": [
+      "Existing Pods keep running; new Pods with a limit above 1Gi are rejected",
+      "Existing Pods are immediately evicted from the node",
+      "The limit of existing Pods is automatically reduced to 1Gi",
+      "The LimitRange is rejected because the namespace has Pods above the maximum"
+    ],
+    "answer": 0,
+    "explain": "A LimitRange is enforced by admission only when Pods are created or modified, and it does not change Pods that are already running. No eviction or automatic reduction happens."
+  },
+  {
+    "obj": "2.5",
+    "q": "Deployment web has topologySpreadConstraints: maxSkew: 1, topologyKey: kubernetes.io/hostname, whenUnsatisfiable: DoNotSchedule, labelSelector app=web. Two nodes are available: node A has 2 app=web Pods, node B has 1. Where does the next replica go?",
+    "options": [
+      "To A, because the scheduler prefers a node where the image already exists",
+      "To B, because on A the difference would be 3-1=2, which exceeds maxSkew",
+      "It stays Pending, because the skew is already 1",
+      "To either, because DoNotSchedule applies only to the first rollout"
+    ],
+    "answer": 1,
+    "explain": "With DoNotSchedule the scheduler allows only nodes where the skew after scheduling stays within maxSkew; on B it would be 2 and 2. A skew of 1 is allowed, and image-based scoring cannot skip the filter."
+  },
+  {
+    "obj": "2.3",
+    "q": "kubectl get hpa web shows TARGETS <unknown>/70%, and describe hpa: FailedGetResourceMetric. metrics-server is running and kubectl top pods shows the usage of the web Pods. What is the most likely cause?",
+    "options": [
+      "The HPA must be autoscaling/v1 for a CPU metric",
+      "Deployment web has no spec.replicas",
+      "minReplicas is greater than the current replica count",
+      "The containers in the web Pods have no resources.requests.cpu, so utilization cannot be computed"
+    ],
+    "answer": 3,
+    "explain": "Utilization is a percentage of requests; without a CPU request the HPA cannot compute the value. autoscaling/v2 supports CPU, and the replica count and minReplicas do not affect reading the metric."
+  },
+  {
+    "obj": "2.3",
+    "q": "Task: create an HPA for Deployment web, at least 2 and at most 6 replicas, target average CPU utilization 70%. The cluster and kubectl are v1.35. Which command?",
+    "options": [
+      "kubectl create hpa web --min=2 --max=6 --cpu=70%",
+      "kubectl scale deployment web --min=2 --max=6 --cpu=70%",
+      "kubectl autoscale deployment web --min=2 --max=6 --cpu=70%",
+      "kubectl autoscale deployment web --replicas=2-6 --target=70%"
+    ],
+    "answer": 2,
+    "explain": "kubectl autoscale creates an HPA, and in v1.35 the target is set with --cpu (a percentage means utilization). There is no kubectl create hpa, scale only sets a fixed replica count, and --replicas=2-6 and --target are not autoscale flags."
+  },
+  {
+    "obj": "2.3",
+    "q": "An HPA targets 60% CPU utilization. The Deployment currently has 4 replicas with an average utilization of 90%. How many replicas does the HPA want (ignoring maxReplicas and behavior)?",
+    "options": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "answer": 1,
+    "explain": "desiredReplicas = ceil(4 × 90 / 60) = ceil(6) = 6. The ratio of 1.5 is outside the 10% tolerance, so the HPA scales."
+  },
+  {
+    "obj": "2.3",
+    "q": "After the load drops, the HPA reduces the replica count only after about 5 minutes, even though CPU is low immediately. behavior was not configured. Why?",
+    "options": [
+      "The default scaleDown stabilizationWindowSeconds is 300 seconds",
+      "metrics-server collects metrics only every 5 minutes",
+      "The HPA controller runs every 300 seconds",
+      "The Deployment has minReadySeconds: 300"
+    ],
+    "answer": 0,
+    "explain": "For scale-down the HPA takes the highest recommendation from the last 300 seconds to avoid flapping; scale-up has no window. The controller computes every 15 seconds, and minReadySeconds affects rollouts, not the HPA."
+  },
+  {
+    "obj": "2.3",
+    "q": "Pod web (container nginx, QoS Burstable, resizePolicy for cpu NotRequired) runs in a v1.35 cluster. You need to raise the CPU limit to 800m without recreating the Pod. Which command?",
+    "options": [
+      "kubectl set resources pod web -c nginx --limits=cpu=800m",
+      "kubectl rollout restart pod/web",
+      "kubectl edit pod web and change the limits",
+      "kubectl patch pod web --subresource resize --patch '{\"spec\":{\"containers\":[{\"name\":\"nginx\",\"resources\":{\"limits\":{\"cpu\":\"800m\"}}}]}}'"
+    ],
+    "answer": 3,
+    "explain": "In-place resize (GA in v1.35) goes through the resize subresource, and with NotRequired the container is not restarted. Changing resources via a regular Pod update is rejected, and rollout restart does not work on a Pod."
+  },
+  {
+    "obj": "2.3",
+    "q": "A Pod is Guaranteed (cpu requests = limits = 500m). You attempt a resize that changes only requests.cpu to 250m while the limit stays 500m. What happens?",
+    "options": [
+      "The resize succeeds and the Pod becomes Burstable",
+      "The resize succeeds, but only after a container restart",
+      "The request is rejected because the resize would change the QoS class, which is fixed",
+      "The Pod gets the PodResizePending condition with reason Deferred"
+    ],
+    "answer": 2,
+    "explain": "The QoS class is determined at creation and a resize must not change it; a Guaranteed Pod must keep requests = limits. Deferred refers to a lack of room on the node, not to a disallowed change."
+  },
+  {
+    "obj": "2.5",
+    "type": "match",
+    "q": "Match each taint effect with how it treats Pods that do not tolerate it.",
+    "options": ["NoSchedule", "PreferNoSchedule", "NoExecute"],
+    "targets": [
+      "New Pods are not scheduled, and existing ones are evicted",
+      "The scheduler avoids the node, but uses it if there is no other choice",
+      "New Pods are not scheduled, and existing ones stay",
+      "The node is automatically cordoned and drained"
+    ],
+    "answer": [2, 1, 0],
+    "explain": "NoSchedule affects only new Pods, PreferNoSchedule is a soft recommendation to the scheduler, and NoExecute also evicts existing Pods. A taint by itself does not trigger a drain."
+  },
+  {
+    "obj": "2.5",
+    "type": "order",
+    "q": "Put the steps from kubectl apply for a Pod to the container starting in order.",
+    "options": [
+      "The kubelet on the selected node starts the containers",
+      "The scheduler writes spec.nodeName (binding)",
+      "Filtering: nodes that do not meet the conditions are dropped",
+      "Admission (e.g. LimitRange, ResourceQuota) accepts the Pod in the API server",
+      "Scoring: the remaining nodes are scored and the best one is chosen"
+    ],
+    "answer": [3, 2, 4, 1, 0],
+    "explain": "The Pod first passes admission and is written to etcd, then the scheduler filters and scores nodes, writes nodeName, and that node's kubelet starts the containers."
+  }
+]

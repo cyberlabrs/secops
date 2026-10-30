@@ -1,0 +1,338 @@
+[
+  {
+    "obj": "7.10",
+    "q": "The BIA set an MTD of 12 h for the ordering system. The technical restore takes 8 h, and verification and entry of backlogged data (WRT) takes 5 h. What is the BEST conclusion?",
+    "options": [
+      "The strategy does not meet the MTD because RTO + WRT is 13 h; a faster recovery strategy is needed.",
+      "The strategy is acceptable because the RTO of 8 h is less than the MTD.",
+      "The strategy is acceptable because WRT is not part of the MTD calculation.",
+      "The MTD should be increased to 13 h to align with technical capabilities."
+    ],
+    "answer": 0,
+    "explain": "RTO + WRT ≤ MTD must hold. 8 + 5 = 13 h > 12 h. The MTD is a business decision from the BIA and is not adjusted to the technology; the strategy is adjusted."
+  },
+  {
+    "obj": "7.10",
+    "q": "Ransomware encrypted servers and deleted all backups on a domain-joined NAS, using a stolen administrator account. Which backup storage strategy would MOST LIKELY have prevented the loss of the backups?",
+    "options": [
+      "Encrypting the backups with a strong algorithm.",
+      "An immutable (WORM / object lock) copy with separate credentials, outside the domain.",
+      "More frequent incremental backups to the same NAS.",
+      "RAID 6 on the NAS device."
+    ],
+    "answer": 1,
+    "explain": "An immutable copy cannot be modified or deleted even with administrator rights until retention expires. Encryption protects confidentiality, not integrity/availability; RAID and more frequent backups to the same device do not help against deletion."
+  },
+  {
+    "obj": "7.10",
+    "q": "An organization does a full backup on Sunday and a differential backup every day. A failure occurs on Friday morning. What is needed for the restore?",
+    "options": [
+      "Sunday's full and all differential backups from Monday to Thursday.",
+      "Only Thursday's differential backup.",
+      "Sunday's full and Thursday's differential backup.",
+      "Sunday's full and Monday's differential backup."
+    ],
+    "answer": 2,
+    "explain": "A differential backup does not clear the archive bit, so it contains all changes since the last full. The last full and the last differential are sufficient."
+  },
+  {
+    "obj": "7.10",
+    "q": "A company has an MTD of three weeks for its internal training system and is looking for the most cost-effective recovery site. What should be recommended?",
+    "options": [
+      "A hot site with synchronous replication.",
+      "A mirrored site in active-active mode.",
+      "A warm site with daily replication.",
+      "A cold site or a capacity agreement with a provider."
+    ],
+    "answer": 3,
+    "explain": "With a long MTD, a cold site meets the requirement at the lowest cost. Hot and mirrored sites are a waste of money for a process that tolerates three weeks of disruption."
+  },
+  {
+    "obj": "7.14",
+    "q": "A company is designing the parking area and surroundings of its new headquarters and wants to reduce crime without visible \"fortress\" measures. Which approach is MOST appropriate?",
+    "options": [
+      "CPTED: natural surveillance (visibility, lighting), natural access control (guiding movement) and territorial reinforcement",
+      "A 2.5 m fence with barbed wire around the entire complex",
+      "Armed guards at all entrances throughout the day",
+      "Removing all windows on the ground floor of the building"
+    ],
+    "answer": 0,
+    "explain": "Crime Prevention Through Environmental Design (CPTED) uses the design of the environment (visibility, lighting, guiding movement, clear boundaries) to deter an attacker without an aggressive appearance. A high fence and armed guards are visible and more expensive measures, and removing windows endangers people's safety and does not address the outdoor area."
+  },
+  {
+    "obj": "7.11",
+    "q": "A flood destroyed the primary data center and systems are running from a hot site. The primary site has been restored. Which systems should be returned to the primary site FIRST?",
+    "options": [
+      "The most critical systems, because they have the shortest MTD.",
+      "The least critical systems, to verify that the primary site works correctly.",
+      "All systems at the same time, to avoid a split environment.",
+      "The systems with the largest number of users."
+    ],
+    "answer": 1,
+    "explain": "When returning, the least critical systems go back first; they serve as a test of the primary site, while critical systems stay at the alternate site until the primary has proven itself."
+  },
+  {
+    "obj": "7.11",
+    "q": "During a DR event, the company's e-mail system is unavailable and possibly compromised. How should the DR team communicate with employees?",
+    "options": [
+      "Through team members' personal e-mail addresses, ad hoc.",
+      "Wait for the e-mail system to be restored.",
+      "Through predefined out-of-band channels (call tree, mass notification system, status page).",
+      "Through the company's public social media."
+    ],
+    "answer": 2,
+    "explain": "The DR plan must define alternative, out-of-band communication methods in advance. A compromised channel is not used, and improvisation and public networks risk information leakage."
+  },
+  {
+    "obj": "7.11",
+    "q": "A storage array had 4 failures in a year (8,760 h), and the total repair time was 24 h. The RTO for that system is 4 h. What is the MOST accurate conclusion?",
+    "options": [
+      "The MTBF is 6 h, so the system is unreliable.",
+      "The MTTR is 24 h, which is six times the RTO.",
+      "Availability is below 99%, so the SLA is not met.",
+      "The MTTR is 6 h, which exceeds the RTO of 4 h, so the recovery strategy does not meet the objective."
+    ],
+    "answer": 3,
+    "explain": "MTTR = 24 / 4 = 6 h. The MTBF is about 2,184 h, availability about 99.7%. The key finding is that the average recovery time is greater than the RTO."
+  },
+  {
+    "obj": "7.11",
+    "q": "Who should give statements to the media during a major DR event?",
+    "options": [
+      "Only the authorized spokesperson, with pre-approved messages.",
+      "The DR coordinator, because they have the best information.",
+      "Any manager the media contacts.",
+      "No one; the media is ignored until recovery is complete."
+    ],
+    "answer": 0,
+    "explain": "The communications plan designates a single authorized spokesperson and approved messages. Ignoring the media leads to speculation, and multiple voices lead to contradictory information."
+  },
+  {
+    "obj": "7.11",
+    "q": "After a DR event, the team holds a meeting. What is the PRIMARY goal of the lessons learned activity?",
+    "options": [
+      "To determine who is responsible for the delay and take disciplinary action.",
+      "To identify what needs improvement and update the DR plan and procedures.",
+      "To prepare a report for the insurance company.",
+      "To close the incident ticket."
+    ],
+    "answer": 1,
+    "explain": "Lessons learned serves to improve the plan, not to find someone to blame. The result is an updated plan and an action plan with owners and deadlines."
+  },
+  {
+    "obj": "7.12",
+    "q": "An organization wants to confirm that the alternate site can really process production transactions, but without any risk to the primary systems. Which test is BEST?",
+    "options": [
+      "Tabletop.",
+      "Full interruption.",
+      "Parallel test.",
+      "Read-through."
+    ],
+    "answer": 2,
+    "explain": "A parallel test brings up systems at the alternate site and processes data in parallel while the primary runs normally. Full interruption endangers production, and tabletop and read-through do not prove the site works technically."
+  },
+  {
+    "obj": "7.12",
+    "q": "The DR plan has just been written and has never been tested. The IT manager proposes a full interruption test next week. What should be recommended?",
+    "options": [
+      "Perform the full interruption because it is the only real proof.",
+      "Skip testing until the first incident occurs.",
+      "Perform the full interruption unannounced to make it realistic.",
+      "First perform less disruptive tests (read-through, tabletop, simulation, parallel), and a full interruption only with senior management approval."
+    ],
+    "answer": 3,
+    "explain": "Tests progress gradually from the least disruptive. A full interruption carries the risk of an actual disaster and requires senior management approval and prior successful tests."
+  },
+  {
+    "obj": "7.12",
+    "q": "The team gathers in a conference room, a facilitator presents an earthquake scenario, and members discuss what each would do, without activating any systems. Which test is this?",
+    "options": [
+      "Tabletop.",
+      "Simulation.",
+      "Parallel.",
+      "Checklist (read-through)."
+    ],
+    "answer": 0,
+    "explain": "A tabletop (structured walkthrough) is a group discussion through a scenario. A read-through is individual reading, and a simulation involves carrying out the response."
+  },
+  {
+    "obj": "7.12",
+    "q": "During a parallel test of the DR plan, what is MOST important regarding communications?",
+    "options": [
+      "Communicate only with the IT team so as not to disrupt the business.",
+      "Clearly label all messages as a test and notify internal participants and relevant external parties (vendors, the DR provider, regulators if needed) in advance.",
+      "Test communications unannounced to get a realistic response.",
+      "Use the same channels as for a real disaster, without a test label."
+    ],
+    "answer": 1,
+    "explain": "Messages during a test must be labeled as a test so they do not cause panic or real reactions, and external parties that are involved must be notified in advance."
+  },
+  {
+    "obj": "7.13",
+    "q": "A security manager is invited to participate in the annual BC exercise. What is the BEST way to ensure the exercise produces valuable results?",
+    "options": [
+      "Focus the exercise exclusively on IT system recovery.",
+      "Do not define objectives so the exercise is spontaneous.",
+      "Define objectives and a realistic scenario based on the risk assessment in advance, involve business units and document findings in an after-action report.",
+      "Repeat the same scenario as last year for comparison."
+    ],
+    "answer": 2,
+    "explain": "A BC exercise tests business continuity as a whole: objectives set in advance, a realistic scenario, business participation and a formal report that leads to a BCP update."
+  },
+  {
+    "obj": "7.13",
+    "q": "What is the MOST COMMON reason a BCP fails when an actual disruption occurs?",
+    "options": [
+      "Overly detailed documentation.",
+      "The use of cloud services.",
+      "Too many participants in exercises.",
+      "The plan was not maintained or tested after changes in the organization."
+    ],
+    "answer": 3,
+    "explain": "An outdated, untested plan is the main cause of failure. That is why the BCP lifecycle includes regular exercises and maintenance upon every significant change."
+  },
+  {
+    "obj": "7.13",
+    "q": "What is the role of senior management in BC planning and exercises?",
+    "options": [
+      "It approves and supports the program, allocates resources and bears ultimate accountability.",
+      "It writes the technical recovery procedures.",
+      "It has no role until a disaster occurs.",
+      "It personally performs the full interruption test."
+    ],
+    "answer": 0,
+    "explain": "Senior management provides the mandate, resources and approval and bears accountability (due care). Technical procedures are written by the teams."
+  },
+  {
+    "obj": "7.13",
+    "q": "How often should BC exercises be performed, according to good practice?",
+    "options": [
+      "Only after an actual incident.",
+      "At least annually and upon every significant change to the business, sites or critical systems.",
+      "Every five years, with the BIA review.",
+      "Only when the regulator requires it."
+    ],
+    "answer": 1,
+    "explain": "Good practice is to exercise at least annually and additionally upon significant changes, because otherwise the plan quickly drifts away from reality."
+  },
+  {
+    "obj": "7.14",
+    "q": "How should an electronic lock on the main exit of a building behave during a power outage?",
+    "options": [
+      "Fail-secure, to protect assets.",
+      "Require a PIN on a battery-powered keypad.",
+      "Fail-safe (it unlocks), so that people can evacuate.",
+      "Remain in its last state."
+    ],
+    "answer": 2,
+    "explain": "Human life comes first, so evacuation exits are fail-safe. Fail-secure is used for safes and the like, with a manual exit from inside."
+  },
+  {
+    "obj": "7.14",
+    "q": "A company is building a new data center and choosing a sprinkler system. What is the BEST choice?",
+    "options": [
+      "Wet pipe, because it is the cheapest.",
+      "Deluge, because it quickly extinguishes large fires.",
+      "Dry pipe, because there is no water in the pipes.",
+      "Pre-action, because it requires two triggers and reduces the risk of false activation and leaks."
+    ],
+    "answer": 3,
+    "explain": "A pre-action system fills the pipes only after detection, and a head opens only with heat, which makes it recommended for IT spaces. Deluge is for industry, dry pipe for cold spaces."
+  },
+  {
+    "obj": "7.14",
+    "q": "Employees report that unauthorized people are entering the building by following employees through badge-controlled doors. Which control solves the problem MOST EFFECTIVELY?",
+    "options": [
+      "A mantrap (access control vestibule).",
+      "Additional CCTV cameras at the entrance.",
+      "A higher fence around the parking lot.",
+      "Locking the door for longer after passage."
+    ],
+    "answer": 0,
+    "explain": "A mantrap lets one person through between two doors and directly prevents tailgating and piggybacking. CCTV only detects, and a fence does not affect entry into the building."
+  },
+  {
+    "obj": "7.15",
+    "q": "A bank employee is forced at gunpoint to open the vault. According to good practice, what is the CORRECT course of action?",
+    "options": [
+      "Refuse and try to lock the vault.",
+      "Cooperate and discreetly activate the duress alarm or use a duress code.",
+      "Try to physically overpower the attacker.",
+      "Deliberately enter the wrong code until the vault locks out."
+    ],
+    "answer": 1,
+    "explain": "Life is more important than assets; the employee cooperates and silently alerts security. Resistance and lockouts can provoke violence."
+  },
+  {
+    "obj": "7.15",
+    "q": "An engineer is traveling to a country with a high risk of industrial espionage and device inspection at the border. What is the BEST control?",
+    "options": [
+      "Bring the usual laptop with full-disk encryption.",
+      "Leave the laptop in the hotel safe.",
+      "Use a loaner device with minimal data and reimage it on return.",
+      "Turn off Wi-Fi during the trip."
+    ],
+    "answer": 2,
+    "explain": "A loaner device minimizes data exposure if it is seized or inspected and prevents a compromised device from being brought into the network. Encryption does not help if the password must be disclosed at the border."
+  },
+  {
+    "obj": "7.15",
+    "q": "An employee receives a series of unexpected MFA push requests at midnight. What should security training teach them to do?",
+    "options": [
+      "Approve the request so the notifications stop.",
+      "Turn off the phone until morning.",
+      "Ignore the requests, because MFA protects the account.",
+      "Deny the requests and immediately report an incident to the security team, because the password is probably compromised."
+    ],
+    "answer": 3,
+    "explain": "This is MFA fatigue (push bombing). The attacker already has the password; the user denies and reports so the password is changed and the incident investigated."
+  },
+  {
+    "obj": "7.12",
+    "type": "order",
+    "q": "Order the DR plan tests from least to most disruptive to production.",
+    "options": [
+      "Parallel test",
+      "Read-through (checklist)",
+      "Full interruption",
+      "Simulation",
+      "Tabletop / structured walkthrough"
+    ],
+    "answer": [
+      1,
+      4,
+      3,
+      0,
+      2
+    ],
+    "explain": "A read-through is individual reading, a tabletop is a group discussion, a simulation carries out the response without failing over production, a parallel test does real processing at the alternate site while the primary runs, and a full interruption shuts down the primary site."
+  },
+  {
+    "obj": "7.10",
+    "type": "match",
+    "q": "Match the description with the type of recovery site or agreement.",
+    "options": [
+      "Space, power and HVAC without equipment; activation takes weeks.",
+      "Complete equipment and near-current data; activation in minutes to hours.",
+      "Some equipment and connectivity, data is not current; activation in hours to days.",
+      "Two organizations agree to host each other.",
+      "A provider guarantees reserved capacity in case of a disaster."
+    ],
+    "targets": [
+      "Mirrored site",
+      "Warm site",
+      "Resource capacity agreement",
+      "Cold site",
+      "Reciprocal agreement",
+      "Hot site"
+    ],
+    "answer": [
+      3,
+      5,
+      1,
+      4,
+      2
+    ],
+    "explain": "A cold site has no equipment, a warm site has some, a hot site has everything and current data. A reciprocal agreement is a mutual arrangement, and a resource capacity agreement contractually guarantees capacity. A mirrored site (continuously active-active) is a distractor."
+  }
+]

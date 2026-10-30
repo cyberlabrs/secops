@@ -1,0 +1,62 @@
+[
+  {
+    "q": "An attacker changes the 'price' field in an HTTP order request and pays 1 KM instead of 100 KM. Which STRIDE category?",
+    "options": ["Spoofing", "Tampering", "Repudiation", "Information disclosure"],
+    "answer": 1,
+    "explain": "Data was modified in transit or on the client: that's tampering (integrity). Control: the server always calculates the price from its own data."
+  },
+  {
+    "q": "A user claims they didn't trigger a project deletion, and the application doesn't record who triggered the action. Which category?",
+    "options": ["Repudiation", "Denial of service", "Elevation of privilege", "Tampering"],
+    "answer": 0,
+    "explain": "Repudiation is the ability to deny an action because there's no reliable evidence. Control: an audit log with identity, time and action, protected from modification."
+  },
+  {
+    "q": "An API returns a full stack trace with the database connection string when an error occurs. Which category?",
+    "options": ["Spoofing", "Information disclosure", "Denial of service", "Repudiation"],
+    "answer": 1,
+    "explain": "Leakage of sensitive information. Control: a generic message to the user, details only in the internal log."
+  },
+  {
+    "q": "A regular user can call /api/admin/users because the endpoint only checks that the user is logged in. Which category?",
+    "options": ["Spoofing", "Tampering", "Elevation of privilege", "Information disclosure"],
+    "answer": 2,
+    "explain": "The user gains rights that don't belong to them: that's elevation of privilege. Authentication is there, authorization is missing."
+  },
+  {
+    "q": "Where in a DFD do you most often look for threats?",
+    "options": ["Inside a single process", "On flows that cross trust boundaries", "Only at external entities", "Only at databases"],
+    "answer": 1,
+    "explain": "At a trust boundary, data moves from a less trusted zone into a more trusted one (or vice versa). That's where authentication, validation and channel protection are needed."
+  },
+  {
+    "q": "Which STRIDE categories typically apply to a data FLOW? (multiple answers)",
+    "options": ["Tampering", "Information disclosure", "Denial of service", "Elevation of privilege"],
+    "answer": [0, 1, 2],
+    "explain": "A flow can be modified (T), eavesdropped on (I) or interrupted (D). A flow itself has no identity or privileges, so S and E aren't relevant to it."
+  },
+  {
+    "q": "What are the four threat modeling questions (Shostack)?",
+    "options": ["Who, what, when, where", "What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?", "Identify, Protect, Detect, Respond", "Plan, Do, Check, Act"],
+    "answer": 1,
+    "explain": "These four questions frame every threat modeling approach, regardless of tool or methodology."
+  },
+  {
+    "q": "A threat has been identified, but the system owner decides the cost of the control outweighs the risk. What is the right thing to do?",
+    "options": ["Ignore the threat and don't record it", "Document the risk acceptance with a rationale and an owner", "Delete the threat from the model", "Block the production release"],
+    "answer": 1,
+    "explain": "Risk acceptance is a legitimate decision, but it must be conscious, recorded and owned, and revisited when circumstances change."
+  },
+  {
+    "q": "A fake internal service poses as the payment service because services don't verify each other's identity. Which control helps most directly?",
+    "options": ["Rate limiting", "mTLS or signed service tokens between services", "Disk encryption", "Backup"],
+    "answer": 1,
+    "explain": "This is spoofing between services. mTLS (e.g. via a service mesh) or short-lived signed tokens give services a verifiable identity."
+  },
+  {
+    "q": "Which methodology specializes in PRIVACY threats?",
+    "options": ["STRIDE", "LINDDUN", "DREAD", "CVSS"],
+    "answer": 1,
+    "explain": "LINDDUN covers privacy threats (linkability, identifiability, non-repudiation, detectability, disclosure, unawareness, non-compliance)."
+  }
+]

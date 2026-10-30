@@ -1,0 +1,11 @@
+{
+  "title": "KQL osnove",
+  "summary": "Gdje se piše KQL u Defender portalu (advanced hunting, ograničenja), izbor prave tabele (Device*, Email*, Identity*, Sentinel tabele), osnovni operatori where/project/extend/summarize/bin/top/render, vremenski filteri i string operatori sa pravilima performansi.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.1"
+  ],
+  "title_en": "KQL basics",
+  "summary_en": "Where KQL is written in the Defender portal (advanced hunting, limits), choosing the right table (Device*, Email*, Identity*, Sentinel tables), the basic operators where/project/extend/summarize/bin/top/render, time filters and string operators with performance rules."
+}

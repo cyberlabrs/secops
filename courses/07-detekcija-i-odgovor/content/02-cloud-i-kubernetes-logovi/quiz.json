@@ -1,0 +1,237 @@
+[
+  {
+    "obj": "4.2",
+    "q": "Ključ AKIA… korisnika ci-deploy je procurio. Korisnik ima još jedan aktivan ključ koji koristi pipeline. Po kom polju filtriraš CloudTrail da odvojiš napadača od pipelinea?",
+    "options": [
+      "userIdentity.accessKeyId",
+      "userIdentity.userName",
+      "eventSource",
+      "recipientAccountId"
+    ],
+    "answer": 0,
+    "explain": "Oba ključa pripadaju istom korisniku, pa userName miješa legitimne i zlonamjerne pozive. accessKeyId identifikuje tačno onaj kredencijal koji je procurio. eventSource je servis, a recipientAccountId nalog koji je primio događaj."
+  },
+  {
+    "obj": "4.2",
+    "q": "Tražiš da li je napadač napravio novog IAM korisnika, ali filtriraš CloudTrail samo po awsRegion eu-central-1, gdje vam radi sve, i ne nalaziš CreateUser. Zašto?",
+    "options": [
+      "CreateUser je data event i nije uključen",
+      "IAM je globalni servis i njegovi događaji se bilježe sa awsRegion us-east-1",
+      "CreateUser se bilježi samo u Event history, ne u trailu",
+      "CloudTrail ne bilježi IAM pozive bez organization traila"
+    ],
+    "answer": 1,
+    "explain": "Globalni servisi kao IAM bilježe događaje u us-east-1, bez obzira na to odakle je poziv došao. CreateUser je management event i ide u trail i u Event history; organization trail nije uslov."
+  },
+  {
+    "obj": "4.2",
+    "q": "U CloudTrailu vidiš CreateAccessKey gdje je userIdentity.userName \"ci-deploy\", a requestParameters.userName \"backup-svc\". Šta to znači i koji je sljedeći korak?",
+    "options": [
+      "ci-deploy je rotirao svoj ključ; ništa",
+      "backup-svc je napravio ključ za ci-deploy; opozvati ci-deploy",
+      "ci-deploy je napravio ključ za backup-svc (moguća perzistencija, T1098.001); uzeti novi accessKeyId iz responseElements i pratiti njegovu upotrebu",
+      "Greška u logu; requestParameters se ne odnosi na korisnika"
+    ],
+    "answer": 2,
+    "explain": "Pozivalac je u userIdentity, a cilj u requestParameters. Ključ za drugog korisnika je klasična perzistencija. Novi accessKeyId je u responseElements.accessKey i po njemu vidiš šta je napadač dalje radio, a ključ se opoziva zajedno sa originalnim."
+  },
+  {
+    "obj": "4.2",
+    "q": "Sa nepoznate IP adrese, ključem koji inače koristi samo CI runner, za dva minuta stiže GetCallerIdentity, pa 40 poziva List*/Describe* od kojih je većina AccessDenied. Kako to klasifikuješ?",
+    "options": [
+      "Normalan rad CI pipelinea nakon nadogradnje",
+      "Izbjegavanje odbrane (T1562.008)",
+      "Uticaj (Impact), jer AccessDenied znači da je resurs obrisan",
+      "Upotreba kompromitovanog kredencijala i izviđanje (T1078.004, T1087.004/T1580)"
+    ],
+    "answer": 3,
+    "explain": "GetCallerIdentity sa nove IP adrese i nalet AccessDenied na pozive za izlistavanje su tipičan obrazac provjere ukradenog ključa i izviđanja dozvola. Nema gašenja logova (T1562.008), a AccessDenied znači da poziv nije dozvoljen, ne da je resurs obrisan."
+  },
+  {
+    "obj": "4.2",
+    "q": "Posljednji događaj iz traila prije tišine od tri sata je cloudtrail:StopLogging bez errorCode. Odakle saznaješ šta se dešavalo u tom periodu?",
+    "options": [
+      "Iz organization traila u management nalogu (ili CloudTrail Lake/GuardDuty kopije), koje članski nalog ne može ugasiti",
+      "Iz istog traila, jer StopLogging važi tek nakon 24 sata",
+      "Iz responseElements StopLogging događaja",
+      "Nikako; podaci su izgubljeni na svim mjestima"
+    ],
+    "answer": 0,
+    "explain": "StopLogging zaustavlja taj trail odmah. Organization trail iz management naloga i druge nezavisne kopije i dalje bilježe. Zato je organization trail standardna kontrola protiv T1562.008. StopLogging nema odgodu, a njegov odgovor ne sadrži buduće događaje."
+  },
+  {
+    "obj": "4.2",
+    "q": "Pozivi dolaze sa userIdentity.arn arn:aws:sts::111122223333:assumed-role/web-role/i-0abc123def4567890, ali sourceIPAddress je adresa VPS provajdera van AWS-a. Šta je najvjerovatnije?",
+    "options": [
+      "Rola je ispravno korištena preko NAT gatewaya",
+      "Privremeni kredencijali instance su ukradeni (npr. preko metadata servisa, T1552.005) i koriste se van AWS-a",
+      "Neko je napravio IAM korisnika sa imenom instance",
+      "AWS servis zove API u ime instance"
+    ],
+    "answer": 1,
+    "explain": "Ime sesije i-… znači da su kredencijali izdati EC2 instanci; upotreba sa spoljne adrese koja nije instanca ni njen NAT znači da su izneseni. GuardDuty to prijavljuje kao InstanceCredentialExfiltration. Poziv AWS servisa bi imao invokedBy, a IAM korisnik bi bio tip IAMUser."
+  },
+  {
+    "obj": "4.2",
+    "q": "Pretražuješ ConsoleLogin događaje. Gdje vidiš da li je prijava uspjela i da li je korišten MFA?",
+    "options": [
+      "errorCode i userIdentity.sessionContext.attributes.mfaAuthenticated",
+      "eventType i readOnly",
+      "responseElements.ConsoleLogin (Success/Failure) i additionalEventData.MFAUsed",
+      "requestParameters.status i tlsDetails"
+    ],
+    "answer": 2,
+    "explain": "Za ConsoleLogin ishod je u responseElements.ConsoleLogin, a korištenje MFA u additionalEventData.MFAUsed. mfaAuthenticated postoji za sesije sa privremenim kredencijalima, ali nije polje ishoda prijave u konzolu. readOnly i tlsDetails ne govore o ishodu."
+  },
+  {
+    "obj": "4.2",
+    "q": "Deaktivirao si procurjeli ključ. Šta još iz CloudTraila mora ući u plan opoziva?",
+    "options": [
+      "Ništa; deaktivacija ključa poništava sve što je napravio",
+      "Samo brisanje CloudTrail loga za taj period",
+      "Samo promjena lozinke root naloga",
+      "Svi artefakti koje je ključ napravio: novi korisnici, ključevi, login profili, politike, izmjene trust policy, key pairovi, funkcije"
+    ],
+    "answer": 3,
+    "explain": "Napadač koji je napravio novi ključ ili korisnika preživljava opoziv prvog ključa. Zato se iz CloudTraila izvlači svaki readOnly=false poziv tog kredencijala i svaki artefakt se uklanja. Brisanje logova uništava dokaze."
+  },
+  {
+    "obj": "4.3",
+    "q": "Pišeš detekciju za kubectl exec nad Kubernetes audit logom. Koji uslov je najpouzdaniji?",
+    "options": [
+      "objectRef.resource == \"pods\" i objectRef.subresource == \"exec\", bez obzira na verb",
+      "verb == \"create\" i objectRef.resource == \"pods/exec\"",
+      "requestURI sadrži \"kubectl\"",
+      "userAgent počinje sa \"kubectl/\""
+    ],
+    "answer": 0,
+    "explain": "Exec se bilježi kao resource pods sa subresource exec. Glagol zavisi od protokola klijenta: stariji SPDY daje create, a WebSocket kod novijeg kubectl-a u nekim verzijama get. resource nikad nije \"pods/exec\" kao jedan string, a userAgent i URI ne razlikuju exec pouzdano."
+  },
+  {
+    "obj": "4.3",
+    "q": "Audit zapis ima user.username system:serviceaccount:prod:web, userAgent curl/8.5.0, a sourceIPs[-1] nije IP poda iz user.extra pod-name nego javna adresa. Šta zaključuješ?",
+    "options": [
+      "Aplikacija web je nadograđena da koristi curl",
+      "Token servisnog naloga je iznesen iz poda i koristi se izvan klastera (T1528)",
+      "kube-proxy je promijenio adresu",
+      "Anonimni pristup, jer servisni nalozi nisu korisnici"
+    ],
+    "answer": 1,
+    "explain": "Bound token nosi pod i node kojima je izdat; upotreba sa druge adrese, alatom koji aplikacija ne koristi, znači da je token ukraden. kube-proxy ne mijenja sourceIPs API zahtjeva, a servisni nalog je autentifikovan identitet, ne system:anonymous."
+  },
+  {
+    "obj": "4.3",
+    "q": "Želiš da audit log pokaže securityContext.privileged u novim podovima, ali da vrijednosti tajni nikad ne završe u logu. Kako podešavaš policy?",
+    "options": [
+      "Sve na RequestResponse",
+      "Sve na Metadata",
+      "pods na Request (ili RequestResponse), secrets na Metadata, a pravilo za secrets prije opštijih jer prvo podudaranje odlučuje",
+      "secrets na None, pods na Metadata"
+    ],
+    "answer": 2,
+    "explain": "securityContext je u tijelu zahtjeva, koje se bilježi od nivoa Request. Za secrets Metadata bilježi ko je pristupio bez sadržaja. Pravila se provjeravaju redom i prvo podudaranje odlučuje. None za secrets bi sakrio i sam pristup."
+  },
+  {
+    "obj": "4.3",
+    "q": "Servisni nalog prod:web je napravio selfsubjectrulesreviews, a zatim dobio 30 odgovora 403 na list secrets, nodes i clusterrolebindings. Šta to pokazuje?",
+    "options": [
+      "Normalan rad kontrolera",
+      "Uspješnu eskalaciju privilegija",
+      "Pogrešnu konfiguraciju audit policyja",
+      "Izviđanje dozvola sa ukradenim tokenom (kubectl auth can-i --list pa isprobavanje)"
+    ],
+    "answer": 3,
+    "explain": "selfsubjectrulesreviews je kubectl auth can-i --list, a niz 403 na osjetljive resurse je isprobavanje granica. Aplikacioni servisni nalog to inače ne radi. 403 znači da pristup nije uspio, pa nema eskalacije."
+  },
+  {
+    "obj": "4.3",
+    "q": "Koju vrijednost iz sourceIPs smiješ smatrati pouzdanom adresom klijenta?",
+    "options": [
+      "Posljednju, jer prethodne dolaze iz X-Forwarded-For i X-Real-Ip koje klijent može postaviti",
+      "Prvu, jer je to originalni klijent",
+      "Bilo koju, sve su provjerene",
+      "Nijednu; IP se vidi samo u kubelet logu"
+    ],
+    "answer": 0,
+    "explain": "Po specifikaciji audit Eventa sve adrese osim posljednje mogu doći iz zaglavlja koja klijent postavlja. Posljednja je udaljena adresa konekcije prema apiserveru (ili proxyju ispred njega)."
+  },
+  {
+    "obj": "4.3",
+    "q": "U audit logu nalaziš create clusterrolebindings sa requestObject.roleRef.name cluster-admin od korisnika dev-ana, van GitOps pipelinea. Kako to klasifikuješ?",
+    "options": [
+      "Pristup tajnama",
+      "Perzistencija i eskalacija privilegija kroz RBAC, analogno AttachUserPolicy u AWS-u",
+      "Exec u kontejner",
+      "Izbjegavanje odbrane brisanjem audit loga"
+    ],
+    "answer": 1,
+    "explain": "Novi binding ka cluster-admin daje trajna puna prava i preživljava opoziv prvobitnog pristupa. To je Kubernetes ekvivalent dodavanja administratorske politike IAM korisniku. Ne radi se o čitanju tajni ni o exec-u."
+  },
+  {
+    "obj": "4.3",
+    "q": "Pod sa privileged: true je odbijen (code 403), a u annotations postoji pod-security.kubernetes.io/enforce-policy. Treba li to istražiti?",
+    "options": [
+      "Ne, kontrola je radila i nema štete",
+      "Ne, 403 znači grešku u RBAC-u",
+      "Da: pokušaj pokazuje namjeru; provjeri ko je to bio, sa kojim kredencijalom i šta je još radio",
+      "Da, ali samo ako je pod kasnije pokrenut"
+    ],
+    "answer": 2,
+    "explain": "Pod Security admission je zaustavio pod, ali pokušaj pravljenja privilegovanog poda (put ka T1611) govori da neko sa tim kredencijalom pokušava bijeg na node. Anotacija pokazuje da je odbio admission, ne RBAC. Napadač će pokušati drugim putem, pa se istražuje odmah."
+  },
+  {
+    "type": "match",
+    "obj": "4.2",
+    "q": "Upari CloudTrail poziv sa ATT&CK tehnikom koju najčešće predstavlja.",
+    "options": [
+      "cloudtrail:StopLogging",
+      "iam:CreateAccessKey za drugog korisnika",
+      "s3:GetObject masovno iz bucketa sa podacima",
+      "iam:CreateUser"
+    ],
+    "targets": ["T1530 Data from Cloud Storage", "T1136.003 Create Account: Cloud Account", "T1562.008 Disable or Modify Cloud Logs", "T1098.001 Additional Cloud Credentials", "T1609 Container Administration Command"],
+    "answer": [2, 3, 0, 1],
+    "explain": "Gašenje traila je T1562.008, dodatni ključ je T1098.001, preuzimanje iz S3 je T1530, a novi korisnik T1136.003. T1609 je Kubernetes/kontejnerski exec i ovdje je distraktor."
+  },
+  {
+    "type": "order",
+    "obj": "4.2",
+    "q": "Poredaj korake CloudTrail istrage procurjelog ključa AKIA…, od prvog.",
+    "options": [
+      "Napraviti hronologiju u UTC i mapirati događaje na ATT&CK",
+      "Filtrirati sve događaje po userIdentity.accessKeyId",
+      "Utvrditi prvu pojavu nove IP adrese i userAgenta za taj ključ",
+      "Iz responseElements izvući nove kredencijale (ključeve, korisnike) i pratiti i njihovu upotrebu"
+    ],
+    "answer": [1, 2, 3, 0],
+    "explain": "Prvo izdvojiš događaje kredencijala, zatim nađeš trenutak kad je napadač počeo (nova IP adresa, alat), pa pratiš artefakte koje je napravio, i na kraju sve spojiš u hronologiju sa ATT&CK oznakama."
+  },
+  {
+    "type": "match",
+    "obj": "4.3",
+    "q": "Upari pitanje iz Kubernetes istrage sa uslovom u jq filteru nad audit logom.",
+    "options": [
+      "Ko je ulazio u kontejnere",
+      "Ko je čitao tajne",
+      "Kome su izdavani novi tokeni servisnih naloga",
+      "Ko provjerava svoje dozvole"
+    ],
+    "targets": [".objectRef.resource==\"serviceaccounts\" and .objectRef.subresource==\"token\"", ".objectRef.resource==\"secrets\" and (.verb==\"get\" or .verb==\"list\")", ".objectRef.subresource==\"exec\"", ".objectRef.resource | test(\"selfsubject(rules|access)reviews\")", ".user.username==\"system:kube-scheduler\""],
+    "answer": [2, 1, 0, 3],
+    "explain": "exec je subresource poda, tajne su resource secrets uz get/list, TokenRequest je subresource token servisnog naloga, a kubectl auth can-i pravi selfsubject*reviews. kube-scheduler filter ne odgovara nijednom pitanju."
+  },
+  {
+    "obj": "4.2",
+    "q": "ci-deployer je IAM korisnik koga inače koristi samo GitLab runner iz VPC-a. Šta pokazuje ovaj CloudTrail zapis?",
+    "snippet": "{\n  \"eventTime\": \"2026-10-16T03:22:51Z\",\n  \"eventSource\": \"cloudtrail.amazonaws.com\",\n  \"eventName\": \"StopLogging\",\n  \"awsRegion\": \"eu-central-1\",\n  \"sourceIPAddress\": \"198.51.100.77\",\n  \"userAgent\": \"aws-cli/2.15.0 Python/3.11.6 Linux/6.1.0\",\n  \"userIdentity\": {\n    \"type\": \"IAMUser\",\n    \"userName\": \"ci-deployer\",\n    \"accessKeyId\": \"AKIAEXAMPLEKEY123456\"\n  },\n  \"requestParameters\": {\"name\": \"org-trail\"},\n  \"responseElements\": null\n}",
+    "lang": "json",
+    "options": [
+      "Izbjegavanje odbrane (T1562.008): ključem ci-deployer sa spoljne adrese uspješno je zaustavljeno logovanje traila; ključ je vjerovatno kompromitovan",
+      "Neuspio pokušaj, jer je responseElements null",
+      "Rutinsku akciju samog AWS-a, jer je eventSource cloudtrail.amazonaws.com",
+      "Perzistenciju: napravljen je novi trail org-trail"
+    ],
+    "answer": 0,
+    "explain": "StopLogging gasi upisivanje traila, tehnika Impair Defenses: Disable or Modify Cloud Logs. Poziv nije pao, jer nema errorCode; null u responseElements je normalan za uspješan StopLogging. eventSource samo kaže koji API je pozvan, a userIdentity pokazuje IAM korisnika i njegov access key, sa adrese i alata (aws-cli) koji ne odgovaraju runneru. Sljedeći koraci: deaktiviraj ključ, StartLogging, pa izvuci sve događaje za taj accessKeyId."
+  }
+]

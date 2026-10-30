@@ -1,0 +1,14 @@
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - echo "build kurs-shop"
+    - python3 -m py_compile app.py
+
+unit-test:
+  stage: test
+  script:
+    - /opt/app-venv/bin/python -c "import tests.test_app as t; t.test_health(); t.test_products(); print('testovi prošli')"

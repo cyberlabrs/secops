@@ -1,0 +1,11 @@
+{
+  "title": "Automatizacija: automation rules, playbooks, AIR i attack disruption",
+  "summary": "Automatizacija u Defender XDR i Sentinelu: email notifikacije, alert tuning i korelacija, MDE advanced features, indikatori, custom data collection, ASR pravila, AIR i promjena od 1. 9. 2026, device grupe i automation levels, automatic attack disruption, Sentinel automation rules i playbooks.",
+  "minutes": 75,
+  "domain": 1,
+  "objectives": [
+    "1.1"
+  ],
+  "title_en": "Automation: automation rules, playbooks, AIR and attack disruption",
+  "summary_en": "Automation in Defender XDR and Sentinel: email notifications, alert tuning and correlation, MDE advanced features, indicators, custom data collection, ASR rules, AIR and the change from 1 Sep 2026, device groups and automation levels, automatic attack disruption, Sentinel automation rules and playbooks."
+}

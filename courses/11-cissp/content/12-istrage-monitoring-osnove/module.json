@@ -1,0 +1,15 @@
+{
+  "title": "Istrage, monitoring i osnove sigurnosnih operacija",
+  "summary": "Istrage i forenzika (dokazi, chain of custody, redoslijed volatilnosti, artefakti, izvještaj), logovanje i monitoring (IDPS, SIEM, SOAR, UEBA, DLP, threat intelligence i hunting), configuration management te osnovni principi operacija (DiD, least privilege, PAM, SoD, rotacija) i zaštita medija i stanja podataka.",
+  "minutes": 90,
+  "domain": 7,
+  "objectives": [
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4",
+    "7.5"
+  ],
+  "title_en": "Investigations, Monitoring and Security Operations Foundations",
+  "summary_en": "Investigations and forensics (evidence, chain of custody, order of volatility, artifacts, reporting), logging and monitoring (IDPS, SIEM, SOAR, UEBA, DLP, threat intelligence and threat hunting), configuration management, and foundational security operations concepts (defense in depth, least privilege, PAM, SoD, job rotation) and protection of media and data states."
+}

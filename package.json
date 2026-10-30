@@ -1,0 +1,21 @@
+{
+  "name": "secops-trening",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SecOps trening: jedna aplikacija za sve sertifikate iz plana",
+  "type": "module",
+  "scripts": {
+    "build-labs": "bash scripts/build-labs.sh",
+    "start": "node server.js",
+    "check": "node scripts/check-content.js",
+    "check-labs": "node scripts/check-content.js --labs"
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
+    "dockerode": "^4.0.2",
+    "express": "^4.21.2",
+    "marked": "^12.0.2",
+    "ws": "^8.18.0"
+  }
+}

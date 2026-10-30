@@ -1,0 +1,250 @@
+[
+  {
+    "obj": "2.1",
+    "q": "The operations and security teams want one place where Security Hub findings and CloudWatch alarms appear as work items with related resources, history, and the ability to run a Systems Manager Automation runbook for remediation directly. Which service meets the requirement?",
+    "options": [
+      "AWS Trusted Advisor",
+      "Amazon Detective",
+      "AWS Config aggregator",
+      "AWS Systems Manager OpsCenter"
+    ],
+    "answer": 3,
+    "explain": "OpsCenter creates OpsItems from Security Hub findings, alarms, and EventBridge rules, shows related resources, and lets you run Automation runbooks. Detective is for investigation, a Config aggregator is for compliance, and Trusted Advisor provides recommendations without work items or runbooks."
+  },
+  {
+    "obj": "2.1",
+    "q": "SOC analysts manually copy Athena queries from a wiki page for every investigation and analyze the results in Excel. The manager wants investigations to be repeatable and documented and to combine SQL queries over Security Lake with Python analysis. Which solution BEST meets this?",
+    "options": [
+      "A CloudWatch dashboard with Logs Insights widgets.",
+      "Jupyter notebooks in Amazon SageMaker AI in the security account, with an IAM role for Athena queries over Security Lake tables.",
+      "A Lambda function that runs all queries every night and emails the results.",
+      "An AWS Glue ETL job that copies data into Excel files."
+    ],
+    "answer": 1,
+    "explain": "A notebook combines explanation, SQL, and Python code in a single document that can be rerun, so the investigation is repeatable and documented. A dashboard and a nightly Lambda are not interactive investigation, and Glue to Excel does not solve repeatability."
+  },
+  {
+    "obj": "2.1",
+    "q": "An organization has 200 accounts. During an incident, the IR team must gain access to any account within minutes, with permissions sufficient for investigation and isolation, but no more. What should be prepared BEFORE an incident?",
+    "options": [
+      "IR roles (ReadOnly and Containment) in all accounts via CloudFormation StackSets, with a trust policy that allows assumption only from the Security Tooling account with MFA.",
+      "An IAM user with AdministratorAccess in every account, whose keys are in a shared password manager.",
+      "A procedure where the IR team asks account owners during an incident to create users for them.",
+      "The root credentials of all accounts in the IR team's safe."
+    ],
+    "answer": 0,
+    "explain": "Pre-deployed IR roles with limited permissions and trust only from the Security Tooling account provide fast and controlled access. Long-lived admin keys are a risk, creating users during an incident is slow, and root access violates least privilege."
+  },
+  {
+    "obj": "2.1",
+    "q": "A company uses AWS Shield Advanced for a CloudFront distribution and an ALB and has a Business Support plan. It wants the Shield Response Team to contact it on its own when the application is under a DDoS attack that affects its health. What should be done?",
+    "options": [
+      "Enable AWS WAF Bot Control on the web ACL.",
+      "Move to Enterprise On-Ramp and open a support case during the attack.",
+      "Enable proactive engagement, associate Route 53 health checks with the protected resources, and enter emergency contacts.",
+      "Enable Shield Standard on all resources."
+    ],
+    "answer": 2,
+    "explain": "Proactive engagement requires Route 53 health checks associated with the protected resources, so the SRT knows when an attack affects the application, and contact details. Business Support is already sufficient for the SRT, Bot Control does not involve contact, and Shield Standard has no SRT."
+  },
+  {
+    "obj": "2.1",
+    "q": "A team built automated remediation that replaces faulty instances and sends alarms. They want proof that the system really responds when instances are stopped in production, but the experiment must stop automatically if the customer error rate exceeds 2%. Which solution meets the requirement?",
+    "options": [
+      "An AWS Fault Injection Service experiment template with the aws:ec2:stop-instances action, targets by tag, and a stop condition tied to a CloudWatch alarm on the error rate.",
+      "A Lambda function that randomly stops instances every Friday.",
+      "An AWS Resilience Hub assessment of the application.",
+      "A tabletop exercise with the application team."
+    ],
+    "answer": 0,
+    "explain": "FIS performs a controlled failure, and a stop condition with a CloudWatch alarm stops the experiment as soon as the threshold is exceeded. A custom Lambda has no safe stop, Resilience Hub assesses the architecture but does not cause a failure itself, and a tabletop does not test the real system."
+  },
+  {
+    "obj": "2.1",
+    "q": "For a critical application, management set an RTO of 1 hour and an RPO of 15 minutes. The security team must assess whether the current architecture can meet these targets after an incident and get concrete recommendations, with the LEAST manual work. What should be used?",
+    "options": [
+      "AWS Trusted Advisor resilience checks.",
+      "An AWS Backup audit report.",
+      "The Amazon Detective behavior graph.",
+      "AWS Resilience Hub with a resiliency policy that defines the RTO and RPO."
+    ],
+    "answer": 3,
+    "explain": "Resilience Hub assesses the application against a resiliency policy (RTO/RPO) and provides recommendations, alarms, SOPs, and FIS experiments. Trusted Advisor and Backup Audit Manager provide narrower checks, and Detective is an investigation tool."
+  },
+  {
+    "obj": "2.1",
+    "q": "When GuardDuty reports a CryptoCurrency:EC2 finding for an instance, the following must happen automatically: isolate the instance, create snapshots of all volumes, wait for the snapshots to complete, then notify the team, and escalate if any step fails. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "A cron job on a bastion instance that reads GuardDuty findings every 5 minutes and runs scripts.",
+      "A single Lambda function that performs all steps and waits in a loop for the snapshots to complete.",
+      "An EventBridge rule for that finding type that starts an AWS Step Functions state machine with the steps, waiting, and error handling.",
+      "An AWS Config rule with automatic remediation."
+    ],
+    "answer": 2,
+    "explain": "Step Functions is designed for multi-step workflows with waiting, branching, and error handling, and EventBridge starts it without servers. A Lambda function in a loop risks a timeout and complicates error handling, a cron job on a bastion is infrastructure to maintain, and Config reacts to configuration, not to GuardDuty findings."
+  },
+  {
+    "obj": "2.1",
+    "q": "A SOC wants an AWS solution that, based on a Security Hub finding, automatically collects the memory and disk of a suspicious EC2 instance, isolates it, and enables analysis in a separate forensics account with a chain of custody. The team does not want to develop the workflow from scratch. What should be deployed?",
+    "options": [
+      "Amazon Inspector with EC2 instance scanning.",
+      "Automated Forensics Orchestrator for Amazon EC2 from the AWS Solutions Library.",
+      "GuardDuty Malware Protection for EC2 with on-demand scanning.",
+      "AWS Elastic Disaster Recovery."
+    ],
+    "answer": 1,
+    "explain": "Automated Forensics Orchestrator uses EventBridge and Step Functions for memory and disk acquisition, isolation, and analysis in the forensics account. Inspector and Malware Protection look for vulnerabilities or malware but do not collect memory or run a forensic process, and Elastic Disaster Recovery is for recovery."
+  },
+  {
+    "obj": "2.1",
+    "q": "After a compromised deployment in one Availability Zone, instances in that AZ return incorrect responses. The team must immediately move load balancer traffic away from that AZ while it investigates, without changing the application. Which solution does this the FASTEST?",
+    "options": [
+      "Change Route 53 weighted records for every instance.",
+      "Start a zonal shift in Amazon Application Recovery Controller for that load balancer.",
+      "Terminate all instances in that AZ.",
+      "Modify the subnet NACL to block all traffic in that AZ."
+    ],
+    "answer": 1,
+    "explain": "A zonal shift temporarily moves traffic for a supported resource (e.g., a load balancer) away from one AZ and is easy to undo. Termination destroys evidence, a NACL change is crude and can also cut off required access, and per-instance Route 53 records are not how a load balancer works."
+  },
+  {
+    "obj": "2.2",
+    "q": "AWS Health sent an AWS_RISK_CREDENTIALS_EXPOSED event: an access key of the IAM user ci-deployer was published in a public GitHub repository. What should the security engineer do FIRST?",
+    "options": [
+      "Deactivate the access key with the command aws iam update-access-key --status Inactive.",
+      "Delete the IAM user ci-deployer.",
+      "Run an Athena query over CloudTrail logs for the last 90 days.",
+      "Delete the repository on GitHub."
+    ],
+    "answer": 0,
+    "explain": "First, further use of the key must be stopped, and deactivation is fast, reversible, and preserves the link to the evidence. Deleting the user destroys context and can break the pipeline, Athena analysis comes after containment, and the key has already been copied, so deleting the repository does not help."
+  },
+  {
+    "obj": "2.2",
+    "q": "The compromised access key has been deactivated, but CloudTrail still records suspicious calls from the ProdAdmin role, which the attacker assumed with that key before deactivation. How can the attacker be stopped with the LEAST impact on legitimate users of the role?",
+    "options": [
+      "Delete the ProdAdmin role and create it again.",
+      "Change the role's maximum session duration to 1 hour.",
+      "Deactivate all access keys in the account.",
+      "Revoke the role's active sessions (Revoke active sessions), which adds a deny for tokens issued before that moment."
+    ],
+    "answer": 3,
+    "explain": "Temporary credentials remain valid until they expire and are independent of the deactivated key; revoke sessions denies all tokens issued before the revocation, and legitimate users simply assume the role again. Deleting the role breaks everyone who uses it, changing the duration does not affect sessions already issued, and the other keys are not the problem."
+  },
+  {
+    "obj": "2.2",
+    "q": "An engineer assigned a new security group with no rules at all to a compromised EC2 instance. Flow logs show that the attacker's existing SSH connection is still working. What is the cause and what should be done?",
+    "options": [
+      "Security groups are applied only after the instance restarts; restart the instance.",
+      "An empty security group allows all traffic by default; add an explicit deny rule.",
+      "The existing connection is tracked and changing the SG does not terminate it; add deny rules to the subnet NACL, or first assign an SG that allows all traffic and then the isolation SG.",
+      "Flow logs lag by 10 minutes; the connection has actually already been terminated."
+    ],
+    "answer": 2,
+    "explain": "Security groups are stateful, and already-tracked connections are not terminated by changing rules. A NACL is stateless and stops traffic immediately, and the trick with an allow-all SG turns connections into untracked ones so the isolation SG then terminates them. SGs have no deny rules, a restart destroys memory, and assuming a delay is not a fix."
+  },
+  {
+    "obj": "2.2",
+    "q": "A compromised instance is part of an Auto Scaling group behind an ALB with ELB health checks. The team plans to isolate the instance and collect memory. What should be done BEFORE isolation so that evidence is not lost?",
+    "options": [
+      "Detach the instance from the Auto Scaling group (or put it in Standby) and deregister it from the target group.",
+      "Reduce the ASG desired capacity to zero.",
+      "Shut down the instance to stop the attack.",
+      "Create an AMI from the instance with the reboot option."
+    ],
+    "answer": 0,
+    "explain": "An isolated instance fails the health check, and the ASG would terminate and replace it, destroying memory and disk. Detaching it from the ASG and the target group prevents that. A desired capacity of zero terminates all instances, shutdown erases memory, and an AMI with a reboot also loses the memory state."
+  },
+  {
+    "obj": "2.2",
+    "q": "After an incident, management wants to determine how a role was compromised, from which IP addresses, and how its activity changed over the last two weeks compared with normal. GuardDuty and Detective are enabled. Which solution provides the answer with the LEAST effort?",
+    "options": [
+      "Manually search CloudTrail Event history in every Region.",
+      "Export VPC Flow Logs to Excel.",
+      "Write Athena queries over the org trail and build charts in QuickSight.",
+      "Open the role's profile in Amazon Detective (pivot from the GuardDuty finding) and review API activity, geolocations, and deviations from the baseline."
+    ],
+    "answer": 3,
+    "explain": "Detective already has a behavior graph with history and a baseline and visualizes entity activity. Athena and QuickSight give a similar answer with much manual work, Event history is per Region and limited, and flow logs do not show the role's API activity."
+  },
+  {
+    "obj": "2.2",
+    "q": "An EC2 instance with EBS volumes encrypted with a customer managed KMS key is compromised. The analysis will be done in a separate forensics account. Which TWO steps preserve evidence? (Choose TWO.)",
+    "options": [
+      "Shut down the instance to freeze the disk state before the snapshot.",
+      "Collect memory with an SSM Run Command tool to S3 before any shutdown.",
+      "Terminate the instance and keep only the root volume.",
+      "Create an AMI and delete the original volumes.",
+      "Create EBS snapshots, share them with the forensics account, and grant that account permission to use the KMS key."
+    ],
+    "answer": [1, 4],
+    "explain": "Memory disappears on shutdown, so it is collected first, and snapshots of encrypted volumes are usable in another account only when that account is granted access to the KMS key. Shutdown and termination lose memory and other volumes, and deleting the originals destroys evidence."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Order the steps for responding to a compromised IAM access key, from first to last.",
+    "options": [
+      "Analyze the CloudTrail activity of the key and of all sessions derived from it.",
+      "Deactivate the access key.",
+      "Delete the compromised key and move to roles or issue a new key.",
+      "Identify the key and its owner from the finding and the CloudTrail field userIdentity.accessKeyId.",
+      "Remove the resources and persistence the attacker created (new users, keys, roles).",
+      "Revoke the active sessions of roles assumed with that key."
+    ],
+    "answer": [3, 1, 5, 0, 4, 2],
+    "explain": "First determine which key is involved, then deactivate the key and revoke sessions because temporary credentials are still valid. Only once the attacker is stopped do you analyze what they did and remove persistence, and the key is deleted last, when it is no longer needed as evidence."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Order the steps for responding to a compromised EC2 instance in an Auto Scaling group.",
+    "options": [
+      "Create EBS snapshots and share them with the forensics account.",
+      "Enable termination protection and tag the instance with the case number.",
+      "Assign an isolation security group and remove the instance profile.",
+      "Terminate the instance and deploy a new one from a verified AMI.",
+      "Detach the instance from the Auto Scaling group and the target group.",
+      "Collect memory via SSM to an S3 bucket with Object Lock."
+    ],
+    "answer": [1, 4, 2, 5, 0, 3],
+    "explain": "First the instance is protected from accidental termination and tagged, then removed from the ASG and load balancer so the ASG does not replace it. Next comes network and credential isolation, then evidence collection in order of volatility (memory, then disk). The rebuild comes only at the end."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Match the situation with the MOST APPROPRIATE containment measure.",
+    "options": [
+      "An entire sandbox account is compromised and the attacker is creating resources in multiple Regions.",
+      "An S3 bucket with reports accidentally became publicly readable.",
+      "A single IP address sends thousands of login requests to an ALB application.",
+      "EC2 instances send data to a known malicious domain.",
+      "An attacker is using temporary credentials taken from the IMDS of a compromised instance."
+    ],
+    "targets": [
+      "Enable S3 Block Public Access for the bucket",
+      "Revoke active sessions for the instance profile role",
+      "Move the account to a quarantine OU with an SCP that denies all actions",
+      "Add the IP to a WAF IP set with a Block rule",
+      "Increase CloudTrail log retention",
+      "Add the domain to a Route 53 Resolver DNS Firewall or Network Firewall deny list"
+    ],
+    "answer": [2, 0, 3, 5, 1],
+    "explain": "An SCP in a quarantine OU stops everything in the compromised account, Block Public Access closes the public bucket, a WAF IP set blocks a single address on the ALB, DNS Firewall or Network Firewall blocks the malicious domain, and revoke sessions invalidates the role's stolen credentials. Log retention is not containment."
+  },
+  {
+    "obj": "2.2",
+    "type": "multi",
+    "q": "Based on this GuardDuty finding, which actions are correct as the first response? (multiple answers)",
+    "lang": "json",
+    "snippet": "{\n  \"type\": \"UnauthorizedAccess:IAMUser/InstanceCredentialExfiltration.OutsideAWS\",\n  \"severity\": 8,\n  \"resource\": {\n    \"resourceType\": \"AccessKey\",\n    \"accessKeyDetails\": {\n      \"accessKeyId\": \"ASIAEXAMPLE4H7KJ2LMN\",\n      \"principalId\": \"AROAEXAMPLEID:i-0abc123def4567890\",\n      \"userName\": \"web-app-role\",\n      \"userType\": \"AssumedRole\"\n    }\n  },\n  \"service\": { \"action\": { \"awsApiCallAction\": {\n    \"api\": \"ListBuckets\",\n    \"remoteIpDetails\": { \"ipAddressV4\": \"203.0.113.77\" } } } }\n}",
+    "options": [
+      "Revoke active sessions of the web-app-role role (Deny with an aws:TokenIssueTime condition)",
+      "Isolate instance i-0abc123def4567890 while preserving evidence and investigate how the credentials were extracted (e.g. SSRF and IMDSv1)",
+      "Deactivate the access key of the IAM user web-app-role",
+      "Terminate the instance immediately so the attacker loses access"
+    ],
+    "answer": [0, 1],
+    "explain": "The instance profile credentials (ASIA…, AssumedRole, a principalId containing the instance ID) were used from an address outside AWS. Temporary credentials stay valid until they expire, so they are revoked with a policy that denies tokens issued before the revocation time. The source is the instance, so it is isolated and investigated, and IMDSv2 reduces the risk of SSRF theft. There is no IAM user or long-term key here, and terminating destroys memory and evidence."
+  }
+]

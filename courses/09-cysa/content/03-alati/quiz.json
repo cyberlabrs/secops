@@ -1,0 +1,276 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Analitičar u logu procesa vidi powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBi... i želi brzo vidjeti šta komanda radi, bez izvršavanja. Koji alat je BEST?",
+    "options": [
+      "VirusTotal",
+      "Joe Sandbox",
+      "CyberChef",
+      "Wireshark"
+    ],
+    "answer": 2,
+    "explain": "CyberChef dekodira Base64 i UTF-16LE tekst (recept From Base64 → Decode text) i radi lokalno. VirusTotal daje reputaciju, sandbox bi izvršio kod, a Wireshark analizira pakete."
+  },
+  {
+    "obj": "1.3",
+    "q": "Na Linux serveru bez grafičkog okruženja treba snimiti sav saobraćaj ka sumnjivoj IP adresi u fajl za kasniju analizu. Koji alat treba koristiti?",
+    "options": [
+      "tcpdump",
+      "Zeek",
+      "Snort u IPS modu",
+      "MXToolbox"
+    ],
+    "answer": 0,
+    "explain": "tcpdump snima pakete sa BPF filterom (npr. host 198.51.100.23) u pcap fajl na komandnoj liniji. Zeek pravi logove metapodataka, a ne pune pakete po defaultu, Snort u IPS modu blokira, a MXToolbox služi za analizu e-pošte i DNS-a."
+  },
+  {
+    "obj": "1.3",
+    "q": "Tim za threat hunting želi retrospektivno tražiti beaconing i rijetke TLS otiske u saobraćaju cijele mreže tokom zadnjih 90 dana, bez čuvanja punih paketa. Koji alat NAJBOLJE odgovara?",
+    "options": [
+      "Wireshark",
+      "Zeek",
+      "Snort",
+      "strings"
+    ],
+    "answer": 1,
+    "explain": "Zeek generiše strukturisane logove (conn.log, ssl.log, dns.log) za svaku konekciju, idealne za dugoročno čuvanje i hunting. Wireshark je za ručnu analizu jednog pcap-a, a Snort alarmira samo kad pravilo odgovara."
+  },
+  {
+    "obj": "1.3",
+    "q": "Organizacija želi na perimetru automatski blokirati saobraćaj koji odgovara poznatim potpisima eksploita, uz alarme u JSON formatu za SIEM. Koje rješenje je BEST?",
+    "options": [
+      "Zeek",
+      "tcpdump",
+      "OpenCTI",
+      "Suricata u inline (IPS) modu"
+    ],
+    "answer": 3,
+    "explain": "Suricata radi kao IDS/IPS zasnovan na potpisima, može raditi inline i blokirati, a alarme i metapodatke upisuje u EVE JSON. Zeek i tcpdump ne blokiraju, a OpenCTI je platforma za threat intelligence."
+  },
+  {
+    "obj": "1.3",
+    "q": "Analitičar u pcap-u vidi HTTP preuzimanje izvršnog fajla i želi ga izdvojiti radi hash-ovanja. Koja funkcija je BEST za to?",
+    "options": [
+      "Wireshark File → Export Objects → HTTP",
+      "tcpdump -c 100",
+      "WHOIS upit za host",
+      "YARA skeniranje pcap fajla"
+    ],
+    "answer": 0,
+    "explain": "Wireshark Export Objects rekonstruiše fajlove prenesene preko HTTP-a (i SMB-a, TFTP-a) iz snimka. tcpdump -c samo ograničava broj paketa, WHOIS daje podatke o domenu, a YARA nad pcap fajlom ne rekonstruiše fajl."
+  },
+  {
+    "obj": "1.3",
+    "q": "Dobijen je sumnjiv prilog sa ugovorom klijenta. Analitičar želi znati da li je poznat malver, bez otkrivanja povjerljivog sadržaja. Šta treba uraditi PRVO?",
+    "options": [
+      "Uploadovati fajl na VirusTotal",
+      "Otvoriti fajl u Wordu na izolovanoj VM",
+      "Izračunati SHA-256 hash i pretražiti ga na VirusTotalu",
+      "Poslati fajl pošiljaocu na provjeru"
+    ],
+    "answer": 2,
+    "explain": "Pretraga po hashu ne otkriva sadržaj, a pokazuje da li je fajl već poznat. Upload povjerljivog dokumenta ga čini dostupnim drugima i može upozoriti napadača. Ručno otvaranje je dinamička analiza i dolazi kasnije, u kontrolisanom sandboxu."
+  },
+  {
+    "obj": "1.3",
+    "q": "Tim želi pravilo koje na svim file serverima prepoznaje varijante iste porodice malvera po zajedničkim stringovima i MZ zaglavlju. Šta treba napisati?",
+    "options": [
+      "Snort pravilo",
+      "YARA pravilo",
+      "Sigma pravilo",
+      "Regex u firewall-u"
+    ],
+    "answer": 1,
+    "explain": "YARA pravila opisuju fajlove i memoriju preko stringova, bajt sekvenci i uslova. Snort/Suricata pravila su za mrežni saobraćaj, a Sigma za logove."
+  },
+  {
+    "obj": "1.3",
+    "q": "Uzorak je u sandboxu radio 5 minuta bez ikakve mrežne ili fajl aktivnosti, iako je statička analiza pokazala URL ka sumnjivom domenu. Šta je MOST likely objašnjenje?",
+    "options": [
+      "Fajl je sigurno bezopasan",
+      "Sandbox nema pristup internetu, pa je analiza nevažeća u svakom slučaju",
+      "URL u stringovima je lažno pozitivan",
+      "Malver koristi tehnike izbjegavanja sandboxa (detekcija VM, odgođeno izvršavanje)"
+    ],
+    "answer": 3,
+    "explain": "Malver često provjerava da li je u VM ili čeka duže od trajanja analize. Negativan sandbox rezultat nije dokaz da je fajl čist, posebno kad statička analiza pokazuje sumnjive indikatore."
+  },
+  {
+    "obj": "1.3",
+    "q": "Phishing poruke dolaze sa domena koji izgleda kao domen partnera. Analitičar želi znati kada je domen registrovan. Koji alat koristi?",
+    "options": [
+      "WHOIS",
+      "GeoIP",
+      "AbuseIPDB",
+      "YARA"
+    ],
+    "answer": 0,
+    "explain": "WHOIS daje registrara i datum kreiranja domena; novoregistrovan domen je snažan phishing indikator. GeoIP daje približnu lokaciju IP adrese, AbuseIPDB prijave zloupotrebe za IP, a YARA služi za fajlove."
+  },
+  {
+    "obj": "1.3",
+    "q": "SSH log pokazuje hiljade neuspjelih prijava sa jedne javne IP adrese. Analitičar želi brzo vidjeti da li su je druge organizacije prijavile za brute force. Koji alat je BEST?",
+    "options": [
+      "MXToolbox",
+      "Cuckoo Sandbox",
+      "AbuseIPDB",
+      "CyberChef"
+    ],
+    "answer": 2,
+    "explain": "AbuseIPDB agregira prijave zajednice o zlonamjernim IP adresama, sa kategorijama (npr. SSH brute force) i skorom povjerenja. Ostali alati služe za e-poštu, analizu fajlova i dekodiranje."
+  },
+  {
+    "obj": "1.3",
+    "q": "Korisnik prijavljuje sumnjivu poruku. Analitičar želi provjeriti SPF, DKIM i DMARC rezultate i put poruke kroz Received zaglavlja. Koji alat je NAJPRIKLADNIJI?",
+    "options": [
+      "OpenUBA",
+      "Zeek",
+      "MISP",
+      "MXToolbox"
+    ],
+    "answer": 3,
+    "explain": "MXToolbox analizira zaglavlja poruke i DNS zapise za autentikaciju pošte (SPF, DKIM, DMARC) i blackliste. OpenUBA je UEBA, Zeek mrežni monitoring, a MISP platforma za dijeljenje IoC-a."
+  },
+  {
+    "obj": "1.3",
+    "q": "Sektorski ISAC traži da članice razmjenjuju IoC-e iz incidenata u strukturisanom obliku, sa TLP oznakama i automatskom sinhronizacijom između instanci. Koja platforma je BEST?",
+    "options": [
+      "MISP",
+      "Wireshark",
+      "SIEM",
+      "MDM"
+    ],
+    "answer": 0,
+    "explain": "MISP je namijenjen upravo razmjeni indikatora između organizacija, sa događajima, atributima, tagovima, TLP-om i sinhronizacijom instanci. SIEM korelira interne logove, a ne služi kao platforma za razmjenu."
+  },
+  {
+    "obj": "1.3",
+    "q": "Analitičar mora vidjeti koji je proces na laptopu otvorio konekciju ka C2 serveru i odmah izolovati laptop od mreže, zadržavajući vezu sa upravljačkom konzolom. Koji alat to omogućava?",
+    "options": [
+      "MDM",
+      "EDR",
+      "GeoIP",
+      "Snort"
+    ],
+    "answer": 1,
+    "explain": "EDR bilježi procese i njihove mrežne konekcije i ima funkciju izolacije hosta uz zadržanu vezu sa konzolom. MDM upravlja politikama uređaja (prvenstveno mobilnih), a Snort radi na mreži i ne zna koji proces je otvorio konekciju."
+  },
+  {
+    "obj": "1.3",
+    "q": "Komanda vssadmin delete shadows /all /quiet je izvršena na više servera nekoliko minuta prije masovne izmjene fajlova. Šta komanda NAJVJEROVATNIJE ukazuje?",
+    "options": [
+      "Rutinsko čišćenje diska",
+      "Kreiranje backupa prije ažuriranja",
+      "Izviđanje Active Directoryja",
+      "Pripremu za ransomware: brisanje shadow kopija da se onemogući oporavak"
+    ],
+    "answer": 3,
+    "explain": "Brisanje svih Volume Shadow kopija bez potvrde je tipičan korak ransomwarea prije enkripcije, kako žrtva ne bi mogla vratiti fajlove. Komanda ne pravi backup niti izviđa AD."
+  },
+  {
+    "obj": "1.3",
+    "q": "Analitičar treba iz 50.000 CloudTrail zapisa izdvojiti sve izvorne IP adrese neuspjelih ConsoleLogin događaja i prebrojati ih. Koji alat je NAJEFIKASNIJI?",
+    "options": [
+      "jq",
+      "strings",
+      "xmllint",
+      "Wireshark"
+    ],
+    "answer": 0,
+    "explain": "CloudTrail zapisi su JSON, a jq filtrira i izdvaja polja (select po eventName i rezultatu, pa .sourceIPAddress). xmllint je za XML, strings za binarne fajlove, a Wireshark za pakete."
+  },
+  {
+    "obj": "1.3",
+    "q": "Koji regularni izraz NAJBOLJE izdvaja SHA-256 hash vrijednosti iz izvještaja?",
+    "options": [
+      "\\b[a-f0-9]{32}\\b",
+      "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b",
+      "\\b[a-f0-9]{64}\\b",
+      "[A-Za-z0-9+/]{40,}={0,2}"
+    ],
+    "answer": 2,
+    "explain": "SHA-256 ima 256 bita, odnosno 64 heksadecimalna znaka. 32 znaka je dužina MD5, drugi izraz hvata IPv4 adrese, a posljednji dugačke Base64 nizove."
+  },
+  {
+    "obj": "1.3",
+    "q": "Pravila sa fiksnim pragom ne otkrivaju zaposlenog koji legitimnim kredencijalima postepeno preuzima mnogo više fajlova nego kolege iz istog tima. Koja tehnologija bi to NAJBOLJE otkrila?",
+    "options": [
+      "IDS zasnovan na potpisima",
+      "UEBA",
+      "Sandbox",
+      "WHOIS"
+    ],
+    "answer": 1,
+    "explain": "UEBA pravi profil ponašanja korisnika i grupe kojoj pripada i označava odstupanja, što je pogodno za insajdere i zloupotrebu legitimnih naloga. Potpisi ne prepoznaju legitimne akcije, a sandbox i WHOIS nemaju veze sa ponašanjem korisnika."
+  },
+  {
+    "obj": "1.3",
+    "q": "Koja DVA formata podataka NAJČEŠĆE susrećeš kao YAML u SecOps radu? (Izaberi DVA.)",
+    "options": [
+      "Sigma detekciona pravila",
+      "Windows Security.evtx",
+      "Kubernetes manifesti",
+      "Suricata eve.json"
+    ],
+    "answer": [0, 2],
+    "explain": "Sigma pravila i Kubernetes manifesti pišu se u YAML-u. EVTX je binarni Windows format, a EVE je JSON (jedan objekat po liniji)."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari svaki zadatak sa alatom koji je za njega NAJBOLJI.",
+    "options": [
+      "Dekodirati URL-encoded i Base64 parametar iz web loga",
+      "Dobiti listu čitljivih URL-ova i ključeva registra iz sumnjivog .exe",
+      "Posmatrati koje procese i konekcije uzorak pravi pri izvršavanju",
+      "Saznati približnu zemlju i ASN izvorne IP adrese",
+      "Strukturisano mapirati vezu aktor–kampanja–tehnika u STIX 2.1",
+      "Korelirati prijave sa VPN-a, AD-a i firewall-a u jednom upitu",
+      "Daljinski obrisati izgubljeni službeni telefon"
+    ],
+    "targets": [
+      "SIEM",
+      "CyberChef",
+      "strings",
+      "Cuckoo Sandbox",
+      "GeoIP",
+      "OpenCTI",
+      "MDM"
+    ],
+    "answer": [1, 2, 3, 4, 5, 0, 6],
+    "explain": "CyberChef dekodira, strings daje statičke stringove iz binarnog fajla, sandbox pokazuje ponašanje pri izvršavanju, GeoIP lokaciju i ASN, OpenCTI strukturisano znanje u STIX-u, SIEM korelira više izvora logova, a MDM upravlja mobilnim uređajima i briše ih na daljinu."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari svaki isječak sa formatom podataka u kojem je zapisan.",
+    "options": [
+      "<Event xmlns=\"http://schemas.microsoft.com/win/2004/08/events/event\"><System><EventID>4625</EventID>",
+      "{\"eventName\":\"ConsoleLogin\",\"sourceIPAddress\":\"185.220.101.4\"}",
+      "detection:\\n  selection:\\n    Image|endswith: '\\\\certutil.exe'",
+      "Binarni fajl Security.evtx kopiran sa domain controllera"
+    ],
+    "targets": [
+      "JSON",
+      "XML",
+      "YAML",
+      "EVTX"
+    ],
+    "answer": [1, 0, 2, 3],
+    "explain": "Windows događaj prikazan u XML pregledu koristi Event/System elemente, CloudTrail je JSON, Sigma pravilo je YAML sa uvlačenjem, a sirovi Windows event log je binarni EVTX fajl koji se čita Event Viewerom ili Get-WinEvent."
+  },
+  {
+    "obj": "1.3",
+    "q": "Na osnovu ovog isječka Zeek conn.log-a, šta je NAJVJEROVATNIJE objašnjenje za saobraćaj hosta 10.0.4.15?",
+    "snippet": "#path conn\n#fields ts             id.orig_h  id.resp_h      id.resp_p service duration orig_bytes resp_bytes\n1761040800.112  10.0.4.15  198.51.100.23  443       ssl     0.31     402        1210\n1761040812.904  10.0.4.22  20.190.159.2   443       ssl     4.87     8812       51230\n1761040860.118  10.0.4.15  198.51.100.23  443       ssl     0.30     402        1210\n1761040920.131  10.0.4.15  198.51.100.23  443       ssl     0.31     402        1210\n1761040944.551  10.0.4.31  10.0.1.10      53        dns     0.01     61         127\n1761040980.109  10.0.4.15  198.51.100.23  443       ssl     0.32     402        1210\n1761041040.127  10.0.4.15  198.51.100.23  443       ssl     0.30     402        1210",
+    "lang": "log",
+    "options": [
+      "Beaconing ka C2 serveru: konekcije tačno svakih 60 sekundi ka istoj adresi sa identičnim brojem bajtova",
+      "Eksfiltracija velikog volumena podataka preko TLS-a",
+      "Vertikalni port scan sa 10.0.4.15 ka 198.51.100.23",
+      "Normalna sinhronizacija Microsoft 365 klijenta, jer je port 443"
+    ],
+    "answer": 0,
+    "explain": "Vremenske oznake se razlikuju za ~60 s, odredište i port su isti, trajanje je ~0,3 s, a orig_bytes/resp_bytes su uvijek 402/1210: mali, pravilni i ujednačeni zahtjevi su klasičan beacon. Za eksfiltraciju bi orig_bytes bio velik, port scan bi gađao mnogo različitih portova, a sam port 443 ne dokazuje legitimnost (red sa 10.0.4.22 izgleda kao stvarni korisnički saobraćaj promjenljive veličine). Sljedeći korak: provjeriti reputaciju 198.51.100.23 i ssl.log (SNI, JA3/JA4), pa izolovati host."
+  }
+]

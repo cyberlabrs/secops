@@ -1,0 +1,244 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Deployment ima replicas: 4 i strategiju RollingUpdate sa maxSurge: 1 i maxUnavailable: 0. Pokrećeš kubectl set image. Šta važi tokom rollouta?",
+    "options": [
+      "Najviše 4 Poda postoje istovremeno, a najmanje 3 su dostupna",
+      "Svi stari Podovi se prvo gase, pa se dižu 4 nova",
+      "Najviše 5 Podova postoji istovremeno, a nikad manje od 4 dostupna",
+      "Najviše 8 Podova postoji istovremeno jer se novi ReplicaSet diže odjednom"
+    ],
+    "answer": 2,
+    "explain": "maxSurge: 1 dozvoljava jedan Pod iznad replicas (ukupno 5), a maxUnavailable: 0 zabranjuje pad ispod 4 dostupna. Gašenje svih starih Podova odjednom je ponašanje strategije Recreate."
+  },
+  {
+    "obj": "2.1",
+    "q": "Zadatak: vrati Deployment web u namespace-u prod na reviziju 2. Koja komanda to radi?",
+    "options": [
+      "kubectl -n prod rollout undo deployment/web --to-revision=2",
+      "kubectl -n prod rollout history deployment/web --revision=2",
+      "kubectl -n prod rollout restart deployment/web --to-revision=2",
+      "kubectl -n prod rollout resume deployment/web --revision=2"
+    ],
+    "answer": 0,
+    "explain": "rollout undo sa --to-revision vraća Pod template iz te revizije. rollout history --revision=2 samo prikazuje detalje revizije, a restart i resume nemaju opciju izbora revizije."
+  },
+  {
+    "obj": "2.1",
+    "q": "kubectl rollout history deployment/web pokazuje <none> u koloni CHANGE-CAUSE za sve revizije. Zadatak traži da nova revizija ima razlog „upgrade na 1.28“. Šta treba uraditi nakon kubectl set image?",
+    "options": [
+      "kubectl label deployment/web change-cause='upgrade na 1.28'",
+      "kubectl rollout history deployment/web --cause='upgrade na 1.28'",
+      "Dodati anotaciju change-cause u spec.template.metadata.labels",
+      "kubectl annotate deployment/web kubernetes.io/change-cause='upgrade na 1.28' --overwrite"
+    ],
+    "answer": 3,
+    "explain": "Kolona CHANGE-CAUSE se puni iz anotacije kubernetes.io/change-cause na Deploymentu. Labela nije anotacija, a rollout history nema flag --cause."
+  },
+  {
+    "obj": "2.1",
+    "q": "Nakon kubectl set image deployment/api api=registry.example.com/api:2.0 novi Podovi su u ImagePullBackOff, a rollout status visi. Stari Podovi verzije 1.9 još rade. Koji je najbrži način da se aplikacija vrati u radno stanje?",
+    "options": [
+      "Obrisati novi ReplicaSet sa kubectl delete rs",
+      "kubectl rollout undo deployment/api",
+      "kubectl rollout pause deployment/api",
+      "kubectl scale deployment/api --replicas=0 pa vratiti na prethodni broj"
+    ],
+    "answer": 1,
+    "explain": "rollout undo vraća prethodni Pod template, pa Deployment skalira stari ReplicaSet nazad. Obrisani ReplicaSet bi Deployment odmah ponovo napravio, pause samo zaustavlja rollout, a skaliranje ne mijenja pogrešan image."
+  },
+  {
+    "obj": "2.1",
+    "q": "rollout history za Deployment web prikazuje revizije 1, 2 i 3. Pokrećeš kubectl rollout undo deployment/web --to-revision=1. Koje revizije history prikazuje nakon toga?",
+    "options": [
+      "1, 2, 3 (aktivna je 1)",
+      "1, 2 (revizija 3 se briše)",
+      "2, 3, 4 (bivša revizija 1 je sada 4)",
+      "1, 2, 3, 4 (nova kopija revizije 1)"
+    ],
+    "answer": 2,
+    "explain": "Rollback pravi novu reviziju od starog template-a: isti ReplicaSet dobija sljedeći broj (4), pa revizija 1 nestaje iz liste. Istorija se ne briše unazad i ne pravi se duplikat."
+  },
+  {
+    "obj": "2.1",
+    "q": "Koje dvije izmjene Deploymenta web pokreću novi rollout i novu reviziju? (Izaberi DVA.)",
+    "options": [
+      "kubectl scale deployment/web --replicas=6",
+      "kubectl set env deployment/web LOG_LEVEL=debug",
+      "kubectl annotate deployment/web owner=team-a",
+      "kubectl set resources deployment/web -c nginx --limits=memory=256Mi",
+      "kubectl label deployment/web tier=frontend"
+    ],
+    "answer": [1, 3],
+    "explain": "Nova revizija nastaje samo kad se promijeni spec.template (env, resursi, image). Skaliranje mijenja spec.replicas, a labela i anotacija na samom Deploymentu mijenjaju njegov metadata, ne Pod template."
+  },
+  {
+    "obj": "2.2",
+    "q": "Pod u namespace-u shop je u statusu CreateContainerConfigError. U Events piše: Error: secret \"db-cred\" not found. Secret db-cred postoji u namespace-u default. Šta je uzrok?",
+    "options": [
+      "Pod može referencirati samo Secret iz vlastitog namespace-a; db-cred treba napraviti u shop",
+      "Vrijednosti u Secretu nisu base64 kodirane",
+      "ServiceAccount Poda nema RBAC dozvolu get na secrets",
+      "Secret mora imati tip kubernetes.io/basic-auth da bi se koristio u env"
+    ],
+    "answer": 0,
+    "explain": "ConfigMap i Secret su namespace resursi i Pod ih vidi samo u svom namespace-u. Kubelet čita Secret za Pod, pa RBAC ServiceAccount-a nije bitan, a tip Opaque se normalno koristi u env."
+  },
+  {
+    "obj": "2.2",
+    "q": "Deployment koristi envFrom sa ConfigMap-om app-config. Promijeniš LOG_LEVEL u ConfigMap-i sa kubectl edit, ali aplikacija i nakon 10 minuta koristi staru vrijednost. Šta treba uraditi?",
+    "options": [
+      "Ništa, kubelet osvježava env varijable svakih 60 sekundi, pa treba sačekati",
+      "Postaviti immutable: true na ConfigMap-u",
+      "Obrisati ConfigMap i ponovo je napraviti sa istim imenom",
+      "Pokrenuti kubectl rollout restart deployment/<ime>, jer se env varijable čitaju samo pri startu kontejnera"
+    ],
+    "answer": 3,
+    "explain": "Env varijable se postavljaju pri startu kontejnera i ne mijenjaju se dok kontejner radi; potrebni su novi Podovi. Kubelet osvježava samo fajlove u ConfigMap volumenu (bez subPath), a immutable bi spriječio izmjene."
+  },
+  {
+    "obj": "2.2",
+    "q": "Image ima više fajlova u /etc/nginx/conf.d/. Zadatak: iz ConfigMap-e nginx-conf (ključ default.conf) ubaci samo /etc/nginx/conf.d/default.conf, a ostali fajlovi u direktorijumu moraju ostati. Šta treba u volumeMounts?",
+    "options": [
+      "mountPath: /etc/nginx/conf.d i readOnly: true",
+      "mountPath: /etc/nginx/conf.d/default.conf i subPath: default.conf",
+      "mountPath: /etc/nginx/conf.d i items sa key: default.conf u volumeMounts",
+      "mountPath: /etc/nginx/conf.d/default.conf bez dodatnih polja"
+    ],
+    "answer": 1,
+    "explain": "subPath montira samo jedan ključ kao fajl na zadatu putanju i ne prekriva ostatak direktorijuma. Montaža na sam direktorijum prekriva sve fajlove, a items je polje volumena, ne volumeMounts."
+  },
+  {
+    "obj": "2.2",
+    "q": "Fajl app.env ima linije DB_HOST=db i DB_PORT=5432. Treba napraviti ConfigMap app-env u kojoj su DB_HOST i DB_PORT zasebni ključevi. Koja komanda?",
+    "options": [
+      "kubectl create configmap app-env --from-file=app.env",
+      "kubectl create configmap app-env --from-literal=app.env",
+      "kubectl create configmap app-env --from-env-file=app.env",
+      "kubectl create secret generic app-env --from-env-file=app.env"
+    ],
+    "answer": 2,
+    "explain": "--from-env-file parsira linije KEY=VALUE i pravi po ključ za svaku. --from-file bi napravio jedan ključ app.env sa cijelim sadržajem, a create secret pravi Secret, ne ConfigMap."
+  },
+  {
+    "obj": "2.2",
+    "q": "Developer ima RBAC dozvolu get na secrets u namespace-u prod i tvrdi da ne može vidjeti lozinke jer su „šifrovane base64“. Šta je tačno?",
+    "options": [
+      "Netačno: base64 je kodiranje, pa kubectl get secret -o jsonpath i base64 -d otkrivaju lozinku; zaštita su RBAC i encryption at rest",
+      "Tačno: bez privatnog ključa API servera base64 se ne može dekodirati",
+      "Tačno: kubectl prikazuje Secret samo korisnicima sa ClusterRole cluster-admin",
+      "Netačno, ali samo ako je Secret tipa Opaque; kubernetes.io/tls je enkriptovan"
+    ],
+    "answer": 0,
+    "explain": "base64 je reverzibilno kodiranje bez ključa, bez obzira na tip Secreta. Ko ima get na Secret, ima i vrijednost; zato se pristup ograničava RBAC-om, a etcd štiti enkripcijom at rest."
+  },
+  {
+    "obj": "2.4",
+    "q": "Pod je Running, ali READY je 0/1 i RESTARTS je 0. Events: Readiness probe failed: dial tcp 10.244.1.7:8080: connect: connection refused. Aplikacija sluša na portu 80. Šta se dešava?",
+    "options": [
+      "Kubelet će restartovati kontejner nakon 3 neuspjeha",
+      "Pod će biti evictovan sa čvora",
+      "Scheduler će premjestiti Pod na drugi čvor",
+      "Pod nije u endpointima Servisa i ne prima saobraćaj; treba ispraviti port u readinessProbe"
+    ],
+    "answer": 3,
+    "explain": "Neuspješna readiness probe samo uklanja Pod iz endpointa Servisa i ne izaziva restart, zato je RESTARTS 0. Restart izaziva liveness probe; eviction i premještanje nemaju veze sa probama."
+  },
+  {
+    "obj": "2.4",
+    "q": "Aplikaciji treba do 4 minute za start. Ima livenessProbe sa periodSeconds: 10 i failureThreshold: 3, pa je kubelet stalno restartuje i Pod je u CrashLoopBackOff. Koje je ispravno rješenje?",
+    "options": [
+      "Dodati readinessProbe sa initialDelaySeconds: 240",
+      "Dodati startupProbe sa periodSeconds: 10 i failureThreshold: 30",
+      "Postaviti restartPolicy: Never",
+      "Postaviti timeoutSeconds: 240 na livenessProbe"
+    ],
+    "answer": 1,
+    "explain": "startupProbe odlaže liveness i readiness dok aplikacija ne startuje; 30 x 10s daje 5 minuta. Readiness ne zaustavlja liveness, restartPolicy Never nije dozvoljen u Deploymentu, a timeoutSeconds važi za jedan pokušaj."
+  },
+  {
+    "obj": "2.4",
+    "q": "kubectl apply za Job vraća grešku: spec.template.spec.restartPolicy: Unsupported value: \"Always\". Šta treba promijeniti?",
+    "options": [
+      "Dodati backoffLimit: 0",
+      "Pomjeriti restartPolicy u spec Joba umjesto u template",
+      "Postaviti restartPolicy na Never ili OnFailure",
+      "Promijeniti apiVersion na batch/v1beta1"
+    ],
+    "answer": 2,
+    "explain": "Job dozvoljava samo restartPolicy Never ili OnFailure jer Pod treba da završi. Polje pripada Pod template-u, backoffLimit ne rješava validaciju, a batch/v1beta1 više ne postoji za Job."
+  },
+  {
+    "obj": "2.4",
+    "q": "U klasteru sa čvorovima controlplane i node01 napraviš DaemonSet log-agent. kubectl get ds pokazuje DESIRED 1. Zadatak traži Pod na svakom čvoru. Šta nedostaje?",
+    "options": [
+      "Tolerancija za taint node-role.kubernetes.io/control-plane:NoSchedule u Pod template-u",
+      "spec.replicas: 2 u DaemonSetu",
+      "nodeName: controlplane u Pod template-u",
+      "Strategija updateStrategy: OnDelete"
+    ],
+    "answer": 0,
+    "explain": "controlplane čvor ima taint NoSchedule, pa DaemonSet Pod ide samo tamo gdje ga toleriše. DaemonSet nema replicas, nodeName bi vezao sve Podove za jedan čvor, a strategija ažuriranja ne utiče na raspored."
+  },
+  {
+    "obj": "2.4",
+    "q": "StatefulSet db ima replicas: 3 i volumeClaimTemplates sa imenom data. Obrišeš Pod db-1. Šta se dešava?",
+    "options": [
+      "Nastaje Pod sa nasumičnim sufiksom, npr. db-7f9c, sa novim PVC-om",
+      "PVC data-db-1 se briše zajedno sa Podom",
+      "StatefulSet ostaje na 2 Poda dok ručno ne povećaš replike",
+      "Nastaje novi Pod db-1 koji montira isti PVC data-db-1"
+    ],
+    "answer": 3,
+    "explain": "StatefulSet čuva identitet: zamjenski Pod ima isto ime i vezuje se za isti PVC iz volumeClaimTemplates. Nasumični sufiksi su ponašanje Deploymenta, a PVC se ne briše uz Pod."
+  },
+  {
+    "obj": "2.4",
+    "q": "kubectl drain node01 --ignore-daemonsets stalno ispisuje: Cannot evict pod as it would violate the pod's disruption budget. Deployment web ima 2 replike, PDB ima minAvailable: 2. Šta omogućava drain bez gašenja zaštite?",
+    "options": [
+      "Dodati --force na kubectl drain",
+      "Povećati Deployment na 3 replike (ili postaviti PDB na minAvailable: 1)",
+      "Dodati --delete-emptydir-data na kubectl drain",
+      "Obrisati PDB i ostaviti ga obrisanog"
+    ],
+    "answer": 1,
+    "explain": "Sa 2 replike i minAvailable: 2 dozvoljeno je 0 prekida, pa eviction uvijek pada; treća replika ili blaži PDB daju jedan dozvoljen prekid. --force se odnosi na Podove bez kontrolera, a --delete-emptydir-data na emptyDir volumene."
+  },
+  {
+    "obj": "2.4",
+    "type": "order",
+    "q": "Pod ima initContainers: wait-db (običan init) pa log-shipper (restartPolicy: Always), i containers: app. Poredaj događaje redom kojim se dešavaju.",
+    "options": [
+      "app starta",
+      "wait-db završi sa izlaznim kodom 0",
+      "log-shipper starta i nastavlja da radi",
+      "wait-db starta"
+    ],
+    "answer": [3, 1, 2, 0],
+    "explain": "Init kontejneri idu redom: wait-db mora završiti prije sljedećeg. Native sidecar log-shipper se pokreće i ne čeka se njegov završetak, nakon čega starta glavni kontejner app."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Upari polje Job spec-a sa njegovim značenjem.",
+    "options": ["completions", "parallelism", "backoffLimit", "activeDeadlineSeconds"],
+    "targets": [
+      "Najviše koliko Podova radi istovremeno",
+      "Maksimalno trajanje cijelog Joba, nakon čega se prekida",
+      "Koliko uspješno završenih Podova je potrebno",
+      "Koliko dugo se završeni Job čuva prije automatskog brisanja",
+      "Broj neuspjelih pokušaja prije nego što Job postane Failed"
+    ],
+    "answer": [2, 0, 4, 1],
+    "explain": "completions je broj potrebnih uspjeha, parallelism broj istovremenih Podova, backoffLimit broj dozvoljenih neuspjeha, a activeDeadlineSeconds vremenska granica. Čuvanje završenog Joba je ttlSecondsAfterFinished."
+  },
+  {
+    "obj": "2.1",
+    "type": "spot",
+    "q": "kubectl apply vraća: spec.template.metadata.labels: Invalid value: ...: `selector` does not match template `labels`. Klikni dva reda koja su u sukobu.",
+    "lang": "yaml",
+    "snippet": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: web-frontend\n  strategy: {type: RollingUpdate, rollingUpdate: {maxSurge: 1, maxUnavailable: 0}}\n  template:\n    metadata:\n      labels:\n        app: web\n        tier: frontend\n    spec:\n      containers:\n      - {name: web, image: \"nginx:1.27\", ports: [{containerPort: 80}]}",
+    "answer": [8, 13],
+    "explain": "spec.selector.matchLabels traži app=web-frontend, a pod šablon ima app=web (i tier=frontend). Svaka oznaka iz selektora mora postojati u šablonu sa istom vrijednošću; šablon smije imati i dodatne oznake. Uskladi ih, npr. app: web na oba mjesta. Pazi: selektor postojećeg Deploymenta je immutable, pa se tada mijenja šablon ili se Deployment pravi iznova."
+  }
+]

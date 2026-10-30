@@ -1,0 +1,12 @@
+{
+  "title": "Detekcija i monitoring: GuardDuty, Security Hub, alarmi i troubleshooting",
+  "summary": "Kako dizajnirati detekciju za nalog i organizaciju (GuardDuty sa zaštitnim planovima i Extended Threat Detection, Security Hub, Macie, Config conformance packs, CloudWatch alarmi, EventBridge) i kako otkloniti kvarove kada logovi ili alarmi ne stižu.",
+  "minutes": 100,
+  "domain": 1,
+  "objectives": [
+    "1.1",
+    "1.3"
+  ],
+  "title_en": "Detection and monitoring: GuardDuty, Security Hub, alarms, and troubleshooting",
+  "summary_en": "How to design detection for an account and an organization (GuardDuty with protection plans and Extended Threat Detection, Security Hub, Macie, Config conformance packs, CloudWatch alarms, EventBridge) and how to troubleshoot when logs or alarms do not arrive."
+}

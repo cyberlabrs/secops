@@ -1,0 +1,14 @@
+{
+  "title": "Incidenti, detekcija, zakrpe i promjene",
+  "summary": "Incident management po ISC2 (detection do lessons learned), firewalli, IDS/IPS, EDR/XDR, sandbox, honeypot, allowlisting i MSSP, zatim patch i vulnerability management (CVSS, EPSS, KEV) i change management (CAB, hitne promjene, DevOps).",
+  "minutes": 90,
+  "domain": 7,
+  "objectives": [
+    "7.6",
+    "7.7",
+    "7.8",
+    "7.9"
+  ],
+  "title_en": "Incidents, Detection, Patching and Change",
+  "summary_en": "Incident management per ISC2 (from detection to lessons learned), firewalls, IDS/IPS, EDR/XDR, sandboxing, honeypots, allowlisting and MSSPs, then patch and vulnerability management (CVSS, EPSS, KEV) and change management (CAB, emergency changes, DevOps)."
+}

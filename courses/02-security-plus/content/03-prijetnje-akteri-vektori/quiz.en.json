@@ -1,0 +1,133 @@
+[
+  {
+    "obj": "2.1",
+    "q": "A regional bank wants information about campaigns that have recently targeted the financial sector specifically, with the ability to share its own experiences with similar organizations. Which source is MOST appropriate?",
+    "options": ["OSINT search of social media", "Internal SIEM logs", "An ISAC for the financial sector", "Dark web forums"],
+    "answer": 2,
+    "explain": "An ISAC (e.g., FS-ISAC) is a community of organizations in the same industry that share threat intelligence relevant to that sector. OSINT is general and unfiltered, and internal logs only show what has already happened to you."
+  },
+  {
+    "obj": "2.1",
+    "q": "The SOC wants the SIEM and firewall to automatically and continuously import new malicious IP addresses, domains, and hashes from partners in a standardized format. What should be used?",
+    "options": ["A threat feed via STIX/TAXII", "A monthly PDF threat report", "A CVSS calculator", "The MITRE ATT&CK matrix"],
+    "answer": 0,
+    "explain": "STIX describes threat data, and TAXII is the protocol for exchanging it automatically, which is the basis of machine-readable threat feeds. A PDF report isn't automated, CVSS scores vulnerabilities, and ATT&CK is a knowledge base of techniques, not an indicator feed."
+  },
+  {
+    "obj": "2.1",
+    "q": "A scanner found two vulnerabilities: CVSS 9.8 on an internal test server with no internet access, and CVSS 7.5 on a public VPN appliance that has a public exploit and is on the CISA KEV list. Which should be remediated FIRST, and why?",
+    "options": ["The 9.8, because the CVSS score is always decisive", "Both at the same time, because both are above 7.0", "Neither until the environmental score is calculated", "The 7.5 on the VPN appliance, because likelihood and exposure are much higher"],
+    "answer": 3,
+    "explain": "Prioritization considers likelihood (active exploitation, KEV, a public exploit), exposure, and system importance, not just the CVSS base score. A public VPN appliance with an actively exploited vulnerability is a greater real risk than an isolated test server."
+  },
+  {
+    "obj": "2.1",
+    "q": "A container scanner report lists \"CVE-2024-3094\". What does this identifier represent?",
+    "options": ["A vulnerability severity score", "A unique public identifier of a known vulnerability", "A malware signature for antivirus", "The number of a patch released by the vendor"],
+    "answer": 1,
+    "explain": "A CVE is a unique identifier and short description of a publicly known vulnerability. The severity score comes from CVSS (e.g., in the NVD), and patches and signatures are separate from the CVE identifier."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Order the phases of the threat intelligence life cycle from first to last.",
+    "options": ["Analysis", "Collection", "Dissemination", "Requirements / direction", "Feedback", "Processing"],
+    "answer": [3, 1, 5, 0, 2, 4],
+    "explain": "First you define what you need to know (requirements), then data is gathered (collection), processed and normalized (processing), analyzed (analysis), delivered to consumers (dissemination), and feedback steers the next cycle."
+  },
+  {
+    "obj": "2.2",
+    "q": "After a company's controversial decision to close a factory, its website was defaced overnight with a message against the decision, along with a DDoS attack and the publication of internal emails. Who is MOST likely responsible?",
+    "options": ["Organized crime", "A state-sponsored actor", "A hacktivist", "A competitor"],
+    "answer": 2,
+    "explain": "A public message, defacement, DDoS, and leaks tied to a social or political stance are typical of hacktivists with ideological motivation. Organized crime would want money, and a state actor would work quietly."
+  },
+  {
+    "obj": "2.2",
+    "q": "An investigation reveals that an attacker was present in a ministry's network for 14 months, used custom malware and a zero-day, and quietly exfiltrated documents. Which actor and motivation fit BEST?",
+    "options": ["State-sponsored, espionage", "Unskilled attacker, notoriety", "Insider, revenge", "Hacktivist, ideological"],
+    "answer": 0,
+    "explain": "Long-term quiet presence, custom tools, and a zero-day point to high resources and sophistication, typical of a state-sponsored APT group with an espionage goal. The other actors rarely have such resources or would be noisier."
+  },
+  {
+    "obj": "2.2",
+    "q": "The day after being fired, a system administrator deleted production backups through a service account that nobody had disabled. Which actor and motivation are involved?",
+    "options": ["Competitor, intellectual property", "Insider, revenge", "Organized crime, extortion", "Accidental, none"],
+    "answer": 1,
+    "explain": "A former employee using existing access and knowledge is an insider, and the motivation is revenge. The lesson is that offboarding must also disable service accounts and shared secrets the person had access to."
+  },
+  {
+    "obj": "2.2",
+    "q": "Logs show thousands of requests with the signature of a well-known free scanning tool, using the default user-agent string and no tailoring to the target. The attack failed. What type of actor is MOST likely behind this?",
+    "options": ["State-sponsored", "Crime syndicate", "Insider", "Unskilled attacker"],
+    "answer": 3,
+    "explain": "Using ready-made tools without customization and without understanding the target is typical of an unskilled attacker with low sophistication. State actors and criminal groups customize their tools and avoid noisy signatures."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Match each actor with their MOST typical motivation.",
+    "options": ["A ransomware group demanding payment in cryptocurrency", "A competing firm that bribes an engineer for source code", "A group attacking the water supply to cause panic", "A bug bounty researcher who reports a vulnerability to the vendor", "A student scanning the university network \"to see what's there\""],
+    "targets": ["Ethical", "Financial / extortion", "General curiosity", "Intellectual property", "Fear / chaos"],
+    "answer": [1, 3, 4, 0, 2],
+    "explain": "A ransomware group wants money and extorts. A competitor targets intellectual property. An attack on critical infrastructure to cause panic is fear/chaos (terrorist). Responsible vulnerability disclosure is an ethical motivation, and scanning out of curiosity is general curiosity."
+  },
+  {
+    "obj": "2.3",
+    "q": "EDR shows that after gaining access, the attacker used PowerShell, WMI, and certutil to download files and move through the network, without launching a single new executable. What is this technique called?",
+    "options": ["Watering hole", "Supply chain attack", "Living-off-the-land", "Logic bomb"],
+    "answer": 2,
+    "explain": "Living-off-the-land means abusing legitimate tools already present on the system, which makes signature-based detection harder. Watering hole and supply chain describe the initial entry method, and a logic bomb is malicious code with a trigger."
+  },
+  {
+    "obj": "2.3",
+    "q": "Attackers compromised the remote monitoring and management (RMM) tool of an IT outsourcing provider and used it to launch ransomware at dozens of its clients simultaneously. Which vector was exploited?",
+    "options": ["Supply chain via a managed service provider", "Message-based via email", "Remote access via RDP", "Physical via an access pass"],
+    "answer": 0,
+    "explain": "An MSP has privileged access to many clients, so compromising the MSP or its tool becomes a supply chain vector to all of them. The clients weren't attacked directly via email or RDP."
+  },
+  {
+    "obj": "2.3",
+    "q": "An attacker compromised the website of a local professional association of engineers, which employees of the targeted company visit often, and planted a browser exploit there. What technique is this?",
+    "options": ["Spear phishing", "Typosquatting", "Pharming", "Watering hole"],
+    "answer": 3,
+    "explain": "A watering hole targets a site the victims visit on their own, instead of the attacker sending them messages. Spear phishing is a targeted message, typosquatting uses a similar domain name, and pharming redirects users through DNS manipulation."
+  },
+  {
+    "obj": "2.3",
+    "q": "A user opens a page with the message \"Confirm you're not a robot\" and instructions to press Win+R, paste the text from the clipboard, and press Enter. After that, an infostealer runs. Which vector is MOST precisely described?",
+    "options": ["Malicious USB", "Image-based, fake CAPTCHA", "Attachment-based, RTF document", "Signal-based, NFC"],
+    "answer": 1,
+    "explain": "A fake CAPTCHA (a technique known as ClickFix) tricks the user into running a malicious command themselves. There's no attachment, USB device, or wireless signal involved."
+  },
+  {
+    "obj": "2.3",
+    "q": "An infostealer stole the browser contents from a developer's laptop. The attacker then logged in to the corporate SaaS without entering a password and without an MFA prompt. What was MOST likely stolen?",
+    "options": ["The list of installed extensions", "The browsing history", "An active session token / session cookie", "A root certificate from the trust store"],
+    "answer": 2,
+    "explain": "A session token represents an already authenticated session, so by using it the attacker skips the password and MFA. That's why short session lifetimes, binding tokens to the device, and re-verification for risky actions are recommended."
+  },
+  {
+    "obj": "2.3",
+    "q": "Ransomware got in through a Windows server with RDP exposed directly to the internet. Which TWO measures BEST reduce this vector? Choose TWO.",
+    "options": ["Remove the direct exposure and allow access only via a VPN, ZTNA, or a bastion host", "Change the RDP port from 3389 to 3390", "Add a warning banner to the login screen", "Require MFA for remote access"],
+    "answer": [0, 3],
+    "explain": "Removing direct exposure and MFA stop brute force and the use of stolen passwords. Changing the port is just obscurity that scanners quickly discover, and a banner is a deterrent with no real protection."
+  },
+  {
+    "obj": "2.3",
+    "q": "An attacker got into a data center by copying an employee's RFID card while the employee was standing in line at a coffee shop. Which vector was exploited?",
+    "options": ["Supply chain", "Physical, access passes", "Network, infrastructure devices", "Human, watering hole"],
+    "answer": 1,
+    "explain": "Cloning a badge is a physical vector targeting access passes. Defenses include cards with stronger cryptography, shielding sleeves, an access vestibule, and verification with a PIN or biometrics."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Match each scenario with its threat vector category.",
+    "options": ["A flyer in the parking lot with a QR code for the \"new parking system\"", "A Teams message from the \"IT helpdesk\" in an external tenant", "A Word document with a VBA macro attached to an invoice", "A USB stick labeled \"Salaries 2026\" left in the cafeteria", "A printer with a default password used as an entry point into the network", "A factory PLC managed over a protocol without authentication", "Intercepting the Bluetooth connection of an executive's headphones"],
+    "targets": ["Message-based", "Attachment-based", "IoT-based", "Image-based", "Signal-based", "External media-based", "OT-based"],
+    "answer": [3, 0, 1, 5, 2, 6, 4],
+    "explain": "The QR code is image-based, the Teams message is message-based (collaboration tools), the macro in a document is attachment-based, the abandoned USB is external media, the printer is IoT, the PLC is OT, and Bluetooth is a signal-based vector."
+  }
+]

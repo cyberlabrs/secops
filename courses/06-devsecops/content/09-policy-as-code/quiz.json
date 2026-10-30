@@ -1,0 +1,241 @@
+[
+  {
+    "obj": "4.4",
+    "q": "Poslije upgradea na OPA 1.21 politika pada pri učitavanju:\n\n```text\nrego_parse_error: `if` keyword is required before rule body\nrego_parse_error: `contains` keyword is required for partial set rules\n```\n\nPravilo glasi `deny[msg] { input.kind == \"Deployment\"; ... }`. Šta je trajna ispravka?",
+    "options": [
+      "Dodati `import future.keywords` na vrh fajla",
+      "Preimenovati pravilo u `violation[msg]`",
+      "Prepisati pravilo u Rego v1: `deny contains msg if { ... }`",
+      "Dodati `package main` iznad pravila"
+    ],
+    "answer": 2,
+    "explain": "OPA 1.x podrazumijevano traži Rego v1 sintaksu, gdje multi-value pravila imaju `contains`, a tijelo `if`. `--v0-compatible` je samo privremeni zaobilazni put; importi i preimenovanje ne mijenjaju sintaksu pravila."
+  },
+  {
+    "obj": "4.4",
+    "q": "Politike su u `policy/k8s.rego` sa `package kubernetes`. `conftest test k8s/deployment.yaml` ne prijavljuje nijedan FAIL, iako je kontejner privilegovan. Šta je uzrok?",
+    "options": [
+      "Conftest podrazumijevano evaluira paket `main`; treba `--namespace kubernetes` ili `--all-namespaces`",
+      "YAML fajl treba eksplicitno `--parser yaml`",
+      "Politike moraju biti u direktoriju `policies/`",
+      "Treba `--combine` da Conftest vidi sve kontejnere"
+    ],
+    "answer": 0,
+    "explain": "Conftest traži pravila u paketu `main`, osim ako ne navedeš drugi namespace. Parser se bira po ekstenziji, podrazumijevani direktorij je `policy/`, a `--combine` spaja više fajlova u jedan ulaz."
+  },
+  {
+    "obj": "4.4",
+    "q": "Pravilo `warn_limits` prijavljuje kontejnere bez memory limita, ali pipeline ostaje zelen. Tim želi da upozorenja ruše build, bez mijenjanja politika. Koji flag?",
+    "options": [
+      "`--all-namespaces`",
+      "`--combine`",
+      "`-o junit`",
+      "`--fail-on-warn`"
+    ],
+    "answer": 3,
+    "explain": "Sa `--fail-on-warn` Conftest vraća exit 1 za upozorenja (i 2 za greške). Ostali flagovi mijenjaju izbor paketa, oblik ulaza ili format izlaza, ali ne exit kod."
+  },
+  {
+    "obj": "4.4",
+    "q": "DaemonSet `node-exporter` legitimno treba `hostPath`. Sva ostala pravila (privilegije, registriji, tag) moraju i dalje važiti za njega. Koje Conftest izuzeće je ispravno?",
+    "options": [
+      "`exception contains rules if { input.metadata.name == \"node-exporter\"; rules := [\"\"] }`",
+      "`exception contains rules if { input.kind == \"DaemonSet\"; input.metadata.name == \"node-exporter\"; rules := [\"hostpath\"] }`",
+      "`exception contains rules if { input.metadata.name == \"node-exporter\"; rules := [\"deny_hostpath\"] }`",
+      "`allow_hostpath if input.metadata.name == \"node-exporter\"`"
+    ],
+    "answer": 1,
+    "explain": "`rules` sadrži sufikse pravila, pa `\"hostpath\"` gasi samo `deny_hostpath`/`violation_hostpath` za taj DaemonSet. Prazan string gasi sva pravila nazvana `deny`, puno ime `deny_hostpath` se ne poklapa sa sufiksom, a `allow_` pravila Conftest ne koristi za izuzeća."
+  },
+  {
+    "obj": "4.4",
+    "q": "Lista dozvoljenih registrija se mijenja svakog mjeseca, a politika `deny_registry` je ista za 30 repoa. Kako to organizovati?",
+    "options": [
+      "Spisak u `data/registries.yaml` (`allowed_registries: [...]`), politika čita `data.allowed_registries`, a Conftest se pokreće sa `--data data`",
+      "Hardkodovati spisak u svaku kopiju politike",
+      "Napraviti posebnu politiku za svaki registrij",
+      "Prosljeđivati spisak kroz CI varijablu i čitati je `opa.runtime()` pozivom u svakom pravilu"
+    ],
+    "answer": 0,
+    "explain": "`--data` učitava JSON/YAML podatke dostupne kao `data.*`, pa se spisak mijenja bez diranja Rega. Hardkodovanje i posebne politike umnožavaju izmjene, a varijable okruženja nisu predviđen način za podatke politike."
+  },
+  {
+    "obj": "4.4",
+    "q": "Pravilo treba da zahtijeva `runAsNonRoot`:\n\n```rego\ndeny_root contains msg if {\n\tsome c in containers\n\tc.securityContext.runAsNonRoot == false\n\tmsg := sprintf(\"%s radi kao root\", [c.name])\n}\n```\n\nDeployment bez ikakvog `securityContext` prolazi. Zašto?",
+    "options": [
+      "Conftest ima grešku sa nepostojećim poljima; treba `--strict`",
+      "Treba koristiti `every` umjesto `some`",
+      "Nepostojeće polje je undefined, pa poređenje nije tačno i pravilo ne važi; treba `not c.securityContext.runAsNonRoot`",
+      "`sprintf` ne prihvata ime kontejnera"
+    ],
+    "answer": 2,
+    "explain": "U Regu izraz nad nepostojećim poljem nije ni tačan ni greška, pa tijelo pravila ne uspije. `not c.securityContext.runAsNonRoot` je tačno i kad polje nedostaje i kad je `false`. Ovo je ponašanje jezika, ne greška Conftesta."
+  },
+  {
+    "obj": "4.4",
+    "q": "Neko je izmijenio `deny_privileged` i greškom ga potpuno onesposobio. Pipeline je ostao zelen, a privilegovani Deployment je prošao. Šta je trebalo biti u jobu prije `conftest test`?",
+    "options": [
+      "`opa fmt -w policy/`",
+      "`conftest verify --policy policy` sa testovima kao `test_privileged_denied`",
+      "`conftest test --output json`",
+      "`opa eval -d policy/ \"data.main\"`"
+    ],
+    "answer": 1,
+    "explain": "`conftest verify` pokreće Rego unit testove (`test_*`); test koji očekuje FAIL za privilegovan kontejner pao bi i zaustavio pipeline. Formatiranje, drugi izlaz ili ručni `opa eval` ne provjeravaju da politika i dalje radi."
+  },
+  {
+    "obj": "4.4",
+    "q": "Poslije upgradea Kyverno CLI-ja na 1.19, `kyverno apply` uz rezultate ispisuje upozorenje za vaše `ClusterPolicy` fajlove. Šta je ispravan zaključak?",
+    "options": [
+      "CLI više ne podržava ClusterPolicy i rezultati su nevažeći",
+      "Treba preći na OPA Gatekeeper",
+      "Treba dodati `spec.validationFailureAction: Enforce`",
+      "`ClusterPolicy` je deprecated u 1.19 uz najavljeno uklanjanje u 1.20; nove politike pisati kao `ValidatingPolicy` (CEL) i planirati migraciju"
+    ],
+    "answer": 3,
+    "explain": "U 1.19 ClusterPolicy i dalje radi, ali je deprecated, a CEL tipovi (`ValidatingPolicy`, `ImageValidatingPolicy`...) su preporučeni put. `validationFailureAction` je i sam zamijenjen sa `failureAction` u pravilu."
+  },
+  {
+    "obj": "4.4",
+    "q": "`ValidatingPolicy` ima izraz `object.spec.template.spec.containers.all(c, c.securityContext.privileged == false)`. Za Deployment čiji kontejner nema `securityContext` evaluacija javlja grešku umjesto rezultata. Šta je ispravka?",
+    "options": [
+      "Zaštititi opciona polja sa `has()`: `!has(c.securityContext) || !has(c.securityContext.privileged) || c.securityContext.privileged == false`",
+      "Promijeniti `validationActions` u `[Audit]`",
+      "Premjestiti izraz u `matchConditions`",
+      "Postaviti `failurePolicy: Ignore`"
+    ],
+    "answer": 0,
+    "explain": "U CEL-u pristup nepostojećem polju je greška, pa opciona polja treba provjeriti sa `has()`. Audit, `matchConditions` i `failurePolicy` mijenjaju šta se radi sa rezultatom ili greškom, ali ne ispravljaju izraz."
+  },
+  {
+    "obj": "4.4",
+    "q": "Pišete `kyverno-test.yaml` za `ValidatingPolicy` `kurs-deployment-baseline`. Šta mora biti u svakom unosu u `results`, pored `policy`, `kind`, `resources` i `result`?",
+    "options": [
+      "`rule: validations[0]`",
+      "`isValidatingAdmissionPolicy: true`",
+      "`isValidatingPolicy: true`",
+      "`kind: ValidatingPolicy` umjesto vrste resursa"
+    ],
+    "answer": 2,
+    "explain": "Za Kyverno CEL `ValidatingPolicy` rezultat se označava sa `isValidatingPolicy: true` i nema imenovanih pravila. `isValidatingAdmissionPolicy` je za Kubernetes VAP, a `kind` je vrsta testiranog resursa (Deployment)."
+  },
+  {
+    "obj": "4.4",
+    "q": "Uvodite novu Kyverno politiku. Prve dvije sedmice u klasteru treba samo bilježiti kršenja, a u pipelineu ih prikazati kao upozorenja, ne kao pad. Koja kombinacija?",
+    "options": [
+      "`validationActions: [Deny]` u klasteru i `kyverno apply --audit-warn` u CI-ju",
+      "`validationActions: [Audit]` u klasteru i `kyverno apply --audit-warn` u CI-ju",
+      "`validationActions: [Audit]` u klasteru i `kyverno apply --policy-report` u CI-ju",
+      "`validationActions: [Deny]` u klasteru i `kyverno apply --continue-on-fail` u CI-ju"
+    ],
+    "answer": 1,
+    "explain": "Audit u klasteru bilježi kršenja u policy report bez odbijanja, a `--audit-warn` u CLI-ju prikazuje kršenja Audit politika kao upozorenja. Deny bi odmah blokirao deploy, `--policy-report` mijenja samo format izlaza, a `--continue-on-fail` ne mijenja ishod."
+  },
+  {
+    "obj": "4.4",
+    "q": "Isto pravilo („nema javnih resursa“) treba provjeriti nad Terraform planom, Dockerfileom i `.gitlab-ci.yml`, jednim jezikom i u CI-ju. Koji alat?",
+    "options": [
+      "Kyverno `ClusterPolicy`",
+      "Kyverno `ImageValidatingPolicy`",
+      "OPA Gatekeeper u klasteru",
+      "Conftest sa Rego politikama"
+    ],
+    "answer": 3,
+    "explain": "Conftest parsira mnoge formate (JSON plan, Dockerfile, YAML) i evaluira ih Rego politikama u CI-ju. Kyverno i Gatekeeper su primarno za Kubernetes resurse u admissionu, a `ImageValidatingPolicy` provjerava potpise slika."
+  },
+  {
+    "obj": "4.4",
+    "q": "Conftest politika provjerava `tfplan.json` (izlaz `terraform show -json`). Kojim putem u `input` dolazi do planirane vrijednosti `publicly_accessible` za `aws_db_instance`?",
+    "options": [
+      "`input.resource_changes[_].change.after.publicly_accessible` (uz `type == \"aws_db_instance\"`)",
+      "`input.resource.aws_db_instance.shop.publicly_accessible`",
+      "`input.aws.rds.instances[_].publicaccess.value`",
+      "`input.spec.template.spec.publicly_accessible`"
+    ],
+    "answer": 0,
+    "explain": "JSON plan ima `resource_changes`, a planirano stanje resursa je u `change.after`. Druga opcija odgovara HCL izvoru, treća Trivyjevom internom cloud modelu, a četvrta Kubernetes manifestu."
+  },
+  {
+    "obj": "4.4",
+    "q": "Conftest gate u pipelineu radi, ali neko je `kubectl apply`-em sa laptopa pokrenuo privilegovan Deployment u produkciji. Koja kontrola to sprječava?",
+    "options": [
+      "Conftest u pre-commit hooku",
+      "Kyverno (ili Gatekeeper) admission u klasteru sa istom politikom",
+      "Protected branch na glavnoj grani",
+      "`conftest test --fail-on-warn` u pipelineu"
+    ],
+    "answer": 1,
+    "explain": "Admission controller provjerava svaki zahtjev prema API serveru, bez obzira odakle dolazi. Pre-commit, zaštićene grane i strožiji CI gate štite samo put kroz repo i pipeline."
+  },
+  {
+    "obj": "4.4",
+    "q": "Tim aplikacije je u svom repou obrisao `deny_hostpath` iz `policy/k8s.rego` jer im je smetao, i pipeline je prošao. Kako to spriječiti?",
+    "options": [
+      "Dodati `policy/` u `.gitignore`",
+      "Pokretati Conftest sa `--all-namespaces`",
+      "Držati politike u centralnom repou uključenom pinovanom verzijom (`include: project`, `ref`), a u aplikacionom repou dozvoliti samo izuzeća uz CODEOWNERS odobrenje security tima",
+      "Postaviti `allow_failure: false` na policy job"
+    ],
+    "answer": 2,
+    "explain": "Kad politike žive u centralnom repou, tim ih ne može izmijeniti jednim commitom, a izuzeća prolaze review. `.gitignore`, `--all-namespaces` i `allow_failure` ne sprječavaju brisanje pravila."
+  },
+  {
+    "obj": "4.4",
+    "type": "order",
+    "q": "Poredaj korake uvođenja novog Conftest pravila u organizaciju sa mnogo repoa.",
+    "options": [
+      "Preimenuj pravilo u `deny_...` i uključi gate",
+      "Napiši pravilo kao `warn_...` i testove (`test_*`)",
+      "U CI-ju pokreći `conftest verify`, pa `conftest test`",
+      "Prati koliko je repoa pogođeno i pošalji timovima uputstvo za ispravku"
+    ],
+    "answer": [
+      1,
+      2,
+      3,
+      0
+    ],
+    "explain": "Pravilo prvo ulazi kao upozorenje sa testovima, CI ga provjerava i primjenjuje, timovi dobiju vrijeme i uputstvo, a tek onda upozorenje postaje gate."
+  },
+  {
+    "obj": "4.4",
+    "type": "match",
+    "q": "Upari Conftest pravilo sa njegovim ponašanjem.",
+    "options": [
+      "deny_hostpath",
+      "warn_limits",
+      "exception",
+      "test_privileged_denied"
+    ],
+    "targets": [
+      "Unit test koji pokreće `conftest verify` ili `opa test`",
+      "Nalaz FAIL, exit 1",
+      "Nalaz WARN, exit 0 bez `--fail-on-warn`",
+      "Gasi pravila po sufiksu za određene ulaze",
+      "Mijenja resurs prije admissiona"
+    ],
+    "answer": [
+      1,
+      2,
+      3,
+      0
+    ],
+    "explain": "`deny_` daje FAIL, `warn_` upozorenje, `exception` gasi pravila po sufiksu, a `test_` pravila su unit testovi. Mijenjanje resursa radi Kyverno `MutatingPolicy`, ne Conftest."
+  },
+  {
+    "obj": "4.4",
+    "q": "Migrirate staru politiku `deny[msg] { input.kind == \"Pod\"; msg := \"...\" }` na OPA 1.21 bez načina kompatibilnosti. Koje DVIJE izmjene su neophodne? (Izaberi DVA.)",
+    "options": [
+      "Dodati `import rego.v1`",
+      "Dodati `contains` za pravilo koje gradi skup poruka",
+      "Dodati `if` prije tijela pravila",
+      "Promijeniti paket u `package v1.main`",
+      "Zamijeniti `msg` pozivom `result.new`"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Rego v1 traži `contains` za multi-value pravila i `if` prije tijela: `deny contains msg if { ... }`. `import rego.v1` u OPA 1.x nije potreban, a ime paketa i `result.new` (Trivy funkcija) nemaju veze sa sintaksom."
+  }
+]

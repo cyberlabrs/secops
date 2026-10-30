@@ -1,0 +1,310 @@
+[
+  {
+    "obj": "3.6",
+    "q": "Pravni odjel traži da se za elektronske ugovore sa partnerima obezbijedi dokaz da partner ne može kasnije poreći da je poslao dokument. Koje rješenje to NAJBOLJE ispunjava?",
+    "options": [
+      "HMAC-SHA256 sa ključem dogovorenim sa partnerom",
+      "Digitalni potpis privatnim ključem partnera uz certifikat izdat od pouzdanog CA",
+      "AES-256-GCM šifrovanje dokumenta",
+      "SHA-256 hash dokumenta poslat emailom"
+    ],
+    "answer": 1,
+    "explain": "Neporecivost pruža samo digitalni potpis, jer privatni ključ posjeduje samo potpisnik, a certifikat vezuje ključ za identitet. HMAC koristi dijeljeni ključ, pa bilo koja strana može proizvesti isti MAC. AES daje povjerljivost, a sam hash nema vezu sa identitetom."
+  },
+  {
+    "obj": "3.6",
+    "q": "Organizacija sa 200 zaposlenih želi da svaki par zaposlenih ima jedinstven simetrični ključ. Koliko ključeva je potrebno, i šta to govori o skalabilnosti?",
+    "options": [
+      "400 ključeva; simetrična kriptografija dobro skalira",
+      "200 ključeva; jedan po korisniku",
+      "19.900 ključeva; zato se za distribuciju koristi asimetrična kriptografija ili KDC",
+      "39.800 ključeva; zato se koristi ECB"
+    ],
+    "answer": 2,
+    "explain": "n(n−1)/2 = 200 × 199 / 2 = 19.900. Broj raste kvadratno, pa se u praksi koriste asimetrična razmjena ključeva (hibridni pristup) ili centralni KDC (Kerberos). 2n = 400 bi bio broj ključeva kod asimetrične kriptografije."
+  },
+  {
+    "obj": "3.6",
+    "q": "Bob želi poslati Alisi poruku koju samo ona može pročitati i koja dokazuje da je od Boba. Koji redoslijed upotrebe ključeva je ISPRAVAN?",
+    "options": [
+      "Bob potpisuje svojim privatnim ključem, pa šifruje Alisinim javnim ključem",
+      "Bob potpisuje Alisinim privatnim ključem, pa šifruje svojim javnim ključem",
+      "Bob šifruje svojim privatnim ključem i ništa više",
+      "Bob šifruje Alisinim javnim ključem i potpisuje Alisinim javnim ključem"
+    ],
+    "answer": 0,
+    "explain": "Potpis se pravi privatnim ključem pošiljaoca (provjera Bobovim javnim), a povjerljivost se postiže šifrovanjem javnim ključem primaoca (dešifruje samo Alisin privatni). Bob nikad nema Alisin privatni ključ."
+  },
+  {
+    "obj": "3.6",
+    "q": "Proizvođač IoT senzora sa ograničenom procesorskom snagom i baterijom treba asimetričnu kriptografiju za autentifikaciju uređaja. Koji izbor je NAJPRIKLADNIJI?",
+    "options": [
+      "RSA sa ključem od 4096 bita",
+      "3DES",
+      "Diffie-Hellman bez autentifikacije",
+      "ECC (npr. ECDSA ili EdDSA na krivoj od 256 bita)"
+    ],
+    "answer": 3,
+    "explain": "ECC daje isti nivo sigurnosti kao RSA sa mnogo kraćim ključevima i manjim računskim zahtjevima, što je idealno za uređaje sa ograničenim resursima. 3DES je simetričan i povučen, a DH bez autentifikacije je ranjiv na MITM."
+  },
+  {
+    "obj": "3.6",
+    "q": "Organizacija čuva podatke koji moraju ostati povjerljivi i nakon pojave kriptografski relevantnog kvantnog računara. Šta je PRVI korak u pripremi?",
+    "options": [
+      "Odmah zamijeniti sve algoritme sa ML-KEM bez testiranja",
+      "Napraviti inventar kriptografije (algoritmi, ključevi, certifikati, zavisnosti) i planirati crypto agility",
+      "Udvostručiti dužinu RSA ključeva i ništa više",
+      "Sačekati da proizvođači sami riješe problem"
+    ],
+    "answer": 1,
+    "explain": "Bez inventara organizacija ne zna gdje koristi ranjive algoritme ni koji podaci imaju dug vijek. Inventar i crypto agility omogućavaju planiranu, hibridnu migraciju na PQC. Duži RSA ključevi ne štite od Shorovog algoritma."
+  },
+  {
+    "obj": "3.6",
+    "q": "Koji NIST standard definiše mehanizam za enkapsulaciju ključa otporan na kvantne računare, namijenjen zamjeni klasične razmjene ključeva?",
+    "options": [
+      "FIPS 204 (ML-DSA)",
+      "FIPS 205 (SLH-DSA)",
+      "FIPS 203 (ML-KEM)",
+      "FIPS 197 (AES)"
+    ],
+    "answer": 2,
+    "explain": "FIPS 203 definiše ML-KEM (Kyber) za enkapsulaciju ključa. FIPS 204 i 205 definišu post-kvantne digitalne potpise, a FIPS 197 je simetrični AES."
+  },
+  {
+    "obj": "3.6",
+    "q": "Tim šifruje bazu ključem koji se čuva u konfiguracionom fajlu na istom serveru, kojem pristupaju isti administratori kao i bazi. Šta je NAJBOLJA preporuka?",
+    "options": [
+      "Premjestiti ključeve u KMS ili HSM, odvojeno od podataka, uz pristup ključevima ograničen na drugu ulogu i logovanje upotrebe",
+      "Promijeniti algoritam sa AES-256 na RSA",
+      "Šifrovati konfiguracioni fajl istim ključem",
+      "Produžiti cryptoperiod da bi se smanjio broj rotacija"
+    ],
+    "answer": 0,
+    "explain": "Ako napadač koji kompromituje server dobija i ključ i podatke, šifrovanje ne štiti. Odvajanje ključeva (KMS/HSM), separation of duties i audit su osnovne prakse upravljanja ključevima. Promjena algoritma ne rješava problem čuvanja ključa."
+  },
+  {
+    "obj": "3.6",
+    "q": "Ključ za šifrovanje je prošao svoj cryptoperiod. Šta je ISPRAVNO prema NIST SP 800-57?",
+    "options": [
+      "Ključ se odmah uništava zajedno sa svim podacima",
+      "Ključ se i dalje koristi za šifrovanje novih podataka dok ga neko ne zamijeni",
+      "Ključ se objavljuje jer više nije osjetljiv",
+      "Ključ prelazi u post-operativnu fazu: ne koristi se za nove operacije, ali može dešifrovati postojeće podatke dok se ne prešifruju ili uniše"
+    ],
+    "answer": 3,
+    "explain": "Nakon cryptoperioda ključ više ne smije štititi nove podatke, ali može biti potreban za dešifrovanje ili provjeru starijih podataka (post-operational). Prerano uništenje bi učinilo podatke nedostupnim."
+  },
+  {
+    "obj": "3.6",
+    "q": "U PKI hijerarhiji, koja komponenta provjerava identitet podnosioca zahtjeva za certifikat, ali sama NE potpisuje certifikate?",
+    "options": [
+      "Root CA",
+      "Registration Authority (RA)",
+      "OCSP responder",
+      "Issuing CA"
+    ],
+    "answer": 1,
+    "explain": "RA obavlja provjeru identiteta i prosljeđuje zahtjev CA-u, koji potpisuje certifikat. OCSP responder daje status opoziva certifikata."
+  },
+  {
+    "obj": "3.6",
+    "q": "Privatni ključ produkcijskog web servera je ukraden. Certifikat važi još 10 mjeseci. Šta je PRVI korak?",
+    "options": [
+      "Obnoviti certifikat sa istim ključnim parom",
+      "Sačekati istek certifikata",
+      "Opozvati certifikat i izdati novi sa novim ključnim parom",
+      "Uključiti HSTS na serveru"
+    ],
+    "answer": 2,
+    "explain": "Kompromitovan ključ znači da napadač može lažno predstavljati server. Opoziv (CRL/OCSP) i novi ključni par su obavezni. Obnova sa istim ključem ne rješava problem, a HSTS ne pomaže protiv napadača koji ima validan ključ."
+  },
+  {
+    "obj": "3.6",
+    "q": "Za zaštitu root CA ključa organizacija želi da nijedna pojedinačna osoba ne može aktivirati ključ. Koja kombinacija je NAJBOLJA?",
+    "options": [
+      "Root CA offline u HSM-u sa M-of-N kontrolom pristupa (npr. 3 od 5 kartica)",
+      "Root CA online radi lakšeg izdavanja certifikata",
+      "Lozinka za root ključ poznata samo CISO-u",
+      "Backup root ključa na USB disku u ladici administratora"
+    ],
+    "answer": 0,
+    "explain": "Offline root u HSM-u smanjuje izloženost, a M-of-N kvorum ostvaruje dual control i split knowledge. Ostale opcije uvode jednu tačku povjerenja ili slabu fizičku zaštitu."
+  },
+  {
+    "obj": "3.6",
+    "q": "Aplikacija šifruje fajlove AES-om u ECB režimu. Revizor primjećuje da se obrasci iz originalnih slika vide i u šifratu. Koja preporuka je NAJBOLJA?",
+    "options": [
+      "Povećati ključ sa 128 na 256 bita uz zadržavanje ECB režima",
+      "Preći na DES",
+      "Dodati kompresiju poslije šifrovanja",
+      "Preći na autentifikovani režim kao što je AES-GCM sa jedinstvenim nonce-om"
+    ],
+    "answer": 3,
+    "explain": "ECB šifruje iste blokove plaintexta u iste blokove šifrata, pa otkriva obrasce bez obzira na dužinu ključa. GCM sa jedinstvenim nonce-om sakriva obrasce i dodaje provjeru integriteta."
+  },
+  {
+    "obj": "3.7",
+    "q": "Napadač je presreo veliki broj šifrovanih poruka, ali nema nijedan odgovarajući plaintext niti pristup sistemu za šifrovanje. Koji model kriptoanalize opisuje situaciju?",
+    "options": [
+      "Known plaintext",
+      "Chosen plaintext",
+      "Ciphertext only",
+      "Chosen ciphertext"
+    ],
+    "answer": 2,
+    "explain": "Napadač ima samo šifrate, što je ciphertext-only model i za napadača najteži. Known plaintext podrazumijeva poznate parove, a chosen modeli pristup šifrovanju ili dešifrovanju."
+  },
+  {
+    "obj": "3.7",
+    "q": "Server vraća različite poruke greške za neispravan padding i za neispravan MAC prilikom dešifrovanja, što napadaču omogućava da postepeno otkrije sadržaj. Koja vrsta napada je moguća i koja je NAJBOLJA odbrana?",
+    "options": [
+      "Frequency analysis; duži ključ",
+      "Chosen ciphertext (padding oracle); AEAD režim i jedinstvena, generička obrada grešaka u konstantnom vremenu",
+      "Brute force; zaključavanje naloga",
+      "Birthday attack; SHA-3"
+    ],
+    "answer": 1,
+    "explain": "Napadač šalje izabrane šifrate i iz odgovora (oracle) zaključuje o plaintextu, što je chosen-ciphertext napad. AEAD (npr. GCM) provjerava integritet prije dešifrovanja, a ujednačene greške ne otkrivaju informaciju."
+  },
+  {
+    "obj": "3.7",
+    "q": "Istraživači su izmjerili potrošnju energije pametne kartice tokom potpisivanja i iz obrazaca rekonstruisali privatni ključ. Koja kontrola NAJBOLJE umanjuje ovakav rizik?",
+    "options": [
+      "Duži RSA ključ",
+      "Češća rotacija lozinke korisnika",
+      "TLS 1.3 između kartice i čitača",
+      "Hardver otporan na side-channel analizu: constant-time implementacije, maskiranje i šum u potrošnji"
+    ],
+    "answer": 3,
+    "explain": "Ovo je side-channel (power analysis) napad na implementaciju, ne na algoritam. Duži ključ ne sprečava curenje kroz fizičke karakteristike; potrebne su protivmjere u hardveru i implementaciji."
+  },
+  {
+    "obj": "3.7",
+    "q": "Napadač izlaže HSM naglim promjenama napona da bi izazvao grešku u računanju i iz pogrešnog rezultata izveo ključ. Koja zaštita je NAJRELEVANTNIJA?",
+    "options": [
+      "Tamper-responsive hardver koji detektuje anomalije napajanja i provjera rezultata prije izlaza",
+      "Duži cryptoperiod",
+      "Šifrovanje backupa",
+      "Certificate pinning"
+    ],
+    "answer": 0,
+    "explain": "Fault injection se sprečava detekcijom manipulacije (napon, takt, temperatura), brisanjem ključeva pri tamperingu i provjerom ispravnosti rezultata prije nego što se otkrije. Ostale opcije ne utiču na fizički napad na uređaj."
+  },
+  {
+    "obj": "3.7",
+    "q": "Incident response tim otkriva da se napadač kreće lateralno koristeći NTLM hasheve lokalnog administratora koji je isti na svim radnim stanicama. Koja kontrola NAJBOLJE sprečava ponavljanje?",
+    "options": [
+      "Duža lozinka domenskog administratora",
+      "Jedinstvene, automatski rotirane lokalne admin lozinke (LAPS) uz Credential Guard i ograničenje admin prava",
+      "Šifrovanje diskova radnih stanica",
+      "Blokiranje ICMP-a"
+    ],
+    "answer": 1,
+    "explain": "Pass-the-hash koristi ukradeni hash umjesto lozinke. Ista lokalna lozinka svuda omogućava lateralno kretanje; LAPS je čini jedinstvenom, Credential Guard štiti hasheve u memoriji, a least privilege smanjuje izloženost."
+  },
+  {
+    "obj": "3.7",
+    "q": "Nakon kompromitacije domenskog kontrolera tim sumnja da je napadač dobio hash KRBTGT naloga i može izdavati sopstvene TGT tikete. Šta je ključni korak oporavka?",
+    "options": [
+      "Promijeniti lozinke svih korisnika jednom",
+      "Isključiti Kerberos i koristiti samo NTLM",
+      "Dvaput resetovati lozinku KRBTGT naloga (uz razmak za replikaciju) i istražiti obim kompromitacije",
+      "Restartovati domenski kontroler"
+    ],
+    "answer": 2,
+    "explain": "Golden ticket napad koristi KRBTGT ključ. Dvostruka rotacija poništava i trenutni i prethodni ključ, pa lažni tiketi prestaju da važe. Prelazak na NTLM pogoršava sigurnost, a restart ne mijenja ključ."
+  },
+  {
+    "obj": "3.7",
+    "q": "Ransomware je šifrovao fajl servere i backup koji je bio montiran kao mrežni disk. Koja kontrola bi NAJVIŠE pomogla oporavku?",
+    "options": [
+      "Duži ključevi za šifrovanje fajl servera",
+      "Plaćanje otkupnine",
+      "Antivirus sa dnevnim ažuriranjem potpisa",
+      "Offline ili immutable backupi sa redovno testiranim oporavkom"
+    ],
+    "answer": 3,
+    "explain": "Ransomware koristi jaku kriptografiju protiv žrtve, pa je dešifrovanje bez ključa nerealno. Oporavak omogućava backup koji napadač ne može izmijeniti ili obrisati. Plaćanje nije preporučeno i ne garantuje oporavak."
+  },
+  {
+    "obj": "3.7",
+    "q": "Finansijski direktor dobija video poziv u kojem „generalni direktor“ hitno traži uplatu dobavljaču. Kasnije se utvrdi da je poziv bio deepfake. Koja kontrola je NAJBOLJA za sprečavanje?",
+    "options": [
+      "Proces koji za takve zahtjeve traži verifikaciju drugim, unaprijed poznatim kanalom i odobrenje dvije osobe",
+      "Alat za detekciju deepfakea na svim računarima",
+      "Šifrovanje video poziva",
+      "Zabrana video poziva u firmi"
+    ],
+    "answer": 0,
+    "explain": "Procesna kontrola (out-of-band verifikacija i dual approval) ne zavisi od uspjeha detekcije, koja zaostaje za tehnologijom generisanja. Šifrovanje poziva ne potvrđuje identitet, a zabrana poziva nije poslovno prihvatljiva."
+  },
+  {
+    "obj": "3.7",
+    "q": "Tim za data science otkriva da je dio javnog skupa podataka za treniranje modela za detekciju prevara namjerno izmijenjen tako da model propušta određene transakcije. Kako se zove prijetnja i koja kontrola je NAJRELEVANTNIJA?",
+    "options": [
+      "Adversarial input; rate limiting API-ja",
+      "Model poisoning; provjera porijekla i integriteta podataka za treniranje i validacija modela prije produkcije",
+      "Deepfake; watermarking videa",
+      "Timing attack; constant-time kod"
+    ],
+    "answer": 1,
+    "explain": "Trovanje podataka/modela mijenja ponašanje modela kroz zatrovane podatke za treniranje. Ključne su provenance i integritet skupova podataka (potpisi, hash) i testiranje modela. Adversarial input obmanjuje već istreniran model u radu."
+  },
+  {
+    "obj": "3.7",
+    "q": "Napadač sa pozicije na javnom WiFi-ju pokušava presresti TLS sesije korisnika mobilne bankarske aplikacije podmetanjem sopstvenog certifikata. Koja kontrola u aplikaciji NAJBOLJE sprečava ovaj napad?",
+    "options": [
+      "Kompresija saobraćaja",
+      "Duži timeout sesije",
+      "Striktna validacija certifikata uz certificate pinning",
+      "Base64 kodiranje podataka"
+    ],
+    "answer": 2,
+    "explain": "AitM napad se oslanja na to da klijent prihvati lažni certifikat. Striktna validacija lanca i pinning određenog ključa onemogućavaju da podmetnut certifikat bude prihvaćen. Kodiranje nije šifrovanje."
+  },
+  {
+    "obj": "3.6",
+    "type": "match",
+    "q": "Upari sigurnosni zahtjev sa kriptografskim mehanizmom koji ga NAJBOLJE ispunjava.",
+    "options": [
+      "Neporecivost potpisanog naloga za plaćanje",
+      "Integritet i autentifikacija poruka između dva servisa koji dijele tajni ključ",
+      "Čuvanje korisničkih lozinki u bazi",
+      "Dogovor sesijskog ključa sa forward secrecy preko interneta",
+      "Šifrovanje velikih količina podataka uz provjeru integriteta"
+    ],
+    "targets": [
+      "AES-GCM",
+      "ECDHE",
+      "Digitalni potpis (ECDSA)",
+      "Argon2 sa saltom",
+      "HMAC-SHA256"
+    ],
+    "answer": [2, 4, 3, 1, 0],
+    "explain": "Neporecivost daje digitalni potpis, dijeljena tajna i integritet su HMAC, lozinke se čuvaju sporim hashom sa saltom, efemerni ECDHE daje PFS, a AES-GCM je AEAD za velike količine podataka."
+  },
+  {
+    "obj": "3.6",
+    "type": "order",
+    "q": "Poredaj korake kreiranja i provjere digitalnog potpisa od prvog do posljednjeg.",
+    "options": [
+      "Primalac provjerava potpis javnim ključem pošiljaoca",
+      "Pošiljalac potpisuje hash svojim privatnim ključem",
+      "Primalac upoređuje izračunati hash sa hashom dobijenim iz potpisa",
+      "Pošiljalac izračunava hash poruke",
+      "Primalac izračunava hash primljene poruke"
+    ],
+    "answer": [3, 1, 4, 0, 2],
+    "explain": "Pošiljalac hashuje poruku i hash potpisuje privatnim ključem. Primalac hashuje primljenu poruku, provjerava potpis javnim ključem pošiljaoca i upoređuje vrijednosti; podudaranje potvrđuje integritet i porijeklo."
+  },
+  {
+    "obj": "3.6",
+    "type": "spot",
+    "q": "Isječak iz servisa koji čuva lozinke korisnika i šifruje zapise u bazi. Označi redove sa pogrešnim kriptografskim izborom ili lošim upravljanjem ključem.",
+    "snippet": "import hashlib, os\nfrom cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes\n\nKEY = bytes.fromhex(\"8f1c2a9d4b7e06f3a1c95d2e7b408f6a3c19e5d7024b8a6f1e3c7d9b05a2e03b\")  # ključ u kodu\n\ndef hash_password(pw: str) -> str:\n    return hashlib.md5(pw.encode()).hexdigest()\n\ndef encrypt(data: bytes) -> bytes:\n    enc = Cipher(algorithms.AES(KEY), modes.ECB()).encryptor()\n    return enc.update(pad(data)) + enc.finalize()\n\ndef file_digest(path: str) -> str:\n    return hashlib.sha256(open(path, \"rb\").read()).hexdigest()",
+    "lang": "python",
+    "answer": [3, 6, 9],
+    "explain": "Red 4: ključ je zapisan u izvornom kodu, pa ga ima svako sa pristupom repozitoriju, buildu ili backupu, a rotacija traži novi release; ključ treba čuvati u KMS-u/HSM-u ili vaultu, uz kontrolu pristupa i rotaciju. Red 7: MD5 je brz hash sa poznatim kolizijama i bez salta, pa se lozinke lako probijaju (rainbow tabele, GPU); za lozinke koristiti spori hash sa saltom (Argon2, bcrypt, scrypt, PBKDF2). Red 10: ECB šifruje svaki blok nezavisno, pa isti plaintext daje isti šifrat i otkriva obrasce, a nema ni integriteta; koristiti AES-GCM (AEAD) sa jedinstvenim nonceom. SHA-256 za provjeru integriteta fajla (red 14) je ispravan izbor."
+  }
+]

@@ -1,0 +1,302 @@
+[
+  {
+    "obj": "4.2",
+    "q": "IAM uloga AppRole u nalogu 111122223333 ima identity politiku koja dozvoljava s3:* na sve resurse. Nalog je u OU na koji je zakačen SCP sa jedinim statementom: Allow ec2:* i Allow s3:GetObject. Bucket politika ne postoji. Uloga pokušava s3:PutObject u bucket istog naloga. Koji je rezultat?",
+    "options": [
+      "Allow, jer identity politika dozvoljava s3:*",
+      "Deny, jer SCP ne dozvoljava s3:PutObject, a SCP postavlja maksimum dozvola za principale u nalogu",
+      "Allow, jer SCP ne sadrži explicit Deny",
+      "Deny, jer bucket nema bucket politiku"
+    ],
+    "answer": 1,
+    "explain": "SCP kao allow lista definiše maksimum; akcija koju nijedan SCP ne dozvoljava je implicitno odbijena bez obzira na identity politiku. Explicit Deny nije potreban, a u istom nalogu bucket politika nije obavezna ako identity politika daje dozvolu."
+  },
+  {
+    "obj": "4.2",
+    "q": "IAM korisnik marko u nalogu 111122223333 nema nijednu identity politiku. Bucket politika u istom nalogu dozvoljava s3:GetObject za Principal arn:aws:iam::111122223333:user/marko. Nema SCP-ova ni RCP-ova osim podrazumijevanih. Šta se dešava kad marko pozove GetObject?",
+    "options": [
+      "Deny, jer svaki principal mora imati identity politiku",
+      "Deny, jer bucket politika mora navesti cijeli nalog kao principal",
+      "Deny, jer je potreban i permissions boundary",
+      "Allow, jer u istom nalogu Allow u resource politici koji direktno imenuje IAM korisnika je dovoljan"
+    ],
+    "answer": 3,
+    "explain": "U istom nalogu efektivne dozvole su unija identity i resource politike, pa resource politika koja imenuje korisnika daje pristup i bez identity politike. Boundary nije obavezan, a principal može biti konkretan korisnik."
+  },
+  {
+    "obj": "4.2",
+    "q": "Uloga DataRole ima permissions boundary koji dozvoljava samo dynamodb:*. Bucket politika u istom nalogu dozvoljava s3:GetObject za Principal arn:aws:iam::111122223333:role/DataRole. Aplikacija koja je preuzela DataRole poziva GetObject. Koji je rezultat?",
+    "options": [
+      "Deny, jer je dozvola u resource politici data ARN-u uloge, pa je ograničava implicit deny u permissions boundaryju",
+      "Allow, jer resource politika u istom nalogu uvijek zaobilazi boundary",
+      "Allow, jer boundary utiče samo na IAM akcije",
+      "Deny, jer bucket politika ne može navoditi IAM ulogu"
+    ],
+    "answer": 0,
+    "explain": "Kad resource politika imenuje ARN uloge, zahtjev pravi sesija te uloge i implicit deny u boundaryju ili session policy ga blokira. Da je politika imenovala ARN sesije ili IAM korisnika, boundary ne bi blokirao."
+  },
+  {
+    "obj": "4.2",
+    "q": "Uloga Reader u nalogu A (111122223333) ima identity politiku koja dozvoljava s3:GetObject na arn:aws:s3:::partner-data/*. Bucket partner-data je u nalogu B i nema bucket politiku. Šta je rezultat zahtjeva i zašto?",
+    "options": [
+      "Allow, jer identity politika navodi tačan ARN bucketa",
+      "Allow, ako nalog A i B nisu u istoj organizaciji",
+      "Deny, jer kod cross-account pristupa resource politika u nalogu B mora takođe dozvoliti principala iz naloga A",
+      "Deny, jer S3 ne podržava cross-account pristup"
+    ],
+    "answer": 2,
+    "explain": "Za cross-account zahtjev AWS evaluira oba naloga i obje evaluacije moraju dati Allow: identity politika u A i resource politika u B. Bez bucket politike u B zahtjev je implicitno odbijen; S3 podržava cross-account pristup."
+  },
+  {
+    "obj": "4.2",
+    "q": "Lambda u nalogu A čita objekte iz bucketa u nalogu B. Bucket politika u B i identity politika uloge u A dozvoljavaju s3:GetObject. Objekti su šifrovani SSE-KMS customer managed ključem iz naloga B. Lambda dobija AccessDenied. Koje rješenje ispravlja problem uz least privilege?",
+    "options": [
+      "Promijeniti enkripciju bucketa na SSE-C",
+      "Dodati s3:* u bucket politiku",
+      "Dodati kms:Decrypt za ulogu iz A samo u identity politiku u nalogu A",
+      "Dodati u key policy ključa u B kms:Decrypt za ulogu iz A i dodati kms:Decrypt na ARN tog ključa u identity politiku uloge u A"
+    ],
+    "answer": 3,
+    "explain": "Cross-account KMS traži dozvolu na obje strane: key policy u B mora dozvoliti ulogu iz A, a identity politika u A mora dozvoliti korištenje ključa. Samo identity politika u A nije dovoljna, s3:* je preširoko, a SSE-C ne rješava autorizaciju."
+  },
+  {
+    "obj": "4.2",
+    "q": "Security tim želi garantovati da nijedan S3 bucket u member nalozima organizacije ne može biti pristupljen principalima van organizacije, čak i ako neki tim greškom napiše bucket politiku sa Principal \"*\". Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "SCP koji zabranjuje s3:PutBucketPolicy u svim nalozima",
+      "Resource control policy (RCP) na rootu organizacije sa Deny za s3:* kad aws:PrincipalOrgID nije ID organizacije, uz izuzetak za AWS servisne principale",
+      "AWS Config pravilo koje detektuje javne buckete i šalje email",
+      "Ručna izmjena svih bucket politika uz uslov aws:PrincipalOrgID"
+    ],
+    "answer": 1,
+    "explain": "RCP centralno ograničava pristup resursima member naloga bez obzira ko pristupa, pa i loše napisana bucket politika ne može otvoriti pristup spolja. SCP ograničava samo principale unutar organizacije, Config samo detektuje, a ručne izmjene ne pokrivaju buduće buckete."
+  },
+  {
+    "obj": "4.2",
+    "q": "SCP na rootu organizacije zabranjuje ec2:RunInstances van regiona eu-central-1. Administrator u management nalogu uspješno pokreće instancu u us-east-1. Zašto?",
+    "options": [
+      "SCP-ovi ne utiču na principale u management nalogu",
+      "SCP-ovi ne utiču na EC2",
+      "Administrator koristi root korisnika, a root nikad nije ograničen SCP-om",
+      "SCP-ovi se primjenjuju tek nakon 24 sata"
+    ],
+    "answer": 0,
+    "explain": "SCP-ovi ne ograničavaju management nalog, zato se workloadi tamo ne drže. Root korisnici member naloga jesu ograničeni SCP-om, a primjena SCP-a nije odgođena 24 sata."
+  },
+  {
+    "obj": "4.2",
+    "q": "Kompanija ima stotine projekata i svakog mjeseca dodaje nove. Developeri smiju zaustavljati i pokretati samo EC2 instance svog projekta. Atribut projekta dolazi iz IdP-a kroz IAM Identity Center. Security tim ne želi mijenjati IAM politike za svaki novi projekat. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "Napraviti poseban permission set za svaki projekat sa ARN-ovima instanci",
+      "Napraviti IAM grupu po projektu i dodavati korisnike ručno",
+      "Uključiti attributes for access control u Identity Centeru i koristiti jednu politiku sa uslovom aws:ResourceTag/Project jednako ${aws:PrincipalTag/Project}, uz Deny na izmjenu tagova",
+      "Napraviti posebnu VPC za svaki projekat i ograničiti pristup security grupama"
+    ],
+    "answer": 2,
+    "explain": "ABAC sa session tagovima iz IdP-a i poređenjem PrincipalTag/ResourceTag radi za nove projekte bez izmjene politike, a Deny na tagovanje sprečava zaobilaženje. Permission set ili grupa po projektu je RBAC koji raste sa brojem projekata, a security grupe ne kontrolišu EC2 API."
+  },
+  {
+    "obj": "4.2",
+    "q": "ABAC politika dozvoljava ec2:StopInstances kad aws:ResourceTag/Project odgovara aws:PrincipalTag/Project. Revizor je otkrio da developer može zaustaviti instance drugog projekta. Šta je NAJVJEROVATNIJI propust?",
+    "options": [
+      "Developer ima dozvolu ec2:CreateTags pa može promijeniti tag Project na tuđoj instanci",
+      "Politika koristi StringEquals umjesto StringLike",
+      "Instance nemaju IMDSv2",
+      "Developer nema MFA"
+    ],
+    "answer": 0,
+    "explain": "ABAC je siguran samo ako korisnik ne može mijenjati tagove na kojima se zasniva odluka; dozvola za CreateTags omogućava promjenu taga i preuzimanje resursa. StringEquals je ispravan operator, a IMDSv2 i MFA nisu povezani sa ovim propustom."
+  },
+  {
+    "obj": "4.2",
+    "q": "Developeri moraju moći sami kreirati IAM uloge za svoje Lambda funkcije. Nijedna uloga koju naprave ne smije imati dozvole izvan politike DevBoundary, i developeri ne smiju zaobići to ograničenje. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "SCP koji zabranjuje iam:CreateRole u nalogu",
+      "Session policy pri svakom pozivu Lambda funkcije",
+      "IAM Access Analyzer unused access analyzer koji jednom mjesečno prijavljuje preširoke uloge",
+      "Dozvoliti iam:CreateRole samo uz uslov iam:PermissionsBoundary jednak ARN-u DevBoundary i zabraniti brisanje boundaryja i izmjenu politike DevBoundary"
+    ],
+    "answer": 3,
+    "explain": "Permissions boundary sa uslovom iam:PermissionsBoundary osigurava da svaka nova uloga ima gornju granicu, a Deny na DeleteRolePermissionsBoundary i izmjenu politike sprečava zaobilaženje. SCP bi potpuno zabranio kreiranje uloga, session policy se ne primjenjuje na Lambda execution role, a Access Analyzer samo naknadno prijavljuje."
+  },
+  {
+    "obj": "4.2",
+    "q": "Multi-tenant SaaS aplikacija koristi jednu IAM ulogu za pristup S3 bucketu u kom svaki tenant ima svoj prefiks. Pri obradi zahtjeva aplikacija mora dobiti kredencijale koji vide samo prefiks tog tenanta, bez pravljenja uloge po tenantu. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "Napraviti poseban bucket i ulogu za svakog tenanta",
+      "Pri AssumeRole proslijediti session policy koja dozvoljava s3:GetObject samo na prefiks tog tenanta",
+      "Postaviti permissions boundary na ulogu sa svim prefiksima",
+      "Dodati S3 ACL po objektu za svakog tenanta"
+    ],
+    "answer": 1,
+    "explain": "Session policy dinamički sužava dozvole jedne uloge za konkretnu sesiju. Uloga po tenantu je upravo ono što se želi izbjeći, boundary je statičan za sve sesije, a ACL-ovi su legacy i teški za održavanje."
+  },
+  {
+    "obj": "4.2",
+    "q": "Bucket sa platnim podacima mora biti dostupan samo kroz S3 gateway VPC endpoint vpce-0a1b2c3d4e5f67890. Analitičari koriste Athena upite nad ovim bucketom i oni moraju i dalje raditi. Koja bucket politika ispunjava zahtjev?",
+    "options": [
+      "Deny s3:* kad aws:SourceIp nije CIDR VPC-a",
+      "Allow s3:* samo za Principal vpce-0a1b2c3d4e5f67890",
+      "Deny s3:* kad aws:SourceVpce nije vpce-0a1b2c3d4e5f67890, uz uslov BoolIfExists aws:ViaAWSService = false",
+      "Deny s3:* kad aws:SecureTransport nije true"
+    ],
+    "answer": 2,
+    "explain": "aws:SourceVpce ograničava pristup na endpoint, a izuzetak kroz aws:ViaAWSService propušta zahtjeve koje Athena šalje u ime korisnika. aws:SourceIp ne nosi privatnu IP kroz endpoint, endpoint nije principal, a SecureTransport ne ograničava mrežni put."
+  },
+  {
+    "obj": "4.2",
+    "q": "Analitičari smiju čitati objekte iz bucketa data lake-a isključivo kroz Amazon Athena upite, a ne direktno preko S3 API-ja. Koji uslov u identity politici za s3:GetObject ispunjava zahtjev?",
+    "options": [
+      "aws:SourceVpce jednak endpointu Athene",
+      "ForAnyValue:StringEquals aws:CalledVia = athena.amazonaws.com",
+      "aws:PrincipalIsAWSService = true",
+      "aws:SourceAccount jednak nalogu Athene"
+    ],
+    "answer": 1,
+    "explain": "aws:CalledVia sadrži servise koji su poslali zahtjev u ime principala, pa dozvola važi samo kad poziv dolazi kroz Athenu. PrincipalIsAWSService je za servisne principale, a ne za korisnika koji koristi Athenu, dok SourceVpce i SourceAccount ne opisuju ovaj lanac."
+  },
+  {
+    "obj": "4.2",
+    "q": "Platform tim želi da tim za plaćanja smije proslijediti (iam:PassRole) servisima samo uloge namijenjene tom timu, uključujući buduće uloge, bez izmjene politike za svaku novu ulogu. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Kreirati uloge tima pod IAM pathom /app/payments/ i dozvoliti iam:PassRole na arn:aws:iam::111122223333:role/app/payments/*",
+      "Dozvoliti iam:PassRole na * uz SCP koji to ograničava",
+      "Navesti ARN svake uloge u politici i ažurirati je pri svakoj novoj ulozi",
+      "Koristiti session policy pri svakom deployu"
+    ],
+    "answer": 0,
+    "explain": "IAM path grupiše uloge i omogućava wildcard u ARN-u, pa nove uloge pod istim pathom automatski ulaze u dozvolu. PassRole na * krši least privilege, nabrajanje ARN-ova traži stalno održavanje, a session policy ne rješava kontrolu PassRole na nivou tima."
+  },
+  {
+    "obj": "4.2",
+    "q": "On-prem serveri moraju svake noći slati backup u S3. Security politika zabranjuje dugotrajne access keyeve, a kompanija ima vlastitu PKI infrastrukturu i X.509 certifikate na serverima. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "IAM korisnik sa access keyem rotiranim svakih 30 dana kroz Secrets Manager",
+      "Cognito identity pool sa guest pristupom",
+      "S3 presigned URL generisan ručno svaki dan",
+      "IAM Roles Anywhere sa trust anchorom na korporativni CA, profilom koji dozvoljava ulogu za backup i credential helperom na serverima"
+    ],
+    "answer": 3,
+    "explain": "Roles Anywhere mijenja X.509 certifikat za privremene kredencijale bez dugotrajnih ključeva i koristi postojeću PKI. Rotirani access key je i dalje dugotrajan, guest Cognito pristup je nesiguran, a ručni presigned URL-ovi traže stalan rad."
+  },
+  {
+    "obj": "4.2",
+    "q": "Zdravstvena aplikacija ima složena pravila: doktor vidi kartone samo svog odjeljenja, povjerljive kartone samo uz posebnu ovlast, a pravila su sada rasuta po kodu više mikroservisa. Kompanija želi centralizovanu i auditabilnu autorizaciju za korisnike aplikacije. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "Napraviti IAM ulogu za svakog doktora",
+      "Koristiti S3 bucket politike za svaki karton",
+      "Amazon Verified Permissions sa Cedar politikama u policy store-u, koje mikroservisi pozivaju preko IsAuthorized",
+      "IAM Access Analyzer custom policy checks"
+    ],
+    "answer": 2,
+    "explain": "Verified Permissions je namijenjen autorizaciji unutar aplikacije, sa Cedar politikama koje podržavaju RBAC i ABAC i bilježe odluke. IAM uloge i bucket politike su za AWS resurse, a Access Analyzer provjerava IAM politike, ne aplikacione odluke."
+  },
+  {
+    "obj": "4.2",
+    "q": "Developer dobija grešku: \"User: arn:aws:sts::111122223333:assumed-role/DevRole/ana is not authorized to perform: s3:GetObject on resource ... with an explicit deny in a resource-based policy\". Gdje treba PRVO gledati?",
+    "options": [
+      "SCP na OU naloga",
+      "Bucket politiku bucketa (resource-based policy) i njen Deny statement",
+      "Permissions boundary uloge DevRole",
+      "Identity politike uloge DevRole"
+    ],
+    "answer": 1,
+    "explain": "Poruka eksplicitno navodi da je razlog explicit deny u resource-based politici, a za S3 objekat to je bucket politika. Za SCP, boundary ili identity politiku poruka bi navela taj tip politike."
+  },
+  {
+    "obj": "4.2",
+    "q": "Security tim želi u CI/CD pipeline-u automatski zaustaviti svaki Terraform plan u kom nova verzija IAM politike daje više pristupa nego trenutna verzija u produkciji. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "IAM Access Analyzer custom policy check CheckNoNewAccess u koraku pipeline-a",
+      "IAM Policy Simulator ručno pokrenut prije svakog release-a",
+      "IAM Access Analyzer external access analyzer",
+      "AWS Config pravilo iam-policy-no-statements-with-admin-access"
+    ],
+    "answer": 0,
+    "explain": "CheckNoNewAccess poredi novu politiku sa referentnom i vraća FAIL ako daje dodatni pristup, pa je pogodan za automatski gate. Simulator je ručan, external access analyzer gleda dijeljenje van zone povjerenja, a Config pravilo detektuje samo admin pristup nakon deploya."
+  },
+  {
+    "obj": "4.2",
+    "q": "Kompanija želi otkriti sve S3 buckete, KMS ključeve, IAM uloge i SQS redove u cijeloj organizaciji koji su dostupni principalima van organizacije, a zatim ukloniti dozvole koje uloge nisu koristile posljednjih 90 dana. Koje DVIJE funkcije IAM Access Analyzer treba koristiti? (Izaberi DVA.)",
+    "options": [
+      "External access analyzer sa organizacijom kao zonom povjerenja",
+      "Policy validation",
+      "Unused access analyzer",
+      "IAM Policy Simulator u custom modu",
+      "CheckNoPublicAccess za svaki identity policy"
+    ],
+    "answer": [0, 2],
+    "explain": "External access analyzer pronalazi resurse dijeljene van zone povjerenja (organizacije), a unused access analyzer pronalazi nekorištene uloge, ključeve i dozvole. Policy validation provjerava gramatiku, Simulator nije dio Access Analyzera, a CheckNoPublicAccess je za resource politike."
+  },
+  {
+    "obj": "4.2",
+    "type": "order",
+    "q": "Poredaj korake kojima AWS evaluira zahtjev unutar jednog naloga, od prvog do posljednjeg.",
+    "options": [
+      "Provjera permissions boundaryja principala",
+      "Provjera da li SCP-ovi naloga principala dozvoljavaju akciju",
+      "Traženje explicit Deny u svim primjenjivim politikama",
+      "Provjera session politike (ako je principal sesija)",
+      "Provjera da li RCP-ovi naloga vlasnika resursa dozvoljavaju akciju",
+      "Provjera resource-based politike",
+      "Provjera identity-based politika"
+    ],
+    "answer": [2, 4, 1, 5, 6, 0, 3],
+    "explain": "AWS prvo traži explicit Deny u svim politikama, zatim provjerava RCP, pa SCP, resource-based politiku, identity politike, permissions boundary i na kraju session politiku. Guardrail koraci mogu samo odbiti zahtjev, nikad ga dozvoliti."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Upari zahtjev sa condition ključem koji ga rješava.",
+    "options": [
+      "Bucket smiju koristiti svi nalozi naše organizacije, uključujući buduće.",
+      "Zahtjevi prema bucketu smiju doći samo kroz određeni VPC endpoint.",
+      "Odbiti svaki zahtjev prema bucketu koji nije išao preko HTTPS-a.",
+      "Korisnik smije upravljati samo resursima sa istim tagom Team kao on.",
+      "Pri kreiranju resursa mora se poslati tag CostCenter.",
+      "Dozvoliti zahtjeve sa korporativnih javnih IP adresa preko interneta."
+    ],
+    "targets": [
+      "aws:SecureTransport",
+      "aws:RequestTag/CostCenter",
+      "aws:SourceIp",
+      "aws:PrincipalOrgID",
+      "aws:ResourceTag/Team = ${aws:PrincipalTag/Team}",
+      "aws:SourceVpce",
+      "aws:CalledVia"
+    ],
+    "answer": [3, 5, 0, 4, 1, 2],
+    "explain": "PrincipalOrgID pokriva sve sadašnje i buduće naloge organizacije, SourceVpce ograničava endpoint, SecureTransport TLS, poređenje ResourceTag i PrincipalTag je ABAC, RequestTag provjerava tagove u zahtjevu za kreiranje, a SourceIp javne adrese. CalledVia je distraktor."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Upari mehanizam sa opisom koji mu tačno odgovara.",
+    "options": [
+      "Service control policy (SCP)",
+      "Resource control policy (RCP)",
+      "Permissions boundary",
+      "Session policy",
+      "Role trust policy"
+    ],
+    "targets": [
+      "Ograničava sesiju dobijenu preko AssumeRole za jedan poziv",
+      "Određuje ko smije preuzeti ulogu",
+      "Daje dozvole IAM korisniku",
+      "Maksimum dozvola za principale member naloga",
+      "Maksimum pristupa resursima member naloga, i za eksterne principale",
+      "Maksimum dozvola za jednog IAM korisnika ili ulogu"
+    ],
+    "answer": [3, 4, 5, 0, 1],
+    "explain": "SCP ograničava principale, RCP resurse (pa i eksterni pristup), boundary jednog korisnika ili ulogu, session policy jednu sesiju, a trust policy određuje ko smije preuzeti ulogu. Nijedan od prva četiri mehanizma ne daje dozvole."
+  },
+  {
+    "obj": "4.2",
+    "type": "spot",
+    "q": "CI rola treba samo: ažurirati kod Lambda funkcija app-*, ČITATI artefakte iz bucketa acme-artifacts i proslijediti (PassRole) isključivo rolu app-lambda-exec. Klikni redove koji krše least privilege.",
+    "lang": "json",
+    "snippet": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\"Effect\": \"Allow\", \"Action\": [\"lambda:UpdateFunctionCode\", \"lambda:GetFunction\"],\n     \"Resource\": \"arn:aws:lambda:eu-central-1:111122223333:function:app-*\"},\n    {\"Effect\": \"Allow\", \"Action\": \"s3:*\",\n     \"Resource\": \"arn:aws:s3:::acme-artifacts/*\"},\n    {\"Effect\": \"Allow\", \"Action\": \"iam:PassRole\",\n     \"Resource\": \"*\",\n     \"Condition\": {\"StringEquals\": {\"iam:PassedToService\": \"lambda.amazonaws.com\"}}}\n  ]\n}",
+    "answer": [5, 8],
+    "explain": "Red 6: s3:* daje i PutObject i DeleteObject nad artefaktima, pa kompromitovan CI može podmetnuti artefakt; treba \"s3:GetObject\". Red 9: PassRole sa Resource \"*\" dozvoljava prosljeđivanje BILO KOJE role Lambda servisu, uključujući admin rolu, što je klasičan put do eskalacije privilegija. Uslov iam:PassedToService ograničava samo servis, ne rolu; Resource treba biti arn:aws:iam::111122223333:role/app-lambda-exec."
+  }
+]

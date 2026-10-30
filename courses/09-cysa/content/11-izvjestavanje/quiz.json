@@ -1,0 +1,305 @@
+[
+  {
+    "obj": "4.1",
+    "q": "CISO traži mjesečni izvještaj o programu upravljanja ranjivostima za upravu. Šta je NAJPRIKLADNIJE uključiti?",
+    "options": [
+      "Kompletan izvoz svih nalaza skenera sa plugin ID-evima",
+      "Risk scorecard po poslovnim jedinicama sa trendom otvorenih kritičnih nalaza i SLA usklađenošću",
+      "Listu svih CVE-ova sa CVSS vektorima za svaki host",
+      "Sirove nmap izlaze za sve podmreže"
+    ],
+    "answer": 1,
+    "explain": "Uprava treba sažet prikaz rizika, trend i usklađenost sa rokovima, a ne tehničke detalje. Detaljne liste su za administratore i vlasnike sistema."
+  },
+  {
+    "obj": "4.1",
+    "q": "Kritična ranjivost je pronađena na sistemu koji upravlja proizvodnom linijom. Dobavljač ugovorom zabranjuje instalaciju zakrpa koje nije certifikovao, a sistem ne smije stati. Šta je NAJBOLJI odgovor?",
+    "options": [
+      "Instalirati zakrpu tokom noći bez obavještavanja dobavljača",
+      "Ignorisati nalaz jer ga ugovor ne dozvoljava popraviti",
+      "Isključiti sistem dok zakrpa ne bude dostupna",
+      "Primijeniti kompenzacione kontrole (segmentacija, strogi ACL, monitoring) i dokumentovati izuzetak dok dobavljač ne certifikuje zakrpu"
+    ],
+    "answer": 3,
+    "explain": "Ugovorni/proprietary inhibitor sprečava patch, pa se rizik smanjuje kompenzacionim kontrolama i formalnim izuzetkom sa rokom. Neovlaštena izmjena krši ugovor, ignorisanje ostavlja rizik, a gašenje prekida poslovanje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Zakrpa za ranjivu biblioteku zahtijeva da tim aplikacije prvo pređe na noviju verziju Jave, što je planirano za sljedeći kvartal. Kako se ovo evidentira u action planu?",
+    "options": [
+      "Kao dependency, uz privremenu mitigaciju i rok",
+      "Kao false positive",
+      "Kao zatvoren nalaz",
+      "Kao legal hold"
+    ],
+    "answer": 0,
+    "explain": "Remedijacija zavisi od drugog posla (upgrade Jave), što je dependency u action planu. Nalaz ostaje otvoren uz privremenu mitigaciju i praćenje roka."
+  },
+  {
+    "obj": "4.1",
+    "q": "Vlasnik sistema je propustio 7-dnevni SLA za kritičnu ranjivost sa KEV liste i ne odgovara na tiket. Šta VM analitičar treba da uradi?",
+    "options": [
+      "Sam se prijaviti na server i instalirati zakrpu",
+      "Zatvoriti tiket kao prihvaćen rizik",
+      "Eskalirati prema definisanom putu eskalacije (menadžer, zatim risk owner/CISO)",
+      "Ukloniti server iz obima skeniranja"
+    ],
+    "answer": 2,
+    "explain": "Action plan predviđa eskalaciju kada se rok probije. Analitičar nema ovlaštenje da mijenja tuđe sisteme niti da sam prihvati rizik; uklanjanje iz skeniranja skriva problem."
+  },
+  {
+    "obj": "4.1",
+    "q": "Security tim želi isključiti TLS 1.0 na internom portalu, ali bi time prestali raditi stari ručni skeneri u skladištu. Koji inhibitor remedijacije je u pitanju?",
+    "options": [
+      "Patch availability",
+      "Contractual agreements",
+      "Degrading functionality",
+      "Organizational governance"
+    ],
+    "answer": 2,
+    "explain": "Ispravka postoji, ali bi pokvarila funkcionalnost zavisnih uređaja: degrading functionality. Rješenje je plan zamjene uređaja, izuzetak sa rokom i kompenzacione kontrole."
+  },
+  {
+    "obj": "4.1",
+    "q": "Uprava pita da li se izloženost organizacije ranjivostima smanjuje tokom posljednjih šest mjeseci. Koja metrika NAJBOLJE odgovara?",
+    "options": [
+      "Trend broja otvorenih kritičnih i visokih nalaza kroz vrijeme (nove vs zatvorene)",
+      "Broj skenera u organizaciji",
+      "Ukupan broj CVE-ova objavljenih u NVD-u",
+      "Broj portova otvorenih na jednom serveru danas"
+    ],
+    "answer": 0,
+    "explain": "Pitanje „da li se smanjuje“ traži trend kroz vrijeme. Broj skenera i globalni broj CVE-ova ne mjere izloženost organizacije, a jedna tačka ne pokazuje kretanje."
+  },
+  {
+    "obj": "4.1",
+    "q": "Nalaz na Windows Server 2012 R2 sistemu ne može se ispraviti jer Microsoft više ne izdaje zakrpe za tu verziju bez ESU ugovora. Koji inhibitor je PRIMARAN?",
+    "options": [
+      "Business process interruption",
+      "Degrading functionality",
+      "Organizational governance",
+      "Legacy systems"
+    ],
+    "answer": 3,
+    "explain": "Sistem van podrške je legacy inhibitor. Mjere: izolacija, pojačan monitoring, virtual patching i plan migracije."
+  },
+  {
+    "obj": "4.2",
+    "q": "Novinar zove SOC analitičara i pita da li je kompanija pogođena ransomwareom o kojem se priča na forumima. Šta analitičar treba da uradi?",
+    "options": [
+      "Potvrditi incident da bi se izbjegle spekulacije",
+      "Ne komentarisati i proslijediti upit PR timu prema communication planu",
+      "Negirati incident dok istraga traje",
+      "Poslati novinaru tehnički izvještaj"
+    ],
+    "answer": 1,
+    "explain": "Eksterne izjave daje PR (uz pravni tim) prema planu. Analitičar ne potvrđuje niti negira; to sprečava netačne ili pravno štetne izjave."
+  },
+  {
+    "obj": "4.2",
+    "q": "Incident je pogodio lične podatke građana EU. Koja je obaveza prema GDPR-u za obavještavanje nadzornog tijela?",
+    "options": [
+      "Bez nepotrebnog odlaganja, a gdje je izvodivo najkasnije 72 sata od saznanja za povredu",
+      "U roku od 24 sata od početka napada",
+      "U roku od 30 dana od zatvaranja incidenta",
+      "Samo ako je incident prijavljen policiji"
+    ],
+    "answer": 0,
+    "explain": "GDPR član 33 propisuje obavještavanje nadzornog tijela u roku od 72 sata od saznanja. (NIS2 dodatno traži rano upozorenje u 24 h za značajne incidente.) Odluku i komunikaciju vodi pravni tim."
+  },
+  {
+    "obj": "4.2",
+    "q": "Postoje dokazi da napadač ima pristup korporativnom emailu i Teams-u. Kako IR tim treba da koordinira odgovor?",
+    "options": [
+      "Kroz Teams kanal sa imenom „ransomware-incident“",
+      "Preko unaprijed dogovorenog out-of-band kanala, uz need-to-know listu učesnika",
+      "Preko emaila sa oznakom „povjerljivo“",
+      "Na javnoj status stranici"
+    ],
+    "answer": 1,
+    "explain": "Operational security awareness: kompromitovani kanali se ne koriste, a krug ljudi se ograničava. Opisno ime kanala i email bi napadaču otkrili da je otkriven."
+  },
+  {
+    "obj": "4.2",
+    "q": "SOC lead primjećuje da 85% alarma jednog pravila analitičari zatvaraju kao benigne. Koja metrika ovo opisuje i šta je sljedeći korak?",
+    "options": [
+      "Nizak MTTD; više analitičara u smjeni",
+      "Visok phishing click rate; awareness trening",
+      "Visok true-positive rate; povećati ozbiljnost pravila",
+      "Visok false-positive rate; tuning pravila (izuzeci, pragovi, enrichment)"
+    ],
+    "answer": 3,
+    "explain": "Udio lažnih alarma je false-positive rate. Bučna pravila uzrokuju alert fatigue, pa se pravilo podešava. Ostale metrike mjere druge stvari."
+  },
+  {
+    "obj": "4.2",
+    "q": "Uprava želi znati koliko dugo napadači u prosjeku ostaju neotkriveni u mreži. Koja metrika to mjeri?",
+    "options": [
+      "Mean time to close",
+      "Alert volume",
+      "Mean time to detect (MTTD)",
+      "Mean time to remediate"
+    ],
+    "answer": 2,
+    "explain": "MTTD mjeri vrijeme od početka kompromitacije do otkrivanja (blisko dwell time-u). Mean time to close i remediate mjere kasnije faze, a alert volume je broj alarma."
+  },
+  {
+    "obj": "4.2",
+    "q": "IR lead mora upravi za 10 minuta objasniti incident koji traje. Šta treba pripremiti?",
+    "options": [
+      "Kompletan timeline sa svim Sysmon događajima",
+      "Listu svih IoC-a i hash-eva",
+      "ATT&CK Navigator sloj sa svim tehnikama",
+      "Executive summary: poslovni uticaj, trenutno stanje, rizik i potrebne odluke, bez tehničkog žargona"
+    ],
+    "answer": 3,
+    "explain": "Uprava treba sažetak na jednoj strani sa uticajem i odlukama. Timeline, IoC-i i ATT&CK mapiranje su prilozi za tehničke timove."
+  },
+  {
+    "obj": "4.2",
+    "q": "Incident traje treći dan i noćna smjena preuzima. Šta NAJBOLJE osigurava da se ništa ne izgubi?",
+    "options": [
+      "Neka nova smjena pročita sve SIEM alarme od početka",
+      "Usmeno dogovaranje na hodniku",
+      "Pisani strukturirani handover (otvorene stavke, vlasnici, akcije u toku, odluke na čekanju) uz kratak usmeni pregled",
+      "Zatvoriti incident i otvoriti novi za novu smjenu"
+    ],
+    "answer": 2,
+    "explain": "Shift/incident handover mora biti dokumentovan i strukturiran, sa jasnim vlasnikom svake stavke. Neformalna predaja gubi informacije, a novi tiket kida istoriju."
+  },
+  {
+    "obj": "4.2",
+    "q": "Nakon velikog incidenta tim organizuje sastanak sa svim učesnicima da utvrdi šta je radilo, šta nije i šta promijeniti u planu, bez traženja krivca. Kako se ova aktivnost zove?",
+    "options": [
+      "Tabletop vježba",
+      "Lessons learned (blameless post-incident review)",
+      "Incident declaration",
+      "Shift handover"
+    ],
+    "answer": 1,
+    "explain": "Lessons learned je post-incident aktivnost; rezultati ulaze u after action report i ažuriraju plan i playbookove. Tabletop je vježba unaprijed, deklaracija je početak incidenta."
+  },
+  {
+    "obj": "4.2",
+    "q": "SOC dobija generički vendor izvještaj o novoj ransomware kampanji. Šta interni threat intelligence izvještaj treba dodati da bi bio NAJKORISNIJI?",
+    "options": [
+      "Procjenu izloženosti našeg okruženja (verzije, assete), pokrivenost naših detekcija za TTP-ove kampanje i konkretne preporuke",
+      "Prevod vendor izvještaja na lokalni jezik",
+      "Listu svih ransomware grupa ikad zabilježenih",
+      "Cijenu otkupnine koju grupa obično traži"
+    ],
+    "answer": 0,
+    "explain": "Interni TI izvještaj je prilagođen organizaciji i okruženju: šta prijetnja znači za nas, da li smo izloženi i da li je detektujemo (ATT&CK mapiranje). Generički sadržaj ne pomaže odlukama."
+  },
+  {
+    "obj": "4.1",
+    "q": "Koje DVIJE stavke su inhibitori remedijacije prema CS0-004 ciljevima? Izaberi DVA.",
+    "options": [
+      "Business process interruption",
+      "Mean time to detect",
+      "Patch availability",
+      "Chain of custody"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Prekid poslovnih procesa i nedostupnost zakrpe su navedeni inhibitori (uz contractual agreements, governance, degrading functionality, legacy i proprietary sisteme). MTTD je metrika, a chain of custody pojam iz dokaza."
+  },
+  {
+    "obj": "4.2",
+    "q": "Koje DVIJE metrike NAJBOLJE pokazuju efikasnost programa svijesti o phishingu kroz godinu? Izaberi DVA.",
+    "options": [
+      "Alert volume u SIEM-u",
+      "Click rate u simuliranim phishing kampanjama",
+      "Mean time to remediate ranjivosti",
+      "Stopa prijave sumnjivih poruka od strane zaposlenih"
+    ],
+    "answer": [
+      1,
+      3
+    ],
+    "explain": "Pad click rate-a i rast stope prijave (report rate) kroz više kampanja pokazuju promjenu ponašanja. Alert volume i remedijacija ranjivosti ne mjere awareness."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Upari zahtjev sa metrikom.",
+    "options": [
+      "Koliko brzo SOC počne zadržavati napad nakon alarma",
+      "Koliko alarma dnevno generiše SIEM",
+      "Koliki udio alarma pravila je lažan",
+      "Koliko dugo napadač ostaje neotkriven",
+      "Koliko u prosjeku traje tiket od otvaranja do zatvaranja"
+    ],
+    "targets": [
+      "Mean time to detect",
+      "Mean time to respond",
+      "Mean time to close",
+      "Alert volume",
+      "False-positive rate"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "Brzina reakcije nakon alarma = MTTR (respond). Broj alarma = alert volume. Udio lažnih = FP rate. Vrijeme neotkrivenosti = MTTD. Od otvaranja do zatvaranja tiketa = mean time to close."
+  },
+  {
+    "obj": "4.2",
+    "type": "match",
+    "q": "Upari stakeholdera sa njegovom ulogom tokom incidenta.",
+    "options": [
+      "Izjava za medije",
+      "Procjena zakonskih obaveza obavještavanja i legal hold",
+      "Obavještenje nadzornog tijela za zaštitu podataka",
+      "Istraga krivičnog djela iznude",
+      "Obavještenje pogođenih korisnika usluge"
+    ],
+    "targets": [
+      "Legal team",
+      "Public relations",
+      "Regulatory reporting agencies",
+      "Law enforcement",
+      "Customers"
+    ],
+    "answer": [
+      1,
+      0,
+      2,
+      3,
+      4
+    ],
+    "explain": "PR daje izjave medijima, pravni tim procjenjuje obaveze i uvodi legal hold, regulator prima obavezna obavještenja, policija istražuje krivična djela, a klijenti dobijaju usaglašeno obavještenje kad su pogođeni."
+  },
+  {
+    "obj": "4.1",
+    "type": "match",
+    "q": "Upari situaciju sa inhibitorom remedijacije.",
+    "options": [
+      "CAB se sastaje jednom mjesečno i nema hitnog procesa",
+      "Dobavljač još nije izdao zakrpu",
+      "Restart ERP-a usred godišnjeg zatvaranja knjiga",
+      "Zatvoren SCADA uređaj koji kupac ne smije mijenjati",
+      "Ugovor o održavanju gubi važnost ako se instalira neodobren softver"
+    ],
+    "targets": [
+      "Contractual agreements",
+      "Organizational governance",
+      "Business process interruption",
+      "Proprietary systems",
+      "Patch availability"
+    ],
+    "answer": [
+      1,
+      4,
+      2,
+      3,
+      0
+    ],
+    "explain": "Spor proces odobrenja je governance; nema zakrpe = patch availability; prekid ključnog procesa = business process interruption; zatvoren sistem dobavljača = proprietary; ugovorno ograničenje = contractual agreements."
+  }
+]

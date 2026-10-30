@@ -1,0 +1,231 @@
+[
+  {
+    "obj": "5.2",
+    "q": "Task: create an SBOM for the image nginx:1.27 in CycloneDX format and save it to /opt/kurs/nginx.cdx.json. Which command does this?",
+    "options": [
+      "trivy image --format cyclonedx --output /opt/kurs/nginx.cdx.json nginx:1.27",
+      "trivy image --format json --output /opt/kurs/nginx.cdx.json nginx:1.27",
+      "trivy sbom --format cyclonedx nginx:1.27 > /opt/kurs/nginx.cdx.json",
+      "syft nginx:1.27 -o spdx-json=/opt/kurs/nginx.cdx.json"
+    ],
+    "answer": 0,
+    "explain": "--format cyclonedx produces a CycloneDX SBOM, and --output writes it to a file. --format json is Trivy's vulnerability report, trivy sbom scans an existing SBOM file, and syft with spdx-json produces SPDX, not CycloneDX."
+  },
+  {
+    "obj": "5.2",
+    "q": "A vendor sent you the SBOM file vendor-app.spdx.json, but not the image itself. You need to determine whether any components have CRITICAL vulnerabilities. What do you run?",
+    "options": [
+      "trivy image --input vendor-app.spdx.json --severity CRITICAL",
+      "trivy sbom --severity CRITICAL vendor-app.spdx.json",
+      "syft scan vendor-app.spdx.json --severity CRITICAL",
+      "trivy fs --format spdx-json vendor-app.spdx.json"
+    ],
+    "answer": 1,
+    "explain": "trivy sbom reads an SBOM (SPDX or CycloneDX) and looks for vulnerabilities in the listed packages without the image. trivy image --input expects an image tar archive, syft creates SBOMs and doesn't scan for vulnerabilities, and trivy fs scans a directory."
+  },
+  {
+    "obj": "5.2",
+    "q": "You run trivy image --severity CRITICAL nginx:1.19 and get 11 findings. With --ignore-unfixed the number drops to 7. What does that mean?",
+    "options": [
+      "Four vulnerabilities are false positives and can be ignored",
+      "Four vulnerabilities are already patched in the image",
+      "For four vulnerabilities the distribution doesn't have a fixed package version yet",
+      "Four vulnerabilities are in application dependencies, not in OS packages"
+    ],
+    "answer": 2,
+    "explain": "--ignore-unfixed hides findings without a Fixed Version, i.e. those for which there is no patch you could install. They still exist in the image; they are neither false positives nor patched."
+  },
+  {
+    "obj": "5.2",
+    "q": "Task: delete all Pods in the prod namespace whose images have CRITICAL vulnerabilities. Which command gets you the Pod → images list fastest?",
+    "options": [
+      "kubectl -n prod describe pods | grep -i severity",
+      "trivy k8s --namespace prod --report summary pods",
+      "crictl images --digests on the controlplane node",
+      "kubectl -n prod get pods -o custom-columns='POD:.metadata.name,IMAGES:.spec.containers[*].image'"
+    ],
+    "answer": 3,
+    "explain": "custom-columns prints the Pod name and the images from the spec, and then you scan each image with trivy image. describe knows nothing about vulnerabilities, crictl images on the controlplane doesn't show Pods on node01, and trivy k8s doesn't give the mapping the task asks for."
+  },
+  {
+    "obj": "5.2",
+    "q": "You deleted the Pod web-7d9c5-abcde because the image nginx:1.19 has CRITICAL vulnerabilities. A few seconds later kubectl -n prod get pods shows a new Pod web-7d9c5-xyz12 with the same image. Why?",
+    "options": [
+      "The Pod belongs to a Deployment, so the ReplicaSet creates a replacement; you need to remove or scale the Deployment",
+      "kubelet restarts deleted Pods because of restartPolicy: Always",
+      "The Pod is a static Pod and must be removed from /etc/kubernetes/manifests",
+      "The deletion failed because --force --grace-period=0 is missing"
+    ],
+    "answer": 0,
+    "explain": "The -7d9c5-xxxxx suffix is typical of a Pod from a ReplicaSet; the controller maintains the replica count. restartPolicy restarts containers within the same Pod, a static Pod would have the node name as a suffix, and the deletion obviously succeeded."
+  },
+  {
+    "obj": "5.2",
+    "q": "During an incident investigation you need to determine exactly which image content ran in the Pod api-0, even though the tag app:1.4 has since been republished. What do you look at?",
+    "options": [
+      "kubectl get pod api-0 -o jsonpath='{.spec.containers[*].image}'",
+      "kubectl get pod api-0 -o jsonpath='{.status.containerStatuses[*].imageID}'",
+      "The annotation kubectl.kubernetes.io/last-applied-configuration",
+      "trivy image app:1.4"
+    ],
+    "answer": 1,
+    "explain": "status.containerStatuses[].imageID contains the digest (sha256) of the image that was actually pulled. The spec and last-applied show the tag, which has since changed, and trivy would scan the new image under that tag."
+  },
+  {
+    "obj": "5.2",
+    "q": "The 2021 attack on Codecov modified a script that CI pipelines downloaded and executed. Which measure would most directly have prevented the damage?",
+    "options": [
+      "Scanning the final image with Trivy before deployment",
+      "A ValidatingAdmissionPolicy that allows only the private registry",
+      "Verifying the hash or signature of the downloaded script before executing it, and minimal secrets in the CI environment",
+      "readOnlyRootFilesystem in the application Pods"
+    ],
+    "answer": 2,
+    "explain": "The damage happened in the CI phase: the modified script sent environment variables containing secrets. Verifying the integrity of the downloaded tool and having fewer secrets in the pipeline address exactly that; image scanning and in-cluster controls come only later."
+  },
+  {
+    "obj": "5.3",
+    "q": "You applied the ValidatingAdmissionPolicy allowed-registries, which allows only images from registry.internal:5000/. kubectl run test --image=nginx:1.27 still succeeds. kubectl get validatingadmissionpolicy shows the policy. What is the most likely cause?",
+    "options": [
+      "failurePolicy is Ignore",
+      "The API server needs a restart to load the policy",
+      "ValidatingAdmissionPolicy needs to be added to --enable-admission-plugins",
+      "There is no ValidatingAdmissionPolicyBinding binding the policy"
+    ],
+    "answer": 3,
+    "explain": "A policy without a Binding isn't applied to anything. The plugin is enabled by default and no restart is needed; failurePolicy only affects errors while evaluating the expression, not whether the expression is false."
+  },
+  {
+    "obj": "5.3",
+    "q": "The validation in a ValidatingAdmissionPolicy reads: object.spec.containers.all(c, c.image.startsWith('registry.internal:5000/')) && object.spec.initContainers.all(c, c.image.startsWith('registry.internal:5000/')). failurePolicy is Fail. A Pod without initContainers with the image registry.internal:5000/nginx:1.27 is rejected. Why?",
+    "options": [
+      "The expression accesses the initContainers field, which doesn't exist; you need !has(object.spec.initContainers) || …",
+      "startsWith doesn't support a colon in the string",
+      "You must use oldObject instead of object on CREATE",
+      "all() returns false for an empty list"
+    ],
+    "answer": 0,
+    "explain": "When a field doesn't exist, accessing it causes an evaluation error, and failurePolicy: Fail then rejects the request. A has() guard solves the problem. oldObject is null on CREATE, and all() over an empty list returns true."
+  },
+  {
+    "obj": "5.3",
+    "q": "The task requires ImagePolicyWebhook to reject Pods when the backend service is unavailable. Which setting in the AdmissionConfiguration achieves this?",
+    "options": [
+      "denyTTL: 0",
+      "defaultAllow: false",
+      "retryBackoff: 0",
+      "failurePolicy: Fail"
+    ],
+    "answer": 1,
+    "explain": "defaultAllow determines the decision when the backend doesn't respond; false means fail-closed. denyTTL and retryBackoff concern caching and retries, and failurePolicy is a field of webhook and ValidatingAdmissionPolicy objects, not of the imagePolicy configuration."
+  },
+  {
+    "obj": "5.3",
+    "q": "You added the flags --enable-admission-plugins=NodeRestriction,ImagePolicyWebhook and --admission-control-config-file=/etc/kubernetes/admission/admission-config.yaml to kube-apiserver.yaml. The file exists on the node, but the API server doesn't come up, and crictl logs shows 'no such file or directory'. What is missing?",
+    "options": [
+      "The flag --runtime-config=imagepolicy.k8s.io/v1alpha1=true",
+      "systemctl restart kube-apiserver",
+      "A hostPath volume and volumeMount for /etc/kubernetes/admission in the manifest",
+      "The label admission=enabled on the controlplane Node object"
+    ],
+    "answer": 2,
+    "explain": "The API server runs in a static Pod container and sees only the host paths that are mounted. Without the volume, the file doesn't exist inside the container. kube-apiserver isn't a systemd service in a kubeadm cluster, and a node label is irrelevant."
+  },
+  {
+    "obj": "5.3",
+    "q": "In the kubeconfig for the ImagePolicyWebhook backend, what does the users section represent?",
+    "options": [
+      "Cluster users who are allowed to run Pods",
+      "The ServiceAccount under which the backend reads Pods from the API",
+      "The list of registries whose images are allowed",
+      "The credentials (client certificate and key) the API server uses to authenticate to the backend"
+    ],
+    "answer": 3,
+    "explain": "In this kubeconfig, clusters describes the remote service (server URL and CA), and users holds the API server's own credentials towards that service. The allowed registries are determined by the backend's logic, not by the kubeconfig."
+  },
+  {
+    "obj": "5.3",
+    "q": "You have cosign.key and cosign.pub. Which command verifies that the image registry.internal:5000/app:1.0 was signed with this key pair?",
+    "options": [
+      "cosign verify --key cosign.pub registry.internal:5000/app:1.0",
+      "cosign verify --key cosign.key registry.internal:5000/app:1.0",
+      "cosign sign --verify --key cosign.pub registry.internal:5000/app:1.0",
+      "cosign verify-blob --key cosign.pub registry.internal:5000/app:1.0"
+    ],
+    "answer": 0,
+    "explain": "Verification uses the public key: cosign verify --key cosign.pub. The private key is only for signing, sign has no --verify, and verify-blob verifies the signature of a regular file, not an image in a registry."
+  },
+  {
+    "obj": "5.3",
+    "q": "The image app:1.0 was signed with cosign. Later someone pushed a different image under the same tag. What does cosign verify --key cosign.pub app:1.0 return?",
+    "options": [
+      "Success, because the signature is bound to the tag",
+      "The error no matching signatures, because the signature is bound to the old image's digest",
+      "Success with a warning that the tag changed",
+      "An error that the public key is no longer valid"
+    ],
+    "answer": 1,
+    "explain": "cosign signs the digest. The tag resolves to a new digest for which no signature exists, so verification fails. The key is still valid; the problem is the image content."
+  },
+  {
+    "obj": "5.3",
+    "q": "With keyless signing in cosign there is no private key. What do you specify for cosign verify instead?",
+    "options": [
+      "--key https://rekor.sigstore.dev",
+      "--certificate-chain with Fulcio's root CA and nothing else",
+      "--certificate-identity and --certificate-oidc-issuer",
+      "--insecure-ignore-tlog=true"
+    ],
+    "answer": 2,
+    "explain": "A keyless signature binds a short-lived Fulcio certificate to an OIDC identity, so verification requires the expected identity and the token issuer. Rekor isn't a key, and ignoring the transparency log weakens verification instead of enabling it."
+  },
+  {
+    "obj": "5.3",
+    "q": "Which TWO measures prevent a Pod with an image from docker.io from running in the prod namespace? (Choose TWO.)",
+    "options": [
+      "A ValidatingAdmissionPolicy with a CEL expression that checks the image prefix, with a Binding to the prod namespace",
+      "imagePullPolicy: Always in all Pods",
+      "An ImagePolicyWebhook whose backend rejects images outside the internal registry",
+      "trivy image --exit-code 1 in the CI pipeline",
+      "A NetworkPolicy that blocks Pod egress to the internet"
+    ],
+    "answer": [0, 2],
+    "explain": "Both mechanisms work in the admission phase and reject the Pod before it is created. imagePullPolicy only forces a re-pull, Trivy in CI doesn't control what runs in the cluster, and a NetworkPolicy doesn't affect where kubelet/containerd pulls the image from."
+  },
+  {
+    "obj": "5.3",
+    "type": "order",
+    "q": "Put the steps for enabling ImagePolicyWebhook on the controlplane node in order.",
+    "options": [
+      "Add ImagePolicyWebhook to --enable-admission-plugins and set --admission-control-config-file",
+      "Write the AdmissionConfiguration with imagePolicy (kubeConfigFile, defaultAllow) in /etc/kubernetes/admission/",
+      "Check that kube-apiserver came back up (crictl ps, kubectl get nodes) and test a Pod with a disallowed image",
+      "Prepare the kubeconfig for the backend (server, CA, client certificate) in the same directory",
+      "Add a hostPath volume and volumeMount for /etc/kubernetes/admission in kube-apiserver.yaml"
+    ],
+    "answer": [3, 1, 4, 0, 2],
+    "explain": "First you prepare the files (the kubeconfig the AdmissionConfiguration points to), then the manifest: volumes and flags (the order of those two changes in the same file doesn't matter, but everything must be ready before saving), then verification. If you save the manifest before the files exist, the API server won't start."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Match the tool or format with its role in the supply chain.",
+    "options": [
+      "syft",
+      "CycloneDX",
+      "cosign",
+      "Rekor",
+      "SLSA provenance"
+    ],
+    "targets": [
+      "Public transparency log where signatures are recorded",
+      "A record of how and where an artifact was built",
+      "A tool that generates an SBOM from an image or directory",
+      "Signing and verifying signatures of OCI images",
+      "OWASP's security-oriented SBOM format",
+      "A configuration scanner for Kubernetes manifests"
+    ],
+    "answer": [2, 4, 3, 0, 1],
+    "explain": "syft creates SBOMs, CycloneDX is OWASP's SBOM format, cosign signs images, Rekor is the Sigstore transparency log, and provenance describes how an artifact was built. The manifest scanner (e.g. kubesec) is a distractor."
+  }
+]

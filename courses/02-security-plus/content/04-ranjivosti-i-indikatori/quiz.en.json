@@ -1,0 +1,157 @@
+[
+  {
+    "obj": "2.4",
+    "q": "A payout service first checks whether the account has sufficient funds and then, in a separate step, deducts the amount. An attacker sends 20 simultaneous payout requests and all of them succeed, even though the balance was enough for one. Which vulnerability was exploited?",
+    "options": ["Buffer overflow", "Race condition (TOCTOU)", "Directory traversal", "Unsafe exception handling"],
+    "answer": 1,
+    "explain": "Between the check (time-of-check) and the use (time-of-use), the state changed because of parallel requests, which is a TOCTOU race condition. The fix is atomic operations or transactions with locking. The other attacks don't depend on execution timing."
+  },
+  {
+    "obj": "2.4",
+    "q": "A developer accidentally pushed an AWS access key to a public GitHub repository. He noticed the mistake after 10 minutes. What should be done FIRST?",
+    "options": ["Delete the file with a new commit", "Make the repository private", "Rewrite git history so the key disappears", "Deactivate and rotate the key in IAM"],
+    "answer": 3,
+    "explain": "A secret that was public, even briefly, is considered compromised because bots scan GitHub in real time. First the key is revoked and rotated, then the history is cleaned and CloudTrail is reviewed. Deleting the file or hiding the repository doesn't undo a key that has already been copied."
+  },
+  {
+    "obj": "2.4",
+    "q": "A researcher found an S3 bucket with customer database backups that can be accessed without authentication. Which vulnerability category is MOST precise?",
+    "options": ["Public object storage (misconfiguration)", "Zero-day", "Unsupported product", "Rogue device"],
+    "answer": 0,
+    "explain": "A publicly accessible bucket is a classic public object storage misconfiguration. The fix is Block Public Access at the account level and CSPM monitoring. There's no unknown software vulnerability and no unauthorized device."
+  },
+  {
+    "obj": "2.4",
+    "q": "When an apostrophe is entered into a search form, the application shows a full stack trace with the framework version, a table name, and the SQL query. Which code weakness is PRIMARILY present?",
+    "options": ["Hardcoded secrets", "Malicious update", "Unsafe exception handling", "Resource reuse"],
+    "answer": 2,
+    "explain": "The application handles errors poorly and reveals internal details that help an attacker (and hints at SQL injection). The correct approach is to show a generic message and write the details only to the log. There are no secrets in the code and no malicious update."
+  },
+  {
+    "obj": "2.4",
+    "q": "A review of card expenses shows that the marketing team pays for its own cloud account where it keeps a copy of the CRM database, without IT's knowledge and without any security controls. What is this called?",
+    "options": ["Rogue access point", "Shadow IT", "An insider threat motivated by revenge", "A supply chain attack"],
+    "answer": 1,
+    "explain": "Shadow IT is systems and services employees introduce without IT's approval and oversight. There's no malicious intent, so it isn't an insider threat in the attack sense, and it isn't an attack through a vendor either."
+  },
+  {
+    "obj": "2.4",
+    "q": "A hypervisor vulnerability allows code in one VM to access the memory of the host and of other VMs on the same physical server. What is this attack called?",
+    "options": ["VM sprawl", "Resource reuse", "Privilege escalation inside the guest", "VM escape"],
+    "answer": 3,
+    "explain": "VM escape is breaking out of guest isolation to the hypervisor, which endangers all VMs on the host. VM sprawl is an uncontrolled number of VMs, and resource reuse is an uncleaned resource from a previous tenant."
+  },
+  {
+    "obj": "2.4",
+    "q": "A company uses a single cloud identity provider for SSO into more than 200 applications. Why is the IdP an especially important part of the attack surface, and what is the BEST protection?",
+    "options": ["Compromising the IdP or an admin account in it grants access to all connected applications; protection is phishing-resistant MFA for admins and monitoring configuration changes", "The IdP stores all passwords in plaintext; protection is disk encryption", "The IdP is exposed only to DDoS; protection is a CDN", "The IdP isn't attack surface because the provider maintains it"],
+    "answer": 0,
+    "explain": "The IdP is the central point of trust: by taking over an admin account, the token signing key, or by adding a fake federation, an attacker can sign in anywhere. That's why admin accounts need FIDO2 MFA and strict monitoring. The shared responsibility model doesn't relieve the customer of protecting configuration and accounts."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Match each finding with the vulnerability or attack surface type.",
+    "options": ["The vendor stopped releasing patches for the firewall model you use", "A patch for the Exchange server has existed for 4 months but isn't installed", "A Raspberry Pi found plugged into a network jack in a meeting room", "A former employee's IAM access key is still active after 2 years", "A popular open-source library received a hidden backdoor in a new version", "A website chatbot follows instructions hidden in a document the user attaches", "An actively exploited vulnerability for which the vendor has no patch yet", "An employee installs an app on a company phone from an APK file downloaded from a forum"],
+    "targets": ["Unpatched system", "Unsupported product", "Zero-day", "Rogue device", "Malicious update", "Stale credentials", "Large language model", "Mobile device (sideloading)"],
+    "answer": [1, 0, 3, 5, 4, 6, 2, 7],
+    "explain": "No patches from the vendor is unsupported, and an existing uninstalled patch is unpatched. An unapproved device on the network is a rogue device, a former employee's active key is stale credentials, a backdoor through a new version is a malicious update, hidden instructions to a model are LLM attack surface (prompt injection), an attack with no available patch is a zero-day, and an APK from a forum is sideloading on a mobile device."
+  },
+  {
+    "obj": "2.5",
+    "q": "On exactly the day an administrator's account was deactivated after he was let go, a script scheduled months earlier deleted all tables in the production database. Which type of malware is MOST likely involved?",
+    "options": ["Worm", "Spyware", "Logic bomb", "Adware"],
+    "answer": 2,
+    "explain": "A logic bomb is malicious code that waits for a trigger (a date or an event, such as an account being disabled) and then causes damage. It's often planted by an insider. A worm spreads across the network, spyware steals data, and adware shows ads."
+  },
+  {
+    "obj": "2.5",
+    "q": "EDR reports that WINWORD.EXE launched powershell.exe with the -EncodedCommand parameter, which loaded code directly into memory. No new executable was found on disk. What is MOST likely?",
+    "options": ["Fileless malware", "A firmware rootkit", "A virus that infects .exe files", "Adware"],
+    "answer": 0,
+    "explain": "Fileless malware lives in memory and uses legitimate tools such as PowerShell, with no file on disk, so file-scanning antivirus has trouble seeing it. A virus would modify executables, and a rootkit would hide deep in the system."
+  },
+  {
+    "obj": "2.5",
+    "q": "A network sensor sees a server sending large amounts of data to an unknown IP address, but Task Manager, netstat, and the service list on the server itself show nothing unusual. What is MOST likely present?",
+    "options": ["Adware", "Keylogger", "Logic bomb", "Rootkit"],
+    "answer": 3,
+    "explain": "A rootkit modifies the system so that OS tools don't display its processes, connections, and files, so the activity is visible only from outside (a network sensor, offline analysis). A keylogger and adware don't hide that way."
+  },
+  {
+    "obj": "2.5",
+    "q": "A camera shows that a person carrying a box of donuts walked through the server room door right behind an employee, who kindly held the door. The person didn't use their own badge. Which physical attack is described, and which control BEST prevents it?",
+    "options": ["Shoulder surfing, privacy filter", "Tailgating, access vestibule", "Skimming, inspecting card readers", "Forced entry, reinforced doors"],
+    "answer": 1,
+    "explain": "Following an authorized person in without authenticating yourself is tailgating (in this case with consent, which is also called piggybacking). An access vestibule lets one person through per authentication. There was no observation of a password, no card copying, and no break-in."
+  },
+  {
+    "obj": "2.5",
+    "q": "Entra ID records a successful sign-in by a user from Sarajevo at 09:02, followed by a successful sign-in to the same account from Brazil at 09:15. Which indicator is this, and what is the BEST next step?",
+    "options": ["Account lockout; unlock the account", "Concurrent sessions; increase the number of allowed sessions", "Impossible travel; revoke the user's sessions and reset their credentials", "Excessive resource consumption; scale the service"],
+    "answer": 2,
+    "explain": "Two sign-ins from locations that can't physically be traveled between in 13 minutes are impossible travel, which points to a stolen password or token. The first step is to revoke sessions and reset credentials (while checking for a VPN as a possible false positive)."
+  },
+  {
+    "obj": "2.5",
+    "q": "A user reports that at 2 a.m. he received 40 push notifications asking him to approve a sign-in, and that he eventually approved one \"to make them stop.\" What is the attack called, and which control BEST mitigates it?",
+    "options": ["MFA fatigue; number matching or FIDO2 MFA", "Password spraying; a longer password", "SIM swapping; SMS codes", "User enumeration; generic error messages"],
+    "answer": 0,
+    "explain": "MFA fatigue (push bombing) is an MFA bypass that wears down the user until they approve the request. The attacker already knows the password. Number matching requires entering the number shown on the sign-in screen, and FIDO2 is phishing-resistant. SMS codes are weaker, not stronger."
+  },
+  {
+    "obj": "2.5",
+    "q": "An employee received an email with no links at all, just an image of a QR code and the message \"Scan to renew your MFA.\" Scanning it with a phone opens a fake Microsoft login page. What is this attack MOST precisely called?",
+    "options": ["Smishing", "Vishing", "Whaling", "Quishing"],
+    "answer": 3,
+    "explain": "Phishing via a QR code is quishing, regardless of the fact that the QR code arrived by email. The attack bypasses link filters and moves the victim to a phone, outside corporate protection. Smishing is via SMS, vishing via voice, and whaling targets executives."
+  },
+  {
+    "obj": "2.5",
+    "q": "An accountant approved an urgent payment after a video call in which the CFO and two colleagues assured him the transaction was confidential. It later turned out none of them had been on the call. What was MOST likely used, and which process control would have prevented it?",
+    "options": ["Watering hole; web traffic filtering", "Deepfake; mandatory verification of payments through another channel (callback to a known number)", "Typosquatting; DMARC", "Spyware; EDR"],
+    "answer": 1,
+    "explain": "AI-generated video and voice of real people is a deepfake, a form of impersonation attack. Technical controls struggle to recognize deepfakes, so the key is a process control: verifying the request through a different, previously known channel and dual approval for large payments."
+  },
+  {
+    "obj": "2.5",
+    "q": "In a coffee shop next to the office, employees see two Wi-Fi networks named \"Firma-Guest\". For those who connect to one of them, the browser reports a certificate error on login pages. What is MOST likely going on?",
+    "options": ["DNS cache poisoning on the corporate resolver", "A DDoS attack on the access point", "A rogue access point (evil twin) for an on-path attack", "Bluesnarfing"],
+    "answer": 2,
+    "explain": "A fake access point with the same SSID (evil twin) puts the attacker in the traffic path, and the certificate errors are a sign that they're intercepting TLS. A DDoS would cause unavailability, and cache poisoning would happen on the DNS server, not on a new Wi-Fi network."
+  },
+  {
+    "obj": "2.5",
+    "q": "On a compromised server, there's a 3-hour gap in the Security event log, and several suspicious files have a 2019 creation date even though they appeared last week. Which TWO indicators of compromise are present? Choose TWO.",
+    "options": ["Account lockout", "Log manipulation", "Timestamp (timestomping)", "Concurrent sessions"],
+    "answer": [1, 2],
+    "explain": "A gap in the log points to log deletion or manipulation, and the fake file dates point to timestomping, i.e., timestamp manipulation. Both serve to cover tracks. There's no data about locked accounts or concurrent sessions."
+  },
+  {
+    "obj": "2.5",
+    "type": "match",
+    "q": "Match each log entry or description with the attack that fits it BEST.",
+    "options": ["GET /download?file=../../../../etc/passwd", "username=admin' OR '1'='1' --", "The same signed payment request arrives 50 times with an identical nonce", "The password \"Jesen2026!\" tried once against 3,000 different accounts", "Login returns \"user does not exist\" for some and \"wrong password\" for others", "A program crashes after 5,000 \"A\" characters are entered into the name field", "A hidden form on a malicious site sends POST /transfer with the logged-in victim's cookie", "A user without admin rights exploits a bug in a service and gets a SYSTEM shell"],
+    "targets": ["Injection", "Directory traversal", "Buffer overflow", "Replay", "Password spraying", "User enumeration", "Forgery (CSRF)", "Privilege escalation", "Brute force"],
+    "answer": [1, 0, 3, 4, 5, 2, 6, 7],
+    "explain": "../ is directory traversal, ' OR '1'='1' is SQL injection, a repeated valid request is replay, one password against many accounts is spraying (not brute force), different messages reveal existing accounts (user enumeration), a long string of characters that crashes the program is a buffer overflow, a request sent from the victim's browser is CSRF (forgery), and gaining higher rights is privilege escalation."
+  },
+  {
+    "obj": "2.5",
+    "type": "match",
+    "q": "Match each behavior with the malware type.",
+    "options": ["Spreads by itself from server to server via an SMB vulnerability, without any user action", "A free \"PDF converter\" that opens remote access for the attacker in the background", "Files get the .locked extension and a message with a Bitcoin address appears", "Records every typed character and sends it to the attacker every 10 minutes", "The browser keeps opening pop-up ads and its home page has been changed", "Inserts its code into other .exe files and activates when the user runs an infected program", "Secretly tracks which sites the user visits and sends the profile to a third party"],
+    "targets": ["Virus", "Worm", "Trojan", "Ransomware", "Keylogger", "Adware", "Spyware"],
+    "answer": [1, 2, 3, 4, 5, 0, 6],
+    "explain": "Self-propagation is a worm, a useful program with a hidden function is a trojan, encryption plus ransom is ransomware, recording keystrokes is a keylogger, ads are adware, inserting into other files with a user action is a virus, and secretly tracking activity is spyware."
+  },
+  {
+    "obj": "2.5",
+    "type": "spot",
+    "q": "In this web server access log excerpt, click the requests that are indicators of an attack.",
+    "lang": "log",
+    "snippet": "10.0.4.17 - - [12/Oct:10:02:11] \"GET /index.html HTTP/1.1\" 200 5120\n10.0.4.17 - - [12/Oct:10:02:12] \"GET /css/main.css HTTP/1.1\" 200 1840\n10.0.4.33 - - [12/Oct:10:03:40] \"POST /login HTTP/1.1\" 302 0\n10.0.4.33 - - [12/Oct:10:03:41] \"GET /dashboard HTTP/1.1\" 200 8204\n10.0.4.91 - - [12/Oct:10:04:05] \"GET /dl?file=..%2f..%2f..%2fetc%2fshadow HTTP/1.1\" 200 1243\n10.0.4.33 - - [12/Oct:10:04:30] \"GET /api/orders?page=2 HTTP/1.1\" 200 3310\n10.0.4.91 - - [12/Oct:10:04:52] \"GET /s?q=%3Cscript%3Ealert(document.cookie)%3C/script%3E HTTP/1.1\" 200 911\n10.0.4.17 - - [12/Oct:10:05:10] \"GET /favicon.ico HTTP/1.1\" 404 0",
+    "answer": [4, 6],
+    "explain": "Line 5: ..%2f is URL-encoded ../, so this is directory traversal toward /etc/shadow, with a 200 response (probably successful). Line 7: %3Cscript%3E is <script>, an XSS probe that reads document.cookie. Both come from the same address 10.0.4.91. The other lines are normal browsing, a login and a 404 for the favicon."
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "title": "Capstone: incident od alarma do izvještaja",
+  "summary": "Kompletan detection package za novi platni servis: log i dekoder, Wazuh pravila sa korelacijom i ATT&CK, FIM, testirano Sigma pravilo i runbook.",
+  "minutes": 150,
+  "practice": true,
+  "title_en": "Capstone: an incident from alert to report",
+  "summary_en": "A complete detection package for a new payment service: log and decoder, Wazuh rules with correlation and ATT&CK, FIM, a tested Sigma rule and a runbook."
+}

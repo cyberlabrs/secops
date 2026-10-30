@@ -1,0 +1,241 @@
+[
+  {
+    "obj": "3.2",
+    "q": "Kompanija pokreće stotine EC2 instanci iz vlastitog AMI-ja. Security tim traži da svaki AMI bude hardenovan po STIG smjernicama, da sadrži najnovije zakrpe i da se novi AMI automatski pravi i skenira na ranjivosti svake sedmice prije distribucije u tri regiona. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Pokrenuti Packer na posebnoj EC2 instanci preko cron posla i kopirati AMI u regione AWS CLI skriptom",
+      "Kreirati EC2 Image Builder pipeline sa STIG komponentom, rasporedom, uključenim Inspector skeniranjem i distribution configuration za tri regiona",
+      "Koristiti user data skriptu koja pri svakom pokretanju instance instalira zakrpe i primjenjuje STIG podešavanja",
+      "Koristiti AWS Config pravilo approved-amis-by-id i ručno praviti novi AMI kad pravilo prijavi neusklađenost"
+    ],
+    "answer": 1,
+    "explain": "EC2 Image Builder je managed servis koji radi build, hardening komponente (uključujući STIG), Inspector skeniranje i distribuciju u više regiona po rasporedu. Packer i cron traže održavanje vlastite infrastrukture, user data usporava pokretanje i ne daje provjeren image, a Config samo detektuje."
+  },
+  {
+    "obj": "3.2",
+    "q": "Aplikacija na ECS Fargate treba čitati objekte iz S3 bucketa. Task se uspješno pokreće i image se povlači iz privatnog ECR-a, ali aplikacija dobija AccessDenied pri čitanju iz S3. Šta treba promijeniti?",
+    "options": [
+      "Dodati s3:GetObject u task execution role",
+      "Dodati s3:GetObject u instance profile ECS container instance",
+      "Dodati ECR pull dozvole u task role",
+      "Dodati s3:GetObject u task role koja je definisana u task definiciji"
+    ],
+    "answer": 3,
+    "explain": "Task role daje dozvole kodu aplikacije u kontejneru. Task execution role koristi ECS agent za povlačenje imagea, logove i tajne, a Fargate nema container instance ni instance profile."
+  },
+  {
+    "obj": "3.2",
+    "q": "Na EKS klasteru rade servisi više timova na istim čvorovima. Svaki servis treba pristup samo svojoj DynamoDB tabeli. Trenutno su sve dozvole na node IAM roli. Koje rješenje primjenjuje least privilege uz NAJMANJE operativnog napora?",
+    "options": [
+      "Koristiti EKS Pod Identity asocijacije koje svaki Kubernetes service account vežu za posebnu IAM ulogu i ograničiti podovima pristup IMDS-u čvora",
+      "Napraviti posebnu node grupu za svaki tim sa vlastitom node rolom",
+      "Generisati IAM access key za svaki servis i čuvati ga u Kubernetes Secret objektu",
+      "Dodati Kubernetes NetworkPolicy koja dozvoljava saobraćaj samo prema DynamoDB endpointu"
+    ],
+    "answer": 0,
+    "explain": "Pod Identity (ili IRSA) daje svakom service accountu vlastitu ulogu, a blokiranje IMDS-a sprečava podove da uzmu node rolu. Posebne node grupe su skupe i grube, statični ključevi krše best practice, a NetworkPolicy ne radi IAM autorizaciju."
+  },
+  {
+    "obj": "3.2",
+    "q": "Penetration test je pokazao da web aplikacija na EC2 ima SSRF ranjivost kroz koju napadač može pročitati http://169.254.169.254/latest/meta-data/iam/security-credentials/. Tim ne može odmah ispraviti kod. Koja kontrola NAJBRŽE sprečava krađu kredencijala na ovaj način?",
+    "options": [
+      "Ukloniti instance profile i staviti access key u konfiguracioni fajl aplikacije",
+      "Dodati security group pravilo koje blokira izlazni saobraćaj ka 169.254.169.254",
+      "Postaviti HttpTokens=required (IMDSv2) na instanci i hop limit 1",
+      "Uključiti GuardDuty i čekati nalaz o eksfiltraciji kredencijala"
+    ],
+    "answer": 2,
+    "explain": "IMDSv2 traži PUT zahtjev za session token, što tipičan SSRF (GET) ne može uraditi. Security group ne kontroliše link-local IMDS saobraćaj, statični ključ je gori, a GuardDuty samo detektuje nakon krađe."
+  },
+  {
+    "obj": "3.2",
+    "q": "Security tim želi kontinuirano otkrivati poznate CVE u container imageima u Amazon ECR-u i u zavisnostima Lambda funkcija, uključujući automatsko ponovno skeniranje kad se objavi novi CVE. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Uključiti ECR basic scanning na push i Lambda code signing",
+      "Uključiti GuardDuty Runtime Monitoring za ECS i Lambda",
+      "Uključiti Amazon Inspector sa ECR enhanced scanning i Lambda standard scanning",
+      "Pokretati Trivy jednom dnevno iz CodeBuild projekta nad svim imageima"
+    ],
+    "answer": 2,
+    "explain": "Inspector enhanced scanning ponovo procjenjuje imagee i Lambda funkcije kad se pojavi novi CVE, bez dodatnog održavanja. Basic scanning nema kontinuirano praćenje, code signing ne traži ranjivosti, GuardDuty Runtime Monitoring prati ponašanje, a CodeBuild sa Trivyjem traži vlastito održavanje."
+  },
+  {
+    "obj": "3.2",
+    "q": "Revizija je otkrila da developeri ponekad hardkodiraju API ključeve i pišu kod ranjiv na injection u Lambda funkcijama. Kompanija želi automatski pronaći te probleme u kodu funkcija koje su već deployovane. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Uključiti Amazon Inspector Lambda code scanning (uz Lambda standard scanning)",
+      "Uključiti AWS Lambda code signing sa AWS Signer profilom",
+      "Uključiti GuardDuty Lambda Protection",
+      "Uključiti Amazon Macie nad S3 bucketom u koji se pakuje kod"
+    ],
+    "answer": 0,
+    "explain": "Lambda code scanning analizira vlastiti kod funkcije i nalazi injection, hardkodovane tajne i slabu kriptografiju. Code signing samo potvrđuje porijeklo paketa, GuardDuty Lambda Protection prati mrežnu aktivnost funkcija, a Macie traži osjetljive podatke u S3, ne ranjivosti koda."
+  },
+  {
+    "obj": "3.2",
+    "q": "Kompanija koristi EKS i ECS na Fargate. Security tim mora dobiti alarm kad se u kontejneru pokrene nepoznat binarni fajl, otvori reverse shell ili pokrene crypto miner. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "Amazon Inspector ECR enhanced scanning",
+      "VPC Flow Logs sa CloudWatch Logs Insights upitima",
+      "AWS Config pravila za ECS task definicije",
+      "GuardDuty Runtime Monitoring sa automatski upravljanim security agentom za EKS i ECS Fargate"
+    ],
+    "answer": 3,
+    "explain": "Runtime Monitoring posmatra procese, fajlove i mrežne događaje unutar kontejnera i daje nalaze kao što su novi binarni fajl ili crypto mining. Inspector traži statične ranjivosti, Flow Logs ne vide procese, a Config provjerava konfiguraciju."
+  },
+  {
+    "obj": "3.2",
+    "q": "Organizacija ima 40 naloga sa Windows i Linux EC2 instancama u dva regiona. Kritične sigurnosne zakrpe moraju se instalirati automatski u nedjelju između 02:00 i 04:00, a status usklađenosti mora biti vidljiv centralno. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "EventBridge raspored koji pokreće Lambda funkciju koja se preko SSH-a spaja na instance i pokreće update",
+      "Systems Manager Patch Manager patch policy preko Quick Setup za cijelu organizaciju, sa custom patch baseline-om i rasporedom u maintenance prozoru",
+      "Amazon Inspector sa automatskom remedijacijom ranjivosti",
+      "User data skripta koja instalira zakrpe pri svakom reboot-u"
+    ],
+    "answer": 1,
+    "explain": "Patch policy u Quick Setup-u centralno definiše baseline, raspored i operaciju za više naloga i regiona, a rezultati idu u Compliance. Inspector pronalazi ranjivosti, ali ne instalira zakrpe, a SSH i user data rješenja su ručna i bez centralnog izvještaja."
+  },
+  {
+    "obj": "3.2",
+    "q": "EC2 instance u privatnom subnetu bez NAT gateway-a trebaju biti dostupne administratorima preko Session Managera. Agent je instaliran i instance profile ima AmazonSSMManagedInstanceCore, ali instance se ne pojavljuju kao managed nodes. Šta je uzrok?",
+    "options": [
+      "Nedostaju interface VPC endpointi za ssm, ssmmessages i ec2messages",
+      "Security group ne dozvoljava ulazni saobraćaj na portu 22",
+      "Nedostaje gateway VPC endpoint za Systems Manager",
+      "Instance nemaju Elastic IP adresu"
+    ],
+    "answer": 0,
+    "explain": "SSM Agent mora izlazno doći do SSM servisa; bez NAT-a to rade interface endpointi za ssm, ssmmessages i ec2messages. Session Manager ne treba port 22 ni javnu IP, a gateway endpointi postoje samo za S3 i DynamoDB."
+  },
+  {
+    "obj": "3.2",
+    "q": "Kompanija želi ukinuti bastion host. Administratori moraju pristupati Linux instancama bez otvorenog porta 22 prema internetu, svaka komanda mora biti zabilježena, a pristup se mora kontrolisati IAM politikama prema tagu instance. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "EC2 Instance Connect sa javnim IP adresama na instancama",
+      "AWS Client VPN i SSH ključevi po korisniku",
+      "Systems Manager Session Manager sa logovanjem sesija u S3 i CloudWatch Logs i IAM uslovom ssm:resourceTag",
+      "Bastion u Auto Scaling grupi sa SSH logovima u CloudWatch"
+    ],
+    "answer": 2,
+    "explain": "Session Manager ne traži ulazne portove, loguje cijelu sesiju i podržava IAM uslove na tag instance. Instance Connect sa javnim IP otvara port 22, a VPN i bastion i dalje traže upravljanje ključevima i ne daju audit komandi."
+  },
+  {
+    "obj": "3.2",
+    "q": "Tim mora koristiti SSH (ne Session Manager) prema instancama u privatnom subnetu, bez bastion hosta, bez javnih IP adresa i bez dugotrajnih SSH ključeva na laptopima. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "NAT gateway i SSH ključevi distribuirani kroz Secrets Manager",
+      "EC2 Instance Connect Endpoint u VPC-u uz IAM dozvole za slanje jednokratnog javnog ključa",
+      "Network Load Balancer sa TCP listenerom na portu 22",
+      "Site-to-Site VPN sa statičkim ključevima u authorized_keys"
+    ],
+    "answer": 1,
+    "explain": "EC2 Instance Connect Endpoint omogućava SSH do privatnih instanci bez javne IP i bastiona, a Instance Connect šalje kratkotrajan ključ kontrolisan IAM-om. NAT je samo za izlazni saobraćaj, NLB na 22 izlaže SSH, a VPN sa statičkim ključevima ne ispunjava zahtjev."
+  },
+  {
+    "obj": "3.2",
+    "q": "Developeri žele dobijati nalaze o sigurnosnim ranjivostima, tajnama i IaC greškama direktno u IDE-u dok pišu kod, uz predložene ispravke. Kompanija je do sada koristila Amazon CodeGuru Security. Koje rješenje treba izabrati?",
+    "options": [
+      "Nastaviti sa CodeGuru Security jer je to jedini AWS SAST servis",
+      "Amazon Inspector EC2 scanning",
+      "AWS Config conformance pack za developer naloge",
+      "Amazon Q Developer code review (security scanning) u IDE-u"
+    ],
+    "answer": 3,
+    "explain": "Amazon Q Developer radi SAST, detekciju tajni, IaC i SCA provjere u IDE-u sa predlozima ispravki. AWS je 20. novembra 2025. ukinuo podršku za CodeGuru Security i kao zamjenu navodi Q Developer i Inspector, dok Inspector EC2 i Config ne skeniraju kod u IDE-u."
+  },
+  {
+    "obj": "3.2",
+    "q": "Kompanija pravi chatbot na Amazon Bedrock za korisničku podršku. Odgovori nikad ne smiju sadržavati brojeve platnih kartica ni email adrese, ali ostatak odgovora treba prikazati korisniku. Koje rješenje ispunjava zahtjev uz NAJMANJE razvoja?",
+    "options": [
+      "Bedrock Guardrail sa sensitive information filterom koji maskira tipove PII za kartice i email u odgovoru",
+      "Amazon Macie nad S3 bucketom sa dokumentima za knowledge base",
+      "Lambda funkcija sa vlastitim regex izrazima koja obrađuje svaki odgovor",
+      "Denied topic u guardrailu za temu plaćanja"
+    ],
+    "answer": 0,
+    "explain": "Sensitive information filter može maskirati PII u odgovoru i vratiti ostatak teksta. Macie radi samo nad S3 podacima, vlastita Lambda traži razvoj i održavanje, a denied topic bi blokirao cijelu temu umjesto maskiranja."
+  },
+  {
+    "obj": "3.2",
+    "q": "Bedrock agent ima action group sa Lambda funkcijom čija uloga ima ec2:* i s3:*. Korisnik je ubacio instrukciju u dokument koji agent čita i agent je obrisao EC2 instance. Koje DVIJE mjere NAJVIŠE smanjuju rizik? (Izaberi DVA.)",
+    "options": [
+      "Ograničiti ulogu Lambda funkcije na tačno potrebne akcije i resurse",
+      "Povećati temperaturu modela da odgovori budu raznovrsniji",
+      "Uključiti potvrdu korisnika (human-in-the-loop) za destruktivne akcije agenta",
+      "Uključiti model invocation logging kao jedinu kontrolu",
+      "Prebaciti agenta u drugi region"
+    ],
+    "answer": [0, 2],
+    "explain": "Ovo je Excessive Agency (LLM06) izazvan indirektnim prompt injectionom: least privilege na ulozi i potvrda za rizične akcije ograničavaju štetu. Logovanje samo pomaže istrazi, a temperatura i region nemaju veze sa autorizacijom."
+  },
+  {
+    "obj": "3.2",
+    "q": "Platform tim želi osigurati da nijedan developer ne može pozvati Bedrock modele bez odobrenog guardraila verzije 3. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Uključiti model invocation logging i pregledati logove sedmično",
+      "Postaviti guardrail kao podrazumijevani u Bedrock konzoli",
+      "Dodati u IAM politike developera Deny na bedrock:InvokeModel i bedrock:Converse kad bedrock:GuardrailIdentifier nije ARN odobrenog guardraila verzije 3",
+      "Napraviti VPC endpoint politiku koja dozvoljava samo bedrock:ApplyGuardrail"
+    ],
+    "answer": 2,
+    "explain": "Uslov bedrock:GuardrailIdentifier omogućava da se inference poziv bez navedenog guardraila odbije. Logovanje samo detektuje, a endpoint politika koja dozvoljava samo ApplyGuardrail bi blokirala inference pozive potpuno."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Upari rizik iz OWASP Top 10 for LLM Applications 2025 sa NAJPRIKLADNIJOM kontrolom.",
+    "options": [
+      "LLM01 Prompt Injection",
+      "LLM02 Sensitive Information Disclosure",
+      "LLM06 Excessive Agency",
+      "LLM09 Misinformation",
+      "LLM10 Unbounded Consumption"
+    ],
+    "targets": [
+      "Contextual grounding check u Bedrock Guardrails",
+      "Throttling i kvote na API-ju, limit tokena po zahtjevu",
+      "Prompt attack filter u Bedrock Guardrails",
+      "Least privilege uloga za action group i potvrda korisnika",
+      "PII maskiranje u sensitive information filteru",
+      "S3 Object Lock na logovima"
+    ],
+    "answer": [2, 4, 3, 0, 1],
+    "explain": "Prompt injection blokira prompt attack filter, curenje PII rješava sensitive information filter, excessive agency least privilege i potvrda, misinformation grounding provjera, a unbounded consumption throttling i limiti. Object Lock nije kontrola za LLM rizike."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Upari zahtjev sa IAM mehanizmom koji ga ispravno rješava.",
+    "options": [
+      "Kod u Lambda funkciji treba pisati u DynamoDB tabelu.",
+      "ECS agent treba povući image iz privatnog ECR-a i pročitati tajnu za env varijablu.",
+      "Aplikacija na EC2 instanci treba čitati iz S3 bucketa.",
+      "Pod u EKS-u treba pristup SQS redu, a ostali podovi na čvoru ne smiju.",
+      "CodeBuild projekat treba push u ECR u tvoje ime."
+    ],
+    "targets": [
+      "Instance profile",
+      "Service role za CodeBuild",
+      "EKS Pod Identity asocijacija",
+      "Lambda execution role",
+      "ECS task execution role",
+      "Lambda resource-based policy"
+    ],
+    "answer": [3, 4, 0, 2, 1],
+    "explain": "Lambda kod koristi execution role; resource-based policy na funkciji kontroliše ko je smije pozvati. ECS agent koristi task execution role, EC2 instance profile, pod Pod Identity (ili IRSA), a servis koji radi u tvoje ime service role."
+  },
+  {
+    "obj": "3.2",
+    "type": "order",
+    "q": "Poredaj korake sigurnog CI/CD toka za container image ispravnim redom.",
+    "options": [
+      "Push imagea u ECR i Amazon Inspector enhanced scan",
+      "Deploy na ECS/EKS",
+      "SAST i skeniranje tajni i IaC u CodeBuild koraku",
+      "Gate koji zaustavlja pipeline ako postoje kritični nalazi",
+      "Commit koda u repozitorij"
+    ],
+    "answer": [4, 2, 0, 3, 1],
+    "explain": "Kod se prvo commituje, zatim se u buildu radi SAST/IaC/tajne, image se pusha i skenira u ECR-u, gate čita nalaze i tek onda slijedi deploy. Gate mora biti prije deploya da bi zaustavio ranjiv image."
+  }
+]

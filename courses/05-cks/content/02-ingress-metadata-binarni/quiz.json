@@ -1,0 +1,243 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Ingress shop u namespaceu shop ima spec.tls sa secretName: shop-tls. Secret si napravio komandom 'kubectl create secret tls shop-tls --cert=tls.crt --key=tls.key' bez -n, a trenutni namespace je default. openssl s_client pokazuje 'subject=CN=TRAEFIK DEFAULT CERT'. Šta je uzrok?",
+    "options": [
+      "Secret je u namespaceu default, a Ingress traži Secret samo u svom namespaceu",
+      "Secret mora biti tipa Opaque",
+      "Traefik ne podržava samopotpisane certifikate",
+      "U tls bloku nedostaje polje namespace: default"
+    ],
+    "answer": 0,
+    "explain": "secretName se uvijek razrješava u namespaceu Ingressa, pa kontroler ne nalazi Secret i servira svoj podrazumijevani certifikat. Polje namespace u tls bloku ne postoji, a samopotpisani certifikati i tip kubernetes.io/tls su ispravni."
+  },
+  {
+    "obj": "1.3",
+    "q": "Koja komanda pravi Secret koji Ingress može koristiti za TLS?",
+    "options": [
+      "kubectl -n shop create secret generic shop-tls --from-file=tls.crt --from-file=tls.key --type=Opaque",
+      "kubectl -n shop create configmap shop-tls --from-file=tls.crt --from-file=tls.key",
+      "kubectl -n shop create secret tls shop-tls --cert=tls.crt --key=tls.key",
+      "kubectl -n shop create secret docker-registry shop-tls --from-file=tls.crt"
+    ],
+    "answer": 2,
+    "explain": "create secret tls pravi tip kubernetes.io/tls sa ključevima tls.crt i tls.key i provjerava da su par. ConfigMap nije Secret, a generic/Opaque i docker-registry su pogrešni tipovi za TLS."
+  },
+  {
+    "obj": "1.3",
+    "q": "'curl --cacert tls.crt --resolve shop.example.com:31443:10.0.0.11 https://shop.example.com:31443/' vraća 'no alternative certificate subject name matches target host name'. Šta popravljaš?",
+    "options": [
+      "Dodaješ -k u curl jer je certifikat samopotpisan",
+      "Praviš novi certifikat sa subjectAltName=DNS:shop.example.com i ažuriraš Secret",
+      "Mijenjaš pathType u Exact",
+      "Dodaješ host u spec.defaultBackend"
+    ],
+    "answer": 1,
+    "explain": "Greška kaže da SAN certifikata ne sadrži ime hosta; klijenti gledaju SAN, ne samo CN. -k bi samo isključio provjeru (sigurnosni propust), a pathType i defaultBackend ne utiču na certifikat."
+  },
+  {
+    "obj": "1.3",
+    "q": "Na Traefik kontroleru treba preusmjeriti HTTP na HTTPS za Ingress shop u namespaceu shop. Napravio si Middleware redirect-https (redirectScheme: scheme: https) u namespaceu shop. Koja anotacija na Ingressu je ispravna?",
+    "options": [
+      "nginx.ingress.kubernetes.io/ssl-redirect: \"true\"",
+      "traefik.ingress.kubernetes.io/router.middlewares: redirect-https",
+      "traefik.ingress.kubernetes.io/router.tls: \"true\"",
+      "traefik.ingress.kubernetes.io/router.middlewares: shop-redirect-https@kubernetescrd"
+    ],
+    "answer": 3,
+    "explain": "Traefik referencira CRD middleware u obliku <namespace>-<ime>@kubernetescrd. nginx anotacija ne utiče na Traefik, ime bez namespacea i providera se ne nalazi, a router.tls samo uključuje TLS na ruti, bez redirecta."
+  },
+  {
+    "obj": "1.3",
+    "type": "order",
+    "q": "Poredaj korake za osiguravanje postojećeg Ingressa shop (namespace shop) sa datim tls.crt i tls.key.",
+    "options": [
+      "Dodaj spec.tls sa hosts: [shop.example.com] i secretName: shop-tls",
+      "Provjeri certifikat: openssl s_client -connect <node>:31443 -servername shop.example.com",
+      "Provjeri SAN certifikata: openssl x509 -in tls.crt -noout -ext subjectAltName",
+      "kubectl -n shop create secret tls shop-tls --cert=tls.crt --key=tls.key"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      1
+    ],
+    "explain": "Prvo provjeriš da certifikat pokriva host, zatim praviš Secret u istom namespaceu, dodaješ tls blok i na kraju provjeravaš šta server zaista šalje."
+  },
+  {
+    "obj": "1.4",
+    "q": "Zadatak: podovi u namespaceu apps ne smiju pristupiti cloud metadata servisu, a sav ostali egress (uključujući DNS) mora raditi. Koja politika (podSelector: {}, policyTypes: [Egress]) je ispravna?",
+    "options": [
+      "egress: [{to: [{ipBlock: {cidr: 169.254.169.254/32}}]}]",
+      "egress: []",
+      "egress: [{to: [{ipBlock: {cidr: 0.0.0.0/0, except: [169.254.169.254/32]}}]}]",
+      "egress: [{to: [{ipBlock: {cidr: 0.0.0.0/0}}]}, {to: [{ipBlock: {cidr: 169.254.169.254/32}}], ports: [{port: 0}]}]"
+    ],
+    "answer": 2,
+    "explain": "ipBlock sa except dozvoljava sve adrese osim metadata adrese. Prva opcija dozvoljava baš metadata, egress: [] blokira sve uključujući DNS, a NetworkPolicy nema deny pravila pa dodatno pravilo ne može ništa oduzeti."
+  },
+  {
+    "obj": "1.4",
+    "q": "U namespaceu apps postoji politika deny-metadata (0.0.0.0/0 except 169.254.169.254/32), ali pod app=web i dalje dobija odgovor sa 169.254.169.254. kubectl get netpol pokazuje i politiku web-egress koja za app=web ima egress: [{}]. Zašto metadata nije blokirana?",
+    "options": [
+      "Politike se sabiraju; web-egress dozvoljava sav egress za app=web, pa except iz druge politike nema efekta",
+      "Novija politika uvijek pobjeđuje",
+      "except radi samo za Ingress",
+      "Treba restartovati podove da bi politika djelovala"
+    ],
+    "answer": 0,
+    "explain": "Saobraćaj je dozvoljen ako ga dozvoljava bilo koja politika koja bira pod, pa egress: [{}] otvara i metadata adresu. Redoslijed ne postoji, except radi i za egress, a politike djeluju odmah."
+  },
+  {
+    "obj": "1.4",
+    "q": "Zašto je obavezan IMDSv2 sa hop limitom 1 efikasna zaštita čvora na AWS-u od podova?",
+    "options": [
+      "IMDSv2 šifruje odgovore pa pod ne može pročitati kredencijale",
+      "Token se dobija PUT zahtjevom sa posebnim zaglavljem, a odgovor sa hop limitom 1 ne stiže do kontejnera iza dodatnog mrežnog skoka",
+      "IMDSv2 mijenja adresu metadata servisa u 169.254.170.2",
+      "IMDSv2 automatski primjenjuje NetworkPolicy u svakom namespaceu"
+    ],
+    "answer": 1,
+    "explain": "PUT sa zaglavljem otežava SSRF, a hop limit 1 sprečava da odgovor sa tokenom pređe dodatni skok do kontejnera. Odgovori nisu dodatno šifrovani, adresa ostaje ista i IMDSv2 nema veze sa NetworkPolicy."
+  },
+  {
+    "obj": "1.4",
+    "q": "Sa controlplane čvora pokreneš 'curl -sk https://node01:10250/pods' i dobiješ JSON listu svih podova na čvoru. Koja kombinacija postavki kubeleta je uzrok?",
+    "options": [
+      "anonymous.enabled: false i authorization.mode: Webhook",
+      "anonymous.enabled: true i authorization.mode: Webhook",
+      "readOnlyPort: 0 i webhook.enabled: true",
+      "anonymous.enabled: true i authorization.mode: AlwaysAllow"
+    ],
+    "answer": 3,
+    "explain": "Anonimni zahtjev prolazi autentifikaciju, a AlwaysAllow ga ne provjerava, pa dobija podatke. Sa Webhook autorizacijom dobio bi Forbidden za system:anonymous, a sa isključenim anonimnim pristupom Unauthorized; readOnlyPort se odnosi na port 10255."
+  },
+  {
+    "obj": "1.4",
+    "q": "Nakon ispravke kubeleta na node01, 'curl -sk https://node01:10250/pods' vraća: Forbidden (user=system:anonymous, verb=get, resource=nodes, subresource=proxy). Zadatak traži da anonimni zahtjevi budu odbijeni već pri autentifikaciji. Šta još fali?",
+    "options": [
+      "authorization.mode: Webhook",
+      "authentication.anonymous.enabled: false",
+      "readOnlyPort: 0",
+      "RBAC Role koja zabranjuje nodes/proxy za system:anonymous"
+    ],
+    "answer": 1,
+    "explain": "Forbidden znači da je zahtjev prihvaćen kao system:anonymous, a odbijen tek u autorizaciji. Sa anonymous.enabled: false odgovor bi bio Unauthorized (401). RBAC nema deny pravila, a Webhook i readOnlyPort su drugi dijelovi konfiguracije."
+  },
+  {
+    "obj": "1.4",
+    "q": "Koja komanda provjerava da li je zastarjeli read-only port kubeleta isključen na node01?",
+    "options": [
+      "curl -s http://node01:10255/pods (očekuješ connection refused)",
+      "curl -sk https://node01:10250/healthz",
+      "curl -s http://node01:10248/healthz",
+      "curl -sk https://node01:6443/readyz"
+    ],
+    "answer": 0,
+    "explain": "Read-only API je HTTP na portu 10255 i gasi se sa readOnlyPort: 0. 10250 je glavni HTTPS API, 10248 je lokalni healthz, a 6443 je API server."
+  },
+  {
+    "obj": "1.4",
+    "q": "Korisnik ima ClusterRole sa rules: [{apiGroups: [''], resources: ['nodes/proxy'], verbs: ['get']}]. Kubelet koristi authorization.mode: Webhook. Šta korisnik realno može?",
+    "options": [
+      "Samo da čita metrike čvora",
+      "Ništa, jer get je glagol samo za čitanje",
+      "Da pristupi svim kubelet API-jima preko proxyja, uključujući izvršavanje komandi u kontejnerima na čvoru",
+      "Samo da vidi listu čvorova"
+    ],
+    "answer": 2,
+    "explain": "nodes/proxy pokriva sve kubelet putanje koje nemaju poseban podresurs, uključujući exec, a neke WebSocket konekcije se autorizuju glagolom get. Metrike su nodes/metrics i nodes/stats, a lista čvorova je list na nodes."
+  },
+  {
+    "obj": "1.4",
+    "type": "match",
+    "q": "Upari port na čvoru sa komponentom ili namjenom.",
+    "options": [
+      "10250",
+      "10255",
+      "2379",
+      "10259"
+    ],
+    "targets": [
+      "kube-scheduler (HTTPS, treba da sluša na 127.0.0.1)",
+      "etcd klijentski port",
+      "kubelet glavni API (HTTPS)",
+      "kube-apiserver",
+      "kubelet read-only API (HTTP, treba ugasiti)"
+    ],
+    "answer": [
+      2,
+      4,
+      1,
+      0
+    ],
+    "explain": "10250 je kubelet API, 10255 zastarjeli read-only port kubeleta, 2379 etcd za klijente, a 10259 scheduler. API server sluša na 6443, koji nije među opcijama."
+  },
+  {
+    "obj": "1.5",
+    "q": "Preuzeo si kubelet i kubelet.sha512 sa dl.k8s.io za v1.35.0. Koja komanda ispravno provjerava fajl?",
+    "options": [
+      "sha512sum -c kubelet.sha512",
+      "echo \"$(cat kubelet.sha512) kubelet\" | sha256sum --check",
+      "sha512sum kubelet.sha512",
+      "echo \"$(cat kubelet.sha512)  kubelet\" | sha512sum --check"
+    ],
+    "answer": 3,
+    "explain": "Fajl sa dl.k8s.io sadrži samo hash, pa treba dodati dva razmaka i ime fajla i proslijediti sha512sum --check. sha512sum -c direktno na tom fajlu javlja neispravan format, sha256sum je pogrešan algoritam, a treća komanda samo hashira fajl sa hashom."
+  },
+  {
+    "obj": "1.5",
+    "q": "U /opt/binaries su kube-apiserver, kubelet i kubectl, a zadatak daje očekivane SHA512 vrijednosti za v1.35.0 linux/amd64. kubelet --version ispisuje 'Kubernetes v1.35.0'. Da li je to dovoljan dokaz da je kubelet ispravan?",
+    "options": [
+      "Da, verzija u binarnom fajlu je potpisana",
+      "Da, ako se verzija poklapa sa kubectl get nodes",
+      "Ne, izmijenjen binarni fajl može ispisati bilo koju verziju; poredi sha512sum sa datom vrijednošću",
+      "Ne, treba pokrenuti kube-bench run --targets node"
+    ],
+    "answer": 2,
+    "explain": "Ispis verzije je samo tekst u binarnom fajlu i napadač ga lako zadrži. Integritet dokazuje poređenje hasha (ili potpis), a kube-bench provjerava konfiguraciju, ne sadržaj binarnih fajlova."
+  },
+  {
+    "obj": "1.5",
+    "q": "Koja komanda brzo i pouzdano potvrđuje da kubectl odgovara datom hashu (varijabla H sadrži cijeli očekivani SHA512)?",
+    "options": [
+      "sha512sum kubectl | grep -q \"$H\" && echo OK || echo MISMATCH",
+      "sha512sum kubectl | head -c 16",
+      "md5sum kubectl | grep -q \"$H\" && echo OK",
+      "ls -l kubectl | grep -q \"$H\" && echo OK"
+    ],
+    "answer": 0,
+    "explain": "Poređenje cijelog SHA512 stringa daje pouzdan rezultat bez čitanja od oka. Prvih 16 znakova nije dovoljno, md5sum daje drugi hash, a ls ne računa hash."
+  },
+  {
+    "obj": "1.5",
+    "q": "Želiš potvrditi ne samo da kubectl odgovara objavljenom hashu nego i da ga je objavio Kubernetes release proces. Šta koristiš?",
+    "options": [
+      "sha256sum --check kubectl.sha256",
+      "cosign verify-blob kubectl --signature kubectl.sig --certificate kubectl.cert --certificate-identity krel-staging@k8s-releng-prod.iam.gserviceaccount.com --certificate-oidc-issuer https://accounts.google.com",
+      "kubectl version --client --output=yaml",
+      "trivy fs kubectl"
+    ],
+    "answer": 1,
+    "explain": "cosign verify-blob provjerava potpis i identitet potpisnika iz certifikata. Hash provjera ne govori ko je objavio fajl, ispis verzije se može lažirati, a trivy traži ranjivosti, ne autentičnost."
+  },
+  {
+    "obj": "1.5",
+    "type": "order",
+    "q": "Poredaj korake provjere binarnih fajlova u /opt/binaries prema datim zvaničnim SHA512 vrijednostima za v1.35.0.",
+    "options": [
+      "Obriši fajlove čiji se hash ne poklapa",
+      "Izračunaj sha512sum za svaki fajl",
+      "Utvrdi verziju i arhitekturu na koju se zvanične vrijednosti odnose",
+      "Uporedi cijele hasheve sa zvaničnim vrijednostima"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "Hashevi imaju smisla samo za istu verziju i arhitekturu. Zatim računaš, porediš cijele stringove, i tek onda brišeš samo neispravne fajlove."
+  }
+]

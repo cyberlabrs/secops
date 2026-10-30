@@ -1,0 +1,266 @@
+[
+  {
+    "obj": "5.1",
+    "q": "The sbom job runs syft scan dir:. -o cyclonedx-json=sbom.cdx.json in the root of the kurs-shop repo. The security team complains that the SBOM lacks the OS packages (openssl, libc) present in the production image. What is the cause and the fix?",
+    "options": [
+      "Syft does not support OS packages in the CycloneDX format; use -o spdx-json",
+      "A source code SBOM only sees declared dependencies; for a release you need an SBOM of the image itself, e.g. syft scan registry:<image@digest>",
+      "The --scanners os flag, which enables the OS package catalog, is missing",
+      "Add trivy sbom sbom.cdx.json, which supplements the SBOM with OS packages"
+    ],
+    "answer": 1,
+    "explain": "A directory SBOM contains what the lock files declare; OS packages only appear in the image, so a release needs an image SBOM by digest. CycloneDX supports OS packages, --scanners is a Trivy flag, and trivy sbom scans an existing SBOM rather than supplementing it."
+  },
+  {
+    "obj": "5.1",
+    "q": "Production runs 40 images built over the past year. This morning a CRITICAL CVE in werkzeug 2.2.2 was published. The pipeline keeps sbom.cdx.json for every image. What is the fastest way to determine which images are affected, without pulling the images?",
+    "options": [
+      "trivy image --severity CRITICAL for every image from the registry",
+      "syft scan for every image, then grep werkzeug",
+      "Re-run all pipelines so the images are rebuilt and rescanned",
+      "trivy sbom --severity CRITICAL over the stored SBOMs, with an updated vulnerability database"
+    ],
+    "answer": 3,
+    "explain": "trivy sbom scans an existing SBOM against the latest vulnerability database without the image, which is exactly the point of keeping SBOMs. trivy image and syft scan read the images again, and a rebuild creates new images instead of answering what is currently in production."
+  },
+  {
+    "obj": "5.1",
+    "q": "The sbom job passes green, but Dependency-Track shows an SBOM with zero components. It turned out syft was run against the wrong directory. Which change to the job would have caught this?",
+    "options": [
+      "Add jq -e '.components | length > 0' sbom.cdx.json after syft",
+      "Add allow_failure: false to the job",
+      "Switch the format to -o spdx-json, which reports an error for an empty source",
+      "Add artifacts: when: always"
+    ],
+    "answer": 0,
+    "explain": "A valid but empty SBOM doesn't cause a tool error, so an explicit content check catches it (jq -e returns a non-zero exit code). allow_failure: false is the default and changes nothing, the SPDX format doesn't fail on an empty source, and when: always only keeps the artifact."
+  },
+  {
+    "obj": "5.1",
+    "q": "A company sells an IoT device on the EU market. Today is 16 Oct 2026. You have learned that attackers are actively exploiting a vulnerability in the firmware. What does the EU Cyber Resilience Act require of you right now?",
+    "options": [
+      "Nothing until 11 Dec 2027, when the CRA fully applies",
+      "Publicly post the complete firmware SBOM on the website within 24 hours",
+      "Report the actively exploited vulnerability (early warning within 24 hours) through the ENISA reporting platform",
+      "Withdraw the CE marking from the product until a patch is released"
+    ],
+    "answer": 2,
+    "explain": "The obligations to report actively exploited vulnerabilities and severe incidents apply from 11 Sep 2026, with an early warning within 24 hours. Full application (essential requirements, CE marking) is 11 Dec 2027, and the SBOM does not have to be public; it goes into the technical documentation."
+  },
+  {
+    "obj": "5.1",
+    "type": "match",
+    "q": "Match each requirement with the format or command that best fulfils it.",
+    "options": [
+      "The legal team wants detailed licensing data in a format that is an ISO standard",
+      "You need an SBOM with vulnerability exploitability statements (VEX) in the same ecosystem",
+      "An SBOM of an image in two formats from a single run",
+      "Checking vulnerabilities in an SBOM from a supplier who didn't send the image"
+    ],
+    "targets": [
+      "trivy sbom vendor.cdx.json",
+      "syft scan dir:. -o table",
+      "SPDX",
+      "syft scan registry:<image> -o cyclonedx-json=a.json -o spdx-json=b.json",
+      "CycloneDX"
+    ],
+    "answer": [2, 4, 3, 0],
+    "explain": "SPDX (2.2.1 is ISO/IEC 5962:2021) originated around licensing; CycloneDX has built-in VEX support; Syft accepts several -o options in one run; trivy sbom scans someone else's SBOM without the image. syft -o table is just a terminal view."
+  },
+  {
+    "obj": "5.2",
+    "q": "The sign job runs cosign sign --key cosign.key 127.0.0.1:5000/kurs-shop:1.0. A month later someone pushed a different image under the same tag, and cosign verify for the tag no longer passes. What should have been done?",
+    "options": [
+      "Sign with --recursive so the signature covers all future versions of the tag",
+      "Use keyless signing, which is bound to the tag instead of the key",
+      "Set the tag as immutable in the cosign configuration",
+      "Sign and deploy by digest (image@sha256:...), because a signature applies to the content, not the tag name"
+    ],
+    "answer": 3,
+    "explain": "A signature is always bound to the digest; a tag is a movable label, so after it moves it points to unsigned content. --recursive signs the images for all platforms of a multi-arch index, keyless also signs the digest, and cosign has no immutable-tag setting (that is a registry option)."
+  },
+  {
+    "obj": "5.2",
+    "q": "The deploy job verifies a keyless signature like this: cosign verify --certificate-identity-regexp '.*kurs-shop.*' --certificate-oidc-issuer https://gitlab.com $IMAGE. Why is this a weak check?",
+    "options": [
+      "The regex accepts any identity containing kurs-shop, e.g. a pipeline in someone else's fork evil/kurs-shop-fork",
+      "For GitLab the issuer must be https://gitlab.com/oauth, so verification never passes",
+      "--certificate-identity-regexp does not exist; only --certificate-identity is allowed",
+      "Keyless verification always also requires --key, otherwise the signature is not cryptographically verified"
+    ],
+    "answer": 0,
+    "explain": "Anyone with a gitlab.com account can create a project whose path contains kurs-shop and obtain a Fulcio certificate; the regex must be narrow and anchored (^...$), or the exact identity should be used. The GitLab issuer is https://gitlab.com, the regex flag exists, and keyless doesn't use --key."
+  },
+  {
+    "obj": "5.2",
+    "q": "A keyless signature from a GitLab job on gitlab.com fails verification with the error \"none of the expected identities matched\". The verification uses --certificate-identity \"https://gitlab.com/shop/kurs-shop/.gitlab-ci.yml@refs/heads/main\". What is wrong?",
+    "options": [
+      "The identity must be the email address of the user who ran the pipeline",
+      "The ref must be just main, without refs/heads/",
+      "There are two slashes between the project path and the CI file path: .../shop/kurs-shop//.gitlab-ci.yml@refs/heads/main",
+      "The verification job is missing id_tokens with aud: gitlab"
+    ],
+    "answer": 2,
+    "explain": "A GitLab identity has the form <instance>/<project>//<CI file>@<ref>, with a double slash; a single one gives exactly this error. The identity is not an email for CI jobs, the ref stays the full refs/heads/main, and the verification job doesn't need an OIDC token (the signing job needs it, with aud: sigstore)."
+  },
+  {
+    "obj": "5.2",
+    "q": "The team upgraded cosign in the sign job from v2 to v3. Signing passes, but the old deploy script using cosign v2 and the old admission controller now reject all new images as unsigned. The most likely cause?",
+    "options": [
+      "cosign v3 no longer supports signing with a key, so no signature was created",
+      "cosign v3 by default creates a Sigstore bundle attached as an OCI 1.1 referrer, while old verifiers look for the signature in the old .sig tag scheme",
+      "cosign v3 signs the tag instead of the digest",
+      "cosign v3 encrypts the signature with the verifier's public key, so v2 cannot read it"
+    ],
+    "answer": 1,
+    "explain": "v3 uses the new bundle and referrers as its default format; verifiers that don't understand it can't find the signature. That's why the verification side is upgraded first. Key-based signing still exists, signatures are bound to the digest, and signatures are not encrypted."
+  },
+  {
+    "obj": "5.2",
+    "q": "In the offline lab (no Rekor, no TUF) cosign sign --key cosign.key $IMAGE fails because it cannot fetch the signing config. Which combination works in cosign 3.1?",
+    "options": [
+      "cosign sign --key cosign.key --offline $IMAGE, and verify without extra flags",
+      "cosign sign --key cosign.key --use-signing-config=false --tlog-upload=false $IMAGE, and verify with --insecure-ignore-tlog=true",
+      "cosign sign --key cosign.key --tlog-upload=false $IMAGE (signing config stays enabled), and verify with --key",
+      "cosign sign --key cosign.key --bundle=false $IMAGE, and verify with --private-infrastructure"
+    ],
+    "answer": 1,
+    "explain": "In v3 --tlog-upload=false is only allowed with the signing config disabled (or with your own signing config without a tlog service), and verifying a signature that isn't in Rekor requires --insecure-ignore-tlog=true. With the signing config enabled cosign rejects --tlog-upload=false, --offline is a deprecated verification flag, and --bundle takes a file path."
+  },
+  {
+    "obj": "5.2",
+    "q": "An organization uses a self-managed GitLab at gitlab.kurs-shop.ba with no internet access from the runners. They want to sign images without a long-lived key on the runner. Which option is feasible?",
+    "options": [
+      "Keyless with the public Fulcio: id_tokens with aud: sigstore is enough",
+      "Keyless with the public Fulcio, with --certificate-oidc-issuer https://gitlab.kurs-shop.ba at verification",
+      "Signing with a key that lives in a KMS or Vault (--key hashivault://...), or a private Sigstore (own Fulcio and Rekor)",
+      "Signing with a key from a masked CI/CD variable, because masked variables are not long-lived"
+    ],
+    "answer": 2,
+    "explain": "The public Fulcio only accepts known OIDC issuers and requires internet access, so for an isolated self-managed instance the options are a key in a KMS/Vault (the key never leaves the KMS) or your own Sigstore infrastructure. A masked variable is still a long-lived key accessible to the job."
+  },
+  {
+    "obj": "5.3",
+    "q": "The build job ends by running jq to create provenance.json and signs it with cosign attest using a key from a CI/CD variable available to the same job. What is the highest SLSA Build level this realistically meets, and why?",
+    "options": [
+      "L1: provenance exists, but it is created and signed by a user script that could have written anything",
+      "L3: the provenance is signed and the build runs on a hosted runner",
+      "L2: it is enough that the provenance is signed with any key",
+      "L0: provenance without an in-toto layout doesn't even count for L1"
+    ],
+    "answer": 0,
+    "explain": "For L2 the provenance must be generated and signed by the hosted platform, and for L3 the key must be inaccessible to user steps; here the same script creates the content and holds the key. L1 allows even unsigned provenance, and an in-toto layout is not a requirement of any SLSA level."
+  },
+  {
+    "obj": "5.3",
+    "q": "What does an in-toto attestation refer to, and how does the verifier know the statement is about the very image it is deploying?",
+    "options": [
+      "To the image tag in the predicateType field",
+      "To the image digest in the subject field; predicateType says what kind of statement it is",
+      "To the commit hash in the _type field",
+      "To the Kubernetes Deployment name in the predicate.subject field"
+    ],
+    "answer": 1,
+    "explain": "subject lists the artifact by name and digest, so the statement is bound to the exact content; predicateType determines the kind of statement (SLSA provenance, CycloneDX…). _type is the Statement format version, and the commit is in the predicate (e.g. resolvedDependencies)."
+  },
+  {
+    "obj": "5.3",
+    "type": "match",
+    "q": "Match each build environment description with the highest SLSA Build level it meets.",
+    "options": [
+      "A developer builds the image on a laptop and pushes it to the registry",
+      "A hosted CI platform generates and signs provenance, but user steps in the same job can read the signing key",
+      "A hosted platform with isolated builds; provenance is signed by a component outside user code",
+      "A script alongside a local build automatically generates unsigned provenance and distributes it with the artifact"
+    ],
+    "targets": ["L2", "L0", "L3", "L1"],
+    "answer": [1, 0, 2, 3],
+    "explain": "Without provenance it is L0; automatic provenance, even unsigned, is L1; a hosted platform that signs it is L2; build isolation and a key inaccessible to user steps is L3. The second option does not reach L3 precisely because the key is accessible."
+  },
+  {
+    "obj": "5.3",
+    "q": "You want the GitLab runner to automatically generate SLSA provenance for the artifacts of the build-wheel job (dist/*.whl). What do you add to the job?",
+    "options": [
+      "artifacts: reports: provenance: dist/",
+      "id_tokens with aud: slsa",
+      "variables: RUNNER_GENERATE_ARTIFACTS_METADATA: \"true\"",
+      "include: template: Security/SLSA.gitlab-ci.yml"
+    ],
+    "answer": 2,
+    "explain": "With RUNNER_GENERATE_ARTIFACTS_METADATA the runner creates <name>-metadata.json alongside the artifact, an in-toto Statement with a SLSA v1 provenance predicate. A provenance report type and a Security/SLSA template don't exist, and id_tokens provides an OIDC token, not provenance."
+  },
+  {
+    "obj": "5.3",
+    "q": "A signature and an attestation of type slsaprovenance1 are attached to the image. The deploy should only let through images built by the runner https://gitlab.kurs-shop.ba/runners/shared. What is correct?",
+    "options": [
+      "cosign verify --key cosign.pub $IMAGE is enough because it also verifies all attestations",
+      "cosign tree $IMAGE and checking that there is a line with the attestation",
+      "trivy sbom over provenance.json with --exit-code 1",
+      "cosign verify-attestation --key cosign.pub --type slsaprovenance1 $IMAGE, then check runDetails.builder.id in the decoded payload (or --policy with a Rego rule)"
+    ],
+    "answer": 3,
+    "explain": "verify-attestation verifies the attestation signature and the predicate type, and the content (builder.id) is checked on the payload or with a policy. cosign verify checks the image signature, not attestations; cosign tree only shows that something exists, without verifying signature or content; trivy sbom doesn't read provenance."
+  },
+  {
+    "obj": "5.4",
+    "type": "order",
+    "q": "Order the jobs of the final part of the pipeline so that the signature means \"the image passed our checks\" and the deploy doesn't trust the tag.",
+    "options": [
+      "deploy: kubectl apply with image@digest",
+      "sign: cosign sign and cosign attest (SBOM, provenance) on the digest",
+      "build: image in the registry, digest in image.txt",
+      "verify: cosign verify and cosign verify-attestation",
+      "image-scan: trivy image --exit-code 1 on the digest"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "The build produces the digest, scanning must pass before signing (otherwise the signature guarantees nothing about the checks), the signature and attestations are bound to the digest, verification comes right before the deploy, and the deploy uses the same verified digest."
+  },
+  {
+    "obj": "5.4",
+    "q": "The deploy job runs cosign verify --key $COSIGN_PUB registry.kurs-shop.ba/kurs-shop:1.4 and then kubectl set image deploy/kurs-shop app=registry.kurs-shop.ba/kurs-shop:1.4. What is the problem?",
+    "options": [
+      "Between verification and image pull the tag can move, so the cluster may run a different image; the deploy should write the verified digest",
+      "cosign verify doesn't work with a public key from a variable",
+      "kubectl set image doesn't work with a private registry",
+      "Verification must come after kubectl set image, to verify the image that is actually running"
+    ],
+    "answer": 0,
+    "explain": "Verifying by tag and deploying by tag opens a window in which the tag can change (TOCTOU), so you deploy the digest that was verified. cosign works with a key from a file or variable, kubectl works with a private registry using an imagePullSecret, and verification after the deploy is too late."
+  },
+  {
+    "obj": "5.4",
+    "q": "The cluster uses Kyverno 1.19. You need a new policy that rejects Pods with unsigned kurs-shop images. Which resource is recommended?",
+    "options": [
+      "ClusterPolicy (kyverno.io/v1) with verifyImages, because it is the only type that supports cosign",
+      "ValidatingAdmissionPolicy (admissionregistration.k8s.io) with the CEL function verifyImageSignatures",
+      "ImageValidatingPolicy (policies.kyverno.io/v1) with attestors and validations that call verifyImageSignatures",
+      "A MutatingPolicy that replaces unsigned images with signed ones"
+    ],
+    "answer": 2,
+    "explain": "In 1.19 ClusterPolicy/Policy are deprecated (removal planned for 1.20), and ImageValidatingPolicy is the stable type for verifying signatures and attestations. The built-in ValidatingAdmissionPolicy has no signature verification functions, and mutation cannot create a signature."
+  },
+  {
+    "obj": "5.4",
+    "q": "You introduced an ImageValidatingPolicy with validationActions: [Deny] for all images (glob: \"*\"). CoreDNS and ingress controller Pods immediately stopped being created. What would have been better?",
+    "options": [
+      "Set validationConfigurations.required: false so the policy blocks nothing",
+      "First run the policy with [Audit], list unsigned third-party images, narrow matchImageReferences to your own images and add exceptions for vendor images, then Deny",
+      "Disable mutateDigest, because it changes the images of system components",
+      "Move verification exclusively to the pipeline's deploy job"
+    ],
+    "answer": 1,
+    "explain": "Audit first shows what the policy would block, without harm; then the policy is narrowed and exceptions are listed. required: false would also weaken verification of your own images, mutateDigest is not the cause of the blocking, and verification only in the pipeline can be bypassed."
+  },
+  {
+    "obj": "5.4",
+    "q": "Why isn't it enough for only the pipeline's deploy job to verify signatures?",
+    "options": [
+      "Because cosign verify in the pipeline doesn't check Rekor",
+      "Because the pipeline can't verify attestations, only signatures",
+      "Because the deploy job has no access to the registry with the signatures",
+      "Because it can be bypassed: a manual kubectl apply or another pipeline with cluster access deploys without that check; an admission policy applies to every request"
+    ],
+    "answer": 3,
+    "explain": "Verification in the pipeline only protects deploys through that pipeline; admission control in the cluster is the only one that applies to all paths. cosign in the pipeline does check Rekor and attestations (verify-attestation), and the deploy job normally has access to the registry."
+  }
+]

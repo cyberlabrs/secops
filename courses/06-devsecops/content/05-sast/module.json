@@ -1,0 +1,11 @@
+{
+  "title": "SAST sa Semgrepom",
+  "summary": "SAST sa Semgrepom: pisanje i testiranje pravila, taint analiza, smanjenje lažnih pozitiva i izuzeci, diff-aware gate u merge requestu i SARIF izvještaji.",
+  "minutes": 75,
+  "domain": 3,
+  "objectives": [
+    "3.1"
+  ],
+  "title_en": "SAST with Semgrep",
+  "summary_en": "SAST with Semgrep: writing and testing rules, taint analysis, reducing false positives and exceptions, a diff-aware gate in the merge request, and SARIF reports."
+}

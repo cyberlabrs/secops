@@ -1,0 +1,249 @@
+[
+  {
+    "obj": "3.2",
+    "q": "U selection imaš eventSource: iam.amazonaws.com i eventName sa listom [CreateAccessKey, CreateLoginProfile]. Šta je logika?",
+    "options": [
+      "eventSource AND (eventName = CreateAccessKey OR CreateLoginProfile)",
+      "eventSource OR eventName",
+      "eventSource AND eventName = CreateAccessKey AND CreateLoginProfile",
+      "Pravilo je neispravno jer lista mora biti u posebnom identifikatoru"
+    ],
+    "answer": 0,
+    "explain": "Polja u mapi se vežu sa AND, a vrijednosti u listi jednog polja sa OR. Za AND nad listom postoji modifikator all."
+  },
+  {
+    "obj": "3.2",
+    "q": "Treba da otkriješ komandu koja sadrži i 'curl' i '| sh', bilo kojim redom. Koji zapis je ispravan?",
+    "options": [
+      "CommandLine: '*curl*| sh*'",
+      "CommandLine|contains|all: ['curl', '| sh']",
+      "CommandLine|contains: ['curl', '| sh']",
+      "CommandLine|re: 'curl&| sh'"
+    ],
+    "answer": 1,
+    "explain": "contains|all traži sve vrijednosti (AND). Bez all lista je OR, a wildcard zapis nameće redoslijed."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pravilo za K8s audit treba isključiti neuspješne zahtjeve (HTTP kod 400 i više). Koji filter?",
+    "options": [
+      "responseStatus.code: '>=400'",
+      "responseStatus.code|re: '^4'",
+      "responseStatus.code|gte: 400",
+      "responseStatus.code|exists: false"
+    ],
+    "answer": 2,
+    "explain": "Numerički modifikatori gt, gte, lt, lte porede brojeve. String '>=400' bi se tražio doslovno, a regex ^4 propušta 5xx."
+  },
+  {
+    "obj": "3.2",
+    "q": "Šta znači condition: selection_exec and not 1 of filter_*?",
+    "options": [
+      "Uslov je neispravan jer not ne ide uz 1 of",
+      "Okini ako se poklopi tačno jedan filter",
+      "Okini ako se poklope svi filteri",
+      "Okini ako se poklopi selection_exec i nijedan identifikator koji počinje sa filter_"
+    ],
+    "answer": 3,
+    "explain": "1 of filter_* je OR preko svih filter_ identifikatora, a not ga negira. To je standardni SigmaHQ obrazac selection minus poznato dobro."
+  },
+  {
+    "obj": "3.2",
+    "q": "sigma convert -t splunk pravilo.yml javlja da backend traži processing pipeline. Šta pipeline radi?",
+    "options": [
+      "Prilagođava pravilo okruženju: mapira imena polja i dodaje uslove poput indeksa ili sourcetypea",
+      "Mijenja sintaksu SPL-a",
+      "Pokreće pravilo nad logovima",
+      "Validira YAML"
+    ],
+    "answer": 0,
+    "explain": "Backend zna sintaksu ciljnog jezika, pipeline zna tvoje okruženje (polja, indeksi, tabele). --without-pipeline služi za vježbu jer upit koristi imena polja iz pravila."
+  },
+  {
+    "obj": "3.2",
+    "q": "Koja transformacija u pipeline YAML-u preimenuje userIdentity.arn u user_arn za Splunk?",
+    "options": [
+      "add_condition",
+      "field_name_mapping",
+      "drop_detection_item",
+      "set_state"
+    ],
+    "answer": 1,
+    "explain": "field_name_mapping mijenja imena polja. add_condition dodaje uslov (npr. index=aws), a rule_conditions ograničava transformaciju na određeni logsource."
+  },
+  {
+    "obj": "3.2",
+    "q": "Treba ti detekcija password sprayinga: jedna IP adresa, 10 ili više različitih korisnika u 10 minuta. Koji tip korelacije?",
+    "options": [
+      "event_count sa group-by user",
+      "temporal_ordered",
+      "value_count sa group-by src_ip, field: user, gte: 10",
+      "event_count sa timespan 10"
+    ],
+    "answer": 2,
+    "explain": "value_count broji različite vrijednosti polja po grupi. event_count broji događaje, pa bi i 10 pokušaja na isti nalog okinulo. timespan traži jedinicu (10m)."
+  },
+  {
+    "obj": "3.2",
+    "q": "Konverzija korelacije temporal_ordered sa -t splunk vraća grešku da tip nije podržan. Šta je ispravan zaključak?",
+    "options": [
+      "Pravilo je sintaksno neispravno",
+      "Treba dodati --without-pipeline",
+      "Sigma ne podržava temporal_ordered",
+      "Backend ne podržava taj tip; koristi drugi tip (npr. temporal) ili napiši korelaciju u ciljnom jeziku"
+    ],
+    "answer": 3,
+    "explain": "Specifikacija definiše temporal_ordered, ali podrška zavisi od backenda. U labu splunk ne podržava temporal_ordered, a kusto nijednu korelaciju."
+  },
+  {
+    "obj": "3.2",
+    "q": "SigmaHQ pravilo za CloudTrail želiš utišati za Terraform CI rolu, ali bez izmjene samog pravila (ažuriraš ga iz upstreama). Šta koristiš?",
+    "options": [
+      "Sigma meta filter (filter: rules: [id], selection, condition: not selection) i sigma convert --filter",
+      "Brišeš pravilo iz repoa",
+      "Spuštaš level na low",
+      "Dodaješ tag tlp.white"
+    ],
+    "answer": 0,
+    "explain": "Meta filter je poseban fajl koji se pri konverziji dodaje na referencirana pravila; uslov se veže sa AND, pa izuzetak pišeš kao not selection."
+  },
+  {
+    "obj": "3.3",
+    "q": "SigmaHQ K8s pravilo sa objectRef.resource nad audit logom u Zircoliteu nikad ne okine, iako u logu ima exec zahtjeva. Najvjerovatniji uzrok?",
+    "options": [
+      "Zircolite ne podržava JSON",
+      "Zircolite spljošti ugniježđena polja na ime lista (resource), pa polje objectRef.resource ne postoji; treba mapiranje u configu",
+      "Pravilo je deprecated",
+      "K8s audit log nema verb polje"
+    ],
+    "answer": 1,
+    "explain": "--keepflat pokazuje stvarna imena kolona. Mapiranje objectRef.resource: objectRef.resource u Zircolite configu zadržava puno ime. Pravilo koje tiho ćuti je klasičan problem mapiranja polja."
+  },
+  {
+    "obj": "3.3",
+    "q": "Zašto pravilu pored pozitivnog treba i negativan test (true_negative)?",
+    "options": [
+      "Da bi Zircolite radio brže",
+      "Jer sigma check to traži",
+      "Negativni test čuva filter: ako neko ukloni ili pokvari izuzetak, test padne prije nego što se vrate lažni pozitivi",
+      "Da bi pravilo dobilo status stable"
+    ],
+    "answer": 2,
+    "explain": "Pozitivni test dokazuje da pravilo vidi napad, negativni da ne alarmira na poznato dobro. Zajedno sprečavaju regresije u oba smjera."
+  },
+  {
+    "obj": "3.3",
+    "q": "Koji filter za izuzetak CI procesa je najotporniji na zloupotrebu?",
+    "options": [
+      "userAgent|contains: 'terraform'",
+      "eventName|startswith: 'Update'",
+      "sourceIPAddress|cidr: '0.0.0.0/0'",
+      "userIdentity.arn|endswith: ':assumed-role/terraform-deploy/ci'"
+    ],
+    "answer": 3,
+    "explain": "Filter po stabilnom identitetu (ARN role) napadač ne može lako lažirati, za razliku od user agenta. Ostale opcije su preširoke."
+  },
+  {
+    "obj": "3.3",
+    "q": "Na piramidi bola, koji indikator napadaču najteže zaobići?",
+    "options": [
+      "TTP, npr. gašenje CloudTraila prije eksfiltracije",
+      "IP adresa napadača",
+      "SHA-256 hash binarnog fajla",
+      "Domen C2 servera"
+    ],
+    "answer": 0,
+    "explain": "Hash, IP i domen napadač mijenja jeftino. Detekcija ponašanja (TTP) ga tjera da promijeni način rada, što je najskuplje."
+  },
+  {
+    "obj": "3.3",
+    "q": "Novo pravilo prošlo je testove. Koji je sljedeći korak prije nego što počne da pravi tickete analitičarima?",
+    "options": [
+      "Odmah status stable",
+      "Tiho puštanje u SIEM 1-2 sedmice i mjerenje broja alarma i lažnih pozitiva",
+      "Brisanje falsepositives polja",
+      "Konverzija u sve backende odjednom"
+    ],
+    "answer": 1,
+    "explain": "Testovi dokazuju logiku, ali ne i šum u stvarnom okruženju. Tiho puštanje daje podatke za podešavanje; tek onda pravilo ide u produkciju sa runbookom."
+  },
+  {
+    "obj": "3.3",
+    "q": "Šta u CI pipelineu za detection as code radi korak sigma check --fail-on-issues rules/?",
+    "options": [
+      "Pokreće pravila nad produkcijskim logovima",
+      "Deployuje pravila u Splunk",
+      "Ruši build za greške u pravilima, greške u uslovima i upozorenja validatora (npr. duplikat id)",
+      "Generiše ATT&CK layer"
+    ],
+    "answer": 2,
+    "explain": "check validira sintaksu, uslove i dobre prakse. Bez --fail-on-issues upozorenja ne ruše build. Testovi nad događajima i deploy su posebni koraci."
+  },
+  {
+    "obj": "3.3",
+    "q": "Koji redoslijed statusa pravila odgovara Sigma životnom ciklusu?",
+    "options": [
+      "deprecated -> experimental -> stable",
+      "stable -> test -> experimental",
+      "test -> unsupported -> stable",
+      "experimental -> test -> stable, a na kraju deprecated sa related vezom na zamjenu"
+    ],
+    "answer": 3,
+    "explain": "Novo pravilo je experimental, poslije podešavanja test, poslije dužeg mirnog rada stable. deprecated označava zamijenjeno pravilo i povezuje se poljem related."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Upari zahtjev sa Sigma modifikatorom.",
+    "options": [
+      "Izvorna adresa je u internoj mreži 10.0.0.0/8",
+      "Polje errorCode ne postoji u događaju",
+      "Poređenje mora razlikovati velika i mala slova",
+      "Vrijednost se pojavljuje bilo gdje u base64 kodiranom stringu"
+    ],
+    "targets": [
+      "|base64offset|contains",
+      "|exists: false",
+      "|cidr",
+      "|cased",
+      "|windash"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "cidr za IP opsege, exists: false za odsutno polje, cased za poređenje osjetljivo na veličinu slova, base64offset|contains za vrijednost unutar base64 teksta. windash je za Windows prekidače komandne linije."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Poredaj korake CI pipelinea za detekcije od prvog.",
+    "options": [
+      "Deploy savedsearches.conf u Splunk sa default grane",
+      "Konverzija sa pipelineom i filterima (sigma convert)",
+      "sigma check --fail-on-issues",
+      "Unit testovi pravila (zircolite --test-rules)"
+    ],
+    "answer": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "Prvo validacija (jeftina i brza), zatim testovi nad događajima, pa konverzija u artefakt, i tek na kraju deploy samo sa glavne grane."
+  },
+  {
+    "type": "spot",
+    "obj": "3.2",
+    "q": "Pravilo treba da uhvati komandne linije koje sadrže i curl i '| sh', osim kad proces pokreće apt-get. U testu se aktivira na skoro svaki proces. Označi redove sa greškom.",
+    "snippet": "title: Preuzimanje skripte i izvršavanje u shellu\nid: 9b1e2c47-5d3a-4e8f-a6b0-2c7d9e1f4a53\nstatus: experimental\nlogsource:\n    product: linux\n    category: process_creation\ndetection:\n    selection:\n        CommandLine|contains:\n            - 'curl'\n            - '| sh'\n    filter_main_apt:\n        ParentImage|endswith: '/apt-get'\n    condition: selection or not filter_main_apt\nlevel: high",
+    "lang": "yaml",
+    "answer": [
+      8,
+      13
+    ],
+    "explain": "Lista ispod contains se podrazumijevano veže sa OR, pa bi se pravilo okidalo na svaki curl; za oba podstringa treba CommandLine|contains|all. Uslov selection or not filter_main_apt je istinit za svaki proces čiji roditelj nije apt-get, bez obzira na selection, i zato se pravilo okida skoro uvijek; ispravno je selection and not filter_main_apt."
+  }
+]

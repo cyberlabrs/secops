@@ -1,0 +1,230 @@
+[
+  {
+    "obj": "6.2",
+    "q": "Na GitLab Ultimate projektu job sast-semgrep ima artifacts:reports:sarif: semgrep.sarif i pokreće semgrep sa --error. Kad Semgrep nađe nalaz, job padne i nalazi se NE pojavljuju u MR security widgetu. Zašto?",
+    "options": [
+      "GitLab ne podržava SARIF iz Semgrepa, samo iz GitLabovih analizatora",
+      "GitLab obrađuje nalaze iz reports:sarif samo za uspješan job; skener treba vratiti 0, a odluku o padu prepustiti posebnom gate jobu",
+      "Nedostaje artifacts:when: always",
+      "SARIF fajl mora imati ekstenziju .json da bi ga GitLab prepoznao"
+    ],
+    "answer": 1,
+    "explain": "Artefakt neuspješnog joba se otprema, ali se njegovi SARIF nalazi ne obrađuju. when: always čuva artefakt, ali ne mijenja to pravilo; GitLab prima SARIF bilo kog skenera, a ekstenzija nije uslov."
+  },
+  {
+    "obj": "6.2",
+    "q": "Projekat je na GitLab Free tieru. Tim želi da developer u MR-u vidi nove Semgrep i Checkov nalaze. Šta je izvodljivo?",
+    "options": [
+      "artifacts:reports:sast sa SARIF fajlom",
+      "artifacts:reports:sarif, koji radi na svim tierovima",
+      "Konvertovati SARIF u Code Quality JSON (description, check_name, fingerprint, severity, location) i predati ga kroz artifacts:reports:codequality",
+      "artifacts:reports:dependency_scanning"
+    ],
+    "answer": 2,
+    "explain": "Code Quality izvještaj se u MR-u prikazuje i na Free tieru, uz razliku u odnosu na ciljnu granu. Security widget i SARIF ingestion su Ultimate, reports:sast očekuje GitLabovu šemu, a dependency_scanning je takođe Ultimate i za drugu vrstu nalaza."
+  },
+  {
+    "obj": "6.2",
+    "q": "Gate skripta broji SARIF rezultate sa level == \"error\". Nalaz iz jednog alata nema polje level ni u rezultatu ni u pravilu, i skripta ga ne broji. Kako ga tretira SARIF 2.1.0?",
+    "options": [
+      "Kao error",
+      "Kao none, pa ga skripta s pravom ignoriše",
+      "Kao note",
+      "Kao warning, pa skripta treba koristiti .level // \"warning\""
+    ],
+    "answer": 3,
+    "explain": "Po specifikaciji podrazumijevani nivo je warning kad nije zadat. Skripta mora eksplicitno primijeniti podrazumijevanu vrijednost, inače nalaze bez polja tretira pogrešno."
+  },
+  {
+    "obj": "6.2",
+    "q": "Developer je dodao # nosemgrep: kurs.python.subprocess-shell iznad linije. U SARIF izvještaju Semgrepa nalaz je i dalje u results, ali sa dodatnim poljem. Kojim, i šta gate treba da radi?",
+    "options": [
+      "suppressions sa kind: inSource; gate ne broji potisnute nalaze, ali ih prikazuje u pregledu izuzetaka",
+      "baselineState: absent; gate ga briše iz izvještaja",
+      "level: none; gate ga tretira kao informativan",
+      "partialFingerprints: null; gate ga deduplicira"
+    ],
+    "answer": 0,
+    "explain": "Potiskivanje u kodu se u SARIF-u zapisuje kao suppressions (kind inSource); nalaz ostaje vidljiv radi revizije. baselineState opisuje odnos prema baselineu, level ozbiljnost, a partialFingerprints služe za praćenje istog nalaza."
+  },
+  {
+    "obj": "6.2",
+    "q": "Pipeline na main grani svaki dan šalje Trivy izvještaj u DefectDojo preko /api/v2/import-scan/. Nakon mjesec dana Engagement ima 30 Testova, a popravljene ranjivosti i dalje stoje kao Active. Šta mijenjaš?",
+    "options": [
+      "Dodati minimum_severity=Critical",
+      "Prebaciti na /api/v2/reimport-scan/ sa istim test_title i close_old_findings=true",
+      "Dodati verified=true",
+      "Prebaciti scan_type na SARIF"
+    ],
+    "answer": 1,
+    "explain": "reimport ažurira isti Test: dodaje nove nalaze, a uz close_old_findings zatvara one kojih više nema. import-scan pravi novi Test za svaki upload. minimum_severity samo filtrira, verified mijenja status, a generički SARIF parser ne rješava zatvaranje i gubi detalje Trivyjevog parsera."
+  },
+  {
+    "obj": "6.2",
+    "q": "Nakon promjene konfiguracije DefectDojo, broj otvorenih nalaza za kurs-shop raste za ~40 sa svakim noćnim importom istog, nepromijenjenog koda. Gdje je problem?",
+    "options": [
+      "U deduplikaciji: hash polja ili ID iz alata nisu stabilni, pa isti nalaz izgleda kao novi",
+      "SLA konfiguracija nema enforce_critical",
+      "Risk acceptance je istekao i reaktivirao nalaze",
+      "auto_create_context=true pravi nove nalaze"
+    ],
+    "answer": 0,
+    "explain": "Rast nalaza bez promjene koda znači da deduplikacija ne prepoznaje iste nalaze (hash_code ili unique_id_from_tool se mijenjaju). SLA ne pravi nalaze, istek prihvatanja rizika reaktivira postojeće (ne pravi nove), a auto_create_context pravi Product/Engagement, ne duplikate."
+  },
+  {
+    "obj": "6.2",
+    "type": "match",
+    "q": "Upari mehanizam sa onim što radi.",
+    "options": [
+      "artifacts:reports:sarif (GitLab Ultimate)",
+      "github/codeql-action/upload-sarif",
+      "/api/v2/reimport-scan/ (DefectDojo)",
+      "artifacts:reports:junit"
+    ],
+    "targets": [
+      "Ažurira postojeći Test i zatvara nalaze kojih više nema",
+      "Prikaz rezultata testova u MR-u, dostupan i na Free tieru",
+      "Pretvara Trivy JSON u CycloneDX",
+      "Uvozi nalaze bilo kog SARIF 2.1.0 skenera u MR widget i vulnerability report",
+      "Šalje SARIF u code scanning; traži security-events: write"
+    ],
+    "answer": [3, 4, 0, 1],
+    "explain": "reports:sarif uvozi SARIF u GitLabov vulnerability management, upload-sarif radi isto za GitHub code scanning, reimport-scan ažurira Test u DefectDojo, a junit izvještaj daje test summary u MR-u. Konverzija u CycloneDX nije ni jedan od ovih mehanizama."
+  },
+  {
+    "obj": "6.2",
+    "q": "DefectDojo je bio nedostupan 20 minuta i hitni popravak produkcije nije mogao proći pipeline, jer je job defectdojo-upload pao. Kako treba izgledati taj job?",
+    "options": [
+      "Premjestiti ga prije build joba, da padne ranije",
+      "Ukloniti ga i slati izvještaje ručno jednom sedmično",
+      "Postaviti allow_failure: true i pokretati ga samo na glavnoj grani; odluku o padu donosi gate u pipelineu, DefectDojo je evidencija",
+      "Dodati retry: 2 i ostaviti ga blokirajućim"
+    ],
+    "answer": 2,
+    "explain": "Upload u platformu je evidencija, ne kapija; njena nedostupnost ne smije blokirati release. retry ne pomaže kod dužeg ispada, ručni upload gubi kontinuitet, a premještanje ne rješava zavisnost."
+  },
+  {
+    "obj": "6.3",
+    "q": "Trivy prijavljuje 14 HIGH ranjivosti u slici. Jedna je u CISA KEV katalogu, a ima CVSS 7.5; druge imaju CVSS 8.8, bez popravke i EPSS ispod 0,01. Kako prioritizuješ?",
+    "options": [
+      "Po CVSS-u: prvo one sa 8.8",
+      "Prvo KEV ranjivost, jer je potvrđeno iskorištavanje u stvarnim napadima; ostale bez popravke idu kao izuzetak sa rokom i praćenje",
+      "Sve jednako, jer su sve HIGH",
+      "Prvo one bez popravke, jer najduže ostaju otvorene"
+    ],
+    "answer": 1,
+    "explain": "KEV znači da se ranjivost stvarno iskorištava, što je jači signal od CVSS-a. Ranjivosti bez popravke ne možeš popraviti upgradeom; prate se uz izuzetak sa rokom. Sam CVSS ne govori o vjerovatnoći napada."
+  },
+  {
+    "obj": "6.3",
+    "q": "Tim prvi put uključuje Semgrep kao blokirajući na repou sa 180 postojećih nalaza. Kako da gate ne blokira svaki MR zbog starog duga, a da ne propusti nove probleme?",
+    "options": [
+      "Postaviti allow_failure: true dok se svih 180 ne popravi",
+      "Dodati # nosemgrep na svih 180 linija",
+      "Blokirati samo nalaze nove u odnosu na ciljnu granu (npr. --baseline-commit ili baselineState: new), a stari dug voditi u platformi sa SLA-om",
+      "Isključiti pravila koja imaju najviše nalaza"
+    ],
+    "answer": 2,
+    "explain": "Gate nad novim nalazima zaustavlja rast duga bez blokiranja svih; postojeći nalazi se rješavaju planski. allow_failure ne zaustavlja ni nove, masovni nosemgrep sakriva dug bez evidencije i roka, a gašenje pravila gubi i nove nalaze."
+  },
+  {
+    "obj": "6.3",
+    "q": "Developer je u DefectDojo označio CVE-2023-30861 (Flask) kao False Positive jer „ne stižemo sada nadograditi“. Šta nije u redu?",
+    "options": [
+      "Ništa, False Positive je ispravan status za ranjivosti koje se popravljaju kasnije",
+      "Treba ga označiti kao Duplicate",
+      "Treba ga označiti kao Mitigated, jer se planira popravka",
+      "Ranjivost postoji, pa to nije lažni pozitiv; treba Risk Acceptance sa obrazloženjem, odobrenjem vlasnika rizika i datumom isteka"
+    ],
+    "answer": 3,
+    "explain": "False Positive znači da problema nema; ovdje problem postoji i samo se odgađa. Prihvatanje rizika ima rok i po isteku reaktivira nalaz. Duplicate i Mitigated bi takođe sakrili stvarnu ranjivost."
+  },
+  {
+    "obj": "6.3",
+    "q": "Risk Acceptance za CVE u kurs-shop ističe 31. 12. 2026. Šta treba da se desi 1. 1. 2027 ako je uključena opcija reactivate_expired?",
+    "options": [
+      "Nalaz se vraća u Active i ponovo ulazi u SLA i gate; vlasnik mora popraviti ili ponovo odobriti izuzetak",
+      "Nalaz se automatski zatvara kao Mitigated",
+      "Nalaz se briše iz DefectDojo",
+      "Ništa; reactivate_expired se odnosi samo na nalaze označene kao False Positive"
+    ],
+    "answer": 0,
+    "explain": "Po isteku prihvatanja rizika nalazi se ponovo aktiviraju, a uz restart_sla_expired SLA počinje ispočetka. Izuzetak koji ne ističe bio bi trajno isključena kontrola; nalaz se ne zatvara niti briše."
+  },
+  {
+    "obj": "6.3",
+    "type": "order",
+    "q": "Poredaj korake obrade novog HIGH nalaza iz Trivyja od pipelinea do zatvaranja.",
+    "options": [
+      "Developer nadogradi paket; sljedeći reimport ne sadrži nalaz i close_old_findings ga zatvara",
+      "Trivy u pipelineu napravi JSON izvještaj",
+      "Gate provjeri ozbiljnost, popravku i KEV i blokira MR",
+      "Reimport u DefectDojo; nalaz dobija SLA datum",
+      "Security trijažira nalaz i označi ga kao Verified"
+    ],
+    "answer": [1, 2, 3, 4, 0],
+    "explain": "Izvještaj nastaje u skeneru, gate odlučuje u pipelineu, nalaz se evidentira u platformi sa SLA-om, slijedi trijaža, a popravka se automatski evidentira kad sljedeći reimport više ne sadrži nalaz."
+  },
+  {
+    "obj": "6.3",
+    "q": "U kvartalu je otkriveno 200 nalaza: 170 u pipelineu, 20 na pentestu prije releasea, 10 u produkciji (bug bounty). Ako se escape rate računa kao nalazi otkriveni poslije releasea / svi nalazi, koliki je?",
+    "options": [
+      "15%",
+      "10%",
+      "5%",
+      "30%"
+    ],
+    "answer": 2,
+    "explain": "Poslije releasea je otkriveno 10 nalaza (produkcija), 10 / 200 = 5%. Pentest prije releasea je i dalje prije produkcije; ako bi organizacija mjerila „propušteno iz pipelinea“, bilo bi (20 + 10) / 200 = 15%, pa definiciju treba zapisati unaprijed."
+  },
+  {
+    "obj": "6.3",
+    "q": "MTTR za Critical nalaze je 41 dan, ali tim kaže da tipično popravlja za nedjelju dana. U podacima je jedan nalaz otvoren 600 dana. Šta je bolja metrika?",
+    "options": [
+      "Ukupni MTTR za sve ozbiljnosti zajedno",
+      "Broj otvorenih nalaza",
+      "Prosjek bez nalaza starijih od 90 dana",
+      "Medijan vremena do popravke po ozbiljnosti, uz posebno praćenje starosti backloga (npr. 90+ dana)"
+    ],
+    "answer": 3,
+    "explain": "Medijan pokazuje tipično iskustvo i ne kvari ga jedan ekstrem, a starost backloga posebno izvlači takve slučajeve. Izbacivanje starih nalaza sakriva problem, miješanje ozbiljnosti gubi smisao, a broj otvorenih ne mjeri brzinu."
+  },
+  {
+    "obj": "6.3",
+    "q": "Fajl security-exceptions.yaml ima izuzetak sa expires: \"2026-11-15\". Gate je 20. 11. 2026 prošao bez upozorenja. Šta gate treba dodatno provjeravati?",
+    "options": [
+      "Da li fajl ima CODEOWNERS",
+      "Da li postoje istekli izuzeci (expires < danas) i u tom slučaju pasti sa porukom da je potrebna revizija",
+      "Da li izuzetak ima polje tool",
+      "Da li je izuzetak stariji od 365 dana od commita"
+    ],
+    "answer": 1,
+    "explain": "Rok ima smisla samo ako ga gate provodi: istekao izuzetak mora ponovo blokirati ili tražiti reviziju. CODEOWNERS štiti izmjene fajla, ali ne provodi rok; ostale provjere ne prate datum isteka."
+  },
+  {
+    "obj": "6.3",
+    "type": "match",
+    "q": "Upari situaciju sa ispravnim stanjem nalaza u trijaži.",
+    "options": [
+      "Semgrep prijavljuje SQLi u testnom fixtureu koji se nikad ne isporučuje",
+      "ZAP prijavljuje CSP na JSON endpointu, gdje CSP nema efekta",
+      "Ranjiva biblioteka bez dostupne popravke; vlasnik servisa odobrio odgodu do 31. 1. 2027",
+      "Isti CVE prijavljen i od Trivyja i od osv-scannera"
+    ],
+    "targets": ["Duplicate", "Risk Accepted", "Mitigated", "Out of Scope", "False Positive"],
+    "answer": [3, 4, 1, 0],
+    "explain": "Kod koji se ne isporučuje je van opsega, nalaz koji ne predstavlja problem je lažni pozitiv, svjesna odgoda sa rokom je prihvaćen rizik, a isti nalaz iz dva alata je duplikat. Mitigated je za popravljene nalaze."
+  },
+  {
+    "obj": "6.3",
+    "q": "Security gate je strog, a tim mora hitno popraviti produkciju. Šta je dobra praksa za takav slučaj?",
+    "options": [
+      "Developer privremeno ukloni security-gate iz .gitlab-ci.yml",
+      "Postaviti allow_failure: true na gate za sve grane",
+      "Pokrenuti deploy ručno sa laptopa, van pipelinea",
+      "Unaprijed definisan izlaz za nuždu (npr. varijabla koju smije postaviti samo maintainer, uz obavezan link na tiket) koji ostavlja trag i ne gasi gate trajno"
+    ],
+    "answer": 3,
+    "explain": "Kontrolisan, zabilježen override sprječava da se gate trajno ukloni ili zaobiđe. Uklanjanje gatea ili allow_failure svuda se obično nikad ne vrati, a deploy sa laptopa zaobilazi i potpise i evidenciju."
+  }
+]

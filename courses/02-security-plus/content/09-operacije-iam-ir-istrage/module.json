@@ -1,0 +1,14 @@
+{
+  "title": "Operacije: IAM, automatizacija, incident response i istrage",
+  "summary": "Upravljanje identitetom i pristupom (SSO, federacija, MFA, modeli kontrole pristupa, passkeys), automatizacija i SOAR, faze odgovora na incident i korištenje logova i forenzičkih podataka u istrazi.",
+  "minutes": 120,
+  "domain": 4,
+  "objectives": [
+    "4.5",
+    "4.6",
+    "4.7",
+    "4.8"
+  ],
+  "title_en": "Operations: IAM, automation, incident response, and investigations",
+  "summary_en": "Identity and access management (SSO, federation, MFA, access control models, passkeys), automation and SOAR, incident response phases, and using logs and forensic data in an investigation."
+}

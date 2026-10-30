@@ -1,0 +1,170 @@
+{
+  "code": "AI Security",
+  "badge": "AISEC",
+  "order": 12,
+  "title": "Sigurnost AI i ML sistema",
+  "subtitle": "Faza 7 plana (bonus): rizici LLM aplikacija i agenata (OWASP Top 10 za LLM), MITRE ATLAS, sigurnost RAG-a, ML pipelinea i lanca snabdijevanja modela, monitoring i governance (EU AI Act, NIST AI RMF, ISO/IEC 42001), sa odbrambenim labovima bez interneta.",
+  "lab": {
+    "image": "kurs-ai-lab:1",
+    "caps": [],
+    "memoryMB": 1536,
+    "setupTimeout": 120
+  },
+  "exam": {
+    "size": 50,
+    "minutes": 75,
+    "pass": 70,
+    "note": "Za ovu oblast nema jednog etabliranog ispita; simulacija je samoprovjera. Srodni sertifikati i programi se pojavljuju (npr. ISACA AAISM, IAPP AIGP za governance), pa provjeri aktuelno stanje ako ti treba formalna potvrda.",
+    "domains": [
+      {
+        "n": 1,
+        "name": "Prijetnje i okviri",
+        "weight": 20,
+        "name_en": "Threats and frameworks"
+      },
+      {
+        "n": 2,
+        "name": "Sigurnost LLM aplikacija i agenata",
+        "weight": 25,
+        "name_en": "Security of LLM applications and agents"
+      },
+      {
+        "n": 3,
+        "name": "RAG i podaci",
+        "weight": 15,
+        "name_en": "RAG and data"
+      },
+      {
+        "n": 4,
+        "name": "ML pipeline i lanac snabdijevanja modela",
+        "weight": 20,
+        "name_en": "ML pipeline and model supply chain"
+      },
+      {
+        "n": 5,
+        "name": "Testiranje, monitoring i odgovor",
+        "weight": 10,
+        "name_en": "Testing, monitoring and response"
+      },
+      {
+        "n": 6,
+        "name": "Governance i usklađenost",
+        "weight": 10,
+        "name_en": "Governance and compliance"
+      }
+    ],
+    "note_en": "There is no single established exam for this field; the simulation is a self-assessment. Related certifications and programs are emerging (e.g., ISACA AAISM, IAPP AIGP for governance), so check the current landscape if you need formal credentials."
+  },
+  "objectives": [
+    {
+      "id": "1.1",
+      "en": "AI/ML threat landscape and taxonomies (NIST AI 100-2, MITRE ATLAS)",
+      "bs": "Pejzaž prijetnji za AI/ML i taksonomije (NIST AI 100-2, MITRE ATLAS)"
+    },
+    {
+      "id": "1.2",
+      "en": "OWASP Top 10 for LLM Applications and for agentic applications",
+      "bs": "OWASP Top 10 za LLM aplikacije i za agentne aplikacije"
+    },
+    {
+      "id": "1.3",
+      "en": "Threat modeling AI systems",
+      "bs": "Modelovanje prijetnji za AI sisteme"
+    },
+    {
+      "id": "2.1",
+      "en": "Defending against prompt injection: trust boundaries, input/output handling, privilege separation",
+      "bs": "Odbrana od prompt injectiona: granice povjerenja, obrada ulaza i izlaza, razdvajanje privilegija"
+    },
+    {
+      "id": "2.2",
+      "en": "Improper output handling, sensitive information disclosure and system prompt leakage",
+      "bs": "Nesigurna obrada izlaza, otkrivanje osjetljivih podataka i curenje sistemskog prompta"
+    },
+    {
+      "id": "2.3",
+      "en": "Agents and tools: excessive agency, least privilege, human-in-the-loop, MCP security",
+      "bs": "Agenti i alati: prevelika ovlašćenja, najmanje privilegije, čovjek u petlji, sigurnost MCP-a"
+    },
+    {
+      "id": "2.4",
+      "en": "Unbounded consumption and abuse controls",
+      "bs": "Neograničena potrošnja i kontrole zloupotrebe"
+    },
+    {
+      "id": "3.1",
+      "en": "RAG security: document-level access control, vector store security, embedding risks",
+      "bs": "Sigurnost RAG-a: kontrola pristupa po dokumentu, sigurnost vektorske baze, rizici embeddinga"
+    },
+    {
+      "id": "3.2",
+      "en": "Data protection for AI: PII handling, training data governance, data poisoning defenses",
+      "bs": "Zaštita podataka u AI-ju: lični podaci, upravljanje podacima za treniranje, odbrana od trovanja podataka"
+    },
+    {
+      "id": "4.1",
+      "en": "Model supply chain: safe serialization formats, model scanning, provenance and signing",
+      "bs": "Lanac snabdijevanja modela: sigurni formati, skeniranje modela, porijeklo i potpisivanje"
+    },
+    {
+      "id": "4.2",
+      "en": "Securing ML pipelines and MLOps platforms; AI-BOM",
+      "bs": "Sigurnost ML pipelinea i MLOps platformi; AI-BOM"
+    },
+    {
+      "id": "4.3",
+      "en": "Model theft, extraction and privacy attacks: risks and mitigations",
+      "bs": "Krađa modela, ekstrakcija i napadi na privatnost: rizici i ublažavanje"
+    },
+    {
+      "id": "5.1",
+      "en": "AI red teaming and evaluation as a process",
+      "bs": "AI red teaming i evaluacija kao proces"
+    },
+    {
+      "id": "5.2",
+      "en": "Logging, monitoring and incident response for AI systems",
+      "bs": "Logovanje, monitoring i odgovor na incidente za AI sisteme"
+    },
+    {
+      "id": "6.1",
+      "en": "Regulation and standards: EU AI Act, NIST AI RMF, ISO/IEC 42001",
+      "bs": "Regulativa i standardi: EU AI Act, NIST AI RMF, ISO/IEC 42001"
+    },
+    {
+      "id": "6.2",
+      "en": "AI governance in the organization: policies, inventory, risk assessment, vendor AI",
+      "bs": "Upravljanje AI-jem u organizaciji: politike, inventar, procjena rizika, AI dobavljača"
+    }
+  ],
+  "sources": [
+    {
+      "title": "OWASP GenAI Security Project (Top 10 za LLM)",
+      "url": "https://genai.owasp.org/",
+      "title_en": "OWASP GenAI Security Project (Top 10 for LLM)"
+    },
+    {
+      "title": "MITRE ATLAS",
+      "url": "https://atlas.mitre.org"
+    },
+    {
+      "title": "NIST AI 100-2 (Adversarial ML taxonomy)",
+      "url": "https://csrc.nist.gov/pubs/ai/100/2/e2025/final"
+    },
+    {
+      "title": "NIST AI RMF",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework"
+    },
+    {
+      "title": "EU AI Act (Uredba 2024/1689) i AI Omnibus (2026/1744)",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "title_en": "EU AI Act (Regulation 2024/1689) and AI Omnibus (2026/1744)"
+    },
+    {
+      "title": "ISO/IEC 42001",
+      "url": "https://www.iso.org/standard/81230.html"
+    }
+  ],
+  "title_en": "Security of AI and ML Systems",
+  "subtitle_en": "Plan phase 7 (bonus): risks of LLM applications and agents (OWASP Top 10 for LLM), MITRE ATLAS, security of RAG, ML pipelines and the model supply chain, monitoring and governance (EU AI Act, NIST AI RMF, ISO/IEC 42001), with offline defensive labs."
+}

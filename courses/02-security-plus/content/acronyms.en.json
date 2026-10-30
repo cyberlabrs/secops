@@ -1,0 +1,532 @@
+[
+ {
+  "a": "AAA",
+  "en": "Authentication, Authorization, and Accounting",
+  "desc": "who you are, what you may do, what you did"
+ },
+ {
+  "a": "AI",
+  "en": "Artificial Intelligence",
+  "desc": "artificial intelligence"
+ },
+ {
+  "a": "ALE",
+  "en": "Annualized Loss Expectancy",
+  "desc": "expected yearly loss: ALE = SLE × ARO"
+ },
+ {
+  "a": "AML/CTF",
+  "en": "Anti-money Laundering/Counter-terrorism Financing",
+  "desc": "preventing money laundering and terrorism financing"
+ },
+ {
+  "a": "APT",
+  "en": "Advanced Persistent Threat",
+  "desc": "advanced, long-term threat; typically a state-sponsored group"
+ },
+ {
+  "a": "ARO",
+  "en": "Annualized Rate of Occurrence",
+  "desc": "how many times per year an event is expected to occur"
+ },
+ {
+  "a": "AUP",
+  "en": "Acceptable Use Policy",
+  "desc": "policy on acceptable use of IT resources"
+ },
+ {
+  "a": "BEC",
+  "en": "Business Email Compromise",
+  "desc": "fraud via a compromised or spoofed business email (e.g., a fake invoice)"
+ },
+ {
+  "a": "BIMI",
+  "en": "Brand Indicators for Message Identification",
+  "desc": "displays the sender's logo next to email that passes DMARC"
+ },
+ {
+  "a": "BIOS",
+  "en": "Basic Input/Output System",
+  "desc": "firmware that boots the computer (mostly UEFI today)"
+ },
+ {
+  "a": "BYOD",
+  "en": "Bring Your Own Device",
+  "desc": "using personal devices for work"
+ },
+ {
+  "a": "CAB",
+  "en": "Change Advisory Board",
+  "desc": "the body that approves changes"
+ },
+ {
+  "a": "CAPTCHA",
+  "en": "Completely Automated Public Turing test to tell Computers and Humans Apart",
+  "desc": "a test that tells humans apart from bots"
+ },
+ {
+  "a": "CI/CD",
+  "en": "Continuous Integration and Continuous Deployment",
+  "desc": "continuous integration and delivery"
+ },
+ {
+  "a": "CIA",
+  "en": "Confidentiality, Integrity, and Availability",
+  "desc": "confidentiality, integrity, availability"
+ },
+ {
+  "a": "CRL",
+  "en": "Certificate Revocation List",
+  "desc": "list of revoked certificates published by the CA"
+ },
+ {
+  "a": "CSPM",
+  "en": "Cloud Security Posture Management",
+  "desc": "tools that continuously check cloud configuration (e.g., public buckets)"
+ },
+ {
+  "a": "CSR",
+  "en": "Certificate Signing Request",
+  "desc": "certificate signing request; contains the public key and subject details"
+ },
+ {
+  "a": "CVE",
+  "en": "Common Vulnerabilities and Exposures",
+  "desc": "unique identifier of a specific vulnerability"
+ },
+ {
+  "a": "CVSS",
+  "en": "Common Vulnerability Scoring System",
+  "desc": "vulnerability severity score from 0 to 10"
+ },
+ {
+  "a": "CWE",
+  "en": "Common Weakness Enumeration",
+  "desc": "catalog of weakness types (e.g., CWE-89 SQL injection)"
+ },
+ {
+  "a": "DDoS",
+  "en": "Distributed Denial of Service",
+  "desc": "denial-of-service attack from many sources"
+ },
+ {
+  "a": "DoS",
+  "en": "Denial of Service",
+  "desc": "denial-of-service attack"
+ },
+ {
+  "a": "DHCP",
+  "en": "Dynamic Host Configuration Protocol",
+  "desc": "automatic IP address assignment"
+ },
+ {
+  "a": "DKIM",
+  "en": "DomainKeys Identified Mail",
+  "desc": "cryptographic email signature; the public key lives in DNS"
+ },
+ {
+  "a": "DLP",
+  "en": "Data Loss Prevention",
+  "desc": "preventing data leaks (content on the network, on endpoints, in the cloud)"
+ },
+ {
+  "a": "DMARC",
+  "en": "Domain-based Message Authentication, Reporting, and Conformance",
+  "desc": "policy for mail that fails SPF/DKIM, plus reporting"
+ },
+ {
+  "a": "DNS",
+  "en": "Domain Name System",
+  "desc": "translates names to IP addresses"
+ },
+ {
+  "a": "EDR",
+  "en": "Endpoint Detection and Response",
+  "desc": "detection and response on the endpoint (behavior, host isolation)"
+ },
+ {
+  "a": "EOI",
+  "en": "Expression of Interest",
+  "desc": "a vendor's expression of interest, an early procurement stage"
+ },
+ {
+  "a": "GBIC",
+  "en": "Gigabit Interface Converter",
+  "desc": "module for connecting media to network gear (predecessor of SFP)"
+ },
+ {
+  "a": "gMSA",
+  "en": "Group Managed Service Account",
+  "desc": "Windows service account with an automatically rotated password"
+ },
+ {
+  "a": "HIDS",
+  "en": "Host-based Intrusion Detection System",
+  "desc": "intrusion detection on the host itself"
+ },
+ {
+  "a": "HIPS",
+  "en": "Host-based Intrusion Prevention System",
+  "desc": "intrusion prevention on the host itself"
+ },
+ {
+  "a": "HR",
+  "en": "Human Resources",
+  "desc": "human resources"
+ },
+ {
+  "a": "IaC",
+  "en": "Infrastructure as Code",
+  "desc": "infrastructure described as code (Terraform, Bicep, CloudFormation)"
+ },
+ {
+  "a": "IDS",
+  "en": "Intrusion Detection System",
+  "desc": "intrusion detection system (alerts only)"
+ },
+ {
+  "a": "IP",
+  "en": "Internet Protocol",
+  "desc": "the core network-layer protocol of the internet"
+ },
+ {
+  "a": "IPFIX",
+  "en": "Internet Protocol Flow Information Export",
+  "desc": "standard for exporting traffic flow data (successor of NetFlow)"
+ },
+ {
+  "a": "IPS",
+  "en": "Intrusion Prevention System",
+  "desc": "intrusion prevention system (inline, blocks)"
+ },
+ {
+  "a": "IPSec",
+  "en": "Internet Protocol Security",
+  "desc": "encryption and authentication at the IP layer (VPN tunnels)"
+ },
+ {
+  "a": "LAN",
+  "en": "Local Area Network",
+  "desc": "local area network"
+ },
+ {
+  "a": "LDAP",
+  "en": "Lightweight Directory Access Protocol",
+  "desc": "directory access protocol (e.g., Active Directory); LDAPS is the encrypted variant"
+ },
+ {
+  "a": "LLM",
+  "en": "Large Language Model",
+  "desc": "large language model"
+ },
+ {
+  "a": "LMS",
+  "en": "Learning Management System",
+  "desc": "system for managing training"
+ },
+ {
+  "a": "MDM",
+  "en": "Mobile Device Management",
+  "desc": "central management of mobile devices"
+ },
+ {
+  "a": "MFA",
+  "en": "Multifactor Authentication",
+  "desc": "multifactor authentication"
+ },
+ {
+  "a": "MOA",
+  "en": "Memorandum of Agreement",
+  "desc": "agreement with specific obligations for the parties"
+ },
+ {
+  "a": "MOU",
+  "en": "Memorandum of Understanding",
+  "desc": "statement of intent to cooperate, usually non-binding"
+ },
+ {
+  "a": "MSA",
+  "en": "Master Service Agreement",
+  "desc": "master agreement that governs future work"
+ },
+ {
+  "a": "MTBF",
+  "en": "Mean Time Between Failures",
+  "desc": "average time between failures (reliability)"
+ },
+ {
+  "a": "MTTR",
+  "en": "Mean Time to Repair",
+  "desc": "average time to repair"
+ },
+ {
+  "a": "NDA",
+  "en": "Non-disclosure Agreement",
+  "desc": "confidentiality agreement"
+ },
+ {
+  "a": "NFC",
+  "en": "Near-field Communication",
+  "desc": "wireless communication over a few centimeters (payments, cards)"
+ },
+ {
+  "a": "NIC",
+  "en": "Network Interface Card",
+  "desc": "network card"
+ },
+ {
+  "a": "NIDS",
+  "en": "Network-based Intrusion Detection System",
+  "desc": "network IDS, analyzes a copy of the traffic"
+ },
+ {
+  "a": "NIPS",
+  "en": "Network-based Intrusion Prevention System",
+  "desc": "network IPS, inline"
+ },
+ {
+  "a": "NVD",
+  "en": "National Vulnerability Database",
+  "desc": "NIST's vulnerability database (CVSS, CPE)"
+ },
+ {
+  "a": "OAuth",
+  "en": "Open Authorization",
+  "desc": "framework for delegated authorization (access tokens)"
+ },
+ {
+  "a": "OCSP",
+  "en": "Online Certificate Status Protocol",
+  "desc": "online status check of a single certificate; stapling speeds it up"
+ },
+ {
+  "a": "OS",
+  "en": "Operating System",
+  "desc": "operating system"
+ },
+ {
+  "a": "OT",
+  "en": "Operational Technology",
+  "desc": "industrial systems (SCADA, PLC)"
+ },
+ {
+  "a": "OTP",
+  "en": "One-time Password",
+  "desc": "one-time password (TOTP, HOTP)"
+ },
+ {
+  "a": "PDF",
+  "en": "Portable Document Format",
+  "desc": "document format, a common attack vector"
+ },
+ {
+  "a": "PIR",
+  "en": "Post-incident Reporting",
+  "desc": "report written after an incident"
+ },
+ {
+  "a": "PKI",
+  "en": "Public Key Infrastructure",
+  "desc": "public key infrastructure: CA, certificates, revocation"
+ },
+ {
+  "a": "QR",
+  "en": "Quick Response",
+  "desc": "QR code; quishing is phishing via QR code"
+ },
+ {
+  "a": "RCS",
+  "en": "Rich Communication Services",
+  "desc": "successor of SMS with richer messaging"
+ },
+ {
+  "a": "RF",
+  "en": "Radio Frequency",
+  "desc": "radio frequency"
+ },
+ {
+  "a": "RFC",
+  "en": "Request for Comments",
+  "desc": "documents that define internet standards"
+ },
+ {
+  "a": "RFI",
+  "en": "Request for Information",
+  "desc": "request for information from vendors"
+ },
+ {
+  "a": "RFP",
+  "en": "Request for Proposal",
+  "desc": "request for a proposal with a solution"
+ },
+ {
+  "a": "RFQ",
+  "en": "Request for Quote",
+  "desc": "request for a price when the solution is already known"
+ },
+ {
+  "a": "ROI",
+  "en": "Return on Investment",
+  "desc": "return on investment"
+ },
+ {
+  "a": "RPO",
+  "en": "Recovery Point Objective",
+  "desc": "how much data (measured in time) you can afford to lose"
+ },
+ {
+  "a": "RPS",
+  "en": "Redundant Power Supply",
+  "desc": "redundant power supply inside a device"
+ },
+ {
+  "a": "RTF",
+  "en": "Rich Text Format",
+  "desc": "document format that can carry malicious objects"
+ },
+ {
+  "a": "RTO",
+  "en": "Recovery Time Objective",
+  "desc": "how quickly the system must be running again"
+ },
+ {
+  "a": "SaaS",
+  "en": "Software as a Service",
+  "desc": "software as a service"
+ },
+ {
+  "a": "SAML",
+  "en": "Security Assertions Markup Language",
+  "desc": "XML standard for SSO between an IdP and an SP"
+ },
+ {
+  "a": "SCAP",
+  "en": "Security Content Automation Protocol",
+  "desc": "standards for automated configuration and vulnerability checks"
+ },
+ {
+  "a": "SELinux",
+  "en": "Security-enhanced Linux",
+  "desc": "MAC (mandatory access control) for Linux"
+ },
+ {
+  "a": "SFP",
+  "en": "Small Form-factor Pluggable",
+  "desc": "small pluggable module for fiber/copper on a switch"
+ },
+ {
+  "a": "SIEM",
+  "en": "Security Information and Event Management",
+  "desc": "central log collection, correlation, and alerting"
+ },
+ {
+  "a": "SLE",
+  "en": "Single Loss Expectancy",
+  "desc": "loss from a single event: asset value × exposure factor"
+ },
+ {
+  "a": "SMS",
+  "en": "Short Message Service",
+  "desc": "text messages; smishing is phishing via SMS"
+ },
+ {
+  "a": "SNMP",
+  "en": "Simple Network Management Protocol",
+  "desc": "monitoring of network devices; SNMPv3 adds authentication and encryption"
+ },
+ {
+  "a": "SOAR",
+  "en": "Security Orchestration, Automation, and Response",
+  "desc": "automated response using playbooks"
+ },
+ {
+  "a": "SOC",
+  "en": "Security Operations Center",
+  "desc": "security operations center"
+ },
+ {
+  "a": "SOP",
+  "en": "Standard Operating Procedure",
+  "desc": "standard operating procedure"
+ },
+ {
+  "a": "SOW",
+  "en": "Statement of Work",
+  "desc": "statement of work: scope, deliverables, deadlines"
+ },
+ {
+  "a": "SPF",
+  "en": "Sender Policy Framework",
+  "desc": "DNS record listing which servers may send mail for a domain"
+ },
+ {
+  "a": "SQL",
+  "en": "Structured Query Language",
+  "desc": "language for querying databases"
+ },
+ {
+  "a": "SSE",
+  "en": "Security Service Edge",
+  "desc": "cloud-delivered security services: SWG, CASB, ZTNA"
+ },
+ {
+  "a": "SSO",
+  "en": "Single Sign-on",
+  "desc": "one sign-in for many applications"
+ },
+ {
+  "a": "TLS",
+  "en": "Transport Layer Security",
+  "desc": "encryption of traffic in transit"
+ },
+ {
+  "a": "TOC",
+  "en": "Time-of-check",
+  "desc": "the moment of the check in a race condition (TOCTOU) vulnerability"
+ },
+ {
+  "a": "TOU",
+  "en": "Time-of-use",
+  "desc": "the moment of use in a race condition (TOCTOU) vulnerability"
+ },
+ {
+  "a": "UPS",
+  "en": "Uninterruptible Power Supply",
+  "desc": "uninterruptible power (battery) for short outages"
+ },
+ {
+  "a": "USB",
+  "en": "Universal Serial Bus",
+  "desc": "USB; a malicious USB device is an attack vector"
+ },
+ {
+  "a": "UTM",
+  "en": "Unified Threat Management",
+  "desc": "appliance combining firewall, IPS, AV, and content filtering"
+ },
+ {
+  "a": "VNC",
+  "en": "Virtual Network Computing",
+  "desc": "remote desktop protocol"
+ },
+ {
+  "a": "VPN",
+  "en": "Virtual Private Network",
+  "desc": "encrypted tunnel over a public network"
+ },
+ {
+  "a": "WAF",
+  "en": "Web Application Firewall",
+  "desc": "firewall for HTTP (L7) that protects web applications"
+ },
+ {
+  "a": "WIPS",
+  "en": "Wireless Intrusion Prevention System",
+  "desc": "detects and blocks rogue access points and wireless attacks"
+ },
+ {
+  "a": "XDR",
+  "en": "Extended Detection and Response",
+  "desc": "EDR extended to network, email, identity, and cloud"
+ }
+]

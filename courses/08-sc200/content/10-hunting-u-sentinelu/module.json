@@ -1,0 +1,11 @@
+{
+  "title": "Threat hunting u Sentinelu: upiti, data lake, summary rules, notebooks",
+  "summary": "Hunting u Sentinelu (Defender portal): hunting upiti i Results delta, bookmarks i hunts, KQL jobovi u data lakeu, summary rules, data lake notebooks u VS Code i Sentinel MCP server.",
+  "minutes": 75,
+  "domain": 3,
+  "objectives": [
+    "3.2"
+  ],
+  "title_en": "Threat hunting in Sentinel: queries, data lake, summary rules, notebooks",
+  "summary_en": "Hunting in Sentinel (Defender portal): hunting queries and Results delta, bookmarks and hunts, KQL jobs in the data lake, summary rules, data lake notebooks in VS Code and the Sentinel MCP server."
+}

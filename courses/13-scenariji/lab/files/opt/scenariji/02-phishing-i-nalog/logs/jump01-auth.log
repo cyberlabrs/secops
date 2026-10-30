@@ -1,0 +1,46 @@
+Oct 12 09:31:12 jump01 sshd[40112]: Accepted publickey for mpetrovic from 10.20.0.41 port 52110 ssh2: ED25519 SHA256:sevly6w+FUYWkClonMXO5ZkYhZkInilZZmIrv86sCUk
+Oct 12 09:31:12 jump01 sshd[40112]: pam_unix(sshd:session): session opened for user mpetrovic(uid=1002) by (uid=0)
+Oct 12 09:31:12 jump01 systemd-logind[612]: New session 301 of user mpetrovic.
+Oct 12 10:02:47 jump01 sshd[40112]: Received disconnect from 10.20.0.41 port 52110:11: disconnected by user
+Oct 12 10:02:47 jump01 sshd[40112]: Disconnected from user mpetrovic 10.20.0.41 port 52110
+Oct 12 10:02:47 jump01 sshd[40112]: pam_unix(sshd:session): session closed for user mpetrovic
+Oct 12 10:02:47 jump01 systemd-logind[612]: Session 301 logged out. Waiting for processes to exit.
+Oct 12 17:44:03 jump01 sshd[40980]: Accepted publickey for jkovac from 10.8.0.14 port 50877 ssh2: ED25519 SHA256:cXDy5ky+uyusHslJ8cIsTPAjV7S+t4Khpq0j422hz1E
+Oct 12 17:44:03 jump01 sshd[40980]: pam_unix(sshd:session): session opened for user jkovac(uid=1003) by (uid=0)
+Oct 12 17:44:03 jump01 systemd-logind[612]: New session 305 of user jkovac.
+Oct 12 17:46:20 jump01 sudo:   jkovac : TTY=pts/0 ; PWD=/home/jkovac ; USER=root ; COMMAND=/usr/bin/systemctl status nginx
+Oct 12 17:46:20 jump01 sudo: pam_unix(sudo:session): session opened for user root(uid=0) by jkovac(uid=1003)
+Oct 12 17:46:21 jump01 sudo: pam_unix(sudo:session): session closed for user root
+Oct 12 18:58:31 jump01 sshd[40980]: Received disconnect from 10.8.0.14 port 50877:11: disconnected by user
+Oct 12 18:58:31 jump01 sshd[40980]: Disconnected from user jkovac 10.8.0.14 port 50877
+Oct 12 18:58:31 jump01 sshd[40980]: pam_unix(sshd:session): session closed for user jkovac
+Oct 12 18:58:31 jump01 systemd-logind[612]: Session 305 logged out. Waiting for processes to exit.
+Oct 13 06:25:01 jump01 CRON[47702]: pam_unix(cron:session): session opened for user root(uid=0) by (uid=0)
+Oct 13 06:25:01 jump01 CRON[47702]: pam_unix(cron:session): session closed for user root
+Oct 13 07:20:33 jump01 sshd[47811]: Accepted publickey for mpetrovic from 10.8.0.11 port 53002 ssh2: ED25519 SHA256:sevly6w+FUYWkClonMXO5ZkYhZkInilZZmIrv86sCUk
+Oct 13 07:20:33 jump01 sshd[47811]: pam_unix(sshd:session): session opened for user mpetrovic(uid=1002) by (uid=0)
+Oct 13 07:20:33 jump01 systemd-logind[612]: New session 309 of user mpetrovic.
+Oct 13 07:48:10 jump01 sshd[47811]: Received disconnect from 10.8.0.11 port 53002:11: disconnected by user
+Oct 13 07:48:10 jump01 sshd[47811]: Disconnected from user mpetrovic 10.8.0.11 port 53002
+Oct 13 07:48:10 jump01 sshd[47811]: pam_unix(sshd:session): session closed for user mpetrovic
+Oct 13 07:48:10 jump01 systemd-logind[612]: Session 309 logged out. Waiting for processes to exit.
+Oct 13 08:24:02 jump01 sshd[48121]: pam_sss(sshd:auth): authentication success; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.8.0.23 user=jkovac
+Oct 13 08:24:02 jump01 sshd[48121]: Accepted password for jkovac from 10.8.0.23 port 50122 ssh2
+Oct 13 08:24:02 jump01 sshd[48121]: pam_unix(sshd:session): session opened for user jkovac(uid=1003) by (uid=0)
+Oct 13 08:24:02 jump01 systemd-logind[612]: New session 311 of user jkovac.
+Oct 13 08:25:13 jump01 sudo:   jkovac : TTY=pts/1 ; PWD=/home/jkovac ; USER=root ; COMMAND=/usr/bin/cat /etc/ssh/sshd_config
+Oct 13 08:25:13 jump01 sudo: pam_unix(sudo:session): session opened for user root(uid=0) by jkovac(uid=1003)
+Oct 13 08:25:13 jump01 sudo: pam_unix(sudo:session): session closed for user root
+Oct 13 08:27:15 jump01 crontab[48190]: (jkovac) BEGIN EDIT (jkovac)
+Oct 13 08:27:15 jump01 crontab[48190]: (jkovac) REPLACE (jkovac)
+Oct 13 08:27:15 jump01 crontab[48190]: (jkovac) END EDIT (jkovac)
+Oct 13 08:40:01 jump01 CRON[48402]: pam_unix(cron:session): session opened for user jkovac(uid=1003) by (uid=0)
+Oct 13 08:40:01 jump01 CRON[48402]: pam_unix(cron:session): session closed for user jkovac
+Oct 13 08:41:22 jump01 sshd[48121]: Received disconnect from 10.8.0.23 port 50122:11: disconnected by user
+Oct 13 08:41:22 jump01 sshd[48121]: Disconnected from user jkovac 10.8.0.23 port 50122
+Oct 13 08:41:22 jump01 sshd[48121]: pam_unix(sshd:session): session closed for user jkovac
+Oct 13 08:41:22 jump01 systemd-logind[612]: Session 311 logged out. Waiting for processes to exit.
+Oct 13 09:00:01 jump01 CRON[48459]: pam_unix(cron:session): session opened for user jkovac(uid=1003) by (uid=0)
+Oct 13 09:00:01 jump01 CRON[48459]: pam_unix(cron:session): session closed for user jkovac
+Oct 13 09:20:01 jump01 CRON[48516]: pam_unix(cron:session): session opened for user jkovac(uid=1003) by (uid=0)
+Oct 13 09:20:01 jump01 CRON[48516]: pam_unix(cron:session): session closed for user jkovac

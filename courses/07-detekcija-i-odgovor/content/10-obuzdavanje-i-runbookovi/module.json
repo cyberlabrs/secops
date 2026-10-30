@@ -1,0 +1,12 @@
+{
+  "title": "Obuzdavanje, oporavak i runbookovi",
+  "summary": "Obuzdavanje, iskorjenjivanje i oporavak za Linux hostove, kontejnere, Kubernetes i cloud naloge, runbookovi za procurjele ključeve, kriptominere i izložen storage i analiza nakon incidenta.",
+  "minutes": 75,
+  "domain": 6,
+  "objectives": [
+    "6.3",
+    "6.4"
+  ],
+  "title_en": "Containment, recovery and runbooks",
+  "summary_en": "Containment, eradication and recovery for Linux hosts, containers, Kubernetes and cloud accounts, runbooks for leaked keys, cryptominers and exposed storage, and the post-incident review."
+}

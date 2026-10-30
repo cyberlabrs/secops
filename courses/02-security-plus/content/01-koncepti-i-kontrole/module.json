@@ -1,0 +1,12 @@
+{
+  "title": "Sigurnosni koncepti, kontrole i change management",
+  "summary": "CIA, AAA, non-repudiation, Zero Trust i least privilege, kategorije i tipovi kontrola, te kako change management utiče na sigurnost.",
+  "minutes": 75,
+  "domain": 1,
+  "objectives": [
+    "1.1",
+    "1.2"
+  ],
+  "title_en": "Security concepts, controls, and change management",
+  "summary_en": "CIA, AAA, non-repudiation, Zero Trust and least privilege, control categories and types, and how change management affects security."
+}

@@ -1,0 +1,7 @@
+#!/bin/bash
+# Pokreće rsyslog, sshd i Wazuh manager (lab nema systemd).
+grep -q "$(hostname)" /etc/hosts 2>/dev/null || echo "127.0.1.1 $(hostname)" >> /etc/hosts
+pgrep -x rsyslogd >/dev/null || rsyslogd
+mkdir -p /run/sshd; pgrep -x sshd >/dev/null || /usr/sbin/sshd
+/var/ossec/bin/wazuh-control status 2>/dev/null | grep -q 'wazuh-analysisd is running' || /var/ossec/bin/wazuh-control start >/dev/null 2>&1
+/var/ossec/bin/wazuh-control status | grep -q 'wazuh-analysisd is running' && echo "Wazuh radi" || { echo "Wazuh se nije pokrenuo: /var/ossec/logs/ossec.log"; exit 1; }

@@ -1,0 +1,256 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Zadatak: na node01 nešto sluša na TCP portu 1234; pronađi proces. Koja komanda odmah prikazuje i ime procesa i PID?",
+    "options": [
+      "ss -tlpn | grep 1234",
+      "systemctl list-units --type=service | grep 1234",
+      "iptables -L INPUT -n | grep 1234",
+      "ps aux | grep 1234"
+    ],
+    "answer": 0,
+    "explain": "ss sa -p prikazuje proces koji drži socket (users:((\"ime\",pid=...))). systemctl ne zna za portove, iptables pokazuje pravila a ne procese, a ps aux traži broj 1234 u tekstu komandne linije, ne port."
+  },
+  {
+    "obj": "3.1",
+    "q": "ss pokazuje da port 1234 drži proces sa pid=2211. Treba ukloniti paket koji ga je instalirao. Koji je ispravan redoslijed alata?",
+    "options": [
+      "lsof -p 2211, pa apt remove na ime procesa",
+      "ls -l /proc/2211/exe da dobiješ putanju, pa dpkg -S <putanja> da dobiješ ime paketa",
+      "systemctl status 2211, pa rm na unit fajl",
+      "dpkg -l | grep 2211"
+    ],
+    "answer": 1,
+    "explain": "/proc/<pid>/exe pokazuje stvarni binarni fajl, a dpkg -S kaže koji paket je vlasnik tog fajla. Ime procesa ne mora biti ime paketa, a dpkg -l ne zna za PID-ove."
+  },
+  {
+    "obj": "3.1",
+    "q": "Uradio si systemctl stop vsftpd na controlplane. Poslije reboota čvora port 21 je ponovo otvoren. Šta si propustio?",
+    "options": [
+      "systemctl daemon-reload",
+      "systemctl reload vsftpd",
+      "systemctl disable vsftpd (ili disable --now od početka)",
+      "systemctl restart kubelet"
+    ],
+    "answer": 2,
+    "explain": "stop zaustavlja samo trenutni proces; servis koji je enabled ponovo startuje pri bootu. daemon-reload samo ponovo čita unit fajlove, a reload šalje signal servisu da ponovo učita konfiguraciju."
+  },
+  {
+    "obj": "3.1",
+    "q": "Zadatak traži da servis apache2 ne smije biti pokrenut ni ručno ni kao zavisnost drugog servisa. Koja komanda to garantuje?",
+    "options": [
+      "systemctl disable apache2",
+      "systemctl stop apache2",
+      "systemctl kill apache2",
+      "systemctl mask apache2"
+    ],
+    "answer": 3,
+    "explain": "mask povezuje unit sa /dev/null pa ga systemd ne može pokrenuti ni ručno ni kao zavisnost. disable samo uklanja automatski start pri bootu, a stop i kill djeluju samo na trenutni proces."
+  },
+  {
+    "obj": "3.1",
+    "q": "Na node01 pokreneš apt purge -y nfs-common i apt u listi za uklanjanje prikaže i paket kubelet. Šta radiš?",
+    "options": [
+      "Prekineš i ne uklanjaš ništa što povlači kubelet; uklanjaš samo ono što zadatak traži bez lomljenja čvora",
+      "Nastaviš; kubelet se automatski reinstalira sa kubeadm upgrade node",
+      "Nastaviš, pa poslije uradiš apt-mark hold kubelet",
+      "Koristiš apt purge --force-yes da preskočiš zavisnosti"
+    ],
+    "answer": 0,
+    "explain": "Uklanjanje kubeleta ruši čvor (NotReady) i obara druge zadatke. kubeadm upgrade node ne instalira pakete, apt-mark hold ne vraća obrisani paket, a forsiranje samo prikriva problem."
+  },
+  {
+    "obj": "3.1",
+    "q": "Koji alat NE služi da utvrdiš koji proces sluša na portu na čvoru?",
+    "options": [
+      "lsof -i :8080",
+      "netstat -tlpn",
+      "ss -tlpn",
+      "aa-status"
+    ],
+    "answer": 3,
+    "explain": "aa-status prikazuje AppArmor profile i procese koji su njima ograničeni, ne mrežne sockete. lsof -i, netstat -tlpn i ss -tlpn svi prikazuju procese koji slušaju na portovima."
+  },
+  {
+    "obj": "3.1",
+    "q": "Tim bira OS za nove radne čvorove sa ciljem najmanje površine napada. Koji izbor najbolje ispunjava cilj?",
+    "options": [
+      "Ubuntu Desktop sa svim razvojnim alatima radi lakšeg debugovanja",
+      "Bottlerocket ili Flatcar: minimalan, immutable OS namijenjen samo kontejnerima",
+      "Bilo koji OS, jer kontejneri su izolovani od hosta",
+      "CentOS sa isključenim SELinuxom radi kompatibilnosti"
+    ],
+    "answer": 1,
+    "explain": "OS-ovi napravljeni za kontejnere imaju read-only ili immutable sistem, bez package managera i suvišnih servisa. Kontejneri dijele kernel sa hostom, pa OS hosta nije nebitan, a gašenje SELinuxa i razvojni alati povećavaju površinu napada."
+  },
+  {
+    "obj": "3.2",
+    "q": "U /etc/sudoers.d/dev piše: dev ALL=(ALL) NOPASSWD: ALL. Zadatak: dev smije samo restartovati nginx. Koji je ispravan sadržaj i provjera?",
+    "options": [
+      "dev ALL=(root) /usr/bin/systemctl restart nginx, pa visudo -c",
+      "dev ALL=(ALL) ALL, pa systemctl restart sudo",
+      "%dev ALL=(ALL) NOPASSWD: /usr/bin/systemctl, pa sshd -t",
+      "Dodati dev u grupu docker umjesto sudo"
+    ],
+    "answer": 0,
+    "explain": "Pravilo ograničava dev na jednu komandu kao root, a visudo -c provjerava sintaksu sudoers fajlova. ALL ALL zadržava puni pristup, cijeli systemctl dozvoljava i druge akcije, a grupa docker je ekvivalent root pristupa."
+  },
+  {
+    "obj": "3.2",
+    "q": "Na controlplane pokreneš awk -F: '$3 == 0 {print $1}' /etc/passwd i dobiješ dva reda: root i backup. Šta to znači?",
+    "options": [
+      "Normalno stanje; backup korisnik treba UID 0 za čitanje fajlova",
+      "backup je sistemski nalog koji koristi kubelet",
+      "Korisnik backup ima UID 0, tj. puna root prava; nalog treba ukloniti ili mu dodijeliti običan UID",
+      "Samo prvi nalog sa UID 0 dobija root prava"
+    ],
+    "answer": 2,
+    "explain": "Kernel gleda UID, ne ime: svaki nalog sa UID 0 je root. Osim root naloga ne bi trebalo da postoji nijedan drugi sa UID 0; kubelet radi kao root, a ne kao poseban nalog."
+  },
+  {
+    "obj": "3.2",
+    "q": "Korisnik ops je izbačen iz tima. Uradio si usermod -L ops, ali ops i dalje može da se prijavi SSH-om na node01. Zašto?",
+    "options": [
+      "usermod -L traži restart sshd servisa",
+      "usermod -L zaključava samo lozinku; prijava SSH ključem iz ~ops/.ssh/authorized_keys i dalje radi",
+      "Zaključavanje važi tek poslije reboota",
+      "SSH ne provjerava /etc/shadow"
+    ],
+    "answer": 1,
+    "explain": "-L dodaje ! ispred hash-a lozinke u /etc/shadow, što blokira samo lozinku. Za potpunu blokadu postavi shell na nologin, ukloni authorized_keys ili obriši korisnika."
+  },
+  {
+    "obj": "3.2",
+    "q": "Postavio si PasswordAuthentication no u /etc/ssh/sshd_config i uradio systemctl reload ssh, ali sshd -T i dalje pokazuje passwordauthentication yes. Šta je najvjerovatniji uzrok?",
+    "options": [
+      "Treba restart umjesto reload",
+      "Opcija se piše PasswordAuth no",
+      "Opcija važi samo za korisnika root",
+      "Fajl u /etc/ssh/sshd_config.d/ (npr. 50-cloud-init.conf) postavlja yes, a sshd koristi prvu pročitanu vrijednost"
+    ],
+    "answer": 3,
+    "explain": "Include direktiva na vrhu sshd_config učitava sshd_config.d/*.conf prije ostatka fajla, a za većinu opcija sshd uzima prvu vrijednost. sshd -T čita fajlove sa diska pa reload nije uzrok, a ime opcije je ispravno."
+  },
+  {
+    "obj": "3.2",
+    "q": "Zadatak: root ne smije da se prijavi preko SSH-a ni na koji način. Koja opcija i redoslijed su ispravni?",
+    "options": [
+      "PermitRootLogin prohibit-password, pa systemctl reload ssh",
+      "PasswordAuthentication no, pa systemctl restart ssh",
+      "PermitRootLogin no, pa sshd -t, pa systemctl reload ssh",
+      "DenyUsers root, pa visudo -c"
+    ],
+    "answer": 2,
+    "explain": "PermitRootLogin no zabranjuje svaku root prijavu; prohibit-password i dalje dozvoljava ključ. PasswordAuthentication utiče na sve korisnike i ne blokira ključeve, a visudo -c provjerava sudoers, ne sshd."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pod u EKS klasteru je kompromitovan. Napadač je sa curl http://169.254.169.254/... dobio kredencijale IAM role čvora koja ima AdministratorAccess. Koje DVIJE mjere direktno smanjuju ovaj rizik? (Izaberi DVA.)",
+    "options": [
+      "Smanjiti rolu čvora na minimalne dozvole, a aplikacijama dati role po ServiceAccountu (IRSA / Pod Identity)",
+      "Isključiti --anonymous-auth na kube-apiserveru",
+      "Blokirati Podovima pristup metadata servisu (IMDSv2 sa hop limitom 1 ili NetworkPolicy egress deny prema 169.254.169.254/32)",
+      "Postaviti PermitRootLogin no na čvorovima",
+      "Uključiti NodeRestriction admission plugin"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Napad koristi metadata servis i preširoku rolu čvora: zatvaranje pristupa metadata servisu i minimalna rola rješavaju oba dijela. Anonimni pristup API-ju, SSH i NodeRestriction se tiču drugih puteva napada."
+  },
+  {
+    "obj": "3.3",
+    "q": "Na node01 želiš ufw sa default deny incoming. Šta MORAŠ dodati prije ufw enable da ne izgubiš pristup čvoru i da čvor ostane Ready?",
+    "options": [
+      "ufw allow 22/tcp i dozvolu za 10250/tcp sa control planea",
+      "ufw allow 2379/tcp",
+      "ufw allow 30000:32767/tcp",
+      "ufw default allow incoming"
+    ],
+    "answer": 0,
+    "explain": "Bez pravila za SSH prekidaš sopstvenu vezu, a control plane mora dosegnuti kubelet na 10250 (exec, logs, metrike). etcd nije na radnom čvoru, NodePort opseg treba samo ako ga koristiš, a allow incoming poništava namjeru."
+  },
+  {
+    "obj": "3.3",
+    "q": "Da bi „počistio“ firewall na node01 pokreneš iptables -F. Šta je najvjerovatnija posljedica?",
+    "options": [
+      "Ništa, kube-proxy pravila su u nftables pa ih iptables ne dira",
+      "Samo se brišu ufw pravila",
+      "Brišu se i pravila kube-proxy-ja i CNI-ja (KUBE-* lanci), pa Service saobraćaj i mreža Podova prestaju da rade dok se pravila ne obnove",
+      "Čvor se automatski drainuje"
+    ],
+    "answer": 2,
+    "explain": "kube-proxy i CNI drže svoja pravila u istim tabelama; flush ih briše. Kubernetes ne drainuje čvor zbog toga, a pravila nisu ograničena na ufw."
+  },
+  {
+    "obj": "3.3",
+    "q": "Upari port sa komponentom kojoj pripada na kubeadm klasteru.",
+    "type": "match",
+    "options": [
+      "6443/TCP",
+      "2379/TCP",
+      "10250/TCP",
+      "10259/TCP",
+      "30000-32767"
+    ],
+    "targets": [
+      "kube-scheduler",
+      "NodePort Services",
+      "etcd klijentski API",
+      "kubelet API",
+      "kube-apiserver",
+      "kube-proxy (10256)"
+    ],
+    "answer": [
+      4,
+      2,
+      3,
+      0,
+      1
+    ],
+    "explain": "Po stranici Ports and Protocols: 6443 API server, 2379-2380 etcd, 10250 kubelet, 10259 kube-scheduler, 10257 kube-controller-manager, a 30000-32767 je podrazumijevani NodePort opseg. kube-proxy health je na 10256."
+  },
+  {
+    "obj": "3.3",
+    "q": "Na controlplane ss -tlpn pokazuje etcd na <IP-čvora>:2379. Ko jedini treba da može da se poveže na taj port spolja?",
+    "options": [
+      "Svi radni čvorovi, jer kubelet čita stanje iz etcd-a",
+      "Administratori sa laptopa, radi etcdctl backupa",
+      "Podovi u namespaceu kube-system",
+      "kube-apiserver (i ostali etcd članovi na 2380); ostalo blokirati firewallom ili security grupom"
+    ],
+    "answer": 3,
+    "explain": "Samo API server priča sa etcd-om; kubeleti i Podovi idu preko API servera. Backup se radi lokalno na control plane čvoru sa certifikatima, ne preko mreže sa laptopa."
+  },
+  {
+    "obj": "3.3",
+    "q": "Zadatak: aplikacija je izložena kao Service tipa LoadBalancer, ali smije joj se pristupati samo iz kancelarijske mreže 203.0.113.0/24. Koje polje to rješava na nivou Kubernetesa?",
+    "options": [
+      "spec.externalTrafficPolicy: Local",
+      "spec.loadBalancerSourceRanges: [203.0.113.0/24]",
+      "spec.sessionAffinity: ClientIP",
+      "metadata.annotations: allow-cidr=203.0.113.0/24"
+    ],
+    "answer": 1,
+    "explain": "loadBalancerSourceRanges ograničava izvorne adrese koje load balancer propušta (podrška zavisi od cloud providera). externalTrafficPolicy čuva izvornu IP i bira čvorove, sessionAffinity vezuje klijenta za Pod, a generička anotacija allow-cidr ne postoji."
+  },
+  {
+    "obj": "3.3",
+    "q": "Poredaj korake za ograničavanje pristupa kubeletu (10250) na node01 samo na control plane IP 10.0.0.10 pomoću iptables.",
+    "type": "order",
+    "options": [
+      "iptables -I INPUT 2 -p tcp --dport 10250 -j DROP",
+      "Provjeri iz controlplane: kubectl logs ili exec na Podu sa node01 radi, a sa druge adrese konekcija pada",
+      "iptables -L INPUT -n --line-numbers da vidiš postojeća pravila",
+      "iptables -I INPUT 1 -p tcp --dport 10250 -s 10.0.0.10 -j ACCEPT"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      1
+    ],
+    "explain": "Prvo pregledaj postojeća pravila, zatim ubaci ACCEPT za control plane na prvo mjesto i DROP za ostale odmah iza njega, pa testiraj. Ako DROP ide prije ACCEPT, i control plane gubi pristup kubeletu."
+  }
+]

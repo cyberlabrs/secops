@@ -1,0 +1,140 @@
+[
+  {
+    "obj": "3.3",
+    "q": "Fintech kompanija obrađuje podatke klijenata u cloudu i želi da ni administratori provajdera ni root na hostu ne mogu pročitati podatke DOK ih aplikacija obrađuje u memoriji. Koje stanje podataka štiti i koja tehnologija je NAJPRIKLADNIJA?",
+    "options": ["Data at rest; enkripcija EBS volumena", "Data in transit; TLS 1.3", "Data in use; confidential computing (secure enclave)", "Data at rest; tokenizacija"],
+    "answer": 2,
+    "explain": "Podaci u memoriji tokom obrade su data in use, a štite ih secure enclave / confidential computing rješenja. Enkripcija diska štiti data at rest, a TLS samo podatke koji putuju mrežom."
+  },
+  {
+    "obj": "3.3",
+    "q": "Web prodavnica čuva brojeve kartica radi ponovljenih plaćanja i želi da smanji PCI DSS opseg svojih sistema. Brojeve treba zamijeniti vrijednostima bez matematičke veze sa originalom, a original čuvati samo kod payment providera. Koja metoda je NAJBOLJA?",
+    "options": ["Tokenization", "Masking", "Hashing", "Obfuscation"],
+    "answer": 0,
+    "explain": "Tokenizacija zamjenjuje broj nasumičnim tokenom, a mapiranje je samo u vaultu provajdera, pa sistemi prodavnice ne čuvaju stvarne brojeve. Masking samo skriva prikaz, a hash se ne može vratiti u original za naplatu."
+  },
+  {
+    "obj": "3.3",
+    "q": "Direktor prodaje je odredio da su CRM podaci „Confidential“ i da im pristupa samo prodajni tim. Ops tim zatim uključuje enkripciju baze, podešava backup i dozvole. Koje uloge imaju direktor i ops tim?",
+    "options": ["Data controller i data subprocessor", "Data steward i data operator", "Data custodian i data owner", "Data owner i data custodian"],
+    "answer": 3,
+    "explain": "Owner je odgovoran za podatke i određuje klasifikaciju i pristup; custodian implementira kontrole (enkripcija, backup, dozvole). Steward brine o kvalitetu i metapodacima, a ne o klasifikaciji."
+  },
+  {
+    "obj": "3.3",
+    "q": "Firma A prikuplja lične podatke kupaca i određuje zašto se obrađuju. Firma B pruža email marketing servis za firmu A, a svoje servere hostuje kod cloud provajdera C. Koja je uloga provajdera C prema GDPR logici?",
+    "options": ["Data controller", "Data subprocessor", "Data owner", "Data steward"],
+    "answer": 1,
+    "explain": "A je controller (određuje svrhu i način), B je processor (obrađuje po nalogu), a C, kojeg je angažovao processor, je subprocessor."
+  },
+  {
+    "obj": "3.3",
+    "q": "Sistem za praćenje proizvodnje nema lične ni tajne podatke, ali bez njega fabrika staje u roku od sat vremena. Kako je ove podatke NAJPRECIZNIJE klasifikovati?",
+    "options": ["Public", "Top secret", "Critical", "Restricted"],
+    "answer": 2,
+    "explain": "Critical označava podatke bez kojih poslovanje ne može funkcionisati, sa naglaskom na dostupnost i integritet. Top secret i restricted se odnose na povjerljivost, a public bi zanemario značaj za poslovanje."
+  },
+  {
+    "obj": "3.3",
+    "q": "Istraživački tim treba zdravstvene podatke za analizu. Imena i JMBG se zamjenjuju nasumičnim identifikatorom, a tabela povezivanja se čuva odvojeno kod službenika za zaštitu podataka. Koja tehnika je primijenjena?",
+    "options": ["Anonymization", "Hashing bez salta", "Data masking za prikaz", "Pseudonymization (deidentification)"],
+    "answer": 3,
+    "explain": "Zamjena identifikatora uz odvojeno čuvanu tabelu povezivanja je pseudonimizacija, oblik deidentifikacije koji je povratan. Anonimizacija bi bila nepovratna, bez mogućnosti ponovnog povezivanja."
+  },
+  {
+    "obj": "3.3",
+    "q": "Bolnica želi da aplikacija za pregled kartona radi na tabletima samo unutar zgrade bolnice, a da se zaključa čim uređaj izađe van tog područja. Koja kontrola rukovanja podacima to omogućava?",
+    "options": ["Geofencing", "Data labeling", "Data transpose", "Retention"],
+    "answer": 0,
+    "explain": "Geofencing dozvoljava funkciju ili pristup samo unutar definisanog geografskog područja. Labeling označava klasifikaciju, transpose preraspoređuje podatke, a retention određuje rok čuvanja."
+  },
+  {
+    "obj": "3.4",
+    "q": "Berzanski trgovački sistem mora nastaviti rad u roku od nekoliko minuta nakon gubitka primarnog data centra, a budžet nije ograničavajući faktor. Koja opcija je NAJBOLJA?",
+    "options": ["Cold site", "Hot site sa kontinuiranom replikacijom", "Warm site sa sedmičnim backupom", "Backup trake u sefu banke"],
+    "answer": 1,
+    "explain": "Hot site je potpuno opremljen i ima replicirane podatke, pa omogućava oporavak u minutama. Warm i cold site traže sate do dane, a trake nemaju infrastrukturu za rad."
+  },
+  {
+    "obj": "3.4",
+    "q": "Uprava kaže: „Smijemo izgubiti najviše 15 minuta narudžbi, ali sistem može biti nedostupan do 4 sata.“ Koja tvrdnja tačno opisuje zahtjeve?",
+    "options": ["RTO = 15 min, RPO = 4 h", "MTTR = 15 min, MTBF = 4 h", "RPO = 4 h, MTTR = 15 min", "RPO = 15 min, RTO = 4 h"],
+    "answer": 3,
+    "explain": "Dozvoljeni gubitak podataka mjeren vremenom je RPO (15 min), a dozvoljeno trajanje zastoja je RTO (4 h). MTTR i MTBF su operativne metrike popravke i pouzdanosti, ne ciljevi oporavka."
+  },
+  {
+    "obj": "3.4",
+    "q": "Ransomware grupa je kompromitovala admin nalog i obrisala sve backupe prije šifrovanja servera. Koja kontrola bi NAJBOLJE spriječila brisanje backupa u budućnosti?",
+    "options": ["Češći incrementalni backupi", "RAID 10 na backup serveru", "Immutable backupi (npr. S3 Object Lock u compliance modu) uz offline kopiju", "Duži retention period"],
+    "answer": 2,
+    "explain": "Immutable backup se ne može obrisati ni izmijeniti do isteka roka, čak ni sa admin pravima. Češći backupi i duži retention ne pomažu ako napadač može sve obrisati, a RAID nije backup."
+  },
+  {
+    "obj": "3.4",
+    "q": "Pri nestanku struje serveri moraju raditi bez prekida, a nestanci u regionu znaju trajati satima. Koja kombinacija je NAJBOLJA?",
+    "options": ["UPS koji premošćava prve minute i generator za duži rad", "Samo surge protector", "Samo redundant power supply u svakom serveru", "Samo generator"],
+    "answer": 0,
+    "explain": "UPS trenutno preuzima napajanje, ali kratko; generator daje dugotrajno napajanje, ali mu treba vrijeme da se pokrene. Surge protector štiti samo od prenapona, a RPS ne pomaže ako nestane struje u cijeloj zgradi."
+  },
+  {
+    "obj": "3.4",
+    "q": "Full backup se radi u nedjelju, a incremental svakog drugog dana. Server je pao u četvrtak ujutro. Šta je potrebno za vraćanje stanja od srijede uveče?",
+    "options": ["Samo incremental od srijede", "Full od nedjelje i svi incrementali od ponedjeljka do srijede", "Full od nedjelje i samo incremental od srijede", "Samo full od nedjelje"],
+    "answer": 1,
+    "explain": "Incremental sadrži samo promjene od posljednjeg bilo kojeg backupa, pa su za restore potrebni full i SVI incrementali redom. Full + samo posljednji važi za differential backup."
+  },
+  {
+    "obj": "3.4",
+    "q": "Banka uvodi novi DR sistem i želi ga provjeriti tako da obrađuje iste stvarne transakcije kao produkcija, a rezultati se uporede, bez prebacivanja korisnika i bez rizika za produkciju. Koji tip testa je to?",
+    "options": ["Failover", "Tabletop exercise", "Parallel processing", "Simulation"],
+    "answer": 2,
+    "explain": "Parallel processing pokreće sekundarni sistem paralelno sa primarnim nad istim podacima i poredi rezultate. Failover stvarno prebacuje rad, tabletop je samo diskusija, a simulation vježba reakciju na zamišljeni događaj."
+  },
+  {
+    "obj": "3.4",
+    "q": "Storage niz je radio ukupno 6.000 sati u periodu u kojem je imao 4 kvara, a popravke su ukupno trajale 10 sati. Koje su vrijednosti MTBF i MTTR?",
+    "options": ["MTBF 2,5 h, MTTR 1.500 h", "MTBF 6.000 h, MTTR 10 h", "MTBF 1.500 h, MTTR 10 h", "MTBF 1.500 h, MTTR 2,5 h"],
+    "answer": 3,
+    "explain": "MTBF = vrijeme rada / broj kvarova = 6.000 / 4 = 1.500 h. MTTR = ukupno vrijeme popravki / broj popravki = 10 / 4 = 2,5 h."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Poredaj faze životnog ciklusa podataka (data management life cycle) redom.",
+    "options": ["Retention", "Distribution", "Creation", "Disposal", "Management"],
+    "answer": [2, 4, 1, 0, 3],
+    "explain": "Podatak nastaje (creation, tu se klasifikuje), zatim se njime upravlja i štiti (management), dijeli se (distribution), čuva koliko propisi traže (retention) i na kraju sigurno uništava (disposal)."
+  },
+  {
+    "obj": "3.3",
+    "type": "match",
+    "q": "Upari vrstu podataka sa compliance kategorijom kojoj NAJBOLJE pripada.",
+    "options": [
+      "Laboratorijski nalazi pacijenata",
+      "Nalog za igricu korisnika starog 11 godina",
+      "Izvještaji o prihodima kotirane kompanije",
+      "Izvorni kod patentiranog algoritma",
+      "E-mailovi sačuvani zbog sudskog spora",
+      "Adresa i broj telefona kupca"
+    ],
+    "targets": ["Legal data", "Financial", "Personal information", "Health data", "Intellectual property", "Child/minor data"],
+    "answer": [3, 5, 1, 4, 0, 2],
+    "explain": "Nalazi su zdravstveni podaci, nalog djeteta spada u podatke maloljetnika, finansijski izvještaji u finansijsku kategoriju, kod algoritma je intelektualna svojina, e-mailovi za spor su pravni podaci (legal hold), a kontakt kupca je lični podatak."
+  },
+  {
+    "obj": "3.4",
+    "type": "match",
+    "q": "Upari situaciju sa rješenjem za redundantnost ili otpornost koje opisuje.",
+    "options": [
+      "Saobraćaj se raspoređuje na tri web servera iza ALB-a",
+      "Broj podova raste automatski kad CPU pređe 70%",
+      "Dva čvora baze; pasivni preuzima kad aktivni padne",
+      "Server ima dva napajanja spojena na različite strujne krugove",
+      "Uređaj štiti opremu od naponskog udara pri udaru groma",
+      "Spoljni firewall i hipervizori su od različitih proizvođača"
+    ],
+    "targets": ["Clustering", "Surge protector", "Load balancing", "Platform diversity", "Autoscaling", "Redundant power supply (RPS)"],
+    "answer": [2, 4, 0, 5, 1, 3],
+    "explain": "Raspodjela saobraćaja je load balancing, automatsko dodavanje instanci autoscaling, aktivni/pasivni čvorovi clustering, dva napajanja u uređaju RPS, zaštita od prenapona surge protector, a različiti proizvođači platform diversity."
+  }
+]

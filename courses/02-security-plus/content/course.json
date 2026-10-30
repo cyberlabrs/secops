@@ -1,0 +1,242 @@
+{
+  "code": "SY0-801",
+  "badge": "SY0-801",
+  "order": 2,
+  "title": "Security+ SY0-801",
+  "subtitle": "Trening za CompTIA Security+ V8 (SY0-801): lekcije po zvaničnim ciljevima ispita, pitanja u stilu ispita uključujući PBQ, simulacija ispita od 90 pitanja i praktični labovi u Linux terminalu.",
+  "exam": {
+    "size": 90,
+    "minutes": 90,
+    "pass": 750,
+    "domains": [
+      {
+        "n": 1,
+        "name": "General Security Concepts",
+        "weight": 16
+      },
+      {
+        "n": 2,
+        "name": "Threats, Vulnerabilities, and Attacks",
+        "weight": 24
+      },
+      {
+        "n": 3,
+        "name": "Security Architecture",
+        "weight": 19
+      },
+      {
+        "n": 4,
+        "name": "Security Operations",
+        "weight": 27
+      },
+      {
+        "n": 5,
+        "name": "Security Program Management and Oversight",
+        "weight": 14
+      }
+    ],
+    "scaleMin": 100,
+    "scaleMax": 900
+  },
+  "sources": {
+    "checked": "oktobar 2026.",
+    "items": [
+      {
+        "name": "CompTIA Security+ V8 (SY0-801): stranica sertifikata i ciljevi ispita",
+        "url": "https://www.comptia.org/en-us/certifications/security/v8/",
+        "note": "izlazak oko 17. novembra 2026; ciljevi ispita, verzija dokumenta 2.0",
+        "name_en": "CompTIA Security+ V8 (SY0-801): certification page and exam objectives",
+        "note_en": "launches around November 17, 2026; exam objectives, document version 2.0"
+      },
+      {
+        "name": "CompTIA Security+ V7 (SY0-701)",
+        "url": "https://www.comptia.org/en-us/certifications/security/v7/",
+        "note": "engleska verzija ispita se povlači 11. juna 2027",
+        "note_en": "the English version of the exam retires on June 11, 2027"
+      },
+      {
+        "name": "Professor Messer: besplatni Security+ video kursevi",
+        "url": "https://www.professormesser.com",
+        "name_en": "Professor Messer: free Security+ video courses"
+      },
+      {
+        "name": "NIST SP 800-61 Rev. 3 (Incident Response)",
+        "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+      },
+      {
+        "name": "NIST SP 800-207 Zero Trust Architecture",
+        "url": "https://csrc.nist.gov/pubs/sp/800/207/final"
+      },
+      {
+        "name": "NIST SP 800-63B Digital Identity Guidelines",
+        "url": "https://pages.nist.gov/800-63-4/"
+      },
+      {
+        "name": "OWASP Top 10 for LLM Applications",
+        "url": "https://genai.owasp.org/llm-top-10/"
+      },
+      {
+        "name": "MITRE ATLAS",
+        "url": "https://atlas.mitre.org"
+      },
+      {
+        "name": "MITRE ATT&CK",
+        "url": "https://attack.mitre.org"
+      },
+      {
+        "name": "FIRST CVSS v4.0",
+        "url": "https://www.first.org/cvss/v4-0/"
+      },
+      {
+        "name": "DMARC.org",
+        "url": "https://dmarc.org"
+      }
+    ],
+    "checked_en": "October 2026"
+  },
+  "objectives": [
+    {
+      "id": "1.1",
+      "en": "Security concepts and controls",
+      "bs": "Sigurnosni koncepti i kontrole"
+    },
+    {
+      "id": "1.2",
+      "en": "Change management",
+      "bs": "Upravljanje promjenama"
+    },
+    {
+      "id": "1.3",
+      "en": "Cryptographic solutions",
+      "bs": "Kriptografska rješenja i PKI"
+    },
+    {
+      "id": "2.1",
+      "en": "Threats and vulnerabilities",
+      "bs": "Karakteristike prijetnji i ranjivosti"
+    },
+    {
+      "id": "2.2",
+      "en": "Threat actors and motivations",
+      "bs": "Akteri prijetnji i motivi"
+    },
+    {
+      "id": "2.3",
+      "en": "Threat vectors and sources",
+      "bs": "Vektori i izvori prijetnji"
+    },
+    {
+      "id": "2.4",
+      "en": "Vulnerabilities and attack surfaces",
+      "bs": "Tipovi ranjivosti i površine napada"
+    },
+    {
+      "id": "2.5",
+      "en": "Indicators of malicious activity",
+      "bs": "Indikatori zlonamjerne aktivnosti"
+    },
+    {
+      "id": "2.6",
+      "en": "AI threats and vulnerabilities",
+      "bs": "Prijetnje i ranjivosti vezane za AI"
+    },
+    {
+      "id": "3.1",
+      "en": "Architecture models",
+      "bs": "Sigurnosne implikacije arhitekturnih modela"
+    },
+    {
+      "id": "3.2",
+      "en": "Securing the infrastructure",
+      "bs": "Upravljanje sigurnosnom arhitekturom"
+    },
+    {
+      "id": "3.3",
+      "en": "Data protection",
+      "bs": "Zaštita podataka"
+    },
+    {
+      "id": "3.4",
+      "en": "Resilience and recovery",
+      "bs": "Otpornost i oporavak"
+    },
+    {
+      "id": "4.1",
+      "en": "Mitigating controls",
+      "bs": "Mitigacione kontrole i tehnike"
+    },
+    {
+      "id": "4.2",
+      "en": "Asset management",
+      "bs": "Upravljanje imovinom"
+    },
+    {
+      "id": "4.3",
+      "en": "Vulnerability management",
+      "bs": "Upravljanje ranjivostima"
+    },
+    {
+      "id": "4.4",
+      "en": "Alerting and monitoring",
+      "bs": "Alarmiranje i nadzor"
+    },
+    {
+      "id": "4.5",
+      "en": "Identity and access management",
+      "bs": "Upravljanje identitetom i pristupom"
+    },
+    {
+      "id": "4.6",
+      "en": "Automation and orchestration",
+      "bs": "Automatizacija i orkestracija"
+    },
+    {
+      "id": "4.7",
+      "en": "Incident response",
+      "bs": "Odgovor na incidente"
+    },
+    {
+      "id": "4.8",
+      "en": "Investigations: data and sources",
+      "bs": "Istrage: podaci i izvori"
+    },
+    {
+      "id": "5.1",
+      "en": "GRC artifacts",
+      "bs": "GRC artefakti: politike, standardi, procedure"
+    },
+    {
+      "id": "5.2",
+      "en": "Risk management",
+      "bs": "Upravljanje rizikom"
+    },
+    {
+      "id": "5.3",
+      "en": "Third-party risk",
+      "bs": "Rizik trećih strana"
+    },
+    {
+      "id": "5.4",
+      "en": "Security compliance",
+      "bs": "Usklađenost"
+    },
+    {
+      "id": "5.5",
+      "en": "Audits and assessments",
+      "bs": "Revizije i procjene"
+    },
+    {
+      "id": "5.6",
+      "en": "Security awareness",
+      "bs": "Sigurnosna svijest"
+    }
+  ],
+  "lab": {
+    "image": "kurs-secplus-lab:1",
+    "caps": [
+      "NET_ADMIN"
+    ]
+  },
+  "title_en": "Security+ SY0-801",
+  "subtitle_en": "Training for CompTIA Security+ V8 (SY0-801): lessons mapped to the official exam objectives, exam-style questions including PBQs, a 90-question exam simulation, and hands-on labs in a Linux terminal."
+}

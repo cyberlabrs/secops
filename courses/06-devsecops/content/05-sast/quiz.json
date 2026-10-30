@@ -1,0 +1,243 @@
+[
+  {
+    "obj": "3.1",
+    "q": "Semgrep job u pipelineu ispisuje 6 nalaza sa ERROR ozbiljnošću, ali je job zelen i MR se može mergeati. Script je `semgrep scan --config semgrep-rules/ --sarif-output=semgrep.sarif`. Šta nedostaje?",
+    "options": [
+      "allow_failure: false na jobu",
+      "--severity ERROR",
+      "--error, jer bez njega Semgrep vraća exit code 0 i kad ima nalaza",
+      "artifacts:reports:sast"
+    ],
+    "answer": 2,
+    "explain": "Semgrep po defaultu završava sa 0 kad uspješno skenira, bez obzira na nalaze; --error daje exit 1 kad ima nalaza. allow_failure: false je već default, --severity samo filtrira pravila, a reports:sast utiče na prikaz u GitLabu, ne na status joba."
+  },
+  {
+    "obj": "3.1",
+    "q": "Pravilo kurs.python.sqli-string-query javlja nalaz na `conn.execute(f\"SELECT COUNT(*) FROM {TABLE}\")`, gdje je TABLE konstanta u modulu. Pravilo je inače korisno. Koji je NAJBOLJI način da se ova linija utiša?",
+    "options": [
+      "# nosemgrep na kraju linije",
+      "# nosemgrep: kurs.python.sqli-string-query uz komentar sa razlogom i referencom na odobrenje",
+      "Dodati app.py u .semgrepignore",
+      "--exclude-rule za to pravilo u CI jobu"
+    ],
+    "answer": 1,
+    "explain": "Izuzetak sa ID-jem gasi samo to pravilo na toj liniji, a razlog ostaje u kodu za review. nosemgrep bez ID-ja gasi sva (i buduća) pravila na liniji, .semgrepignore isključuje cijeli fajl, a --exclude-rule gasi pravilo u cijelom projektu."
+  },
+  {
+    "obj": "3.1",
+    "q": "Pattern pravilo za `subprocess.$F(..., shell=True, ...)` daje 40 nalaza; većina su skripte sa fiksnim komandama bez korisničkog ulaza. Želiš nalaz samo kad parametar HTTP zahtjeva stigne do komande. Šta koristiš?",
+    "options": [
+      "mode: taint sa pattern-sources za flask.request..., pattern-sinks za prvi argument poziva sa shell=True i sanitizerom shlex.quote",
+      "metavariable-regex nad $F sa regexom ^(run|call)$",
+      "pattern-either sa svim varijantama subprocess poziva",
+      "--severity ERROR da se prikažu samo ozbiljni nalazi"
+    ],
+    "answer": 0,
+    "explain": "Taint analiza prijavljuje samo tok od nepouzdanog izvora do ponora, pa fiksne komande nestaju iz nalaza. metavariable-regex i pattern-either samo mijenjaju koje pozive gleda, ne odakle dolazi podatak, a --severity ne razlikuje fiksne komande od korisničkog ulaza."
+  },
+  {
+    "obj": "3.1",
+    "q": "Taint pravilo ima ponor `$DB.execute(...)` bez dodatnih operatora. Javlja nalaz i na `conn.execute(\"SELECT * FROM p WHERE id = ?\", (request.args.get(\"id\"),))`, iako je upit parametrizovan. Kako ga ispraviti?",
+    "options": [
+      "Dodati request.args.get kao sanitizer",
+      "Prebaciti pravilo na severity: INFO",
+      "Dodati pattern-not-inside: conn.execute(...)",
+      "Ponor napisati kao patterns sa pattern: $DB.execute($QUERY, ...) i focus-metavariable: $QUERY"
+    ],
+    "answer": 3,
+    "explain": "focus-metavariable ograničava ponor na prvi argument (SQL tekst), pa taint u parametrima više ne daje nalaz. Izvor kao sanitizer bi ugasio sve nalaze, INFO samo krije problem, a pattern-not-inside bi isključio i stvarne SQL injectione."
+  },
+  {
+    "obj": "3.1",
+    "q": "Uvodiš Semgrep u repo star 6 godina sa 280 postojećih nalaza. Tim traži da MR-ovi ne budu blokirani starim nalazima, ali da novi budu. Koja konfiguracija MR joba to radi?",
+    "options": [
+      "allow_failure: true na jobu",
+      "--exclude-rule za sva pravila sa postojećim nalazima",
+      "--baseline-commit \"$CI_MERGE_REQUEST_DIFF_BASE_SHA\" uz GIT_DEPTH: 0 i --error",
+      "--severity ERROR uz --error"
+    ],
+    "answer": 2,
+    "explain": "Baseline commit prijavljuje samo nalaze kojih nije bilo u ciljnoj grani; za to baseline commit mora postojati u lokalnom klonu, otud GIT_DEPTH: 0. allow_failure ne blokira ništa, --exclude-rule gasi pravila i za nov kod, a --severity ERROR blokira i stare ERROR nalaze."
+  },
+  {
+    "obj": "3.1",
+    "q": "Job ima `artifacts: reports: sast: semgrep.sarif`, ali u MR widgetu GitLaba se ne pojavljuje nijedan nalaz. Šta je uzrok?",
+    "options": [
+      "artifacts:reports:sast očekuje GitLab SAST JSON format; treba --gitlab-sast-output=gl-sast-report.json",
+      "Nedostaje artifacts:when: always",
+      "SARIF mora imati ekstenziju .json",
+      "Semgrep CE ne podržava GitLab"
+    ],
+    "answer": 0,
+    "explain": "GitLab za reports:sast traži svoj JSON format izvještaja, koji Semgrep pravi sa --gitlab-sast / --gitlab-sast-output. when: always je bitan kad job padne, ali ne objašnjava prazan widget na uspješnom jobu; ekstenzija nije problem, a CE ima GitLab izlaz."
+  },
+  {
+    "obj": "3.1",
+    "q": "U jobu je `semgrep scan --config /opt/kurs/semgrep-rules/ --exclude-rule kurs.python.flask-debug --error`, ali nalaz kurs.python.flask-debug se i dalje pojavljuje. Zašto?",
+    "options": [
+      "--exclude-rule radi samo sa pravilima iz registrija",
+      "Semgrep lokalnim pravilima doda prefiks putanje (opt.kurs.semgrep-rules.kurs.python.flask-debug), pa --exclude-rule treba puni ID",
+      "--exclude-rule mora ići prije --config",
+      "Pravilo ima severity WARNING, a --exclude-rule radi samo za ERROR"
+    ],
+    "answer": 1,
+    "explain": "Kod pravila iz lokalnih fajlova ID u rezultatima sadrži putanju do fajla sa tačkama, i --exclude-rule poredi taj puni ID. Redoslijed flagova i severity nisu bitni, a flag radi i za lokalna pravila."
+  },
+  {
+    "obj": "3.1",
+    "q": "Kolega je izmijenio pravilo za YAML i nakon toga ono više nikad ne daje nalaz, a niko to nije primijetio dva mjeseca. Šta bi to spriječilo?",
+    "options": [
+      "Pokretanje Semgrepa sa --strict",
+      "Pinovanje verzije Semgrep slike",
+      "Prebacivanje pravila u .semgrepignore",
+      "Test fajl uz pravilo sa # ruleid: i # ok: anotacijama i job koji pokreće semgrep --test u repou pravila"
+    ],
+    "answer": 3,
+    "explain": "semgrep --test provjerava da pravilo nalazi sve linije označene sa ruleid i nijednu sa ok, pa regresija u pravilu ruši CI repoa sa pravilima. --strict se tiče grešaka parsiranja, pin slike ne štiti od izmjene pravila, a .semgrepignore je za putanje koda."
+  },
+  {
+    "obj": "3.1",
+    "q": "Ruta `/search` uzima `q = request.args.get(\"q\")` i poziva `find_products(q)`; u `find_products` se upit sastavlja spajanjem stringova u varijablu `query` i izvršava `execute(query)`. Semgrep CE sa taint pravilom ne javlja ništa. Zašto?",
+    "options": [
+      "CE taint analiza radi unutar jedne funkcije; praćenje kroz parametar u drugu funkciju je interprocedural analiza iz Pro verzije",
+      "request.args.get nije podržan izvor u Pythonu",
+      "Taint pravila rade samo sa --pro flagom",
+      "Spajanje stringova sanitizuje taint"
+    ],
+    "answer": 0,
+    "explain": "U CE taint ne prelazi iz jedne funkcije u parametar druge; Pro to radi interprocedural (i interfile sa --pro). Taint pravila rade u CE unutar funkcije, request.args.get je običan izvor, a spajanje stringova prenosi taint, ne uklanja ga."
+  },
+  {
+    "obj": "3.1",
+    "q": "Želiš pravilo koje hvata `requests.get/post/put/delete(...)` bez parametra timeout, ali ne i `requests.Session()` ili `requests.utils.quote(...)`. Koja kombinacija operatora je odgovarajuća?",
+    "options": [
+      "pattern: requests.$M(...) i pattern-inside: requests.$M(..., timeout=$T)",
+      "pattern-either sa requests.$M(...) i requests.Session()",
+      "patterns sa pattern: requests.$M(...), metavariable-regex nad $M (^(get|post|put|delete)$) i pattern-not: requests.$M(..., timeout=$T, ...)",
+      "mode: taint sa izvorom requests.$M(...)"
+    ],
+    "answer": 2,
+    "explain": "metavariable-regex ograničava ime metode, a pattern-not isključuje pozive koji već imaju timeout. pattern-inside bi tražio upravo pozive SA timeoutom, pattern-either bi hvatao i Session, a taint ovdje nema smisla jer nema toka podataka."
+  },
+  {
+    "obj": "3.1",
+    "q": "Security tim želi agregirati nalaze Semgrepa, Trivyja i Checkova u DefectDojo i prikazati ih u GitHub Code scanningu. Koji format izlaza je zajednički imenitelj?",
+    "options": [
+      "GitLab SAST JSON",
+      "SARIF 2.1.0",
+      "CycloneDX JSON",
+      "JUnit XML"
+    ],
+    "answer": 1,
+    "explain": "SARIF 2.1.0 je OASIS standard za rezultate statičke analize; izvoze ga sva tri alata, a čitaju GitHub i DefectDojo. GitLab SAST JSON je specifičan za GitLab, CycloneDX je format za SBOM, a JUnit opisuje testove, ne nalaze."
+  },
+  {
+    "obj": "3.1",
+    "q": "Developer je u fajlu dodao `# nosemgrep` (bez ID-ja) iznad cijelog bloka koda sa SQL upitima. Šta je glavni rizik?",
+    "options": [
+      "Semgrep će pasti sa exit code 7",
+      "Linija će biti prijavljena dva puta u SARIF-u",
+      "Izuzetak važi samo lokalno, ne i u CI-ju",
+      "nosemgrep bez ID-ja gasi sva pravila na toj liniji, uključujući i pravila dodana u budućnosti, i nema traga zašto"
+    ],
+    "answer": 3,
+    "explain": "Izuzetak bez ID-ja je preširok i nevidljiv za buduća pravila, pa se u reviewu traži oblik nosemgrep: <rule-id> uz razlog. Ne izaziva grešku 7 (neispravno pravilo), ne duplira nalaze i važi jednako lokalno i u CI-ju."
+  },
+  {
+    "obj": "3.1",
+    "q": "U `kurs-shop` imaš PyYAML 5.3.1 i poziv `yaml.load(request.data, Loader=yaml.Loader)`. Tim kaže: „Dependabot će nadograditi PyYAML na 6.x i to rješava problem.“ Šta je tačno?",
+    "options": [
+      "Tačno, nadogradnja PyYAML zatvara i SCA i SAST nalaz",
+      "Netačno, SCA nalaz ne postoji jer se koristi yaml.Loader",
+      "Nadogradnja zatvara SCA nalaz (ranjiva verzija), ali yaml.Loader je nesiguran i u 6.x; SAST nalaz traži yaml.safe_load",
+      "Problem rješava samo DAST skeniranje /import rute"
+    ],
+    "answer": 2,
+    "explain": "yaml.Loader namjerno može praviti proizvoljne Python objekte bez obzira na verziju, pa nadogradnja ne popravlja kod. SCA i SAST nalaze različite stvari i dopunjuju se; DAST može potvrditi problem, ali ga ne popravlja."
+  },
+  {
+    "obj": "3.1",
+    "q": "Uvodiš Semgrep timu od 60 developera koji do sada nije imao SAST. Koji plan najvjerovatnije neće izazvati masovno ignorisanje alata?",
+    "options": [
+      "Odmah blokirati MR na svim nalazima svih pravila, da tim shvati ozbiljnost",
+      "Uvesti samo GitLab SAST šablon na Ultimate i ne pisati vlastita pravila",
+      "Pokretati Semgrep samo noćno i slati PDF izvještaj menadžmentu",
+      "Prvo samo izvještaj (allow_failure: true), pa blokirati nove ERROR nalaze visokog confidence u MR-u, pa postepeno širiti skup blokirajućih pravila"
+    ],
+    "answer": 3,
+    "explain": "Postepeno uvođenje gradi povjerenje: blokiraš samo ono što je pouzdano i novo, a ostalo pratiš. Blokiranje svega odmah vodi do masovnog nosemgrep-a, noćni PDF ne daje povratnu informaciju developeru u MR-u, a šablon bez organizacionih pravila propušta specifične obrasce."
+  },
+  {
+    "obj": "3.1",
+    "q": "U SARIF-u iz Semgrep CE polje fingerprints sadrži `\"matchBasedId/v1\": \"requires login\"`. Šta to znači za uvoz u DefectDojo?",
+    "options": [
+      "Uvoz će pasti jer SARIF nije validan",
+      "CE ne daje stvarni fingerprint, pa platforma deduplicira na osnovu pravila, fajla i linije, što je osjetljivije na pomjeranje koda",
+      "Treba se ulogovati u Semgrep da bi CLI uopšte radio",
+      "Nalazi bez fingerprinta se automatski označavaju kao lažno pozitivni"
+    ],
+    "answer": 1,
+    "explain": "Placeholder znači da stabilni identitet nalaza daje tek Semgrep platforma; bez njega alat za agregaciju koristi druge atribute za deduplikaciju. SARIF je validan, CE radi bez logina, a nedostatak fingerprinta ne mijenja status nalaza."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Poredaj korake rada sa lažnim pozitivom od prvog izbora do posljednje opcije.",
+    "options": [
+      "Isključiti pravilo za projekat (--exclude-rule) uz zapisanu odluku i rok",
+      "Popraviti pravilo (pattern-not, sanitizer, uži izvor) i dodati # ok: test",
+      "Dodati putanju u .semgrepignore ako nije produkcijski kod",
+      "Inline # nosemgrep: <rule-id> sa razlogom za pojedinačnu provjerenu liniju"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "Izmjena pravila uklanja lažni pozitiv svuda i trajno; inline izuzetak je uzak i vidljiv u reviewu; isključivanje putanja ima veći opseg, a gašenje cijelog pravila je posljednja opcija jer gubiš i stvarne nalaze."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Upari Semgrep operator sa onim što radi u pravilu.",
+    "options": [
+      "pattern-not",
+      "focus-metavariable",
+      "pattern-sanitizers",
+      "metavariable-regex",
+      "pattern-inside"
+    ],
+    "targets": [
+      "Nalaz mora biti unutar zadatog konteksta (npr. funkcije sa dekoratorom)",
+      "Prekida taint tok kad vrijednost prođe kroz zadatu funkciju",
+      "Uklanja iz rezultata kod koji odgovara ovom obliku",
+      "Ograničava ime funkcije ili vrijednost na zadati regex",
+      "Označava kao nalaz samo dio koda vezan za jednu metavarijablu",
+      "Šalje rezultate u SARIF format"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "pattern-not isključuje oblik, focus-metavariable sužava lokaciju nalaza, sanitizer prekida taint, metavariable-regex filtrira vrijednost metavarijable, a pattern-inside traži kontekst. Format izlaza se bira flagom (--sarif), ne operatorom."
+  },
+  {
+    "obj": "3.1",
+    "q": "Imaš GitLab Premium i nemaš resurse za održavanje vlastitih pravila, ali želiš osnovni SAST na svakom MR-u. Šta je najjednostavniji korak?",
+    "options": [
+      "include: template: Jobs/SAST.gitlab-ci.yml i po potrebi SAST_EXCLUDED_PATHS",
+      "Uključiti GITLAB_ADVANCED_SAST_ENABLED: \"true\"",
+      "Pokrenuti semgrep --config auto u jobu",
+      "Dodati artifacts:reports:sast u postojeći test job"
+    ],
+    "answer": 0,
+    "explain": "SAST šablon dodaje semgrep-sast job sa pravilima koje održava GitLab i radi na svim tierovima. Advanced SAST je Ultimate funkcija, --config auto zavisi od registrija i mreže, a reports:sast bez skenera nema šta prijaviti."
+  },
+  {
+    "obj": "3.1",
+    "q": "Semgrep u merge requestu prijavljuje ovaj nalaz. Koja izmjena ga ispravno rješava?",
+    "snippet": "src/routes/orders.js\n❯❯❱ javascript.express.security.injection.tainted-sql-string\n       Detected user input used to manually construct a SQL string. This is usually bad\n       practice because manual construction could accidentally result in a SQL injection.\n\n        23┆ const id = req.query.id;\n         ⋮┆----------------------------------------\n        27┆ const rows = await db.query(`SELECT * FROM orders WHERE user_id = ${id}`);",
+    "lang": "text",
+    "options": [
+      "Parametrizovan upit: db.query(\"SELECT * FROM orders WHERE user_id = $1\", [id])",
+      "Komentar // nosemgrep iznad reda 27, jer je id uvijek broj",
+      "Prije upita: id = id.replace(\"'\", \"\")",
+      "allow_failure: true na semgrep jobu dok se kod ne prepravi"
+    ],
+    "answer": 0,
+    "explain": "Taint ide od izvora req.query.id do sinka db.query kroz template string. Parametrizovan upit odvaja podatke od SQL-a, pa nalaz nestaje sa razlogom. nosemgrep bez dokaza samo sakriva ranjivost (nigdje se ne provjerava da je id broj), uklanjanje navodnika ne štiti od unosa kao 1 OR 1=1, a allow_failure gasi gate umjesto da riješi problem."
+  }
+]

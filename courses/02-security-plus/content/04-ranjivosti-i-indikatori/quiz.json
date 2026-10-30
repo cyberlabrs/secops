@@ -1,0 +1,157 @@
+[
+  {
+    "obj": "2.4",
+    "q": "Servis za isplate prvo provjeri da li račun ima dovoljno sredstava, a zatim u odvojenom koraku skine iznos. Napadač pošalje 20 istovremenih zahtjeva za isplatu i svi prođu, iako je stanje bilo dovoljno za jedan. Koja ranjivost je iskorištena?",
+    "options": ["Buffer overflow", "Race condition (TOCTOU)", "Directory traversal", "Unsafe exception handling"],
+    "answer": 1,
+    "explain": "Između provjere (time-of-check) i upotrebe (time-of-use) stanje se promijenilo zbog paralelnih zahtjeva, što je TOCTOU race condition. Rješenje su atomarne operacije ili transakcije sa zaključavanjem. Ostali napadi ne zavise od vremena izvršavanja."
+  },
+  {
+    "obj": "2.4",
+    "q": "Developer je slučajno pushovao AWS access ključ u javni GitHub repozitorij. Primijetio je grešku nakon 10 minuta. Šta treba uraditi PRVO?",
+    "options": ["Obrisati fajl novim commitom", "Učiniti repozitorij privatnim", "Prepisati git istoriju da ključ nestane", "Deaktivirati i rotirati ključ u IAM-u"],
+    "answer": 3,
+    "explain": "Tajna koja je bila javna, makar i nakratko, smatra se kompromitovanom jer botovi skeniraju GitHub u realnom vremenu. Prvo se ključ opoziva i rotira, a zatim se čisti istorija i provjerava CloudTrail. Brisanje fajla ili sakrivanje repozitorija ne poništava već kopiran ključ."
+  },
+  {
+    "obj": "2.4",
+    "q": "Istraživač je pronašao S3 bucket sa backupima baze klijenata kojem se može pristupiti bez autentifikacije. Koja kategorija ranjivosti je NAJPRECIZNIJA?",
+    "options": ["Public object storage (misconfiguration)", "Zero-day", "Unsupported product", "Rogue device"],
+    "answer": 0,
+    "explain": "Javno dostupan bucket je klasična greška u konfiguraciji javnog object storage-a. Rješenje je Block Public Access na nivou naloga i CSPM nadzor. Nema nepoznate ranjivosti softvera niti neovlaštenog uređaja."
+  },
+  {
+    "obj": "2.4",
+    "q": "Kada se u formu za pretragu unese apostrof, aplikacija prikaže kompletan stack trace sa verzijom frameworka, nazivom tabele i SQL upitom. Koja slabost u kodu je PRVENSTVENO prisutna?",
+    "options": ["Hardcoded secrets", "Malicious update", "Unsafe exception handling", "Resource reuse"],
+    "answer": 2,
+    "explain": "Aplikacija loše obrađuje greške i otkriva interne detalje koji pomažu napadaču (i nagovještava SQL injection). Ispravno je prikazati generičku poruku, a detalje samo upisati u log. Nema tajni u kodu niti zlonamjernog ažuriranja."
+  },
+  {
+    "obj": "2.4",
+    "q": "Pregled troškova kartica pokazuje da marketing tim plaća vlastiti cloud nalog u kojem drži kopiju CRM baze, bez znanja IT-a i bez ikakvih sigurnosnih kontrola. Kako se ovo zove?",
+    "options": ["Rogue access point", "Shadow IT", "Insider threat sa motivom osvete", "Supply chain napad"],
+    "answer": 1,
+    "explain": "Shadow IT su sistemi i servisi koje zaposleni uvode bez odobrenja i nadzora IT-a. Nema zle namjere, pa nije insider threat u smislu napada, a nije ni napad preko dobavljača."
+  },
+  {
+    "obj": "2.4",
+    "q": "Ranjivost u hipervizoru omogućava kodu iz jedne VM da pristupi memoriji hosta i drugih VM-ova na istom fizičkom serveru. Kako se zove ovaj napad?",
+    "options": ["VM sprawl", "Resource reuse", "Privilege escalation unutar gosta", "VM escape"],
+    "answer": 3,
+    "explain": "VM escape je izlazak iz izolacije gosta na hipervizor, čime se ugrožavaju sve VM-ove na hostu. VM sprawl je nekontrolisan broj VM-ova, a resource reuse je neočišćen resurs prethodnog korisnika."
+  },
+  {
+    "obj": "2.4",
+    "q": "Firma koristi jedan cloud identity provider za SSO u preko 200 aplikacija. Zašto je IdP posebno važan dio attack surface-a i šta je NAJBOLJA zaštita?",
+    "options": ["Kompromitacija IdP-a ili admin naloga u njemu daje pristup svim povezanim aplikacijama; zaštita je phishing-resistant MFA za admine i nadzor promjena konfiguracije", "IdP čuva sve lozinke u plaintextu; zaštita je enkripcija diska", "IdP je izložen samo DDoS-u; zaštita je CDN", "IdP nije attack surface jer ga održava provajder"],
+    "answer": 0,
+    "explain": "IdP je centralna tačka povjerenja: preuzimanjem admin naloga, ključa za potpisivanje tokena ili lažne federacije napadač se može prijaviti bilo gdje. Zato admin nalozi trebaju FIDO2 MFA i strogi nadzor. Model dijeljene odgovornosti ne skida sa korisnika obavezu zaštite konfiguracije i naloga."
+  },
+  {
+    "obj": "2.4",
+    "type": "match",
+    "q": "Upari svaki nalaz sa vrstom ranjivosti ili attack surface-a.",
+    "options": ["Proizvođač je prestao izdavati zakrpe za firewall model koji koristite", "Za Exchange server postoji zakrpa od prije 4 mjeseca, ali nije instalirana", "Raspberry Pi pronađen ukopčan u mrežnu utičnicu u sali za sastanke", "IAM access ključ bivšeg zaposlenog je i dalje aktivan nakon 2 godine", "Popularna open-source biblioteka je u novoj verziji dobila skriven backdoor", "Chatbot na sajtu izvršava uputstva skrivena u dokumentu koji korisnik priloži", "Aktivno iskorištavana ranjivost za koju proizvođač još nema zakrpu", "Zaposleni instalira aplikaciju na službeni telefon iz APK fajla preuzetog sa foruma"],
+    "targets": ["Unpatched system", "Unsupported product", "Zero-day", "Rogue device", "Malicious update", "Stale credentials", "Large language model", "Mobile device (sideloading)"],
+    "answer": [1, 0, 3, 5, 4, 6, 2, 7],
+    "explain": "Bez zakrpa od proizvođača je unsupported, a postojeća neinstalirana zakrpa je unpatched. Neodobren uređaj u mreži je rogue device, aktivan ključ bivšeg zaposlenog su stale credentials, backdoor kroz novu verziju je malicious update, skrivena uputstva modelu su LLM attack surface (prompt injection), napad bez dostupne zakrpe je zero-day, a APK sa foruma je sideloading na mobilnom uređaju."
+  },
+  {
+    "obj": "2.5",
+    "q": "Tačno na dan kada je nalog administratora deaktiviran nakon otkaza, skripta zakazana mjesecima ranije obrisala je sve tabele u produkcionoj bazi. Koji tip malvera je NAJVJEROVATNIJE u pitanju?",
+    "options": ["Worm", "Spyware", "Logic bomb", "Adware"],
+    "answer": 2,
+    "explain": "Logic bomb je zlonamjerni kod koji čeka okidač (datum ili događaj, poput gašenja naloga) i tada izvrši štetu. Često ga postavlja insajder. Worm se širi mrežom, spyware krade podatke, a adware prikazuje reklame."
+  },
+  {
+    "obj": "2.5",
+    "q": "EDR prijavljuje da je WINWORD.EXE pokrenuo powershell.exe sa parametrom -EncodedCommand, koji je učitao kod direktno u memoriju. Na disku nije pronađen nijedan novi izvršni fajl. Šta je NAJVJEROVATNIJE?",
+    "options": ["Fileless malware", "Rootkit u firmware-u", "Virus koji inficira .exe fajlove", "Adware"],
+    "answer": 0,
+    "explain": "Fileless malver živi u memoriji i koristi legitimne alate poput PowerShella, bez fajla na disku, pa ga antivirus zasnovan na skeniranju fajlova teško vidi. Virus bi mijenjao izvršne fajlove, a rootkit bi se skrivao duboko u sistemu."
+  },
+  {
+    "obj": "2.5",
+    "q": "Mrežni senzor vidi da server šalje velike količine podataka ka nepoznatoj IP adresi, ali Task Manager, netstat i lista servisa na samom serveru ne pokazuju ništa neobično. Šta je NAJVJEROVATNIJE prisutno?",
+    "options": ["Adware", "Keylogger", "Logic bomb", "Rootkit"],
+    "answer": 3,
+    "explain": "Rootkit mijenja sistem tako da alati OS-a ne prikazuju njegove procese, konekcije i fajlove, pa se aktivnost vidi samo spolja (mrežni senzor, offline analiza). Keylogger i adware se ne skrivaju na taj način."
+  },
+  {
+    "obj": "2.5",
+    "q": "Kamera pokazuje da je osoba sa kutijom krafni prošla kroz vrata server sale odmah iza zaposlenog, koji joj je ljubazno pridržao vrata. Osoba nije koristila svoju karticu. Koji fizički napad je opisan i koja kontrola ga NAJBOLJE sprečava?",
+    "options": ["Shoulder surfing, privacy filter", "Tailgating, access vestibule", "Skimming, pregled čitača kartica", "Forced entry, ojačana vrata"],
+    "answer": 1,
+    "explain": "Prolazak za ovlaštenom osobom bez vlastite autentifikacije je tailgating (u ovom slučaju uz pristanak, što se zove i piggybacking). Access vestibule propušta jednu osobu po autentifikaciji. Nije bilo posmatranja lozinke, kopiranja kartice niti provale."
+  },
+  {
+    "obj": "2.5",
+    "q": "Entra ID bilježi uspješnu prijavu korisnika iz Sarajeva u 09:02, a zatim uspješnu prijavu istog naloga iz Brazila u 09:15. Koji indikator je ovo i koji je NAJBOLJI sljedeći korak?",
+    "options": ["Account lockout; otključati nalog", "Concurrent sessions; povećati broj dozvoljenih sesija", "Impossible travel; opozvati sesije i resetovati kredencijale korisnika", "Excessive resource consumption; skalirati servis"],
+    "answer": 2,
+    "explain": "Dvije prijave sa lokacija koje se fizički ne mogu preći u 13 minuta su impossible travel, što ukazuje na ukradenu lozinku ili token. Prvi korak je opoziv sesija i reset kredencijala (uz provjeru VPN-a kao mogućeg lažnog alarma)."
+  },
+  {
+    "obj": "2.5",
+    "q": "Korisnik prijavljuje da je u 2 ujutro dobio 40 push notifikacija za odobrenje prijave, i da je jednu na kraju odobrio „da bi prestale“. Kako se zove napad i koja kontrola ga NAJBOLJE ublažava?",
+    "options": ["MFA fatigue; number matching ili FIDO2 MFA", "Password spraying; duža lozinka", "SIM swapping; SMS kodovi", "User enumeration; generičke poruke o grešci"],
+    "answer": 0,
+    "explain": "MFA fatigue (push bombing) je MFA bypass koji iscrpljuje korisnika dok ne odobri zahtjev. Napadač već zna lozinku. Number matching traži unos broja sa ekrana prijave, a FIDO2 je otporan na phishing. SMS kodovi su slabiji, ne jači."
+  },
+  {
+    "obj": "2.5",
+    "q": "Zaposleni je dobio e-mail bez ijednog linka, samo sa slikom QR koda i porukom „Skenirajte da biste obnovili MFA“. Skeniranjem telefonom otvara se lažna Microsoft login stranica. Kako se NAJPRECIZNIJE zove ovaj napad?",
+    "options": ["Smishing", "Vishing", "Whaling", "Quishing"],
+    "answer": 3,
+    "explain": "Phishing preko QR koda je quishing, bez obzira na to što je QR kod stigao e-mailom. Napad zaobilazi filtere linkova i prebacuje žrtvu na telefon, van korporativne zaštite. Smishing je preko SMS-a, vishing preko glasa, a whaling cilja rukovodioce."
+  },
+  {
+    "obj": "2.5",
+    "q": "Računovođa je odobrio hitnu uplatu nakon video poziva na kojem su ga finansijski direktor i dvoje kolega uvjeravali da je transakcija povjerljiva. Kasnije se ispostavilo da nijedan od njih nije učestvovao u pozivu. Šta je NAJVJEROVATNIJE korišćeno i koja kontrola procesa bi to spriječila?",
+    "options": ["Watering hole; filtriranje web saobraćaja", "Deepfake; obavezna verifikacija uplata drugim kanalom (callback na poznat broj)", "Typosquatting; DMARC", "Spyware; EDR"],
+    "answer": 1,
+    "explain": "AI-generisan video i glas stvarnih osoba je deepfake, oblik impersonation napada. Tehničke kontrole teško prepoznaju deepfake, pa je ključna procesna kontrola: provjera zahtjeva drugim, unaprijed poznatim kanalom i dvostruko odobrenje za velike uplate."
+  },
+  {
+    "obj": "2.5",
+    "q": "U kafiću pored kancelarije zaposleni vide dvije Wi-Fi mreže sa imenom „Firma-Guest“. Kod onih koji se spoje na jednu od njih pregledač prijavljuje grešku certifikata na login stranicama. Šta je NAJVJEROVATNIJE u pitanju?",
+    "options": ["DNS cache poisoning na korporativnom resolveru", "DDoS napad na pristupnu tačku", "Rogue access point (evil twin) za on-path napad", "Bluesnarfing"],
+    "answer": 2,
+    "explain": "Lažna pristupna tačka sa istim SSID-om (evil twin) postavlja napadača na putanju saobraćaja, a greške certifikata su znak da presreće TLS. DDoS bi uzrokovao nedostupnost, a cache poisoning bi se dešavao na DNS serveru, ne na novoj Wi-Fi mreži."
+  },
+  {
+    "obj": "2.5",
+    "q": "Na kompromitovanom serveru u Security event logu postoji praznina od 3 sata, a nekoliko sumnjivih fajlova ima datum kreiranja iz 2019. iako su se pojavili prošle sedmice. Koja DVA indikatora kompromitacije su prisutna? Izaberi DVA.",
+    "options": ["Account lockout", "Log manipulation", "Timestamp (timestomping)", "Concurrent sessions"],
+    "answer": [1, 2],
+    "explain": "Praznina u logu ukazuje na brisanje ili manipulaciju logovima, a lažni datumi fajlova na timestomping, odnosno manipulaciju vremenskih oznaka. Oba služe prikrivanju tragova. Nema podataka o zaključanim nalozima ni istovremenim sesijama."
+  },
+  {
+    "obj": "2.5",
+    "type": "match",
+    "q": "Upari svaki zapis iz logova ili opis sa napadom koji NAJBOLJE odgovara.",
+    "options": ["GET /download?file=../../../../etc/passwd", "username=admin' OR '1'='1' --", "Isti potpisani zahtjev za plaćanje stiže 50 puta sa identičnim nonce-om", "Lozinka „Jesen2026!“ probana jednom na 3.000 različitih naloga", "Login vraća „korisnik ne postoji“ za neke, a „pogrešna lozinka“ za druge", "Program pada nakon unosa 5.000 znakova „A“ u polje za ime", "Skrivena forma na zlonamjernom sajtu šalje POST /transfer sa kolačićem prijavljene žrtve", "Korisnik bez admin prava iskoristi grešku u servisu i dobije SYSTEM shell"],
+    "targets": ["Injection", "Directory traversal", "Buffer overflow", "Replay", "Password spraying", "User enumeration", "Forgery (CSRF)", "Privilege escalation", "Brute force"],
+    "answer": [1, 0, 3, 4, 5, 2, 6, 7],
+    "explain": "../ je directory traversal, ' OR '1'='1' je SQL injection, ponovljen validan zahtjev je replay, jedna lozinka na mnogo naloga je spraying (ne brute force), različite poruke otkrivaju postojeće naloge (user enumeration), dugačak niz znakova koji ruši program je buffer overflow, zahtjev poslat iz pregledača žrtve je CSRF (forgery), a dobijanje većih prava je privilege escalation."
+  },
+  {
+    "obj": "2.5",
+    "type": "match",
+    "q": "Upari svako ponašanje sa tipom malvera.",
+    "options": ["Širi se sam sa servera na server preko SMB ranjivosti, bez akcije korisnika", "Besplatan „PDF konverter“ koji u pozadini otvara udaljeni pristup napadaču", "Fajlovi dobijaju ekstenziju .locked i pojavljuje se poruka sa Bitcoin adresom", "Bilježi sve otkucane znakove i šalje ih napadaču svakih 10 minuta", "Pregledač stalno otvara pop-up reklame i promijenjena mu je početna stranica", "Ubacuje svoj kod u druge .exe fajlove i aktivira se kad korisnik pokrene zaraženi program", "Tajno prati koje sajtove korisnik posjećuje i šalje profil trećoj strani"],
+    "targets": ["Virus", "Worm", "Trojan", "Ransomware", "Keylogger", "Adware", "Spyware"],
+    "answer": [1, 2, 3, 4, 5, 0, 6],
+    "explain": "Samostalno širenje je worm, koristan program sa skrivenom funkcijom je trojan, šifrovanje uz otkup je ransomware, bilježenje tastera je keylogger, reklame su adware, ubacivanje u druge fajlove uz akciju korisnika je virus, a tajno praćenje aktivnosti je spyware."
+  },
+  {
+    "obj": "2.5",
+    "type": "spot",
+    "q": "U ovom isječku access loga web servera klikni zahtjeve koji su indikator napada.",
+    "lang": "log",
+    "snippet": "10.0.4.17 - - [12/Oct:10:02:11] \"GET /index.html HTTP/1.1\" 200 5120\n10.0.4.17 - - [12/Oct:10:02:12] \"GET /css/main.css HTTP/1.1\" 200 1840\n10.0.4.33 - - [12/Oct:10:03:40] \"POST /login HTTP/1.1\" 302 0\n10.0.4.33 - - [12/Oct:10:03:41] \"GET /dashboard HTTP/1.1\" 200 8204\n10.0.4.91 - - [12/Oct:10:04:05] \"GET /dl?file=..%2f..%2f..%2fetc%2fshadow HTTP/1.1\" 200 1243\n10.0.4.33 - - [12/Oct:10:04:30] \"GET /api/orders?page=2 HTTP/1.1\" 200 3310\n10.0.4.91 - - [12/Oct:10:04:52] \"GET /s?q=%3Cscript%3Ealert(document.cookie)%3C/script%3E HTTP/1.1\" 200 911\n10.0.4.17 - - [12/Oct:10:05:10] \"GET /favicon.ico HTTP/1.1\" 404 0",
+    "answer": [4, 6],
+    "explain": "Red 5: ..%2f je URL-kodiran ../, pa je to directory traversal prema /etc/shadow, i to sa odgovorom 200 (vjerovatno uspješan). Red 7: %3Cscript%3E je <script>, probni XSS napad koji čita document.cookie. Oba dolaze sa iste adrese 10.0.4.91. Ostali redovi su obična navigacija, prijava i 404 za favicon."
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "title": "Sigurno deployovanje i usklađenost",
+  "summary": "IaC kroz CloudFormation StackSets, Guard, cfn-lint, Hooks i Terraform skenere; tagging strategija i ABAC; Firewall Manager; dijeljenje resursa kroz Service Catalog i RAM; usklađenost kroz AWS Config, Security Hub, Audit Manager, AWS Artifact i Well-Architected Tool.",
+  "minutes": 110,
+  "domain": 6,
+  "objectives": [
+    "6.2",
+    "6.3"
+  ],
+  "title_en": "Secure deployment and compliance",
+  "summary_en": "IaC with CloudFormation StackSets, Guard, cfn-lint, Hooks, and Terraform scanners; tagging strategy and ABAC; Firewall Manager; resource sharing with Service Catalog and RAM; compliance with AWS Config, Security Hub, Audit Manager, AWS Artifact, and the Well-Architected Tool."
+}

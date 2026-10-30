@@ -1,0 +1,298 @@
+[
+  {
+    "obj": "1.1",
+    "q": "During an engagement, a client asks a CISSP consultant to remove from the final report a critical vulnerability in the software of medical devices used in hospitals, because the finding would hurt sales. What should the consultant do?",
+    "options": [
+      "Remove the finding, because the canon on service to principals requires loyalty to the client",
+      "Refuse to change the report, insist on coordinated disclosure and escalate, because protecting society takes precedence over the principal's interest",
+      "Immediately publish the vulnerability details on social media to protect patients",
+      "Move the finding into a report appendix marked as confidential and not mention it in the summary"
+    ],
+    "answer": 1,
+    "explain": "The canons are ordered by priority: protecting society (1) and acting honestly and legally (2) take precedence over service to principals (3). Concealment is unethical, but unilateral public disclosure is not correct either: go through internal channels and coordinated disclosure."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which order of the ISC2 Code of Professional Ethics canons is correct, from highest priority?",
+    "options": [
+      "Service to principals; protect society; act honorably and legally; advance the profession",
+      "Act honorably and legally; protect society; advance the profession; service to principals",
+      "Advance the profession; service to principals; protect society; act honorably and legally",
+      "Protect society and the infrastructure; act honorably, honestly, justly, and legally; provide diligent and competent service to principals; advance and protect the profession"
+    ],
+    "answer": 3,
+    "explain": "The canons are: 1) Protect society, the common good, necessary public trust and confidence, and the infrastructure; 2) Act honorably, honestly, justly, responsibly, and legally; 3) Provide diligent and competent service to principals; 4) Advance and protect the profession."
+  },
+  {
+    "obj": "1.1",
+    "q": "An employer wants to file a complaint with ISC2 because its contract consultant, a CISSP, performed the work negligently. Which canon does the complaint MOST likely relate to, and who can file it?",
+    "options": [
+      "Canon 3; the complaint can be filed by a principal, i.e., the employer or client",
+      "Canon 1; the complaint can be filed only by a government authority",
+      "Canon 4; the complaint can be filed by any member of the public",
+      "Canon 2; the complaint can be filed only by another certified ISC2 member"
+    ],
+    "answer": 0,
+    "explain": "Negligent and incompetent service violates canon 3 (diligent and competent service to principals), and complaints under that canon are filed by principals. For canons 1 and 2 a complaint can be filed by anyone affected, and for canon 4 by other professionals."
+  },
+  {
+    "obj": "1.1",
+    "q": "A business unit wants to introduce a generative AI assistant that will analyze customers' loan applications. What should the CISO ensure FIRST?",
+    "options": [
+      "That the development team chooses the model with the highest accuracy on public benchmarks",
+      "That the rollout is banned until the technology matures",
+      "That there is an AI acceptable use policy, a risk and privacy impact assessment, a named owner, and human oversight of decisions with legal consequences",
+      "That the model runs in an isolated network so attackers cannot access it"
+    ],
+    "answer": 2,
+    "explain": "Ethics in AI is a governance question: loan decisions have legal consequences for individuals, so fairness, transparency, accountability, and human oversight are required, along with a policy and risk assessment. The other answers are narrower technical or extreme ones."
+  },
+  {
+    "obj": "1.1",
+    "q": "Testing shows that an AI model for screening résumés systematically gives lower scores to candidates from a certain age group. Which AI ethics principle is PRIMARILY violated?",
+    "options": [
+      "Availability",
+      "Explainability",
+      "Fairness (absence of bias)",
+      "Non-repudiation"
+    ],
+    "answer": 2,
+    "explain": "Systematically unfavorable treatment of a group is bias and violates the principle of fairness. Explainability helps uncover the problem, but it is not the principle that was violated."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which element is MOST important for an organizational code of ethics to be effective?",
+    "options": [
+      "Visible support and personal example from top management (tone at the top), along with a reporting channel and consistent consequences",
+      "Publishing the code on the public website",
+      "Translating the code into all languages spoken by employees",
+      "An annual award for the most ethical employee"
+    ],
+    "answer": 0,
+    "explain": "Without management's support and example, the code is just a document. A reporting channel with whistleblower protection and consistent enforcement make it real. The other measures help, but are not key."
+  },
+  {
+    "obj": "1.1",
+    "q": "During an authorized penetration test, a CISSP comes across evidence of possible embezzlement in the finance department, which is outside the agreed scope. What is the BEST thing to do?",
+    "options": [
+      "Continue the investigation to gather complete evidence before reporting",
+      "Copy the suspicious files to a personal drive as insurance",
+      "Ignore the finding because it is outside the scope of the contract",
+      "Stop further work on that area, document what was seen, and report to the client's point of contact according to the agreed rules of engagement"
+    ],
+    "answer": 3,
+    "explain": "Work outside the scope is unauthorized, and ignoring the finding breaches the duty to the principal. The correct course is to stop, document, and report through the agreed channel, leaving the investigation to those authorized."
+  },
+  {
+    "obj": "1.1",
+    "q": "According to RFC 1087 \"Ethics and the Internet\", which activity is considered unethical?",
+    "options": [
+      "Publishing vulnerability research in coordination with the vendor",
+      "Knowingly wasting resources (people, capacity, computers) through deliberate actions",
+      "Encrypting private communications",
+      "Using open-source software in a commercial product in accordance with its license"
+    ],
+    "answer": 1,
+    "explain": "RFC 1087 lists as unethical unauthorized access, disrupting the intended use of the Internet, wasting resources, destroying the integrity of information, and compromising users' privacy."
+  },
+  {
+    "obj": "1.2",
+    "q": "A bank wants to ensure that a customer cannot later dispute having approved an international transfer. Which control BEST provides this?",
+    "options": [
+      "A digital signature of the transaction with the customer's private key along with a trusted timestamp",
+      "An HMAC computed with a key shared by the bank and the customer",
+      "TLS 1.3 between the application and the server",
+      "A SHA-256 hash of the transaction stored in the database"
+    ],
+    "answer": 0,
+    "explain": "Non-repudiation requires that only the sender can produce the proof: a private key makes that possible. HMAC uses a shared key, so the bank could compute it too; TLS protects the channel, and a hash provides only integrity."
+  },
+  {
+    "obj": "1.2",
+    "q": "An attacker intercepted a PDF invoice in transit and changed the recipient's account number. Which two properties are PRIMARILY violated?",
+    "options": [
+      "Confidentiality and availability",
+      "Availability and non-repudiation",
+      "Integrity and authenticity",
+      "Confidentiality and privacy"
+    ],
+    "answer": 2,
+    "explain": "Modifying the content violates integrity, and the recipient no longer receives the original invoice from the real sender, so authenticity is violated as well."
+  },
+  {
+    "obj": "1.2",
+    "q": "What is the opposite of the CIA triad in ISC2 terminology?",
+    "options": [
+      "AAA: Authentication, Authorization, Accounting",
+      "DAD: Disclosure, Alteration, Destruction/Denial",
+      "STRIDE",
+      "IAAA: Identification, Authentication, Authorization, Accountability"
+    ],
+    "answer": 1,
+    "explain": "DAD models the outcomes of attacks: disclosure (against confidentiality), alteration (against integrity), and destruction or denial (against availability)."
+  },
+  {
+    "obj": "1.2",
+    "q": "The owner of a medication dosing system in intensive care asks which property should be prioritized. Which answer is BEST?",
+    "options": [
+      "Confidentiality, because health data is protected by law",
+      "Non-repudiation, because physician accountability is required",
+      "All properties equally, because they are equally important in every system",
+      "Integrity and availability, because incorrect or unavailable dose information directly endangers life"
+    ],
+    "answer": 3,
+    "explain": "Human life is the priority. In a clinical dosing system, the accuracy and availability of data have a direct impact on patient safety; confidentiality is important but secondary in this context."
+  },
+  {
+    "obj": "1.2",
+    "q": "An organization uses a shared administrator account for all engineers. After logs are deleted, it cannot be determined who made a change. Which concept is PRIMARILY prevented?",
+    "options": [
+      "Availability",
+      "Least privilege",
+      "Abstraction",
+      "Accountability"
+    ],
+    "answer": 3,
+    "explain": "Accountability requires unique identities and a reliable audit trail to tie an action to an individual. A shared account prevents this regardless of other controls."
+  },
+  {
+    "obj": "1.2",
+    "q": "An analyst has the appropriate security clearance for documents marked Secret, but is denied access to the file of one operation. Which principle has been applied?",
+    "options": [
+      "Need to know",
+      "Separation of duties",
+      "Defense in depth",
+      "Security through obscurity"
+    ],
+    "answer": 0,
+    "explain": "Need to know limits access to the information required for a specific task, even when the subject has a sufficient clearance level."
+  },
+  {
+    "obj": "1.2",
+    "q": "During a power outage, the electronic locks on the building's exits must unlock. Which principle is applied and why?",
+    "options": [
+      "Fail-secure, because assets must remain protected",
+      "Fail-open for network devices, because availability takes precedence",
+      "Fail-safe, because the safety of people takes precedence over protecting assets",
+      "Defense in depth, because locks are not the only control"
+    ],
+    "answer": 2,
+    "explain": "A fail-safe control, on failure, goes into a state that protects people. Human life always comes first, so the exits unlock."
+  },
+  {
+    "obj": "1.3",
+    "q": "A new CISO has been tasked with establishing an information security program in an organization that has never had one. What is the FIRST step?",
+    "options": [
+      "Buy a SIEM and set up a SOC",
+      "Secure senior management support and a mandate, and align the program with the organization's mission and objectives",
+      "Perform a penetration test of the entire infrastructure",
+      "Write technical standards for server configuration"
+    ],
+    "answer": 1,
+    "explain": "The most important success factor of a program is management support (top-down). Without a mandate and alignment with business objectives, technical measures have neither priority nor budget."
+  },
+  {
+    "obj": "1.3",
+    "q": "An organization is acquiring a smaller company that has its own network and administrator accounts. Which activity BEFORE signing the contract BEST represents due diligence from a security perspective?",
+    "options": [
+      "Connect the networks immediately after signing to speed up integration",
+      "Replace all of the acquired company's devices with standard equipment",
+      "Assess the security posture, incident history, compliance, and contractual obligations of the company being acquired",
+      "Lay off the acquired company's IT team to reduce insider risk"
+    ],
+    "answer": 2,
+    "explain": "Due diligence in an acquisition means finding out what risks we inherit before making the decision. Connecting networks without an assessment can introduce compromised systems, and the other options are hasty."
+  },
+  {
+    "obj": "1.3",
+    "q": "Who in the organization bears ULTIMATE responsibility for protecting information?",
+    "options": [
+      "Senior management and the board of directors",
+      "The CISO",
+      "The data custodian",
+      "The system administrator"
+    ],
+    "answer": 0,
+    "explain": "Management can delegate implementation, but not accountability. The CISO leads the program and advises, the custodian implements controls."
+  },
+  {
+    "obj": "1.3",
+    "q": "Who is responsible for determining the classification of a customer data set and approving who may access it?",
+    "options": [
+      "Data custodian",
+      "Security administrator",
+      "Auditor",
+      "Data owner"
+    ],
+    "answer": 3,
+    "explain": "The data owner (usually a senior manager of the business function) classifies the data and approves access. The custodian implements protection according to the owner's requirements, and the administrator assigns rights."
+  },
+  {
+    "obj": "1.3",
+    "q": "Management wants a framework that will align IT investments and processes with business goals and clearly separate governance from management. Which framework is MOST appropriate?",
+    "options": [
+      "PCI DSS",
+      "COBIT 2019",
+      "SABSA",
+      "NIST SP 800-53"
+    ],
+    "answer": 1,
+    "explain": "COBIT is a framework for the governance and management of IT, with a goals cascade and a separation of EDM (governance) from APO/BAI/DSS/MEA (management). SABSA is an architecture framework, 800-53 a control catalog, PCI DSS a contractual standard for cards."
+  },
+  {
+    "obj": "1.3",
+    "q": "A cloud provider wants to sell SaaS to US federal agencies. Which authorization program must it go through?",
+    "options": [
+      "ISO/IEC 27001 certification",
+      "SOC 2 Type II",
+      "FedRAMP, based on NIST SP 800-53 controls and a 3PAO assessment",
+      "PCI DSS ROC"
+    ],
+    "answer": 2,
+    "explain": "FedRAMP standardizes the assessment and authorization of cloud services for the US federal government, with Low, Moderate, and High levels derived from NIST SP 800-53."
+  },
+  {
+    "obj": "1.3",
+    "q": "Through a risk assessment, a company determined that its sales laptops were not encrypted, but did nothing for a year. After a laptop with customer data was stolen, what will MOST likely be determined?",
+    "options": [
+      "That the company did not exercise due care, even though it performed due diligence",
+      "That the company did not perform due diligence",
+      "That the risk had been accepted, so there is no liability",
+      "That only the employee whose laptop was stolen is responsible"
+    ],
+    "answer": 0,
+    "explain": "The risk assessment (finding out) is due diligence. Failing to implement reasonable measures after finding out is a failure of due care, which may constitute negligence. The risk was not formally accepted by the owner."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Match the framework with its primary purpose.",
+    "options": [
+      "ISO/IEC 27001",
+      "SABSA",
+      "NIST CSF 2.0",
+      "PCI DSS"
+    ],
+    "targets": [
+      "Contractual industry standard for protecting payment card data",
+      "Certifiable requirements for an information security management system",
+      "Business-driven security architecture through layers",
+      "Voluntary framework with the functions Govern, Identify, Protect, Detect, Respond, Recover"
+    ],
+    "answer": [1, 2, 3, 0],
+    "explain": "ISO 27001 defines a certifiable ISMS, SABSA is a security architecture methodology with traceability to business requirements, NIST CSF 2.0 has six functions including the new Govern, and PCI DSS is the card brands' contractual standard."
+  },
+  {
+    "obj": "1.3",
+    "type": "order",
+    "q": "Order the levels of planning and direction from the most general and long-term to the most concrete.",
+    "options": [
+      "Tactical plan (projects and procurement for the next year)",
+      "The organization's mission",
+      "Operational plan (tasks, deadlines, responsible people)",
+      "Strategic plan (goals for 3 to 5 years)"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "The mission is the permanent purpose, the strategic plan the long-term direction, the tactical plan the mid-term steps, and the operational plan the short-term details of execution. Security plans follow the same top-down hierarchy."
+  }
+]

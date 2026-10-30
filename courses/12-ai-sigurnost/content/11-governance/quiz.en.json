@@ -1,0 +1,276 @@
+[
+  {
+    "obj": "6.1",
+    "q": "Management asks which of the three documents is binding, which is a voluntary framework and which can be certified. What is correct?",
+    "options": [
+      "All three are binding in the EU",
+      "The EU AI Act is a binding regulation, the NIST AI RMF is a voluntary framework, and ISO/IEC 42001 is a certifiable management system standard",
+      "The NIST AI RMF is binding for all companies that use the cloud",
+      "ISO/IEC 42001 is an EU regulation, and the EU AI Act is a standard"
+    ],
+    "answer": 1,
+    "explain": "The AI Act is Regulation (EU) 2024/1689; the NIST AI RMF 1.0 is voluntary; ISO/IEC 42001:2023 defines an AIMS, which is certified by an accredited body."
+  },
+  {
+    "obj": "6.1",
+    "q": "A Serbian company develops a system for ranking job candidates and sells it to employers in Germany. Does the EU AI Act apply to it, and in which role?",
+    "options": [
+      "No, because the company is not registered in the EU",
+      "Yes, but only as a distributor",
+      "Only if the system uses a model trained in the EU",
+      "Yes, as the provider of a system placed on the EU market; employment is an Annex III area"
+    ],
+    "answer": 3,
+    "explain": "The AI Act also applies to non-EU providers that place a system on the EU market. Ranking candidates is a high-risk use (Annex III, employment)."
+  },
+  {
+    "obj": "6.1",
+    "q": "Under the AI Omnibus (Regulation (EU) 2026/1744), from when at the latest do the obligations for standalone high-risk systems under Annex III apply?",
+    "options": [
+      "From 2 Dec 2027",
+      "From 2 Aug 2025",
+      "From 2 Aug 2026",
+      "From 2 Aug 2028"
+    ],
+    "answer": 0,
+    "explain": "The Omnibus moved Annex III to no later than 2 Dec 2027, and Annex I (AI in regulated products) to no later than 2 Aug 2028. The GPAI obligations started on 2 Aug 2025."
+  },
+  {
+    "obj": "6.1",
+    "q": "A team says: “The obligations for high-risk systems have been postponed, so the AI Act doesn't require anything of us right now.” What is wrong?",
+    "options": [
+      "Nothing, the whole regulation has been postponed until 2028",
+      "The AI Act applies only to the public sector",
+      "Prohibited practices and AI literacy apply from 2 Feb 2025, GPAI obligations from 2 Aug 2025, and the Art. 50 transparency obligations from 2 Aug 2026",
+      "Only the fines have been postponed"
+    ],
+    "answer": 2,
+    "explain": "The obligations for high-risk systems were postponed; the other provisions apply earlier. Besides, controls such as the inventory, logs and human oversight take months to prepare."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company puts a support chatbot on its website for customers in the EU. The system doesn't decide on users' rights. Which AI Act obligation is most relevant?",
+    "options": [
+      "Conformity assessment and CE marking",
+      "Registration in the EU database of high-risk systems",
+      "A fundamental rights impact assessment (FRIA)",
+      "Article 50: users must know they are interacting with an AI system"
+    ],
+    "answer": 3,
+    "explain": "A chatbot is a typical example of a transparency obligation. Conformity assessment, registration and FRIA relate to high-risk systems and certain deployers."
+  },
+  {
+    "obj": "6.1",
+    "q": "Which AI Act article requires high-risk systems to be resilient against attempts to alter their use or behavior by exploiting vulnerabilities, including data and model poisoning and adversarial examples?",
+    "options": [
+      "Article 15: accuracy, robustness and cybersecurity",
+      "Article 4: AI literacy",
+      "Article 50: transparency",
+      "Article 99: penalties"
+    ],
+    "answer": 0,
+    "explain": "Article 15 explicitly lists measures against data and model poisoning, adversarial examples and confidentiality attacks. This is where regulation relies directly on security engineering."
+  },
+  {
+    "obj": "6.1",
+    "q": "What are the four functions of the NIST AI RMF 1.0?",
+    "options": [
+      "Identify, Protect, Detect, Respond",
+      "Plan, Do, Check, Act",
+      "GOVERN, MAP, MEASURE, MANAGE",
+      "Assess, Authorize, Monitor, Retire"
+    ],
+    "answer": 2,
+    "explain": "The AI RMF uses GOVERN (which cuts across the others), MAP, MEASURE and MANAGE. Identify/Protect/Detect/Respond are NIST CSF functions, and PDCA is the ISO management system cycle."
+  },
+  {
+    "obj": "6.1",
+    "q": "An organization is building an assistant on a large language model and wants a catalog of generative-AI-specific risks mapped to the NIST AI RMF. Which document should it use?",
+    "options": [
+      "NIST SP 800-53",
+      "NIST AI 600-1 (Generative AI Profile)",
+      "ISO/IEC 27002",
+      "NIST SP 800-61"
+    ],
+    "answer": 1,
+    "explain": "AI 600-1 (July 2024) applies the AI RMF to generative AI, lists 12 risks (e.g., confabulation, information security, data privacy) and proposes actions per RMF function."
+  },
+  {
+    "obj": "6.1",
+    "q": "An organization has an ISMS certified to ISO/IEC 27001 and wants ISO/IEC 42001 certification. What is the best approach?",
+    "options": [
+      "Extend the existing management system: the same risk process, audit and management review, plus AI risks and the controls from 42001 Annex A",
+      "Build a completely separate system with a different risk register",
+      "Drop 27001 because 42001 replaces it",
+      "Wait for the AI Act's harmonized standards"
+    ],
+    "answer": 0,
+    "explain": "42001 has the same clause structure as 27001, so it integrates into the existing system. 42001 doesn't replace 27001; they cover different areas."
+  },
+  {
+    "obj": "6.1",
+    "q": "Which ISO/IEC standard sets requirements for bodies that audit and certify AI management systems?",
+    "options": [
+      "ISO/IEC 23894",
+      "ISO/IEC 42005",
+      "ISO/IEC 5962",
+      "ISO/IEC 42006"
+    ],
+    "answer": 3,
+    "explain": "ISO/IEC 42006 applies to certification bodies for an AIMS. 23894 provides guidance on AI risk management, 42005 on AI system impact assessment, and 5962 is SPDX."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company uses a commercial LLM as a deployer, then fine-tunes it and sells it under its own name as a creditworthiness assessment product. What changes?",
+    "options": [
+      "Nothing, it remains a deployer",
+      "It becomes the provider of a high-risk system (Annex III, essential services), with the obligations of Arts. 9–15",
+      "It becomes a distributor",
+      "The obligations pass to the base model's vendor"
+    ],
+    "answer": 1,
+    "explain": "The role is determined per system: whoever places a system on the market under their own name is the provider. Creditworthiness assessment of natural persons is in Annex III. The GPAI model vendor has its own obligations (Art. 53), but doesn't take over the system provider's obligations."
+  },
+  {
+    "obj": "6.1",
+    "q": "HR wants a tool that uses a camera to assess employees' emotions during meetings to “measure engagement.” What should the governance team answer?",
+    "options": [
+      "Allowed, with notice to employees",
+      "High-risk, a conformity assessment is required",
+      "A prohibited practice under Article 5 (emotion recognition in the workplace, with narrow medical and safety exceptions); stop the use case",
+      "Minimal risk"
+    ],
+    "answer": 2,
+    "explain": "Emotion recognition in the workplace and in education has been prohibited since 2 Feb 2025, except for medical or safety reasons. Measuring engagement is not such a reason."
+  },
+  {
+    "obj": "6.2",
+    "q": "CASB logs show that hundreds of employees use public AI chat services, and no approved alternative exists. What is the best order of measures?",
+    "options": [
+      "Immediately block all AI domains and take disciplinary action",
+      "Do nothing until the AI Act starts applying to high-risk systems",
+      "Send an email saying use is prohibited, with no other measures",
+      "Offer an approved enterprise alternative with a contract excluding the use of data for training, a clear data class policy and a simple intake, then block disallowed services"
+    ],
+    "answer": 3,
+    "explain": "A ban without an alternative drives people to work around it. An approved path, clear rules and only then technical blocking reduce data leakage and provide visibility."
+  },
+  {
+    "obj": "6.2",
+    "q": "Which field in the AI system inventory is most important for quickly finding the affected systems when a vendor changes its model?",
+    "options": [
+      "The model with its vendor and pinned version, together with the system owner",
+      "The color of the product logo",
+      "The number of employees on the team",
+      "The vendor's founding date"
+    ],
+    "answer": 0,
+    "explain": "The inventory should say which system uses which model and version, and who is responsible. Then, when there is a change or an incident at the vendor, you immediately know whom to notify and what to re-evaluate."
+  },
+  {
+    "obj": "6.2",
+    "q": "A team got approval for an internal assistant with RAG over public documentation. Three months later they added a tool that creates purchase orders in the ERP. What should the governance process require?",
+    "options": [
+      "Nothing, the system is already approved",
+      "Only an update to the user guide",
+      "A new risk assessment, because a new tool with write rights changes the risk profile (excessive agency)",
+      "A new license purchase"
+    ],
+    "answer": 2,
+    "explain": "Significant changes (a new tool, a new model, a new data class, a new user group) send the system back for assessment. A tool that writes to the ERP requires controls such as an allowlist and human confirmation."
+  },
+  {
+    "obj": "6.2",
+    "q": "An LLM API vendor swapped the model without notice, and the guardrails and evaluation were calibrated for the old version. Which contract clause would have prevented this?",
+    "options": [
+      "A volume discount",
+      "The ability to pin the model version and an obligation to give notice of changes within an agreed period",
+      "An obligation to pay in advance",
+      "Regional exclusivity"
+    ],
+    "answer": 1,
+    "explain": "Version pinning and a notice period give time to run your own evaluation (module 10) before moving to the new version."
+  },
+  {
+    "obj": "6.2",
+    "q": "Which question in an AI vendor assessment most directly addresses the risk that confidential inputs end up in future versions of its model?",
+    "options": [
+      "How long the vendor has been in business",
+      "Which programming language it uses",
+      "What the API latency is",
+      "Whether our inputs and outputs are used for training, and whether that can be excluded by contract"
+    ],
+    "answer": 3,
+    "explain": "Using customer data for training is a direct path to leakage and intellectual property problems. The other questions are operational."
+  },
+  {
+    "obj": "6.2",
+    "q": "A new use case comes in through intake. What is the correct order of the first steps?",
+    "options": [
+      "Intake with purpose, data, users, model and tools, then triage and classification, then an assessment proportional to the risk",
+      "Immediately a full assessment with all controls for every case",
+      "First buy the tool, then assess after launch",
+      "Classification without any information about the system"
+    ],
+    "answer": 0,
+    "explain": "Intake provides the facts, triage separates minimal risk (fast track) from the rest, classification determines the regulatory obligations, and the assessment chooses controls according to the actual risks."
+  },
+  {
+    "obj": "6.2",
+    "q": "Which combination of sources best uncovers AI systems that are not in the inventory?",
+    "options": [
+      "Only an annual employee survey",
+      "CASB and proxy logs, spending and subscriptions, procurement contracts, the model registry and vendor API keys in the secrets manager",
+      "Only the IT department's license list",
+      "Only searching the code for the word “AI”"
+    ],
+    "answer": 1,
+    "explain": "Shadow AI and AI features in SaaS don't report themselves; multiple technical and financial sources give a realistic picture. A survey and a license list miss a large part."
+  },
+  {
+    "obj": "6.2",
+    "q": "A downstream system provider integrates a vendor's GPAI model. Which AI Act provision gives it grounds to request information from the vendor about the model's capabilities and limitations?",
+    "options": [
+      "Article 5",
+      "Article 99",
+      "Article 53, the obligations of GPAI model providers, including information for providers that integrate the model",
+      "Article 27"
+    ],
+    "answer": 2,
+    "explain": "Article 53 obliges GPAI model providers to keep documentation and provide information to downstream providers. Article 5 covers prohibitions, 99 penalties, 27 FRIA."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Match the use case with its likely class under the EU AI Act.",
+    "options": [
+      "Creditworthiness assessment of natural persons for loan approval",
+      "Generating marketing images for social media",
+      "An internal spam filter",
+      "A social scoring system for citizens that leads to unfavorable treatment"
+    ],
+    "targets": [
+      "Prohibited practice (Art. 5)",
+      "Minimal risk",
+      "High-risk (Annex III)",
+      "Transparency obligations (Art. 50)",
+      "GPAI model with systemic risk"
+    ],
+    "answer": [2, 3, 1, 0],
+    "explain": "Creditworthiness is in Annex III (essential services); synthetic content requires labeling; a spam filter is a typical minimal risk; social scoring is prohibited. GPAI with systemic risk is a category of model, not of use case."
+  },
+  {
+    "obj": "6.2",
+    "type": "order",
+    "q": "Order the phases of the AI system governance lifecycle in an organization.",
+    "options": [
+      "Monitoring and periodic review; a significant change sends the system back for assessment",
+      "Decision: approved, approved with conditions or rejected",
+      "Intake: purpose, data, users, model, tools, autonomy",
+      "Assessment: security, DPIA, FRIA if needed",
+      "Triage and classification (EU AI Act, the organization's role)"
+    ],
+    "answer": [2, 4, 3, 1, 0],
+    "explain": "The facts from intake enable triage and classification, which determine the scope of the assessment; the assessment leads to a decision, and an approved system is monitored and reassessed when it changes."
+  }
+]

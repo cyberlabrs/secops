@@ -1,0 +1,68 @@
+[
+  {
+    "q": "A Kubernetes Secret has the value 'cGFzc3dvcmQxMjM='. What is true?",
+    "options": ["The value is encrypted with AES", "The value is only Base64-encoded and anyone who can read the Secret can decode it", "The value is a password hash", "The value can't be read without KMS"],
+    "answer": 1,
+    "explain": "Base64 is encoding, not encryption. Protection requires RBAC on Secret objects, etcd encryption (a KMS provider) or an external secrets manager."
+  },
+  {
+    "q": "Why is HMAC used to sign webhooks instead of a plain SHA-256 hash?",
+    "options": ["HMAC is faster", "Anyone can compute a plain hash; HMAC requires a secret key, so it also proves who sent the message", "SHA-256 is broken", "HMAC encrypts the content"],
+    "answer": 1,
+    "explain": "HMAC provides integrity and authenticity between parties that share the key. It doesn't provide confidentiality: the content stays readable."
+  },
+  {
+    "q": "Which algorithm is recommended for password hashing?",
+    "options": ["MD5", "SHA-256", "Argon2id", "AES-256"],
+    "answer": 2,
+    "explain": "Argon2id is deliberately slow and memory-hard, with a salt. SHA-256 is too fast (billions of guesses per second on a GPU), MD5 is broken, and AES is encryption, not a hash."
+  },
+  {
+    "q": "What happens if the same nonce is reused with the same key in AES-GCM?",
+    "options": ["Nothing in particular", "Confidentiality is lost (the XOR of the plaintexts leaks) and an attacker can forge messages", "Encryption gets slower", "The key is rotated automatically"],
+    "answer": 1,
+    "explain": "A reused nonce in GCM is one of the most dangerous mistakes: it breaks both confidentiality and authentication. That's why random 96-bit nonces with a limited number of messages per key, or a counter, are used."
+  },
+  {
+    "q": "Ana wants to send Marko a message only he can read. Which key does she encrypt it with?",
+    "options": ["Her private key", "Her public key", "Marko's public key", "Marko's private key"],
+    "answer": 2,
+    "explain": "Encryption uses the recipient's public key, and only their private key decrypts. Signing is the reverse: you sign with your private key, and it's verified with the public key."
+  },
+  {
+    "q": "What is envelope encryption?",
+    "options": ["Email encryption", "Data is encrypted with a data key (DEK), and the DEK is encrypted with a master key (KEK) in KMS", "Double encryption with the same key", "Encrypting only the header"],
+    "answer": 1,
+    "explain": "That's how S3 SSE-KMS, EBS and many other services work. The master key never leaves KMS, and every DEK decryption is logged and controlled by IAM."
+  },
+  {
+    "q": "Which algorithms would a sufficiently powerful quantum computer threaten? (multiple answers)",
+    "options": ["RSA", "ECDSA / ECDH", "AES-256", "SHA-384"],
+    "answer": [0, 1],
+    "explain": "Shor's algorithm breaks the problems RSA and ECC are built on. Grover's algorithm only halves the effective strength of symmetric ciphers and hash functions, so AES-256 and SHA-384 remain usable."
+  },
+  {
+    "q": "Which NIST standard defines the post-quantum key exchange mechanism (ML-KEM, formerly Kyber)?",
+    "options": ["FIPS 197", "FIPS 203", "FIPS 140-3", "SP 800-63B"],
+    "answer": 1,
+    "explain": "FIPS 203 is ML-KEM, FIPS 204 ML-DSA (signatures), FIPS 205 SLH-DSA (hash-based signatures). FIPS 197 is AES, and FIPS 140-3 is the standard for cryptographic modules."
+  },
+  {
+    "q": "What is a 'harvest now, decrypt later' attack?",
+    "options": ["Stealing backups", "Recording encrypted traffic today in order to decrypt it once quantum computers become available", "Password brute force", "Ransomware"],
+    "answer": 1,
+    "explain": "That's why key exchange (which protects confidentiality) is migrated to PQC before signatures. Data that must stay secret for a long time is already at risk today."
+  },
+  {
+    "q": "Which AES mode should NOT be used because identical plaintext blocks produce identical ciphertext blocks?",
+    "options": ["GCM", "ECB", "CTR", "ChaCha20-Poly1305 (not an AES mode)"],
+    "answer": 1,
+    "explain": "ECB reveals patterns in the data. Use AEAD constructions: AES-GCM or ChaCha20-Poly1305."
+  },
+  {
+    "q": "How do you generate a password reset token in Python?",
+    "options": ["random.randint()", "secrets.token_urlsafe(32)", "time.time() converted to hex", "a hash of the username"],
+    "answer": 1,
+    "explain": "The secrets module uses the operating system's CSPRNG. random is predictable, and the time or a hash of the name are easy to guess."
+  }
+]

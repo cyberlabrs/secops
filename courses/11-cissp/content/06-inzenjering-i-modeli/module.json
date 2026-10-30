@@ -1,0 +1,15 @@
+{
+  "title": "Siguran dizajn, modeli sigurnosti i ranjivosti arhitektura",
+  "summary": "Principi sigurnog dizajna i Zero Trust, threat modeling, modeli Bell-LaPadula, Biba, Clark-Wilson i Brewer-Nash, izbor kontrola (RMF, Common Criteria), TCB, reference monitor, TPM i HSM, te ranjivosti i mitigacije od baza i kontejnera do OT/ICS, clouda i kvantnih prijetnji.",
+  "minutes": 100,
+  "domain": 3,
+  "objectives": [
+    "3.1",
+    "3.2",
+    "3.3",
+    "3.4",
+    "3.5"
+  ],
+  "title_en": "Secure Design, Security Models and Architecture Vulnerabilities",
+  "summary_en": "Secure design principles and Zero Trust, threat modeling, the Bell-LaPadula, Biba, Clark-Wilson and Brewer-Nash models, control selection (RMF, Common Criteria), TCB, reference monitor, TPM and HSM, and vulnerabilities and mitigations from databases and containers to OT/ICS, cloud and quantum threats."
+}

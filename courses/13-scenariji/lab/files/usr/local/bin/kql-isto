@@ -1,0 +1,9 @@
+#!/bin/bash
+# Pomoćna skripta za provjere labova: kql-isto <tvoj.csv> <referentni upit> [sort]
+# Vraća 0 ako je tvoj CSV isti kao rezultat referentnog upita.
+t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
+pre=""; [ -n "$KQL_PRE" ] && pre="$KQL_PRE"
+printf '%s\n%s\n.save %s/ref.csv\n' "$pre" "$2" "$t" > $t/q.kql
+kql $t/q.kql >/dev/null 2>&1
+if [ "$3" = "sort" ]; then a=$(sort "$1" 2>/dev/null); b=$(sort $t/ref.csv 2>/dev/null); else a=$(cat "$1" 2>/dev/null); b=$(cat $t/ref.csv 2>/dev/null); fi
+[ -n "$b" ] && [ "$a" = "$b" ]

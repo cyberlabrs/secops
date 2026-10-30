@@ -1,0 +1,224 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Zadatak: inicijalizuj klaster na controlplane tako da Flannel radi sa podrazumijevanom konfiguracijom (mreža 10.244.0.0/16). Koja komanda je ispravna?",
+    "options": [
+      "kubeadm init --service-cidr=10.244.0.0/16",
+      "kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=v1.35.0",
+      "kubeadm init --control-plane-endpoint=10.244.0.0/16",
+      "kubeadm init --apiserver-advertise-address=10.244.0.0"
+    ],
+    "answer": 1,
+    "explain": "Pod mreža se zadaje sa `--pod-network-cidr` i mora se slagati sa CNI konfiguracijom. `--service-cidr` je za ClusterIP servise, a `--control-plane-endpoint` i `--apiserver-advertise-address` su adrese API servera, ne opsezi."
+  },
+  {
+    "obj": "1.3",
+    "q": "Nakon uspješnog `kubeadm init` i kopiranja admin.conf, `kubectl get nodes` pokazuje controlplane kao NotReady, a CoreDNS Podovi su Pending. Šta je sljedeći korak?",
+    "options": [
+      "kubectl taint node controlplane node-role.kubernetes.io/control-plane:NoSchedule-",
+      "kubectl -n kube-system rollout restart deployment coredns",
+      "Instalirati CNI plugin, npr. kubectl apply -f /opt/kurs/manifests/kube-flannel.yaml",
+      "systemctl restart kubelet"
+    ],
+    "answer": 2,
+    "explain": "Bez Pod mreže čvor ostaje NotReady, a CoreDNS čeka jer čvor ima not-ready taint. Uklanjanje control-plane tainta i restart CoreDNS-a ili kubeleta ne rješavaju nedostatak CNI-ja."
+  },
+  {
+    "obj": "1.3",
+    "q": "Klaster je napravljen prije tri dana. Treba dodati node01. Koja komanda na controlplane čvoru daje kompletnu join komandu?",
+    "options": [
+      "kubeadm token list",
+      "kubeadm init phase bootstrap-token",
+      "kubeadm join --print-join-command",
+      "kubeadm token create --print-join-command"
+    ],
+    "answer": 3,
+    "explain": "Originalni token je istekao (24h), pa `token create --print-join-command` pravi novi i ispisuje cijelu komandu sa hashom CA. `token list` samo izlistava tokene, a `kubeadm join` nema flag `--print-join-command`."
+  },
+  {
+    "obj": "1.3",
+    "q": "Na node01 `kubeadm join` pada sa porukom `could not find a JWS signature in the cluster-info ConfigMap for token ID \"abcdef\"`. Šta je uzrok?",
+    "options": [
+      "Token je istekao ili je obrisan",
+      "Pogrešan --discovery-token-ca-cert-hash",
+      "Na node01 nije pokrenut containerd",
+      "Na controlplane nije instaliran CNI"
+    ],
+    "answer": 0,
+    "explain": "JWS potpis u cluster-info ConfigMap-u postoji samo za važeće tokene, pa ova poruka znači da token više ne postoji. Pogrešan hash daje grešku pri provjeri identiteta API servera, a runtime i CNI nisu dio discovery koraka."
+  },
+  {
+    "obj": "1.3",
+    "q": "node01 je ranije bio u drugom klasteru. `kubeadm join` javlja `[ERROR FileAvailable--etc-kubernetes-kubelet.conf]: /etc/kubernetes/kubelet.conf already exists`. Šta radiš?",
+    "options": [
+      "kubeadm join ... --ignore-preflight-errors=all",
+      "Na node01 pokreneš kubeadm reset -f, očistiš /etc/cni/net.d i ponoviš join",
+      "Obrišeš samo /etc/kubernetes/kubelet.conf i ponoviš join",
+      "kubectl delete node node01 na controlplane"
+    ],
+    "answer": 1,
+    "explain": "`kubeadm reset` uklanja stanje starog klastera (kubeconfig, PKI, podatke kubeleta), a ostaci CNI konfiguracije se brišu ručno. Ignorisanje greške ili brisanje jednog fajla ostavlja stare certifikate i CA, a `delete node` ne mijenja ništa na samom čvoru."
+  },
+  {
+    "obj": "1.3",
+    "q": "Pišeš kubeadm konfiguraciju sa `apiVersion: kubeadm.k8s.io/v1beta4` i hoćeš dodati flag `--audit-log-maxage=30` API serveru. Koji isječak ClusterConfiguration je ispravan?",
+    "options": [
+      "apiServer:\n  extraArgs:\n    audit-log-maxage: \"30\"",
+      "apiServer:\n  args:\n    - --audit-log-maxage=30",
+      "apiServer:\n  extraArgs:\n    - name: audit-log-maxage\n      value: \"30\"",
+      "extraArgs:\n  kube-apiserver:\n    audit-log-maxage: \"30\""
+    ],
+    "answer": 2,
+    "explain": "U v1beta4 `extraArgs` je lista objekata `name`/`value` sa imenom flaga bez crtica. Mapa ključ: vrijednost je format iz v1beta3, a polja `args` i top-level `extraArgs` ne postoje."
+  },
+  {
+    "obj": "1.3",
+    "q": "Koja komanda daje kompletan kostur InitConfiguration i ClusterConfiguration za trenutnu verziju kubeadm-a, kao polaznu tačku za vlastiti fajl?",
+    "options": [
+      "kubectl -n kube-system get cm kubeadm-config -o yaml",
+      "kubeadm config images list",
+      "kubeadm config validate --config init.yaml",
+      "kubeadm config print init-defaults"
+    ],
+    "answer": 3,
+    "explain": "`print init-defaults` ispisuje sve dokumente sa podrazumijevanim vrijednostima. ConfigMap kubeadm-config postoji tek nakon init-a, `images list` daje spisak image-a, a `validate` samo provjerava postojeći fajl."
+  },
+  {
+    "obj": "1.3",
+    "q": "Pokrećeš `kubeadm init --config init.yaml --pod-network-cidr=10.244.0.0/16` i kubeadm odbija da nastavi. Zašto?",
+    "options": [
+      "--config se ne može miješati sa flagovima koji pripadaju konfiguraciji; CIDR treba upisati u networking.podSubnet",
+      "Flag --pod-network-cidr ne postoji u kubeadm 1.35",
+      "init.yaml mora imati ekstenziju .conf",
+      "Pod CIDR mora biti manji od /16"
+    ],
+    "answer": 0,
+    "explain": "Kad koristiš konfiguracioni fajl, podešavanja kao Pod CIDR idu u fajl (`networking.podSubnet`), a kubeadm odbija miješanje. Flag postoji, ekstenzija nije bitna, a /16 je uobičajen Pod CIDR."
+  },
+  {
+    "obj": "1.5",
+    "q": "Klaster je inicijalizovan sa `kubeadm init --pod-network-cidr=10.244.0.0/16`, bez drugih flagova. Sada treba dodati drugi control plane čvor. Šta je glavna prepreka?",
+    "options": [
+      "Nedostaje KubeProxyConfiguration",
+      "Klaster nema controlPlaneEndpoint, pa ne postoji zajednička stabilna adresa za više API servera",
+      "Token je napravljen bez --upload-certs",
+      "Flannel ne podržava više control plane čvorova"
+    ],
+    "answer": 1,
+    "explain": "Bez controlPlaneEndpoint-a svi čvorovi i kubeconfig fajlovi pokazuju na IP prvog API servera, pa kubeadm ne dozvoljava dodavanje control plane čvorova. Certifikati se mogu postaviti naknadno sa upload-certs fazom, a CNI i kube-proxy konfiguracija nisu prepreka."
+  },
+  {
+    "obj": "1.5",
+    "q": "HA klaster je napravljen sa `--upload-certs` prije pet sati. Join novog control plane čvora sa `--certificate-key` iz ispisa init-a ne uspijeva jer Secret kubeadm-certs ne postoji. Šta radiš na postojećem control plane čvoru?",
+    "options": [
+      "kubeadm certs renew all",
+      "kubeadm token create --ttl 0",
+      "kubeadm init phase upload-certs --upload-certs, pa join sa novim certificate key-em",
+      "kubectl -n kube-system create secret generic kubeadm-certs --from-file=/etc/kubernetes/pki"
+    ],
+    "answer": 2,
+    "explain": "Uploadovani certifikati i ključ za dešifrovanje brišu se nakon dva sata; faza upload-certs ih ponovo šifruje i ispiše novi ključ. `certs renew` produžava certifikate na disku, token TTL ne utiče na Secret, a ručno napravljen Secret nije šifrovan formatom koji kubeadm očekuje."
+  },
+  {
+    "obj": "1.5",
+    "q": "Imaš token, hash i certificate key. Koja komanda priključuje cp2 kao dodatni control plane čvor?",
+    "options": [
+      "kubeadm join k8s-api.lab.local:6443 --token <t> --discovery-token-ca-cert-hash sha256:<h> --upload-certs",
+      "kubeadm init --control-plane-endpoint k8s-api.lab.local:6443 --certificate-key <k>",
+      "kubeadm join k8s-api.lab.local:6443 --token <t> --discovery-token-ca-cert-hash sha256:<h>",
+      "kubeadm join k8s-api.lab.local:6443 --token <t> --discovery-token-ca-cert-hash sha256:<h> --control-plane --certificate-key <k>"
+    ],
+    "answer": 3,
+    "explain": "`--control-plane` traži instalaciju kontrolne ravni, a `--certificate-key` dešifruje dijeljene certifikate iz Secret-a kubeadm-certs. Bez tih flagova čvor postaje worker; `init` bi napravio novi klaster, a `--upload-certs` nije flag join-a."
+  },
+  {
+    "obj": "1.5",
+    "q": "Tim planira stacked etcd HA klaster i pita koliko control plane čvorova treba da bi klaster preživio istovremeni otkaz dva čvora. Koliko?",
+    "options": [
+      "5",
+      "4",
+      "3",
+      "2"
+    ],
+    "answer": 0,
+    "explain": "Kvorum je n/2+1: sa 5 članova treba 3 za kvorum, pa smiju otkazati dva. Sa 4 člana kvorum je 3 i podnosi se samo jedan otkaz, a sa 3 člana takođe samo jedan."
+  },
+  {
+    "obj": "1.5",
+    "q": "Upari HA pojam sa tačnim opisom.",
+    "type": "match",
+    "options": ["Stacked etcd", "External etcd", "controlPlaneEndpoint", "Leader election"],
+    "targets": [
+      "Samo jedan kube-scheduler i kube-controller-manager je aktivan, preko Lease objekata",
+      "etcd član radi kao static Pod na svakom control plane čvoru",
+      "etcd radi na zasebnim mašinama i navodi se u etcd.external",
+      "Stabilna DNS adresa load balancera ispred svih API servera",
+      "Svaki API server ima svoju etcd bazu bez replikacije"
+    ],
+    "answer": [1, 2, 3, 0],
+    "explain": "Stacked etcd dijeli čvor sa kontrolnom ravni, external etcd je odvojen, controlPlaneEndpoint je adresa LB-a, a leader election osigurava jednog aktivnog scheduler-a i controller-manager-a. Posljednji opis je netačan: etcd članovi uvijek repliciraju podatke."
+  },
+  {
+    "obj": "1.5",
+    "q": "Poredaj korake podizanja HA klastera sa stacked etcd-om (tri control plane čvora, load balancer).",
+    "type": "order",
+    "options": [
+      "Na cp2 i cp3 pokreni kubeadm join ... --control-plane --certificate-key <k>",
+      "Podesi load balancer (TCP 6443) i DNS ime k8s-api.lab.local",
+      "Na cp1 pokreni kubeadm init --control-plane-endpoint k8s-api.lab.local:6443 --upload-certs",
+      "Instaliraj CNI",
+      "Priključi worker čvorove sa kubeadm join bez --control-plane"
+    ],
+    "answer": [1, 2, 3, 0, 4],
+    "explain": "Load balancer i ime moraju postojati prije init-a jer ulaze u certifikate i kubeconfig. Nakon init-a na cp1 instalira se CNI, zatim se priključuju ostali control plane čvorovi i na kraju workeri."
+  },
+  {
+    "obj": "1.3",
+    "q": "Treba trajno ukloniti node01 iz klastera. Poredaj korake.",
+    "type": "order",
+    "options": [
+      "Na node01: kubeadm reset -f",
+      "Na node01: obriši /etc/cni/net.d i očisti iptables pravila",
+      "kubectl delete node node01",
+      "kubectl drain node01 --ignore-daemonsets --delete-emptydir-data"
+    ],
+    "answer": [3, 2, 0, 1],
+    "explain": "Prvo se Podovi uredno premjeste (drain), zatim se objekt čvora ukloni iz API-ja, pa se na čvoru poništi kubeadm stanje. reset ne briše CNI konfiguraciju i iptables, pa se to čisti ručno na kraju."
+  },
+  {
+    "obj": "1.2",
+    "q": "`kubeadm init` pada u preflight fazi sa `[ERROR CRI]: container runtime is not running`. Šta prvo provjeravaš?",
+    "options": [
+      "kubectl get nodes",
+      "systemctl status containerd i da li socket /run/containerd/containerd.sock postoji",
+      "Da li je CNI instaliran u /etc/cni/net.d",
+      "Da li je token istekao"
+    ],
+    "answer": 1,
+    "explain": "Preflight se preko CRI socketa obraća runtime-u; ako containerd ne radi ili socket ne postoji, init ne može pokrenuti kontrolnu ravan. kubectl još nema klaster, a CNI i token nisu dio preflight provjere runtime-a."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na serveru je instaliran i containerd i CRI-O. `kubeadm init` javlja da je pronađeno više CRI endpointa. Kako navodiš containerd?",
+    "options": [
+      "kubeadm init --cri-socket=unix:///run/containerd/containerd.sock",
+      "kubeadm init --container-runtime=containerd",
+      "export CONTAINER_RUNTIME_ENDPOINT=containerd pa kubeadm init",
+      "kubeadm init --ignore-preflight-errors=CRI"
+    ],
+    "answer": 0,
+    "explain": "Kad postoji više runtime-a, kubeadm traži eksplicitan socket preko `--cri-socket` (ili `nodeRegistration.criSocket` u konfiguraciji). Flag `--container-runtime` ne postoji u kubeadm-u, a ignorisanje provjere ne bira runtime."
+  },
+  {
+    "obj": "1.3",
+    "q": "Zadatak traži da u /opt/hash.txt upišeš vrijednost za --discovery-token-ca-cert-hash bez pravljenja novog tokena. Odakle se računa hash?",
+    "options": [
+      "Iz /etc/kubernetes/pki/apiserver.crt",
+      "Iz /etc/kubernetes/admin.conf polja client-certificate-data",
+      "Iz /etc/kubernetes/pki/sa.pub",
+      "SHA-256 javnog ključa iz /etc/kubernetes/pki/ca.crt"
+    ],
+    "answer": 3,
+    "explain": "Hash je SHA-256 nad javnim ključem CA certifikata klastera (openssl x509 -pubkey ... | openssl dgst -sha256). Certifikat API servera i admin klijentski certifikat nisu CA, a sa.pub služi za potpisivanje ServiceAccount tokena."
+  }
+]

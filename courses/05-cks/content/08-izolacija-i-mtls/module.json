@@ -1,0 +1,12 @@
+{
+  "title": "Izolacija (multi-tenancy, gVisor) i enkripcija Pod-Pod",
+  "summary": "Izolacija tenanta u istom klasteru (namespace, RBAC, NetworkPolicy, kvote, posvećeni čvorovi), sandbox kontejneri preko RuntimeClass-a i gVisora te šifrovanje saobraćaja između Podova sa Cilium WireGuard/IPsec i Istio mTLS-om.",
+  "minutes": 90,
+  "domain": 4,
+  "objectives": [
+    "4.3",
+    "4.4"
+  ],
+  "title_en": "Isolation (multi-tenancy, gVisor) and Pod-to-Pod encryption",
+  "summary_en": "Tenant isolation within one cluster (namespaces, RBAC, NetworkPolicy, quotas, dedicated nodes), sandboxed containers via RuntimeClass and gVisor, and encrypting Pod-to-Pod traffic with Cilium WireGuard/IPsec and Istio mTLS."
+}

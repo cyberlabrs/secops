@@ -1,0 +1,236 @@
+[
+  {
+    "obj": "4.3",
+    "q": "Zadatak: napravi RuntimeClass gvisor koji koristi containerd handler runsc. Koji manifest je ispravan?",
+    "options": [
+      "apiVersion: node.k8s.io/v1, kind: RuntimeClass, metadata.name: gvisor, handler: runsc",
+      "apiVersion: v1, kind: RuntimeClass, metadata.name: gvisor, spec.handler: runsc",
+      "apiVersion: node.k8s.io/v1, kind: RuntimeClass, metadata.name: runsc, runtimeHandler: gvisor",
+      "apiVersion: node.k8s.io/v1, kind: RuntimeClass, metadata.name: gvisor, metadata.namespace: default, handler: runsc"
+    ],
+    "answer": 0,
+    "explain": "RuntimeClass je u grupi node.k8s.io/v1, polje handler je na vrhu objekta (nema spec) i mora odgovarati imenu runtimea u containerd konfiguraciji. Objekat nije namespaced, a polje runtimeHandler ne postoji."
+  },
+  {
+    "obj": "4.3",
+    "q": "Deployment untrusted treba da radi u gVisoru preko RuntimeClass-a gvisor. Gdje dodaješ polje?",
+    "options": [
+      "spec.runtimeClassName u Deploymentu",
+      "spec.template.metadata.annotations: runtimeclass: gvisor",
+      "spec.template.spec.runtimeClassName: gvisor",
+      "spec.template.spec.containers[].runtimeClassName: gvisor"
+    ],
+    "answer": 2,
+    "explain": "runtimeClassName je polje PodSpec-a, pa u Deploymentu ide u spec.template.spec. Nije polje kontejnera ni Deploymenta, a anotacija nema efekta."
+  },
+  {
+    "obj": "4.3",
+    "q": "Pod sa runtimeClassName: gvisor je na node02 u stanju ContainerCreating, a događaj kaže: failed to get sandbox runtime: no runtime for \"runsc\" is configured. Na node01 isti Pod radi. Koje je najbolje trajno rješenje?",
+    "options": [
+      "Promijeniti handler u RuntimeClass-u na runc",
+      "Dodati u RuntimeClass scheduling.nodeSelector sa oznakom koju imaju samo čvorovi sa instaliranim runsc",
+      "Obrisati Pod da ga scheduler pokuša ponovo",
+      "Dodati runtimeClassName i u kube-scheduler konfiguraciju"
+    ],
+    "answer": 1,
+    "explain": "runsc postoji samo na dijelu čvorova, pa RuntimeClass treba da Podove usmjeri na njih preko scheduling.nodeSelector (spaja se sa nodeSelector-om Poda). Handler runc uklanja sandbox, a ponovno brisanje može opet završiti na node02."
+  },
+  {
+    "obj": "4.3",
+    "q": "Kako najbrže dokazuješ da Pod sandboxed zaista radi u gVisoru?",
+    "options": [
+      "kubectl get pod sandboxed -o wide pokazuje kolonu RUNTIME=gvisor",
+      "kubectl exec sandboxed -- cat /etc/os-release pokazuje gVisor",
+      "kubectl logs sandboxed sadrži riječ runsc",
+      "kubectl exec sandboxed -- dmesg pokazuje poruke poput Starting gVisor..., a uname -r se razlikuje od kernela čvora"
+    ],
+    "answer": 3,
+    "explain": "gVisor ima svoj emulirani kernel log koji počinje sa Starting gVisor i prijavljuje sopstvenu verziju kernela. -o wide nema kolonu za runtime, os-release dolazi iz slike, a logovi su izlaz aplikacije."
+  },
+  {
+    "obj": "4.3",
+    "q": "Tim B dobija posvećen čvor node01. Postavio si taint tenant=team-b:NoSchedule na node01 i dodao toleranciju u Podove tima B. Neki Podovi tima B i dalje završavaju na drugim čvorovima. Šta nedostaje?",
+    "options": [
+      "nodeSelector ili nodeAffinity za oznaku tenant=team-b na Podovima tima B (i ta oznaka na node01)",
+      "Efekat NoExecute umjesto NoSchedule",
+      "PriorityClass za Podove tima B",
+      "ResourceQuota u namespaceu team-b"
+    ],
+    "answer": 0,
+    "explain": "Taint samo odbija Podove bez tolerancije; tolerancija dozvoljava, ali ne tjera Pod na taj čvor. Za privlačenje treba nodeSelector/affinity. NoExecute bi samo izbacio postojeće Podove drugih timova."
+  },
+  {
+    "obj": "4.3",
+    "q": "U namespaceu team-b postoji ResourceQuota sa requests.cpu=4. kubectl run test --image=nginx vraća: failed quota: team-b: must specify requests.cpu. Koja izmjena je najbolja da developeri ne moraju svaki put pisati requests?",
+    "options": [
+      "Obrisati ResourceQuota",
+      "Dodati LimitRange sa defaultRequest za CPU u namespace team-b",
+      "Dodati PriorityClass sa globalDefault: true",
+      "Postaviti --default-requests flag na kube-scheduleru"
+    ],
+    "answer": 1,
+    "explain": "LimitRange popunjava podrazumijevane requests/limits pri admissionu, pa kvota može da se obračuna. Brisanje kvote uklanja zaštitu od DoS-a, PriorityClass ne utiče na requests, a takav scheduler flag ne postoji."
+  },
+  {
+    "obj": "4.3",
+    "q": "Klijent hoste nepovjerljiv kod korisnika i boji se ranjivosti u Linux kernelu koja omogućava bijeg iz kontejnera. Koja mjera direktno smanjuje taj rizik?",
+    "options": [
+      "NetworkPolicy default deny u namespaceu korisnika",
+      "ResourceQuota sa limitom broja Podova",
+      "Pokretanje Podova kroz RuntimeClass sa gVisor ili Kata handlerom",
+      "Odvojen namespace i RBAC po korisniku"
+    ],
+    "answer": 2,
+    "explain": "Sandbox runtime odvaja aplikaciju od kernela hosta (gVisor korisničkim kernelom, Kata lakom VM-om). Namespace, RBAC, kvote i NetworkPolicy ne mijenjaju činjenicu da svi kontejneri dijele kernel čvora."
+  },
+  {
+    "obj": "4.3",
+    "type": "match",
+    "q": "Upari mehanizam izolacije sa rizikom koji prvenstveno ublažava.",
+    "options": [
+      "ResourceQuota/LimitRange",
+      "NetworkPolicy default deny",
+      "RBAC Role po namespaceu",
+      "RuntimeClass sa runsc"
+    ],
+    "targets": [
+      "Tim A čita i briše Deploymente tima B preko API-ja",
+      "Bijeg iz kontejnera preko ranjivosti u kernelu hosta",
+      "Šifrovanje saobraćaja između čvorova",
+      "Jedan tenant potroši svu memoriju i CPU klastera",
+      "Pod tima A otvara konekciju ka bazi tima B"
+    ],
+    "answer": [3, 4, 0, 1],
+    "explain": "Kvote štite od iscrpljivanja resursa, NetworkPolicy od mrežnog pristupa između tenanta, RBAC od pristupa API objektima, a sandbox od bijega preko kernela. Šifrovanje saobraćaja je zadatak Ciliuma ili service mesha."
+  },
+  {
+    "obj": "4.3",
+    "type": "order",
+    "q": "Poredaj korake da Deployment web pređe na gVisor na klasteru gdje je runsc tek instaliran na node01.",
+    "options": [
+      "Dodati spec.template.spec.runtimeClassName: gvisor u Deployment web",
+      "U /etc/containerd/config.toml na node01 dodati runtime runsc (runtime_type io.containerd.runsc.v1) i restartovati containerd",
+      "Provjeriti kubectl exec u novi Pod: dmesg pokazuje Starting gVisor",
+      "Napraviti RuntimeClass gvisor sa handler: runsc"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Handler mora postojati na čvoru prije nego što ga RuntimeClass referencira, a Pod se može pokrenuti tek kad postoji RuntimeClass. Izmjena template-a pokreće rolling update, pa provjera ide na novom Podu."
+  },
+  {
+    "obj": "4.4",
+    "q": "Klaster koristi Cilium kao CNI. Kako uključuješ WireGuard transparentnu enkripciju saobraćaja između Podova?",
+    "options": [
+      "kubectl label ns --all cilium.io/encryption=wireguard",
+      "PeerAuthentication sa mtls.mode: STRICT u kube-system",
+      "--set wireguard.enabled=true u kube-proxy konfiguraciji",
+      "helm upgrade cilium cilium/cilium -n kube-system --reuse-values --set encryption.enabled=true --set encryption.type=wireguard"
+    ],
+    "answer": 3,
+    "explain": "Cilium enkripcija se uključuje Helm vrijednostima encryption.enabled i encryption.type (wireguard ili ipsec). PeerAuthentication je Istio resurs, a oznake namespacea i kube-proxy ne kontrolišu Cilium enkripciju."
+  },
+  {
+    "obj": "4.4",
+    "q": "Uključio si Cilium WireGuard enkripciju. Koja komanda potvrđuje da je aktivna na agentu?",
+    "options": [
+      "kubectl -n kube-system exec ds/cilium -- cilium-dbg status | grep Encryption",
+      "kubectl get networkpolicy -A",
+      "kubectl -n kube-system logs ds/kube-proxy | grep wireguard",
+      "istioctl proxy-status"
+    ],
+    "answer": 0,
+    "explain": "Status Cilium agenta prikazuje red Encryption sa Wireguard, interfejsom cilium_wg0 i brojem peerova. Cilium CLI ima i cilium encryption status. NetworkPolicy, kube-proxy i istioctl nemaju veze sa Cilium enkripcijom."
+  },
+  {
+    "obj": "4.4",
+    "q": "Namespace payments je u Istio meshu (sidecar injekcija). Zadatak: workloadi u payments smiju primati samo mTLS saobraćaj. Koji manifest?",
+    "options": [
+      "apiVersion: security.istio.io/v1, kind: PeerAuthentication, metadata: {name: default, namespace: payments}, spec: {mtls: {mode: PERMISSIVE}}",
+      "apiVersion: networking.k8s.io/v1, kind: NetworkPolicy, metadata.namespace: payments, spec.tls: STRICT",
+      "apiVersion: security.istio.io/v1, kind: PeerAuthentication, metadata: {name: default, namespace: payments}, spec: {mtls: {mode: STRICT}}",
+      "apiVersion: security.istio.io/v1, kind: AuthorizationPolicy, metadata.namespace: payments, spec.mtls: STRICT"
+    ],
+    "answer": 2,
+    "explain": "PeerAuthentication bez selektora u namespaceu važi za sve workloade, a STRICT prihvata samo mTLS. PERMISSIVE prima i čist tekst, NetworkPolicy nema TLS polje, a AuthorizationPolicy služi za autorizaciju, ne za mod mTLS-a."
+  },
+  {
+    "obj": "4.4",
+    "q": "Nakon PeerAuthentication STRICT u payments, curl iz Poda u namespaceu legacy (bez sidecara) ka api.payments vraća kod 000 i exit code 56, a iz payments radi. Šta to znači?",
+    "options": [
+      "Servis api ima pogrešan port",
+      "Politika radi ispravno: klijent bez proxyja ne može uspostaviti mTLS i biva odbijen",
+      "CoreDNS ne razrješava ime iz drugog namespacea",
+      "NetworkPolicy u payments blokira legacy"
+    ],
+    "answer": 1,
+    "explain": "U STRICT modu server prihvata samo mTLS, pa čist HTTP od klijenta bez sidecara pada na nivou konekcije (exit 56, reset). DNS greška bi dala drugi kod (6), a pogrešan port bi pao i iz payments."
+  },
+  {
+    "obj": "4.4",
+    "q": "Želiš STRICT mTLS za cijeli mesh jednom politikom. Gdje i kako je praviš?",
+    "options": [
+      "PeerAuthentication default bez selektora u root namespaceu mesha (podrazumijevano istio-system)",
+      "PeerAuthentication default sa selektorom app: '*' u namespaceu default",
+      "PeerAuthentication u svakom namespaceu, jer mesh-wide politika ne postoji",
+      "ClusterPeerAuthentication objekat bez namespacea"
+    ],
+    "answer": 0,
+    "explain": "Politika u root namespaceu bez selektora važi za cijeli mesh, a namespace i workload politike je mogu nadjačati. Selektor u root namespaceu bi je suzio, a ClusterPeerAuthentication ne postoji."
+  },
+  {
+    "obj": "4.4",
+    "q": "Pod u namespaceu shop (oznaka istio-injection=enabled) ima READY 1/1 i saobraćaj mu nije šifrovan. Ostali Podovi imaju 2/2. Koji je najvjerovatniji uzrok?",
+    "options": [
+      "PeerAuthentication je u PERMISSIVE modu",
+      "Cilium WireGuard nije uključen",
+      "Pod je nastao prije postavljanja oznake i nije restartovan, pa nema istio-proxy sidecar",
+      "Pod koristi RuntimeClass gvisor"
+    ],
+    "answer": 2,
+    "explain": "Sidecar se ubacuje pri kreiranju Poda, pa postojeće Podove treba restartovati (kubectl rollout restart). PERMISSIVE ne uklanja sidecar, Cilium nije dio Istia, a RuntimeClass ne utiče na injekciju."
+  },
+  {
+    "obj": "4.4",
+    "q": "Razlike Cilium WireGuard i Istio mTLS. Koje tvrdnje su tačne? (Izaberi DVA.)",
+    "options": [
+      "Istio mTLS daje identitet po workloadu (ServiceAccount) i omogućava AuthorizationPolicy po tom identitetu",
+      "Cilium WireGuard zahtijeva sidecar u svakom Podu",
+      "Cilium WireGuard šifruje saobraćaj između čvorova bez izmjene aplikacija i bez proxyja u Podu",
+      "Istio STRICT mod zamjenjuje potrebu za NetworkPolicy",
+      "Cilium WireGuard zahtijeva PeerAuthentication u svakom namespaceu"
+    ],
+    "answer": [0, 2],
+    "explain": "Cilium šifruje na nivou čvora kroz tunel bez sidecara, a Istio radi mTLS između proxyja sa identitetom workloada. Enkripcija ne ograničava ko s kim razgovara, pa NetworkPolicy ostaje potrebna; PeerAuthentication je Istio resurs."
+  },
+  {
+    "obj": "4.4",
+    "type": "match",
+    "q": "Upari Istio mtls.mode sa ponašanjem servera.",
+    "options": [
+      "STRICT",
+      "PERMISSIVE",
+      "UNSET",
+      "DISABLE"
+    ],
+    "targets": [
+      "Prima i mTLS i čist tekst",
+      "Nasljeđuje od namespacea ili mesha; bez roditelja kao PERMISSIVE",
+      "Šifruje samo saobraćaj prema eksternim servisima",
+      "Bez mTLS-a; ambient ga ne podržava",
+      "Prima samo mTLS"
+    ],
+    "answer": [4, 0, 1, 3],
+    "explain": "STRICT odbija čist tekst, PERMISSIVE prima oba, UNSET nasljeđuje, a DISABLE isključuje mTLS. Egress prema eksternim servisima se ne podešava preko PeerAuthentication."
+  },
+  {
+    "obj": "4.4",
+    "q": "Tim hoće Cilium IPsec umjesto WireGuarda. Šta mora postojati prije nego što agent može šifrovati?",
+    "options": [
+      "PeerAuthentication STRICT u kube-system",
+      "RuntimeClass sa handlerom ipsec",
+      "Oznaka encryption=ipsec na svakom čvoru",
+      "Secret cilium-ipsec-keys u namespaceu kube-system sa ključem, uz encryption.type=ipsec"
+    ],
+    "answer": 3,
+    "explain": "IPsec u Ciliumu koristi ključeve iz Secreta cilium-ipsec-keys koje sam praviš i rotiraš; WireGuard ključeve generiše automatski. Ostale opcije miješaju Istio, RuntimeClass i nepostojeće oznake."
+  }
+]

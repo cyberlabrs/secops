@@ -1,0 +1,243 @@
+[
+  {
+    "obj": "3.1",
+    "q": "A Semgrep job in the pipeline prints 6 findings with ERROR severity, but the job is green and the MR can be merged. The script is `semgrep scan --config semgrep-rules/ --sarif-output=semgrep.sarif`. What is missing?",
+    "options": [
+      "allow_failure: false on the job",
+      "--severity ERROR",
+      "--error, because without it Semgrep returns exit code 0 even when there are findings",
+      "artifacts:reports:sast"
+    ],
+    "answer": 2,
+    "explain": "By default Semgrep exits with 0 when the scan succeeds, regardless of findings; --error gives exit 1 when there are findings. allow_failure: false is already the default, --severity only filters rules, and reports:sast affects how GitLab displays results, not the job status."
+  },
+  {
+    "obj": "3.1",
+    "q": "The rule kurs.python.sqli-string-query reports a finding on `conn.execute(f\"SELECT COUNT(*) FROM {TABLE}\")`, where TABLE is a module constant. The rule is otherwise useful. What is the BEST way to silence this line?",
+    "options": [
+      "# nosemgrep at the end of the line",
+      "# nosemgrep: kurs.python.sqli-string-query with a comment giving the reason and a reference to the approval",
+      "Add app.py to .semgrepignore",
+      "--exclude-rule for that rule in the CI job"
+    ],
+    "answer": 1,
+    "explain": "An exception with an ID silences only that rule on that line, and the reason stays in the code for review. nosemgrep without an ID silences all (including future) rules on the line, .semgrepignore excludes the whole file, and --exclude-rule silences the rule in the whole project."
+  },
+  {
+    "obj": "3.1",
+    "q": "A pattern rule for `subprocess.$F(..., shell=True, ...)` gives 40 findings; most are scripts with fixed commands and no user input. You want a finding only when an HTTP request parameter reaches the command. What do you use?",
+    "options": [
+      "mode: taint with pattern-sources for flask.request..., pattern-sinks for the first argument of a call with shell=True, and the sanitizer shlex.quote",
+      "metavariable-regex on $F with the regex ^(run|call)$",
+      "pattern-either with all variants of subprocess calls",
+      "--severity ERROR to show only serious findings"
+    ],
+    "answer": 0,
+    "explain": "Taint analysis reports only a flow from an untrusted source to a sink, so fixed commands disappear from the findings. metavariable-regex and pattern-either only change which calls are examined, not where the data comes from, and --severity doesn't distinguish fixed commands from user input."
+  },
+  {
+    "obj": "3.1",
+    "q": "A taint rule has the sink `$DB.execute(...)` with no additional operators. It also reports a finding on `conn.execute(\"SELECT * FROM p WHERE id = ?\", (request.args.get(\"id\"),))`, even though the query is parameterized. How do you fix it?",
+    "options": [
+      "Add request.args.get as a sanitizer",
+      "Switch the rule to severity: INFO",
+      "Add pattern-not-inside: conn.execute(...)",
+      "Write the sink as patterns with pattern: $DB.execute($QUERY, ...) and focus-metavariable: $QUERY"
+    ],
+    "answer": 3,
+    "explain": "focus-metavariable restricts the sink to the first argument (the SQL text), so taint in the parameters no longer produces a finding. Using the source as a sanitizer would silence all findings, INFO only hides the problem, and pattern-not-inside would also exclude real SQL injections."
+  },
+  {
+    "obj": "3.1",
+    "q": "You are introducing Semgrep into a 6-year-old repo with 280 existing findings. The team asks that MRs not be blocked by old findings, but that new ones be blocked. Which MR job configuration does this?",
+    "options": [
+      "allow_failure: true on the job",
+      "--exclude-rule for all rules with existing findings",
+      "--baseline-commit \"$CI_MERGE_REQUEST_DIFF_BASE_SHA\" with GIT_DEPTH: 0 and --error",
+      "--severity ERROR with --error"
+    ],
+    "answer": 2,
+    "explain": "A baseline commit reports only findings that were not in the target branch; for that, the baseline commit must exist in the local clone, hence GIT_DEPTH: 0. allow_failure blocks nothing, --exclude-rule silences the rules for new code too, and --severity ERROR also blocks old ERROR findings."
+  },
+  {
+    "obj": "3.1",
+    "q": "A job has `artifacts: reports: sast: semgrep.sarif`, but no findings appear in the GitLab MR widget. What is the cause?",
+    "options": [
+      "artifacts:reports:sast expects the GitLab SAST JSON format; you need --gitlab-sast-output=gl-sast-report.json",
+      "artifacts:when: always is missing",
+      "SARIF must have the .json extension",
+      "Semgrep CE does not support GitLab"
+    ],
+    "answer": 0,
+    "explain": "For reports:sast GitLab requires its own JSON report format, which Semgrep produces with --gitlab-sast / --gitlab-sast-output. when: always matters when the job fails, but doesn't explain an empty widget on a successful job; the extension is not the problem, and CE has GitLab output."
+  },
+  {
+    "obj": "3.1",
+    "q": "The job runs `semgrep scan --config /opt/kurs/semgrep-rules/ --exclude-rule kurs.python.flask-debug --error`, but the kurs.python.flask-debug finding still appears. Why?",
+    "options": [
+      "--exclude-rule only works with registry rules",
+      "Semgrep adds a path prefix to local rules (opt.kurs.semgrep-rules.kurs.python.flask-debug), so --exclude-rule needs the full ID",
+      "--exclude-rule must come before --config",
+      "The rule has severity WARNING, and --exclude-rule only works for ERROR"
+    ],
+    "answer": 1,
+    "explain": "For rules from local files, the ID in the results contains the path to the file with dots, and --exclude-rule compares against that full ID. The order of flags and the severity don't matter, and the flag works for local rules too."
+  },
+  {
+    "obj": "3.1",
+    "q": "A colleague modified the YAML rule and since then it never produces a finding, and nobody noticed for two months. What would have prevented this?",
+    "options": [
+      "Running Semgrep with --strict",
+      "Pinning the version of the Semgrep image",
+      "Moving the rule into .semgrepignore",
+      "A test file next to the rule with # ruleid: and # ok: annotations, and a job that runs semgrep --test in the rules repo"
+    ],
+    "answer": 3,
+    "explain": "semgrep --test checks that the rule finds every line marked with ruleid and none marked with ok, so a regression in the rule breaks the CI of the rules repo. --strict concerns parsing errors, pinning the image doesn't protect against a rule change, and .semgrepignore is for code paths."
+  },
+  {
+    "obj": "3.1",
+    "q": "The `/search` route takes `q = request.args.get(\"q\")` and calls `find_products(q)`; in `find_products` the query is built by string concatenation into the variable `query` and `execute(query)` is run. Semgrep CE with a taint rule reports nothing. Why?",
+    "options": [
+      "CE taint analysis works within a single function; tracking through a parameter into another function is interprocedural analysis from the Pro version",
+      "request.args.get is not a supported source in Python",
+      "Taint rules only work with the --pro flag",
+      "String concatenation sanitizes the taint"
+    ],
+    "answer": 0,
+    "explain": "In CE, taint does not cross from one function into another function's parameter; Pro does this interprocedurally (and interfile with --pro). Taint rules work in CE within a function, request.args.get is an ordinary source, and string concatenation propagates taint rather than removing it."
+  },
+  {
+    "obj": "3.1",
+    "q": "You want a rule that catches `requests.get/post/put/delete(...)` without a timeout parameter, but not `requests.Session()` or `requests.utils.quote(...)`. Which combination of operators is appropriate?",
+    "options": [
+      "pattern: requests.$M(...) and pattern-inside: requests.$M(..., timeout=$T)",
+      "pattern-either with requests.$M(...) and requests.Session()",
+      "patterns with pattern: requests.$M(...), metavariable-regex on $M (^(get|post|put|delete)$) and pattern-not: requests.$M(..., timeout=$T, ...)",
+      "mode: taint with the source requests.$M(...)"
+    ],
+    "answer": 2,
+    "explain": "metavariable-regex restricts the method name, and pattern-not excludes calls that already have a timeout. pattern-inside would look for exactly the calls WITH a timeout, pattern-either would also catch Session, and taint makes no sense here because there is no data flow."
+  },
+  {
+    "obj": "3.1",
+    "q": "The security team wants to aggregate findings from Semgrep, Trivy and Checkov in DefectDojo and show them in GitHub Code scanning. Which output format is the common denominator?",
+    "options": [
+      "GitLab SAST JSON",
+      "SARIF 2.1.0",
+      "CycloneDX JSON",
+      "JUnit XML"
+    ],
+    "answer": 1,
+    "explain": "SARIF 2.1.0 is the OASIS standard for static analysis results; all three tools export it, and GitHub and DefectDojo read it. GitLab SAST JSON is GitLab-specific, CycloneDX is an SBOM format, and JUnit describes tests, not findings."
+  },
+  {
+    "obj": "3.1",
+    "q": "A developer added `# nosemgrep` (without an ID) above an entire block of code with SQL queries. What is the main risk?",
+    "options": [
+      "Semgrep will fail with exit code 7",
+      "The line will be reported twice in the SARIF",
+      "The exception applies only locally, not in CI",
+      "nosemgrep without an ID silences all rules on that line, including rules added in the future, and leaves no trace of why"
+    ],
+    "answer": 3,
+    "explain": "An exception without an ID is too broad and invisible to future rules, so code review requires the form nosemgrep: <rule-id> with a reason. It doesn't cause error 7 (invalid rule), doesn't duplicate findings, and applies equally locally and in CI."
+  },
+  {
+    "obj": "3.1",
+    "q": "In `kurs-shop` you have PyYAML 5.3.1 and the call `yaml.load(request.data, Loader=yaml.Loader)`. The team says: \"Dependabot will upgrade PyYAML to 6.x and that solves the problem.\" What is correct?",
+    "options": [
+      "True, upgrading PyYAML closes both the SCA and the SAST finding",
+      "False, there is no SCA finding because yaml.Loader is used",
+      "The upgrade closes the SCA finding (vulnerable version), but yaml.Loader is unsafe in 6.x too; the SAST finding requires yaml.safe_load",
+      "Only a DAST scan of the /import route solves the problem"
+    ],
+    "answer": 2,
+    "explain": "yaml.Loader can intentionally construct arbitrary Python objects regardless of the version, so the upgrade doesn't fix the code. SCA and SAST find different things and complement each other; DAST can confirm the problem but doesn't fix it."
+  },
+  {
+    "obj": "3.1",
+    "q": "You are introducing Semgrep to a team of 60 developers that has had no SAST until now. Which plan is least likely to cause the tool to be ignored en masse?",
+    "options": [
+      "Block MRs immediately on all findings of all rules, so the team grasps how serious it is",
+      "Introduce only the GitLab SAST template on Ultimate and write no custom rules",
+      "Run Semgrep only nightly and send a PDF report to management",
+      "Report only at first (allow_failure: true), then block new high-confidence ERROR findings in the MR, then gradually expand the set of blocking rules"
+    ],
+    "answer": 3,
+    "explain": "A gradual rollout builds trust: you block only what is reliable and new, and track the rest. Blocking everything right away leads to mass nosemgrep use, a nightly PDF gives the developer no feedback in the MR, and a template without organizational rules misses specific patterns."
+  },
+  {
+    "obj": "3.1",
+    "q": "In the SARIF from Semgrep CE the fingerprints field contains `\"matchBasedId/v1\": \"requires login\"`. What does this mean for importing into DefectDojo?",
+    "options": [
+      "The import will fail because the SARIF is not valid",
+      "CE doesn't provide a real fingerprint, so the platform deduplicates based on rule, file and line, which is more sensitive to code moving",
+      "You have to log in to Semgrep for the CLI to work at all",
+      "Findings without a fingerprint are automatically marked as false positives"
+    ],
+    "answer": 1,
+    "explain": "The placeholder means that a stable finding identity is provided only by the Semgrep platform; without it the aggregation tool uses other attributes for deduplication. The SARIF is valid, CE works without login, and a missing fingerprint doesn't change the finding's status."
+  },
+  {
+    "obj": "3.1",
+    "type": "order",
+    "q": "Put the steps for handling a false positive in order, from the first choice to the last resort.",
+    "options": [
+      "Exclude the rule for the project (--exclude-rule) with a recorded decision and a deadline",
+      "Fix the rule (pattern-not, sanitizer, narrower source) and add a # ok: test",
+      "Add the path to .semgrepignore if it is not production code",
+      "Inline # nosemgrep: <rule-id> with a reason for an individual, verified line"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "Changing the rule removes the false positive everywhere and permanently; an inline exception is narrow and visible in review; excluding paths has a wider scope, and disabling the whole rule is the last resort because you also lose real findings."
+  },
+  {
+    "obj": "3.1",
+    "type": "match",
+    "q": "Match the Semgrep operator with what it does in a rule.",
+    "options": [
+      "pattern-not",
+      "focus-metavariable",
+      "pattern-sanitizers",
+      "metavariable-regex",
+      "pattern-inside"
+    ],
+    "targets": [
+      "The finding must be inside a given context (e.g., a function with a decorator)",
+      "Breaks the taint flow when the value passes through a given function",
+      "Removes code matching this form from the results",
+      "Restricts a function name or value to a given regex",
+      "Marks as the finding only the part of the code bound to one metavariable",
+      "Sends results to the SARIF format"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "pattern-not excludes a form, focus-metavariable narrows the finding's location, a sanitizer breaks taint, metavariable-regex filters the metavariable's value, and pattern-inside requires a context. The output format is chosen with a flag (--sarif), not an operator."
+  },
+  {
+    "obj": "3.1",
+    "q": "You have GitLab Premium and no resources to maintain custom rules, but you want basic SAST on every MR. What is the simplest step?",
+    "options": [
+      "include: template: Jobs/SAST.gitlab-ci.yml and, if needed, SAST_EXCLUDED_PATHS",
+      "Enable GITLAB_ADVANCED_SAST_ENABLED: \"true\"",
+      "Run semgrep --config auto in a job",
+      "Add artifacts:reports:sast to the existing test job"
+    ],
+    "answer": 0,
+    "explain": "The SAST template adds a semgrep-sast job with rules maintained by GitLab and works on all tiers. Advanced SAST is an Ultimate feature, --config auto depends on the registry and network access, and reports:sast without a scanner has nothing to report."
+  },
+  {
+    "obj": "3.1",
+    "q": "Semgrep reports this finding in a merge request. Which change correctly resolves it?",
+    "snippet": "src/routes/orders.js\n❯❯❱ javascript.express.security.injection.tainted-sql-string\n       Detected user input used to manually construct a SQL string. This is usually bad\n       practice because manual construction could accidentally result in a SQL injection.\n\n        23┆ const id = req.query.id;\n         ⋮┆----------------------------------------\n        27┆ const rows = await db.query(`SELECT * FROM orders WHERE user_id = ${id}`);",
+    "lang": "text",
+    "options": [
+      "A parameterized query: db.query(\"SELECT * FROM orders WHERE user_id = $1\", [id])",
+      "A // nosemgrep comment above line 27, because id is always a number",
+      "Before the query: id = id.replace(\"'\", \"\")",
+      "allow_failure: true on the semgrep job until the code is fixed"
+    ],
+    "answer": 0,
+    "explain": "Taint flows from the source req.query.id to the sink db.query through a template string. A parameterized query separates data from SQL, so the finding disappears for a real reason. nosemgrep without evidence just hides the vulnerability (nothing checks that id is a number), stripping quotes does not stop input like 1 OR 1=1, and allow_failure disables the gate instead of fixing the problem."
+  }
+]

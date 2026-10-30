@@ -1,0 +1,312 @@
+[
+  {
+    "obj": "2.1",
+    "q": "An organization is introducing a cloud data protection program and wants controls to be applied consistently throughout the entire lifecycle. In which phase is it MOST important to assign a classification to the data?",
+    "options": [
+      "Store",
+      "Create",
+      "Share",
+      "Archive"
+    ],
+    "answer": 1,
+    "explain": "Classification at creation (Create) determines the controls in all subsequent phases. Classifying later means the data has already been stored and used without appropriate controls."
+  },
+  {
+    "obj": "2.1",
+    "q": "A cooperation agreement has been sent to a partner company, and the organization no longer has control over the infrastructure on which the document resides. In which lifecycle phase is the data, and which control is MOST relevant?",
+    "options": [
+      "Use; volume encryption",
+      "Archive; WORM storage",
+      "Share; Information Rights Management",
+      "Destroy; crypto-shredding"
+    ],
+    "answer": 2,
+    "explain": "Sharing outside the organization is the Share phase. IRM follows the document even after it leaves the organization (who may open, print, forward it, when access expires). Volume encryption does not protect the copy at the partner."
+  },
+  {
+    "obj": "2.1",
+    "q": "An analyst opens a report containing personal data in an application and views it on screen, without making changes. In which lifecycle phase is the data?",
+    "options": [
+      "Use",
+      "Create",
+      "Store",
+      "Share"
+    ],
+    "answer": 0,
+    "explain": "Use covers viewing and processing without permanent modification. Changing the content would be Create (modification), and making it available to others would be Share."
+  },
+  {
+    "obj": "2.1",
+    "q": "A provider's object storage splits each object into fragments with parity distributed across three availability zones, so the object can be reconstructed even after the loss of an entire zone. What is this technique called?",
+    "options": [
+      "Bit splitting",
+      "Tokenization",
+      "Synchronous replication",
+      "Erasure coding"
+    ],
+    "answer": 3,
+    "explain": "Erasure coding splits data into fragments and parity fragments, so the original can be reconstructed from a subset using less space than full replication. Bit splitting is focused on confidentiality (no location holds usable data)."
+  },
+  {
+    "obj": "2.1",
+    "q": "A company wants no single cloud provider to possess a usable part of its most sensitive data. Which approach BEST meets the requirement?",
+    "options": [
+      "Replicating complete copies at three providers",
+      "Bit splitting: encrypted data split into parts stored at different providers",
+      "Encryption with the provider's key at a single provider",
+      "Archiving in a single provider's long-term storage"
+    ],
+    "answer": 1,
+    "explain": "Bit splitting distributes encrypted parts so that no location holds usable data. Full replication gives each provider a complete copy, and the other options keep everything at a single provider."
+  },
+  {
+    "obj": "2.1",
+    "q": "While preparing for a GDPR audit, an organization does not know to which third-party systems customers' personal data from its web shop is sent. What should be done FIRST?",
+    "options": [
+      "Enable DLP in blocking mode on all outbound connections",
+      "Encrypt all databases",
+      "Map the data flows (DFD), including trust boundaries, third parties and cross-border transfers",
+      "Terminate contracts with all SaaS providers"
+    ],
+    "answer": 2,
+    "explain": "Without a flow map it is unknown where the data is, who receives it and which transfers require a legal basis. DLP and encryption come after understanding the flows, and terminating contracts is disproportionate."
+  },
+  {
+    "obj": "2.1",
+    "q": "Who, as a rule, is responsible for determining the classification of data and approving access?",
+    "options": [
+      "Data custodian",
+      "Cloud service provider",
+      "Data steward",
+      "Data owner"
+    ],
+    "answer": 3,
+    "explain": "The data owner (a business role) is accountable for the data, determines classification and who may access it. The custodian implements controls, the steward takes care of quality and metadata, and the CSP is usually a custodian/processor."
+  },
+  {
+    "obj": "2.1",
+    "q": "An application in an EU region replicates a database containing personal data to a region in Asia for disaster recovery. Which risk is MOST SIGNIFICANT from a risk management perspective?",
+    "options": [
+      "Increased write latency",
+      "A cross-border transfer of personal data and a jurisdiction issue without an appropriate legal basis",
+      "Higher storage costs",
+      "More complex performance monitoring"
+    ],
+    "answer": 1,
+    "explain": "Data dispersion across borders introduces regulatory risk (GDPR transfers outside the EEA, another jurisdiction). Cost and latency are operational issues of lesser importance to a risk manager."
+  },
+  {
+    "obj": "2.2",
+    "q": "An application on a virtual machine writes temporary processing files to the local instance store disk. What happens to that data when the instance is stopped, and what does it mean for the design?",
+    "options": [
+      "The data is lost; data that must survive the instance, including logs, must not be stored on ephemeral storage",
+      "The data is automatically copied to object storage",
+      "The data remains and moves to the new instance",
+      "The data is archived to long-term storage"
+    ],
+    "answer": 0,
+    "explain": "Ephemeral storage is tied to the life of the instance and disappears on stop or failure. Persistent data and logs must go to volume or object storage, or to centralized logging."
+  },
+  {
+    "obj": "2.2",
+    "q": "During an audit it was discovered that a snapshot of the volume holding the customer database had been shared publicly. Which storage type does this threat belong to, and which control is BEST?",
+    "options": [
+      "Object storage; enable versioning",
+      "Ephemeral storage; increase the disk size",
+      "Long-term storage; enable object lock",
+      "Volume storage; prohibit public snapshots by policy and mandate encrypting volumes with a customer-managed key"
+    ],
+    "answer": 3,
+    "explain": "Snapshots belong to volume storage. A preventive organization-level policy prevents public sharing, and encryption with a CMK means that without rights to the key the snapshot is unusable even if it is shared."
+  },
+  {
+    "obj": "2.2",
+    "q": "An attacker with stolen administrator credentials tries to delete the backups in object storage as well, to strengthen a ransomware extortion. Which control BEST protects the backups?",
+    "options": [
+      "More frequent backups",
+      "Object lock in compliance (WORM) mode with versioning and backups in a separate account",
+      "Encrypting backups with the provider's key",
+      "Moving backups to ephemeral storage"
+    ],
+    "answer": 1,
+    "explain": "WORM/object lock prevents deletion and modification even by administrators during the retention period, and a separate account limits the reach of compromised credentials. More frequent backups do not help if they can be deleted, and encryption does not prevent deletion."
+  },
+  {
+    "obj": "2.2",
+    "q": "An organization must retain financial records for 10 years, accesses them rarely and must prove they have not been altered. Which solution is MOST APPROPRIATE?",
+    "options": [
+      "Volume storage with daily snapshots",
+      "Ephemeral storage with replication",
+      "Long-term archival storage with WORM protection and a key management plan for the entire retention period",
+      "A relational database with column-level encryption"
+    ],
+    "answer": 2,
+    "explain": "Archival storage is economical for rarely used data, WORM proves immutability, and the keys must remain available for the full 10 years because losing the key means losing the archive."
+  },
+  {
+    "obj": "2.2",
+    "q": "Which storage type is characterized by a flat namespace, access through an HTTP API and metadata attached to each unit of data?",
+    "options": [
+      "Volume storage",
+      "Raw storage",
+      "File storage",
+      "Object storage"
+    ],
+    "answer": 3,
+    "explain": "Object storage stores objects with metadata in a flat namespace and is accessed through an API. Volume and raw are block devices, and file storage uses a hierarchical file system over NFS/SMB."
+  },
+  {
+    "obj": "2.2",
+    "q": "What is the GREATEST long-term threat specific to encrypted data in a long-term archive?",
+    "options": [
+      "Loss or unavailability of keys and format obsolescence over the years of retention",
+      "The noisy neighbor effect",
+      "Data loss when an instance is shut down",
+      "SQL injection"
+    ],
+    "answer": 0,
+    "explain": "Archives live for years: if the key is lost or the format becomes unreadable, the data is lost even though it physically exists. Loss on instance shutdown relates to ephemeral storage, and SQL injection to databases."
+  },
+  {
+    "obj": "2.2",
+    "q": "In which service model does the customer typically use raw storage, volume storage and object storage, and in which information storage and management and content/file storage?",
+    "options": [
+      "PaaS; IaaS",
+      "IaaS; SaaS",
+      "SaaS; PaaS",
+      "IaaS; PaaS"
+    ],
+    "answer": 1,
+    "explain": "IaaS provides raw, volume, object and ephemeral storage. A SaaS customer accesses data through the application (information storage and management, content/file storage). PaaS is associated with structured and unstructured storage."
+  },
+  {
+    "obj": "2.3",
+    "q": "A merchant wants to reduce the number of systems in PCI DSS scope, while the CRM and analytics continue to work with a value of the same format as the card number. Which technique is BEST?",
+    "options": [
+      "Encrypting card numbers with an AES-256 key from KMS",
+      "Hashing card numbers with SHA-256",
+      "Tokenization with a token vault isolated from other systems",
+      "Dynamic masking in the CRM"
+    ],
+    "answer": 2,
+    "explain": "A token has no mathematical relationship to the card number, so systems that see only tokens can be taken out of PCI scope. An encrypted PAN can still keep systems in scope, a hash of card numbers is susceptible to guessing, and masking only hides the display while the original remains in the CRM."
+  },
+  {
+    "obj": "2.3",
+    "q": "The legal team must be able to prove that an electronic order was sent by a specific partner and that the content was not altered. Which mechanism BEST provides this?",
+    "options": [
+      "A SHA-256 hash of the order",
+      "An HMAC with a key shared between the company and the partner",
+      "Encrypting the order with the company's public key",
+      "The partner's digital signature with its private key, with a certificate from a PKI"
+    ],
+    "answer": 3,
+    "explain": "A digital signature provides integrity and nonrepudiation because only the owner of the private key can sign. A hash provides only integrity, an HMAC uses a shared key so both parties can produce the same MAC, and encryption with a public key provides confidentiality, not proof of the sender."
+  },
+  {
+    "obj": "2.3",
+    "q": "A research institute receives patient data for statistical analysis and must under no circumstances be able to link the data to specific individuals. Which technique is MOST APPROPRIATE?",
+    "options": [
+      "Anonymization, including removal or generalization of indirect identifiers",
+      "Pseudonymization with a mapping table kept at the hospital",
+      "Dynamic masking of names in the application",
+      "Tokenization of national ID numbers"
+    ],
+    "answer": 0,
+    "explain": "Anonymization irreversibly removes the link to a person, with attention to indirect identifiers. Pseudonymization and tokenization are reversible, and dynamic masking leaves the original data in the system."
+  },
+  {
+    "obj": "2.3",
+    "q": "The support team should see only the last four digits of a client's account number in the application, while payment processing uses the full number from the same database. Which technique is BEST?",
+    "options": [
+      "Static masking of the entire database",
+      "Dynamic masking according to the user's role",
+      "Anonymization of account numbers",
+      "Deleting the account number column"
+    ],
+    "answer": 1,
+    "explain": "Dynamic masking shows a masked value at access time according to role, while the original remains for authorized processes. Static masking and anonymization would permanently destroy data needed for payments."
+  },
+  {
+    "obj": "2.3",
+    "q": "An organization is introducing DLP for email and SaaS collaboration. Which rollout approach is BEST?",
+    "options": [
+      "Immediately enable blocking of all messages containing numbers",
+      "Deploy DLP only on endpoints",
+      "First establish data classification, run DLP in monitoring mode, tune the rules, then gradually introduce blocking",
+      "Buy the DLP solution with the most predefined rules and enable them all"
+    ],
+    "answer": 2,
+    "explain": "DLP depends on classification, and monitoring mode allows tuning and reducing false positives before blocking that could disrupt the business. Endpoint DLP alone does not cover SaaS and email channels."
+  },
+  {
+    "obj": "2.3",
+    "q": "A developer asks how an application on Kubernetes in the cloud should obtain the production database password. What is the BEST recommendation?",
+    "options": [
+      "The password encrypted in a configuration file, with the key in an environment variable",
+      "The password in a Kubernetes manifest in a Git repository with restricted access",
+      "The password baked into the container image during the build",
+      "A secrets manager that the application accesses through a workload identity, with automatic password rotation"
+    ],
+    "answer": 3,
+    "explain": "A secrets manager with a workload identity removes static secrets from code and images, and automatic rotation reduces the damage from a leak. An encrypted password only shifts the problem to the key, and secrets in Git or an image are easily copied."
+  },
+  {
+    "obj": "2.3",
+    "q": "An organization wants to be able, upon an erasure request, to permanently render unreadable all data of a single client, including copies in backups and replicas in the cloud. Which design BEST enables this?",
+    "options": [
+      "Envelope encryption with a separate data key per client, so that destroying that key renders all copies unreadable",
+      "A single KMS key for the entire database with annual rotation",
+      "Overwriting the client's records with zeros in the production database",
+      "Volume encryption with the provider's key"
+    ],
+    "answer": 0,
+    "explain": "A key per client enables selective crypto-shredding: destroying that client's key renders all copies, including backups, unusable. A single shared key cannot be destroyed without losing all the data, and overwriting does not reach the backups."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Match the requirement with the data protection technique that BEST meets it.",
+    "options": [
+      "Confirm that a downloaded installation file was not altered in transit.",
+      "A test environment with realistic but fake client data.",
+      "User behavior analytics with the possibility of re-identification in a security incident.",
+      "Prevent sending files containing national ID numbers to personal email addresses.",
+      "Storing user passwords in the application database."
+    ],
+    "targets": [
+      "Pseudonymization",
+      "Slow hashing with a salt (Argon2/bcrypt)",
+      "DLP for data in motion",
+      "Static masking",
+      "SHA-256 hash",
+      "Tokenization"
+    ],
+    "answer": [4, 3, 0, 2, 1],
+    "explain": "File integrity is checked with a hash, test data is created with static masking, analytics with possible re-identification uses pseudonymization, DLP prevents leakage by email, and passwords are stored with slow salted hashing. Tokenization is a distractor."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Order the phases of the cloud data lifecycle according to the CSA/ISC2 model from first to last.",
+    "options": [
+      "Archive",
+      "Use",
+      "Destroy",
+      "Create",
+      "Share",
+      "Store"
+    ],
+    "answer": [3, 5, 1, 4, 0, 2],
+    "explain": "The order is Create, Store, Use, Share, Archive, Destroy. In practice the phases are not always linear, but this is the reference model the exam uses."
+  },
+  {
+    "obj": "2.3",
+    "type": "spot",
+    "q": "Key policy for the KMS key (KEK) that encrypts billing data. The KeyAdmin role manages the key and the billing-app application encrypts and decrypts data. Mark the lines that violate least privilege or separation of duties.",
+    "snippet": "{\n  \"Statement\": [\n    {\"Sid\": \"KeyAdmins\", \"Effect\": \"Allow\",\n     \"Principal\": {\"AWS\": \"arn:aws:iam::111122223333:role/KeyAdmin\"},\n     \"Action\": [\"kms:Create*\", \"kms:Describe*\", \"kms:EnableKeyRotation\", \"kms:PutKeyPolicy\"],\n     \"Resource\": \"*\"},\n    {\"Sid\": \"BillingApp\", \"Effect\": \"Allow\",\n     \"Principal\": {\"AWS\": \"arn:aws:iam::111122223333:role/billing-app\"},\n     \"Action\": [\"kms:Encrypt\", \"kms:Decrypt\", \"kms:GenerateDataKey\", \"kms:ScheduleKeyDeletion\"],\n     \"Resource\": \"*\"},\n    {\"Sid\": \"Reporting\", \"Effect\": \"Allow\",\n     \"Principal\": {\"AWS\": \"*\"},\n     \"Action\": \"kms:Decrypt\", \"Resource\": \"*\"}\n  ]\n}",
+    "lang": "json",
+    "answer": [8, 11],
+    "explain": "Line 9: the application that uses the key also gets kms:ScheduleKeyDeletion. A key user must not be able to destroy the key: a compromised application (or ransomware) could crypto-shred all data by scheduling deletion of the KEK. Key deletion belongs to a separate administrative role with a waiting period and an alert. Line 12: Principal \"*\" with no condition grants kms:Decrypt to any AWS principal, so anyone who obtains an encrypted DEK can get the plaintext key. Name the specific reporting role (and add conditions if needed). Key administrators do not get Decrypt (good SoD), and the application only gets Encrypt/Decrypt/GenerateDataKey."
+  }
+]

@@ -1,0 +1,263 @@
+[
+  {
+    "obj": "1.6",
+    "q": "Task: install the Traefik chart from /opt/kurs/charts/traefik-*.tgz as release traefik into namespace ingress (the namespace does not exist), with deployment.replicas=2. Which command is correct?",
+    "options": [
+      "helm install traefik /opt/kurs/charts/traefik-*.tgz -n ingress --create-namespace --set deployment.replicas=2",
+      "helm install /opt/kurs/charts/traefik-*.tgz traefik -n ingress --set deployment.replicas=2",
+      "helm upgrade traefik /opt/kurs/charts/traefik-*.tgz -n ingress --set deployment.replicas=2",
+      "helm template traefik /opt/kurs/charts/traefik-*.tgz -n ingress --create-namespace --set deployment.replicas=2"
+    ],
+    "answer": 0,
+    "explain": "helm install takes the release name first and then the chart, and --create-namespace creates the missing namespace. The reversed argument order is wrong, upgrade without --install fails because the release does not exist, and template installs nothing."
+  },
+  {
+    "obj": "1.6",
+    "q": "Release web was installed with `--set image.tag=1.28 --set replicaCount=3`. A colleague runs `helm upgrade web ./web-chart --set replicaCount=5`. What happens to image.tag?",
+    "options": [
+      "It stays 1.28, because Helm always remembers previous values",
+      "It goes back to the default value from the chart's values.yaml",
+      "The upgrade fails because image.tag is missing",
+      "It stays 1.28 only if the release was installed with --atomic"
+    ],
+    "answer": 1,
+    "explain": "Without --reuse-values (or -f with all values) an upgrade computes values from the chart defaults plus whatever is given in that command. --atomic (--rollback-on-failure in Helm 4) has nothing to do with values."
+  },
+  {
+    "obj": "1.6",
+    "q": "`helm history api -n prod` shows revisions 1 (superseded), 2 (superseded), 3 (deployed). You run `helm rollback api 1 -n prod`. What does the history show afterwards?",
+    "options": [
+      "Revisions 2 and 3 are deleted, revision 1 is deployed",
+      "Revision 1 is deployed, revisions 2 and 3 are superseded",
+      "A new revision 4 with the content of revision 1 is deployed",
+      "Revision 3 stays deployed until helm upgrade is run"
+    ],
+    "answer": 2,
+    "explain": "A rollback creates a new revision with the configuration of the requested revision; history is neither deleted nor changed. That is why after a rollback you can return to the state of revision 3 again."
+  },
+  {
+    "obj": "1.6",
+    "q": "You installed release monitoring into namespace observability. `helm list` returns an empty list. What is the most likely reason?",
+    "options": [
+      "The release was installed with --wait so it has not finished yet",
+      "Helm 4 stores the release in a ConfigMap that helm list does not read",
+      "The release was installed using helm template",
+      "helm list looks only at the current namespace; you need helm list -n observability or -A"
+    ],
+    "answer": 3,
+    "explain": "Helm works in the namespace from the context if -n is not given, so a release in another namespace is not visible. Helm stores state in Secrets, and helm install is not the same as helm template."
+  },
+  {
+    "obj": "1.6",
+    "q": "A task asks you to save the manifests that chart /opt/kurs/charts/traefik-*.tgz would create (with service.spec.type=NodePort) to /root/traefik.yaml, without installing. Which command?",
+    "options": [
+      "helm template traefik /opt/kurs/charts/traefik-*.tgz --set service.spec.type=NodePort > /root/traefik.yaml",
+      "helm show values /opt/kurs/charts/traefik-*.tgz --set service.spec.type=NodePort > /root/traefik.yaml",
+      "helm get manifest traefik > /root/traefik.yaml",
+      "helm pull /opt/kurs/charts/traefik-*.tgz --untar -d /root/traefik.yaml"
+    ],
+    "answer": 0,
+    "explain": "helm template renders manifests locally with the given values. show values prints only the chart's values.yaml, get manifest requires an existing release, and pull only unpacks the chart."
+  },
+  {
+    "obj": "1.6",
+    "q": "You have a Helm 3 script with `helm upgrade --install app ./chart --atomic --force`. What happens in Helm 4?",
+    "options": [
+      "The command fails because both flags were removed",
+      "The command works, but with warnings; the new names are --rollback-on-failure and --force-replace",
+      "The command works without warnings; the flags are unchanged",
+      "--atomic works, and --force was renamed to --server-side"
+    ],
+    "answer": 1,
+    "explain": "Helm 4 renamed --atomic to --rollback-on-failure and --force to --force-replace; the old names still work with a deprecation warning. --server-side is a separate flag for the apply method."
+  },
+  {
+    "obj": "1.6",
+    "q": "Which TWO commands show the correct chart value names before installation, so you do not have to guess keys? (Choose TWO.)",
+    "options": [
+      "helm show values traefik/traefik",
+      "helm get values traefik -n traefik",
+      "helm show values /opt/kurs/charts/traefik-*.tgz",
+      "helm status traefik -n traefik",
+      "helm history traefik -n traefik"
+    ],
+    "answer": [0, 2],
+    "explain": "helm show values works with both repo/chart and a local .tgz and does not require a release. get values, status and history work only on an already installed release."
+  },
+  {
+    "obj": "1.6",
+    "q": "The overlays/prod directory has a kustomization.yaml with resources: [../../base] and images: [{name: nginx, newTag: \"1.28\"}]. You run `kubectl apply -f overlays/prod/`. What happens?",
+    "options": [
+      "The base is applied with image tag 1.28",
+      "kubectl recognizes kustomization.yaml and behaves like apply -k",
+      "Only the base is applied without changes",
+      "kubectl tries to apply kustomization.yaml as a regular manifest and reports an error, and the overlay is not applied"
+    ],
+    "answer": 3,
+    "explain": "-f reads the YAML files in the directory as regular manifests; a Kustomization is not an API object, so apply fails. Kustomize needs kubectl apply -k overlays/prod."
+  },
+  {
+    "obj": "1.6",
+    "q": "After adding `commonLabels: {team: payments}` to kustomization.yaml and running `kubectl apply -k .` over an existing Deployment, you get the error: spec.selector: Invalid value ... field is immutable. How do you add the label without this error?",
+    "options": [
+      "Use labels with pairs: {team: payments} and includeSelectors: false",
+      "Add namePrefix: payments-",
+      "Run kubectl apply -k . --force",
+      "Move the label into configMapGenerator"
+    ],
+    "answer": 0,
+    "explain": "commonLabels always adds labels to selectors too, and a Deployment selector is immutable. The labels field without includeSelectors changes only metadata labels. namePrefix would create a new Deployment, and a generator does not add labels to objects."
+  },
+  {
+    "obj": "1.6",
+    "q": "An overlay contains a configMapGenerator for app-config. When you change the literal LOG_LEVEL=debug and run apply -k again, what happens?",
+    "options": [
+      "ConfigMap app-config is updated, and Pods do not see the change until a manual restart",
+      "A ConfigMap with a new hash suffix is created, the Deployment gets the new reference and does a rolling update",
+      "apply fails because a ConfigMap with a generated name cannot be changed",
+      "Kustomize deletes the old Deployment and creates a new one"
+    ],
+    "answer": 1,
+    "explain": "The generator adds a content hash to the name and updates references, so a content change changes the Pod template and triggers a rollout. Without the hash (disableNameSuffixHash) the behavior would be as in the first option."
+  },
+  {
+    "obj": "1.6",
+    "q": "What is missing from this entry in kustomization.yaml?\n\npatches:\n- patch: |-\n    - op: replace\n      path: /spec/replicas\n      value: 5",
+    "options": [
+      "A path field with the file name",
+      "apiVersion and kind in the patch itself",
+      "target (e.g. kind: Deployment, name: web), because a JSON 6902 patch always requires a target",
+      "The field options.allowNameChange: true"
+    ],
+    "answer": 2,
+    "explain": "A JSON 6902 patch is a list of operations without any object identification, so Kustomize must know which resource it applies to. apiVersion/kind are given in a strategic merge patch, and allowNameChange is for renaming."
+  },
+  {
+    "obj": "1.8",
+    "q": "You apply a CRD with metadata.name: backup.kurs.local, spec.group: kurs.local, names.plural: backups. The API server rejects it. Why?",
+    "options": [
+      "The group must contain at least two dots",
+      "scope is not specified and it has no default value of Namespaced",
+      "kind must be identical to the plural",
+      "metadata.name must be <plural>.<group>, i.e. backups.kurs.local"
+    ],
+    "answer": 3,
+    "explain": "The CRD name must match names.plural and spec.group. The group only needs a dot, and kind is the CamelCase singular (Backup)."
+  },
+  {
+    "obj": "1.8",
+    "q": "You try `kubectl apply -f backup.yaml` (kind: Backup, apiVersion: kurs.local/v1) and get: no matches for kind \"Backup\" in version \"kurs.local/v1\". What do you check first?",
+    "options": [
+      "kubectl get crd | grep kurs.local and whether the CRD serves version v1",
+      "Whether a RoleBinding exists for the user",
+      "The kube-scheduler logs",
+      "Whether the operator Pod is running"
+    ],
+    "answer": 0,
+    "explain": "The message means the API server does not know that kind in that version: the CRD is not installed, not Established, or the version does not have served: true. RBAC would give forbidden, and the operator does not affect whether a CR can be created."
+  },
+  {
+    "obj": "1.8",
+    "q": "The backup-operator is running, but new Backup objects never get a status. The operator logs show: backups.kurs.local \"db-nightly\" is forbidden: User \"system:serviceaccount:backup-system:backup-operator\" cannot update resource \"backups/status\". What is the fix?",
+    "options": [
+      "Add the update verb on the backups resource to the ClusterRole",
+      "Add the backups/status subresource with the update and patch verbs to the operator's ClusterRole",
+      "Change the CRD scope to Cluster",
+      "Set automountServiceAccountToken: false on the operator"
+    ],
+    "answer": 1,
+    "explain": "Status is written through the separate /status subresource, which requires its own rule. Permission on backups does not cover backups/status, and the CRD scope and token are not the cause."
+  },
+  {
+    "obj": "1.8",
+    "q": "What happens when you run `kubectl delete crd backups.kurs.local` in a cluster that has 40 Backup objects?",
+    "options": [
+      "The deletion fails while Backup objects exist",
+      "The CRD is deleted, the Backup objects stay in etcd and come back when the CRD is recreated",
+      "The CRD and all Backup objects are deleted",
+      "Only objects in the default namespace are deleted"
+    ],
+    "answer": 2,
+    "explain": "Deleting a CRD removes the API endpoint and all custom resources of that type; a recreated CRD is empty. That is why Helm does not delete CRDs on uninstall."
+  },
+  {
+    "obj": "1.8",
+    "q": "Task: write the documentation of all spec fields of the Backup resource to /root/backup-spec.txt (the backups.kurs.local CRD has an openAPIV3Schema with descriptions). Fastest solution?",
+    "options": [
+      "kubectl get crd backups.kurs.local -o yaml > /root/backup-spec.txt",
+      "kubectl describe backups > /root/backup-spec.txt",
+      "kubectl api-resources --api-group=kurs.local > /root/backup-spec.txt",
+      "kubectl explain backup.spec --recursive > /root/backup-spec.txt"
+    ],
+    "answer": 3,
+    "explain": "kubectl explain reads the OpenAPI schema the CRD publishes and prints the fields with descriptions. get crd gives the whole CRD YAML, describe describes existing objects, and api-resources only lists types."
+  },
+  {
+    "obj": "1.8",
+    "q": "A CRD has a schema with spec.properties: schedule (string) and target (string). You apply a CR with an extra field spec.retentionDays: 7. What happens (kubectl v1.35, default strict validation)?",
+    "options": [
+      "kubectl reports an error about the unknown field spec.retentionDays",
+      "The field is silently stored in etcd",
+      "The operator automatically extends the CRD schema",
+      "The API server adds the field to the schema as a string"
+    ],
+    "answer": 0,
+    "explain": "kubectl sends strict field validation by default, so an unknown field not in the schema causes an error; with weaker validation the field would be dropped (pruning), not stored. The schema changes only by editing the CRD."
+  },
+  {
+    "obj": "1.6",
+    "type": "order",
+    "q": "Put the steps for upgrading Helm release ingress to a new chart while keeping existing values, with verification and the option to roll back, in order.",
+    "options": [
+      "helm upgrade ingress /opt/kurs/charts/traefik-*.tgz -n ingress --reuse-values",
+      "helm history ingress -n ingress",
+      "helm get values ingress -n ingress",
+      "helm rollback ingress -n ingress (if the new revision does not work)",
+      "kubectl get pods -n ingress"
+    ],
+    "answer": [2, 0, 4, 1, 3],
+    "explain": "First you look at the current values, then upgrade with --reuse-values, check the Pods, see the new revision in history and roll back to the previous one if needed."
+  },
+  {
+    "obj": "1.8",
+    "type": "match",
+    "q": "Match each CRD field with its purpose.",
+    "options": [
+      "spec.scope",
+      "versions[].storage",
+      "versions[].schema.openAPIV3Schema",
+      "names.shortNames",
+      "versions[].additionalPrinterColumns"
+    ],
+    "targets": [
+      "Extra columns in kubectl get output",
+      "Validation and pruning of custom resource fields",
+      "Namespaced or Cluster",
+      "A short name for kubectl (e.g. bk)",
+      "The version in which objects are stored in etcd (exactly one)",
+      "The controller replica count"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "scope determines whether CRs are namespaced, storage marks the version for etcd, openAPIV3Schema validates fields, shortNames give an alias, and additionalPrinterColumns add columns. A CRD has no field for controller replicas."
+  },
+  {
+    "obj": "1.6",
+    "type": "match",
+    "q": "Match each Kustomize field with its effect.",
+    "options": [
+      "namePrefix: prod-",
+      "images: [{name: nginx, newTag: \"1.28\"}]",
+      "secretGenerator",
+      "resources: [../../base]"
+    ],
+    "targets": [
+      "Includes the manifests from the base kustomization",
+      "Creates a Secret with a hash suffix in its name",
+      "Changes the tag of all containers using the nginx image",
+      "Adds a prefix to object names and updates references",
+      "Adds a label to selectors"
+    ],
+    "answer": [3, 2, 1, 0],
+    "explain": "namePrefix changes names and references, images changes the image tag, secretGenerator creates a Secret with a hash, and resources pulls in the base. Selectors are changed by commonLabels or labels with includeSelectors."
+  }
+]

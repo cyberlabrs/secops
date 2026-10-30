@@ -1,0 +1,266 @@
+[
+  {
+    "obj": "2.2",
+    "q": "You added a decoder for kurs-api to local_decoder.xml. wazuh-logtest still does not show name: 'kurs-api' in phase 2. The XML is valid. What is the most likely cause?",
+    "options": [
+      "The manager was not restarted, so analysisd still has the old set of decoders",
+      "Rule 100100 has level 0",
+      "alerts.json is not writable",
+      "The <mitre> tag is missing"
+    ],
+    "answer": 0,
+    "explain": "wazuh-logtest uses the decoders and rules that analysisd has loaded. Changes to local_decoder.xml and local_rules.xml become visible only after the manager is restarted. The rule level and mitre do not affect phase 2."
+  },
+  {
+    "obj": "2.2",
+    "q": "The line 'login failed user=ana src=198.51.100.23' from kurs-api should populate srcip and the result field. How do you check the value of the result field in a rule?",
+    "options": [
+      "<result>^failed$</result>",
+      "<field name=\"result\">^failed$</field>",
+      "<match field=\"result\">failed</match>",
+      "<status>failed</status>, because result is an alias for status"
+    ],
+    "answer": 1,
+    "explain": "result is not a static field, so it is dynamic and is checked with the <field name=\"...\"> tag. Only static fields have dedicated tags (<srcip>, <user>, <status>...)."
+  },
+  {
+    "obj": "2.2",
+    "q": "You want a brute force rule to fire when your rule 100101 occurs 6 times in 2 minutes from the same address. Which combination is correct?",
+    "options": [
+      "level=\"10\" timeframe=\"6\" frequency=\"120\" + <if_sid>100101</if_sid>",
+      "level=\"10\" + <if_sid>100101</if_sid> + <frequency>6</frequency>",
+      "level=\"10\" frequency=\"6\" timeframe=\"120\" + <if_matched_sid>100101</if_matched_sid> + <same_srcip />",
+      "level=\"0\" frequency=\"6\" + <if_group>100101</if_group>"
+    ],
+    "answer": 2,
+    "explain": "frequency and timeframe are rule attributes, and counting previous alerts is done by if_matched_sid (or if_matched_group). same_srcip limits the count to the same source address."
+  },
+  {
+    "obj": "2.2",
+    "q": "Your frequency rule never fires even though auth.log has hundreds of matches for the base rule. The base rule is level=\"0\" so it does not create noise. What is the problem?",
+    "options": [
+      "frequency does not work on a manager without an indexer",
+      "same_srcip works only for Windows agents",
+      "timeframe must be divisible by 60",
+      "Level 0 alerts are discarded immediately and cannot be counted with if_matched_sid; the base rule must be at least level 1 (with <options>no_log</options> if needed)"
+    ],
+    "answer": 3,
+    "explain": "The documentation explicitly states that level 0 rules are discarded immediately and cannot be used with if_matched_sid. If you do not want the base rule to be visible, use no_log, not level 0."
+  },
+  {
+    "obj": "2.2",
+    "q": "You need the built-in rule 5710 (sshd invalid user) to have level 7 instead of 5. What is the correct approach?",
+    "options": [
+      "Copy the rule into local_rules.xml with overwrite=\"yes\" and change the level",
+      "Edit /var/ossec/ruleset/rules/0095-sshd_rules.xml",
+      "Create a new rule 5710 in local_rules.xml without additional attributes",
+      "Change log_alert_level in ossec.conf to 7"
+    ],
+    "answer": 0,
+    "explain": "Built-in files are overwritten on upgrade. overwrite=\"yes\" in local_rules.xml replaces the rule; if_sid and the other if_* tags cannot be changed this way. The same ID without overwrite produces a duplicate error."
+  },
+  {
+    "obj": "2.2",
+    "q": "The internal vulnerability scanner 10.20.0.15 generates dozens of 5710 alerts every night. What is the best way to suppress them?",
+    "options": [
+      "Set 5710 to level 0 with overwrite",
+      "Add a level 0 child rule with <if_sid>5710</if_sid> and <srcip>10.20.0.15</srcip>, with a ticket in the description",
+      "Disable the whole 0095-sshd_rules.xml",
+      "Delete the scanner lines from auth.log with a cron job"
+    ],
+    "answer": 1,
+    "explain": "A narrow level 0 child suppresses only the specific source for the specific rule, and everything else stays visible. Lowering 5710 or disabling the file loses detection for everyone, and deleting logs destroys evidence."
+  },
+  {
+    "obj": "2.2",
+    "q": "In the wazuh-logtest output, phase 2 shows name: 'kurs-api', but there are no srcuser or srcip fields. What do you check?",
+    "options": [
+      "rules_id in the active-response block",
+      "The level of rule 100101",
+      "The regex and offset in the child decoder (and the prematch that activates it)",
+      "Whether JSON_Decoder is enabled"
+    ],
+    "answer": 2,
+    "explain": "The decoder name means the parent (program_name) matched, but no child extracted the fields. The cause is in the child's prematch, regex or offset. Rules come into play only in phase 3."
+  },
+  {
+    "obj": "2.2",
+    "q": "What is the purpose of the -U option in the command wazuh-logtest -q -U '5710:5:sshd'?",
+    "options": [
+      "Loads a user ruleset from another directory",
+      "Writes the result to alerts.json",
+      "Updates the ruleset from the internet",
+      "Returns exit code 0 only if the line ends up on rule 5710, level 5 and decoder sshd, so it is used in automated tests"
+    ],
+    "answer": 3,
+    "explain": "-U specifies the expected result (rule:level:decoder) and sets the exit code, which enables detection regression tests in CI. A single line is sent with -U."
+  },
+  {
+    "obj": "2.2",
+    "q": "A decoder regex with the default type does not work: ^login (\\w+) user=([a-z0-9._-]{2,32}). Why?",
+    "options": [
+      "OS_Regex has no [a-z] classes or {n,m} quantifiers; that requires type=\"pcre2\"",
+      "OS_Regex does not support parentheses",
+      "The regex must start with offset=\"after_regex\"",
+      "A decoder must not contain a dot"
+    ],
+    "answer": 0,
+    "explain": "The default OS_Regex is limited to basic operators (\\w, \\d, \\s, \\S, +, *...). More complex expressions require type=\"pcre2\" on <regex>, <prematch> or <program_name>."
+  },
+  {
+    "obj": "2.2",
+    "q": "Rule 100121 should fire when a successful login (100102) arrives from an address that triggered brute force alert 100120 in the last 5 minutes. What is the key part?",
+    "options": [
+      "<if_sid>100120</if_sid> and frequency=\"2\"",
+      "<if_sid>100102</if_sid>, <if_matched_sid>100120</if_matched_sid>, timeframe=\"300\" and <same_srcip />",
+      "<if_group>authentication_failures</if_group> without timeframe",
+      "<list> with addresses from alerts.json"
+    ],
+    "answer": 1,
+    "explain": "The rule is evaluated as a child of the successful login, and if_matched_sid looks for an earlier brute force alert within the timeframe window; same_srcip ties both to the same address. The built-in 40112 does the same through groups."
+  },
+  {
+    "obj": "2.4",
+    "q": "You added an active-response block with firewall-drop and <level>7</level>, without rules_id. What will happen?",
+    "options": [
+      "Only the IP from rule 5763 will be blocked",
+      "Nothing, level is ignored without rules_group",
+      "Every source address from any alert of level 7 or higher will be blocked, including false positives and internal addresses",
+      "The block will last 7 minutes"
+    ],
+    "answer": 2,
+    "explain": "level, rules_id and rules_group are cumulative: any of them triggers the response. Level 7 on its own means blocking for a huge number of rules, which is almost always a mistake."
+  },
+  {
+    "obj": "2.4",
+    "q": "What data does an active response script receive on stdin?",
+    "options": [
+      "The raw line from auth.log",
+      "The path to alerts.json",
+      "Only the IP address as the first command-line argument",
+      "JSON with command (add or delete) and parameters.alert containing the whole alert, e.g. data.srcip"
+    ],
+    "answer": 3,
+    "explain": "Since Wazuh 4.2, scripts receive JSON on stdin: version, origin, command (add/delete) and parameters with extra_args, alert and program. delete arrives when the timeout expires."
+  },
+  {
+    "obj": "2.4",
+    "q": "An SSH brute force comes from the office's public NAT address, behind which all the admins also sit. firewall-drop is enabled for 5763. Which measure directly prevents self-blocking?",
+    "options": [
+      "Add the office address to <white_list> in the <global> block of ossec.conf",
+      "Set location to all",
+      "Increase timeout to 86400",
+      "Switch firewall-drop to host-deny"
+    ],
+    "answer": 0,
+    "explain": "white_list addresses are exempt from active response. A longer timeout and location all make the consequences worse, and host-deny blocks the same, just with a different mechanism."
+  },
+  {
+    "obj": "2.4",
+    "q": "The team proposes disable-account as the response to the rule 'multiple failed logins for a user'. What is the main risk?",
+    "options": [
+      "disable-account does not exist on Linux",
+      "An attacker can deliberately lock out all accounts (including admins) just by guessing passwords, so the detection becomes a DoS tool",
+      "The account can never be re-enabled",
+      "The script requires an indexer"
+    ],
+    "answer": 1,
+    "explain": "Automatic lockout on a signal the attacker controls turns defense into denial of service. For accounts, an alert and a manual decision is better, or AR only on high-confidence rules."
+  },
+  {
+    "obj": "2.4",
+    "q": "Where do you check whether active response was actually executed and with which parameters?",
+    "options": [
+      "journalctl -u sshd",
+      "/var/ossec/logs/alerts/alerts.log only",
+      "/var/ossec/logs/active-responses.log (and the state, e.g. iptables -S INPUT)",
+      "/var/ossec/etc/lists/"
+    ],
+    "answer": 2,
+    "explain": "Script execution results go to /var/ossec/logs/active-responses.log. The effect is confirmed directly on the system, e.g. with a rule in iptables."
+  },
+  {
+    "obj": "2.4",
+    "q": "What is repeated_offenders in the agent configuration, e.g. 1,5,10, used for?",
+    "options": [
+      "The number of alerts before AR starts",
+      "The number of agents on which AR runs",
+      "A list of rule IDs",
+      "Increasing timeouts in minutes for addresses that are blocked again"
+    ],
+    "answer": 3,
+    "explain": "repeated_offenders sets an increasing block duration (in minutes) for repeat offenders; the timeout from the manager applies only to the first offense. It is configured in the agent's ossec.conf."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Order the phases through which analysisd (and wazuh-logtest) takes a single log line, starting with the first.",
+    "options": [
+      "Filtering: the rule tree, deepest match",
+      "Writing the alert to alerts.json if the level is above the threshold",
+      "Pre-decoding: timestamp, hostname, program_name",
+      "Decoding: the parent and then the child decoder extract fields"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      1
+    ],
+    "explain": "First timestamp, hostname and program_name are extracted from the header, then the decoder extracts the fields, and then the rules are evaluated. The alert is written only if the level of the winning rule is high enough."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Match each requirement with the Wazuh rule or decoder element that solves it.",
+    "options": [
+      "Recognize the source by the program name in the syslog header",
+      "Count previous alerts of a single rule within a time window",
+      "Do not repeat the same correlation alert for the next 60 seconds",
+      "Check an address against a list of known scanners"
+    ],
+    "targets": [
+      "<list field=\"srcip\" lookup=\"address_match_key\">",
+      "ignore=\"60\"",
+      "<program_name> in the parent decoder",
+      "<if_matched_sid> with frequency and timeframe",
+      "<options>no_full_log</options>"
+    ],
+    "answer": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "program_name recognizes the source, if_matched_sid with frequency/timeframe counts alerts, ignore suppresses repetition, and list performs a CDB list lookup. no_full_log only removes full_log from the alert."
+  },
+  {
+    "obj": "2.4",
+    "type": "order",
+    "q": "Order the steps for safely rolling out automatic IP blocking for a new brute force rule.",
+    "options": [
+      "Enable firewall-drop with timeout and white_list",
+      "Run the rule without AR and measure false positives",
+      "Test the rule in wazuh-logtest",
+      "AR that only notifies (no blocking)"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "explain": "First the rule is checked in logtest, then it runs in production without any action until false positives are measured, then comes AR that only reports, and only then real blocking with a timeout and a whitelist."
+  },
+  {
+    "type": "spot",
+    "obj": "2.2",
+    "q": "wazuh-logtest shows that 100101 matches every failed login and the decoder extracts srcip, but 100120 never fires even after 20 attempts from the same address. Click the line that causes it.",
+    "snippet": "<group name=\"kurs-api,\">\n  <rule id=\"100101\" level=\"0\">\n    <decoded_as>kurs-api</decoded_as>\n    <match>login failed</match>\n    <description>kurs-api: failed login</description>\n  </rule>\n\n  <rule id=\"100120\" level=\"10\" frequency=\"6\" timeframe=\"120\">\n    <if_matched_sid>100101</if_matched_sid>\n    <same_srcip />\n    <description>kurs-api: brute force from $(srcip)</description>\n  </rule>\n</group>",
+    "lang": "xml",
+    "answer": [
+      1
+    ],
+    "explain": "A level 0 alert is discarded immediately and never counted, so frequency has nothing to count. Fix: level=\"3\" (at least 1), and if you do not want the base alert indexed, add <options>no_log</options> instead of level 0. The rest of the correlation (if_matched_sid, same_srcip, frequency and timeframe) is correct."
+  }
+]

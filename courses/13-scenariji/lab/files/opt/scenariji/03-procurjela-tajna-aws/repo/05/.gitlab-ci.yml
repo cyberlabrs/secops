@@ -1,0 +1,15 @@
+stages: [test, export]
+
+test:
+  stage: test
+  image: python:3.12-slim
+  script:
+    - pip install -q -r requirements.txt
+    - pytest -q
+
+export-probni:
+  stage: export
+  image: python:3.12-slim
+  script:
+    - pip install -q -r requirements.txt
+    - python -m app.export --datum 2026-10-12

@@ -1,0 +1,302 @@
+[
+  {
+    "obj": "3.1",
+    "q": "U procesu nabavke ista osoba može kreirati novog dobavljača u sistemu i odobriti plaćanje tom dobavljaču. Koja kontrola NAJBOLJE sprečava prevaru?",
+    "options": [
+      "Rotation of duties",
+      "Separation of duties",
+      "Mandatory vacation",
+      "Defense in depth"
+    ],
+    "answer": 1,
+    "explain": "Separation of duties dijeli kritične korake procesa na različite osobe, pa jedna osoba ne može sama izvršiti prevaru. Rotacija i obavezni odmor pomažu da se postojeća prevara OTKRIJE, a defense in depth je opšti princip slojeva."
+  },
+  {
+    "obj": "3.1",
+    "q": "Elektronska brava na evakuacionim vratima data centra treba da se ponaša na određen način pri nestanku napajanja. Šta je ISPRAVNO?",
+    "options": [
+      "Fail-secure, jer imovina u data centru ima veliku vrijednost",
+      "Ostaje u stanju u kojem je bila prije nestanka struje",
+      "Fail-safe (otključava se), jer je ljudski život na prvom mjestu",
+      "Zaključava se i aktivira alarm"
+    ],
+    "answer": 2,
+    "explain": "Za evakuacione izlaze bezbjednost ljudi ima prioritet nad zaštitom imovine, pa se brava otključava (fail-safe/fail-open). Fail-secure se koristi za vrata koja nisu evakuacioni put, npr. ormare sa medijima."
+  },
+  {
+    "obj": "3.1",
+    "q": "Organizacija uvodi Zero Trust arhitekturu po NIST SP 800-207. Koja komponenta u data planeu omogućava, prati i prekida vezu između subjekta i resursa na osnovu odluke?",
+    "options": [
+      "Policy Enforcement Point (PEP)",
+      "Policy Engine (PE)",
+      "Policy Administrator (PA)",
+      "Continuous diagnostics and mitigation (CDM) sistem"
+    ],
+    "answer": 0,
+    "explain": "PEP je u data planeu i sprovodi odluku. Policy Engine donosi odluku, a Policy Administrator je izvršava u control planeu (zajedno čine PDP). CDM je izvor podataka o stanju uređaja."
+  },
+  {
+    "obj": "3.1",
+    "q": "Otvaranje sefa sa smart karticama za aktivaciju root CA zahtijeva da dvije ovlaštene osobe budu istovremeno prisutne i da svaka unese svoj dio. Koji princip je primijenjen?",
+    "options": [
+      "Separation of duties",
+      "Rotation of duties",
+      "Least privilege",
+      "Two-person integrity (dual control)"
+    ],
+    "answer": 3,
+    "explain": "Two-person integrity/dual control zahtijeva dvije osobe za ISTU kritičnu radnju u isto vrijeme. SoD dijeli RAZLIČITE korake procesa na različite osobe. Ako svaka osoba zna samo dio tajne, dodatno je primijenjen split knowledge."
+  },
+  {
+    "obj": "3.1",
+    "q": "Tim razvija novu aplikaciju za zdravstvene podatke i želi da identifikuje prijetnje privatnosti kao što su povezivanje zapisa i identifikacija pacijenata. Koja metodologija threat modelinga je NAJPRIKLADNIJA?",
+    "options": [
+      "DREAD",
+      "STRIDE",
+      "LINDDUN",
+      "Attack trees za fizičku sigurnost"
+    ],
+    "answer": 2,
+    "explain": "LINDDUN je namijenjen prijetnjama privatnosti (Linkability, Identifiability, Non-repudiation, Detectability, Disclosure, Unawareness, Non-compliance). STRIDE pokriva sigurnosne kategorije, a DREAD je metoda rangiranja."
+  },
+  {
+    "obj": "3.2",
+    "q": "U vojnom sistemu korisnik sa clearanceom Secret pokušava sačuvati izvod iz Secret izvještaja u fajl označen kao Confidential. Sistem to odbija. Koje pravilo je primijenjeno?",
+    "options": [
+      "Biba simple integrity property",
+      "Bell-LaPadula * (star) security property",
+      "Bell-LaPadula simple security property",
+      "Clark-Wilson IVP"
+    ],
+    "answer": 1,
+    "explain": "Star property u BLP zabranjuje pisanje naniže (no write down) da informacija višeg nivoa ne bi procurila u objekat nižeg nivoa. Simple security property zabranjuje čitanje naviše."
+  },
+  {
+    "obj": "3.2",
+    "q": "Sistem za kontrolu kvaliteta lijekova ne smije dozvoliti da podaci iz nepouzdanog izvora (forma na webu) direktno uđu u validiranu bazu rezultata. Koji model NAJBOLJE opisuje ovaj zahtjev?",
+    "options": [
+      "Bell-LaPadula",
+      "Brewer-Nash",
+      "Take-Grant",
+      "Biba"
+    ],
+    "answer": 3,
+    "explain": "Biba štiti integritet: no write up sprečava da subjekat/podatak nižeg integriteta piše u objekat višeg integriteta. BLP štiti povjerljivost, Brewer-Nash sukob interesa, a Take-Grant propagaciju prava."
+  },
+  {
+    "obj": "3.2",
+    "q": "Računovodstveni sistem dozvoljava izmjene glavne knjige isključivo kroz verifikovane programe, a periodična procedura provjerava konzistentnost podataka. Korisnici nemaju direktan pristup tabelama. Koji model je implementiran?",
+    "options": [
+      "Clark-Wilson",
+      "Biba",
+      "Graham-Denning",
+      "Noninterference"
+    ],
+    "answer": 0,
+    "explain": "Clark-Wilson koristi access triple (subjekat-program-objekat): CDI se mijenjaju samo kroz TP (well-formed transactions), a IVP provjerava integritet. Biba nema koncept pristupa samo kroz program."
+  },
+  {
+    "obj": "3.2",
+    "q": "Revizorska firma ima više klijenata iz iste industrije. Kada revizor pristupi dokumentima jednog klijenta, sistem mu automatski zabranjuje pristup dokumentima konkurenata. Koji model je u pitanju?",
+    "options": [
+      "Bell-LaPadula sa strong star property",
+      "Lipner",
+      "Brewer-Nash (Chinese Wall)",
+      "Harrison-Ruzzo-Ullman"
+    ],
+    "answer": 2,
+    "explain": "Brewer-Nash dinamički mijenja prava na osnovu ranijih pristupa da bi spriječio sukob interesa. Ostali modeli imaju statička pravila ili se bave upravljanjem pravima."
+  },
+  {
+    "obj": "3.2",
+    "q": "Koja od tvrdnji o Bibinom modelu je TAČNA?",
+    "options": [
+      "Adresira sva tri cilja integriteta",
+      "Štiti povjerljivost zabranom čitanja naviše",
+      "Zasniva se na dinamičkom mijenjanju prava",
+      "Sprečava samo neovlaštene korisnike da mijenjaju podatke, a ne i greške ovlaštenih korisnika ni unutrašnju konzistentnost"
+    ],
+    "answer": 3,
+    "explain": "Biba adresira samo prvi cilj integriteta (neovlaštene izmjene). Clark-Wilson adresira sva tri, uključujući sprečavanje neovlaštenih izmjena od ovlaštenih korisnika i konzistentnost. Zaštita povjerljivosti je BLP."
+  },
+  {
+    "obj": "3.3",
+    "q": "Tehnička procjena pokazala je da novi sistem ispunjava većinu sigurnosnih zahtjeva, uz nekoliko preostalih rizika. Ko i kako odlučuje da li sistem smije ići u produkciju?",
+    "options": [
+      "Ovlašteni rukovodilac (authorizing official) formalno prihvata rezidualni rizik i izdaje ovlašćenje (akreditacija/ATO)",
+      "Tim koji je radio procjenu automatski odobrava rad",
+      "Administrator sistema odlučuje nakon što zakrpi preostale ranjivosti",
+      "Proizvođač softvera izdaje potvrdu o usklađenosti"
+    ],
+    "answer": 0,
+    "explain": "Certifikacija je tehnička procjena, a akreditacija (authorization) je formalna odluka menadžmenta da prihvati rezidualni rizik. Procjenitelj, administrator i proizvođač ne mogu prihvatiti rizik u ime organizacije."
+  },
+  {
+    "obj": "3.3",
+    "q": "Proizvođač firewalla tvrdi da je proizvod evaluiran na Common Criteria EAL4+. Šta CISO treba PRVO da uradi prije odluke o nabavci?",
+    "options": [
+      "Kupiti proizvod jer EAL4 garantuje sigurnost",
+      "Zahtijevati EAL7 jer je viši nivo uvijek bolji",
+      "Uporediti Security Target i evaluiranu konfiguraciju sa sigurnosnim zahtjevima organizacije",
+      "Odbaciti proizvod jer EAL nije relevantan"
+    ],
+    "answer": 2,
+    "explain": "EAL mjeri povjerenje u evaluaciju (assurance), a evaluacija važi za Security Target i evaluiranu konfiguraciju. Treba provjeriti da li to odgovara tvojim zahtjevima (ili Protection Profileu). EAL7 je rijedak i skup, a viši nivo ne znači da proizvod pokriva tvoje potrebe."
+  },
+  {
+    "obj": "3.3",
+    "q": "U Common Criteria evaluaciji, koji dokument opisuje zahtjeve korisnika za određenu klasu proizvoda, nezavisno od konkretnog proizvođača?",
+    "options": [
+      "Security Target",
+      "Protection Profile",
+      "Target of Evaluation",
+      "Evaluation Assurance Level"
+    ],
+    "answer": 1,
+    "explain": "Protection Profile je skup zahtjeva za klasu proizvoda (npr. firewall), nezavisan od implementacije. Security Target su tvrdnje proizvođača o konkretnom proizvodu, TOE je proizvod koji se ocjenjuje, a EAL nivo povjerenja."
+  },
+  {
+    "obj": "3.3",
+    "q": "Novi sistem obrađuje javne informacije (nizak uticaj) i finansijske transakcije (umjeren uticaj na integritet i povjerljivost, visok na dostupnost). Koju kategoriju sistem dobija po FIPS 199 prije izbora baselinea?",
+    "options": [
+      "Low, jer je većina podataka javna",
+      "Moderate, kao prosjek",
+      "Zavisi od budžeta za kontrole",
+      "High, po high-water mark principu"
+    ],
+    "answer": 3,
+    "explain": "Sistem se kategorizuje po najvišem uticaju bilo kog tipa informacija i bilo kog cilja (high-water mark), pa visok uticaj na dostupnost daje kategoriju High i odgovarajući baseline. Budžet ne određuje kategoriju."
+  },
+  {
+    "obj": "3.4",
+    "q": "Organizacija želi da serveri pri pokretanju dokažu udaljenom servisu da bootloader i kernel nisu izmijenjeni prije nego što dobiju ključeve za dešifrovanje podataka. Koja tehnologija to omogućava?",
+    "options": [
+      "TPM sa measured bootom i remote attestationom",
+      "HSM u data centru",
+      "DEP i ASLR",
+      "RAID 1"
+    ],
+    "answer": 0,
+    "explain": "TPM bilježi mjerenja boot lanca u PCR registre i potpisuje ih za remote attestation; ključevi se mogu sealovati za ispravno stanje. HSM čuva ključeve centralno, ali ne mjeri boot pojedinačnog servera. DEP/ASLR štite memoriju."
+  },
+  {
+    "obj": "3.4",
+    "q": "Koja TRI svojstva mora imati reference monitor?",
+    "options": [
+      "Brz, jeftin i distribuiran",
+      "Zasnovan na DAC-u, MAC-u i RBAC-u",
+      "Šifrovan, redundantan i auditabilan",
+      "Tamperproof, uvijek pozvan (complete mediation) i dovoljno mali da se može verifikovati"
+    ],
+    "answer": 3,
+    "explain": "Reference monitor mora biti zaštićen od izmjena, posredovati svaki pristup i biti dovoljno mali za analizu i testiranje. Implementira ga security kernel unutar TCB-a."
+  },
+  {
+    "obj": "3.4",
+    "q": "Banka treba da čuva ključeve za potpisivanje platnih transakcija tako da ključevi nikad ne napuštaju uređaj u čistom obliku, uz validaciju FIPS 140-3 nivoa 3 i visoke performanse. Šta je NAJBOLJI izbor?",
+    "options": [
+      "TPM u svakom aplikacionom serveru",
+      "Šifrovan fajl sa ključevima na serveru",
+      "Hardware Security Module (HSM)",
+      "Secure enclave u laptopu administratora"
+    ],
+    "answer": 2,
+    "explain": "HSM je namjenski uređaj za generisanje, čuvanje i korištenje ključeva visokih performansi, sa tamper zaštitom i FIPS validacijom. TPM je vezan za jednu platformu i nije namijenjen centralnim operacijama visokog obima."
+  },
+  {
+    "obj": "3.4",
+    "q": "Sistem obrađuje podatke više nivoa klasifikacije, a korisnici imaju različite clearance nivoe; sistem sam sprovodi razdvajanje. U kojem security modeu radi sistem?",
+    "options": [
+      "Dedicated",
+      "Multilevel",
+      "System high",
+      "Compartmented"
+    ],
+    "answer": 1,
+    "explain": "U multilevel modu korisnici nemaju isti clearance za sve podatke, pa sistem mora pouzdano sprovoditi razdvajanje (traži snažan TCB). U dedicated, system high i compartmented svi korisnici imaju clearance za najviši nivo."
+  },
+  {
+    "obj": "3.5",
+    "q": "Zaposleni bez prava pristupa platama vidi ukupan budžet plata svog odjeljenja i pojedinačne plate svih kolega osim šefa, pa izračunava šefovu platu. Kako se zove ova ranjivost i koja kontrola pomaže?",
+    "options": [
+      "Aggregation; šifrovanje baze",
+      "Inference; kontrola konteksta, cell suppression ili perturbation",
+      "Polyinstantiation; brisanje zapisa",
+      "TOCTOU; zaključavanje tabela"
+    ],
+    "answer": 1,
+    "explain": "Inference je izvođenje povjerljive informacije iz dostupnih podataka. Pomažu kontekstno zavisna kontrola pristupa, cell suppression i perturbation. Šifrovanje ne pomaže jer korisnik legitimno vidi podatke koje koristi."
+  },
+  {
+    "obj": "3.5",
+    "q": "Sigurnosni tim predlaže automatsko nedjeljno skeniranje ranjivosti i patchovanje svih PLC kontrolera u pogonu za preradu hemikalija. Koji je NAJBOLJI odgovor CISO-a?",
+    "options": [
+      "Odobriti plan jer patchovanje uvijek ima prioritet",
+      "Isključiti PLC-ove sa mreže zauvijek",
+      "Zamijeniti sve PLC-ove standardnim serverima",
+      "Prioritet su dostupnost i bezbjednost ljudi: segmentacija po Purdue modelu, pasivni monitoring i planirane, testirane promjene u dogovoru sa operacijama"
+    ],
+    "answer": 3,
+    "explain": "U OT/ICS okruženju aktivno skeniranje i neplanirani restarti mogu izazvati prekid procesa i fizičku opasnost. Segmentacija, pasivni monitoring i pažljivo testirane promjene su ravnoteža između sigurnosti i bezbjednosti."
+  },
+  {
+    "obj": "3.5",
+    "q": "Organizacija čuva medicinske podatke koji moraju ostati povjerljivi 25 godina. Koja prijetnja je NAJRELEVANTNIJA za današnji izbor kriptografije za prenos tih podataka?",
+    "options": [
+      "Harvest now, decrypt later napadi uz buduće kvantne računare",
+      "VM sprawl",
+      "Covert timing channel u bazi",
+      "Polyinstantiation"
+    ],
+    "answer": 0,
+    "explain": "Napadač može danas snimiti šifrovan saobraćaj i dešifrovati ga kada kriptografski relevantan kvantni računar razbije asimetričnu razmjenu ključeva. Za dugoročno povjerljive podatke treba planirati migraciju na PQC i crypto agility."
+  },
+  {
+    "obj": "3.5",
+    "q": "Kubernetes klaster pokreće kontejnere kao root sa privilegovanim režimom, a image-i dolaze iz javnih registara bez provjere. Koja kombinacija mjera NAJBOLJE smanjuje rizik?",
+    "options": [
+      "Premjestiti klaster u drugi cloud region",
+      "Dodati više worker čvorova",
+      "Non-root i neprivilegovani kontejneri, skeniranje i potpisivanje image-a sa admission kontrolom, network policies",
+      "Isključiti logovanje radi performansi"
+    ],
+    "answer": 2,
+    "explain": "Kontejneri dijele kernel hosta, pa privilegovan root kontejner olakšava container escape. Ograničavanje privilegija, provjera porijekla i ranjivosti image-a i segmentacija direktno smanjuju rizik. Ostale opcije ne utiču na ranjivosti."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Upari scenarij sa modelom sigurnosti koji ga NAJBOLJE opisuje.",
+    "options": [
+      "Vojni sistem ne dozvoljava pisanje Top Secret sadržaja u Secret dokument",
+      "Bankarska aplikacija dozvoljava izmjenu stanja računa samo kroz provjerene transakcije uz SoD",
+      "Konsultant koji je radio za naftnu kompaniju A ne smije vidjeti podatke kompanije B",
+      "Pravila za kreiranje i brisanje subjekata i objekata i prenos prava pristupa",
+      "Proizvodni proces ne smije koristiti podatke iz nepouzdanog senzora za ažuriranje validiranih zapisa"
+    ],
+    "targets": [
+      "Brewer-Nash",
+      "Biba",
+      "Bell-LaPadula",
+      "Clark-Wilson",
+      "Graham-Denning"
+    ],
+    "answer": [2, 3, 0, 4, 1],
+    "explain": "No write down je BLP; transakcije i SoD su Clark-Wilson; sukob interesa je Brewer-Nash; kreiranje/brisanje subjekata i objekata i prava je Graham-Denning; zaštita pouzdanih podataka od nepouzdanog ulaza je Biba."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Poredaj korake NIST Risk Management Frameworka (SP 800-37) nakon pripreme (Prepare).",
+    "options": [
+      "Authorize",
+      "Select",
+      "Monitor",
+      "Categorize",
+      "Assess",
+      "Implement"
+    ],
+    "answer": [3, 1, 5, 4, 0, 2],
+    "explain": "Redoslijed je Categorize, Select, Implement, Assess, Authorize, Monitor. Kategorizacija određuje baseline, kontrole se biraju i implementiraju, procjenjuju, rukovodilac prihvata rizik i izdaje ATO, a zatim slijedi kontinuirani monitoring."
+  }
+]

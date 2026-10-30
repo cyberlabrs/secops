@@ -1,0 +1,11 @@
+2026-10-12T17:42:11Z vpn01 ovpn-server[2211]: 192.0.2.131:50211 SAML: Entra ID assertion accepted for username 'jelena.kovac@drinalog.example'
+2026-10-12T17:42:11Z vpn01 ovpn-server[2211]: 192.0.2.131:50211 [jelena.kovac@drinalog.example] Peer Connection Initiated with [AF_INET]192.0.2.131:50211
+2026-10-12T17:42:12Z vpn01 ovpn-server[2211]: jelena.kovac@drinalog.example/192.0.2.131:50211 MULTI_sva: pool returned IPv4=10.8.0.14, IPv6=(Not enabled)
+2026-10-12T19:05:40Z vpn01 ovpn-server[2211]: jelena.kovac@drinalog.example/192.0.2.131:50211 SIGTERM[soft,remote-exit] received, client-instance exiting
+2026-10-13T07:12:50Z vpn01 ovpn-server[2211]: 192.0.2.75:49822 SAML: Entra ID assertion accepted for username 'marko.petrovic@drinalog.example'
+2026-10-13T07:12:50Z vpn01 ovpn-server[2211]: 192.0.2.75:49822 [marko.petrovic@drinalog.example] Peer Connection Initiated with [AF_INET]192.0.2.75:49822
+2026-10-13T07:12:51Z vpn01 ovpn-server[2211]: marko.petrovic@drinalog.example/192.0.2.75:49822 MULTI_sva: pool returned IPv4=10.8.0.11, IPv6=(Not enabled)
+2026-10-13T08:20:51Z vpn01 ovpn-server[2211]: 203.0.113.77:51844 SAML: Entra ID assertion accepted for username 'jelena.kovac@drinalog.example'
+2026-10-13T08:20:51Z vpn01 ovpn-server[2211]: 203.0.113.77:51844 [jelena.kovac@drinalog.example] Peer Connection Initiated with [AF_INET]203.0.113.77:51844
+2026-10-13T08:20:52Z vpn01 ovpn-server[2211]: jelena.kovac@drinalog.example/203.0.113.77:51844 MULTI_sva: pool returned IPv4=10.8.0.23, IPv6=(Not enabled)
+2026-10-13T15:20:02Z vpn01 ovpn-server[2211]: marko.petrovic@drinalog.example/192.0.2.75:49822 SIGTERM[soft,remote-exit] received, client-instance exiting

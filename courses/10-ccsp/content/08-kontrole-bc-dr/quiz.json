@@ -1,0 +1,302 @@
+[
+  {
+    "obj": "3.4",
+    "q": "Banka koja koristi javni IaaS traži uvjerenje da provider ima adekvatne fizičke kontrole pristupa data centrima. Šta je BEST pristup?",
+    "options": [
+      "Zahtijevati individualni nenajavljeni obilazak svih data centara providera.",
+      "Pretpostaviti da su kontrole dobre jer je provider velik.",
+      "Pregledati SOC 2 Type II izvještaj i ISO/IEC 27001 certifikat providera.",
+      "Postaviti vlastite kamere u data centar providera."
+    ],
+    "answer": 2,
+    "explain": "Nezavisni audit izvještaji su standardni način da customer stekne uvjerenje o fizičkim kontrolama providera. Individualni obilasci i vlastite kamere se ne dozvoljavaju jer bi ugrozili sve tenante, a pretpostavka nije dokaz."
+  },
+  {
+    "obj": "3.4",
+    "q": "Kompanija koristi 40 SaaS aplikacija sa lokalnim nalozima. Revizija pronalazi aktivne naloge zaposlenih koji su otišli prije više mjeseci. Koja kontrola NAJBOLJE rješava uzrok?",
+    "options": [
+      "Federacija sa centralnim IdP-om (SSO) i automatski provisioning i deprovisioning kroz SCIM",
+      "Obavezna promjena lozinke svakih 30 dana u svakoj aplikaciji",
+      "Kvartalni ručni pregled naloga u svakoj aplikaciji",
+      "Uvođenje CAPTCHA na stranice za prijavu"
+    ],
+    "answer": 0,
+    "explain": "Centralni identitet znači da gašenje naloga u IdP-u ukida pristup svim federisanim aplikacijama, a SCIM automatski uklanja lokalne naloge. Promjena lozinki ne uklanja naloge, ručni pregledi su spori i skloni greškama, a CAPTCHA nije relevantna."
+  },
+  {
+    "obj": "3.4",
+    "q": "Aplikacija na VM-ovima koristi statički API ključ za pristup cloud storageu, smješten u konfiguracionom fajlu. Koja izmjena je NAJBOLJA?",
+    "options": [
+      "Šifrovati konfiguracioni fajl lozinkom zapisanom u istom direktoriju.",
+      "Rotirati ključ jednom godišnje.",
+      "Premjestiti ključ u varijablu okruženja.",
+      "Koristiti workload identitet (rolu instance) sa kratkotrajnim kredencijalima i minimalnim ovlaštenjima."
+    ],
+    "answer": 3,
+    "explain": "Workload identiteti daju automatski rotirane, kratkotrajne kredencijale bez statičkih tajni, uz least privilege. Varijabla okruženja i šifrovanje lozinkom iz istog direktorija ostavljaju statičku tajnu, a godišnja rotacija je preslaba."
+  },
+  {
+    "obj": "3.4",
+    "q": "Regulator traži da cloud provider ne može pristupiti podacima pacijenata ni dok se obrađuju u memoriji. Koja kontrola NAJBOLJE odgovara ovom zahtjevu?",
+    "options": [
+      "Enkripcija diskova provider-managed ključevima",
+      "Confidential computing sa hardverskim enklavama",
+      "TLS 1.3 između klijenta i aplikacije",
+      "Verzionisanje objekata u storageu"
+    ],
+    "answer": 1,
+    "explain": "Enkripcija at rest i TLS ne štite podatke u upotrebi. Confidential computing obrađuje podatke u hardverski izolovanim enklavama nedostupnim hostu i operateru. Verzionisanje je zaštita od gubitka, ne povjerljivosti."
+  },
+  {
+    "obj": "3.4",
+    "q": "Tim za odgovor na incidente želi analizirati sadržaj mrežnog saobraćaja sumnjive instance u IaaS okruženju. Koji mehanizam je NAJPRIKLADNIJI?",
+    "options": [
+      "Zahtjev provideru za pristup fizičkom switchu",
+      "Traffic mirroring sa instance prema senzoru za packet capture",
+      "Pregled SOC 3 izvještaja providera",
+      "Analiza samo billing izvještaja"
+    ],
+    "answer": 1,
+    "explain": "U IaaS-u customer nema pristup fizičkoj mreži, ali može koristiti traffic mirroring ili agenta na hostu za packet capture. Pristup switchu se ne dozvoljava, a SOC 3 i billing ne sadrže saobraćaj."
+  },
+  {
+    "obj": "3.4",
+    "q": "Organizacija ima logove iz tri cloud providera i desetine SaaS aplikacija, ali analitičari ih pregledaju odvojeno i propuštaju napade koji prelaze granice sistema. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Povećati retenciju logova u svakom sistemu.",
+      "Isključiti logovanje u manje važnim sistemima.",
+      "Zaposliti više analitičara za ručni pregled.",
+      "Centralizovati logove u SIEM sa normalizacijom, sinhronizovanim vremenom i pravilima korelacije."
+    ],
+    "answer": 3,
+    "explain": "Korelacija događaja iz različitih izvora u SIEM-u otkriva napade koji se ne vide u pojedinačnim logovima. Duža retencija, više ljudi ili manje logova ne rješavaju problem povezivanja događaja."
+  },
+  {
+    "obj": "3.4",
+    "q": "Organizacija pokreće privatni cloud u vlastitom objektu. Zaposleni su primijećeni kako ulaze u serversku salu odmah iza kolega bez korištenja kartice. Koja kontrola NAJBOLJE sprečava ovo?",
+    "options": [
+      "Mantrap (sigurnosna kabina) sa autentifikacijom jedne osobe po prolazu",
+      "Upozoravajući natpis na vratima",
+      "Kamera bez praćenja snimaka",
+      "Duža šifra na tastaturi"
+    ],
+    "answer": 0,
+    "explain": "Mantrap fizički sprečava tailgating jer propušta jednu autentifikovanu osobu. Natpis je deterrent, kamera bez praćenja samo bilježi, a duža šifra ne sprečava ulazak iza kolege."
+  },
+  {
+    "obj": "3.4",
+    "q": "Ransomware je kompromitovao administratorski nalog i obrisao produkcijske podatke i backupe u istom cloud nalogu. Koja kontrola bi NAJVJEROVATNIJE sačuvala backupe?",
+    "options": [
+      "Češći backupi u istom nalogu",
+      "Kompresija backupa",
+      "Backupi u odvojenom nalogu sa odvojenim kredencijalima i nepromjenjivošću (WORM)",
+      "Duža lozinka za administratorski nalog"
+    ],
+    "answer": 2,
+    "explain": "Izolacija backupa (drugi nalog, odvojeni kredencijali) i nepromjenjivost sprečavaju da kompromitovan produkcijski administrator obriše kopije. Češći backupi u istom nalogu i kompresija ne štite, a duža lozinka ne rješava već kompromitovan nalog."
+  },
+  {
+    "obj": "3.4",
+    "q": "Root nalog cloud okruženja se koristi za svakodnevne administratorske zadatke. Koja kombinacija mjera je NAJBOLJA?",
+    "options": [
+      "Podijeliti lozinku root naloga svim administratorima radi dostupnosti.",
+      "Obrisati root nalog.",
+      "Koristiti root samo vikendom.",
+      "Zaštititi root jakim MFA, koristiti ga samo kroz break-glass proceduru, alarmirati svaku upotrebu i dati administratorima individualne naloge sa least privilege."
+    ],
+    "answer": 3,
+    "explain": "Root nalog se ne koristi za svakodnevni rad; čuva se za hitne situacije uz jak MFA i alarm, a administratori rade kroz individualne, ograničene naloge radi accountabilityja. Dijeljenje lozinke ruši accountability, a root se tipično ne može obrisati."
+  },
+  {
+    "obj": "3.4",
+    "q": "Firma koristi SaaS CRM i želi dubinski packet capture saobraćaja unutar aplikacije radi forenzike. Šta je NAJVJEROVATNIJI ishod?",
+    "options": [
+      "Customer može postaviti mrežni tap u data centru providera.",
+      "Packet capture unutar SaaS-a nije dostupan customeru; oslanja se na audit logove koje provider izlaže i ugovornu saradnju.",
+      "SaaS provider je dužan predati sav saobraćaj svih tenanta.",
+      "Packet capture je automatski uključen u svaki SaaS."
+    ],
+    "answer": 1,
+    "explain": "U SaaS-u customer ne kontroliše mrežu ni infrastrukturu. Dostupni su audit logovi aplikacije i saradnja providera definisana ugovorom. Tap u data centru i saobraćaj drugih tenanta nisu mogući."
+  },
+  {
+    "obj": "3.5",
+    "q": "Ko treba odrediti RTO i RPO za sistem obrade narudžbi?",
+    "options": [
+      "Vlasnici poslovnih procesa kroz BIA, uz odobrenje uprave",
+      "Cloud provider u svom SLA",
+      "Administrator backup sistema na osnovu tehničkih mogućnosti",
+      "Eksterni revizor"
+    ],
+    "answer": 0,
+    "explain": "RTO i RPO proizlaze iz poslovnog uticaja prekida, pa ih određuju vlasnici procesa kroz BIA. IT predlaže rješenja i troškove, provider daje SLA za svoj servis, a revizor provjerava proces."
+  },
+  {
+    "obj": "3.5",
+    "q": "BIA pokazuje da se smije izgubiti najviše 10 minuta transakcija. Koja metrika je time definisana i šta ona NAJDIREKTNIJE određuje?",
+    "options": [
+      "RTO; određuje broj zaposlenih u DR timu",
+      "RSL; određuje procenat kapaciteta u DR okruženju",
+      "RPO; određuje učestalost backupa ili način replikacije podataka",
+      "MTD; određuje lokaciju DR centra"
+    ],
+    "answer": 2,
+    "explain": "RPO je maksimalan prihvatljiv gubitak podataka mjeren vremenom i određuje koliko često se podaci kopiraju ili repliciraju. RTO je vrijeme oporavka, RSL kapacitet tokom DR-a, a MTD granica opstanka."
+  },
+  {
+    "obj": "3.5",
+    "q": "Za kritičan sistem MTD je 6 sati, a nakon tehničkog oporavka potrebno je 2 sata za provjeru podataka (WRT). Koji RTO je NAJVIŠI prihvatljiv?",
+    "options": [
+      "4 sata",
+      "6 sati",
+      "8 sati",
+      "2 sata"
+    ],
+    "answer": 0,
+    "explain": "RTO + WRT ne smije preći MTD: 6 − 2 = 4 sata. RTO od 6 ili 8 sati prelazi MTD kada se doda WRT. 2 sata je prihvatljivo, ali nije najviša vrijednost."
+  },
+  {
+    "obj": "3.5",
+    "q": "Tokom katastrofe kompanija prihvata da sistem za izvještavanje radi sa 40% normalnog kapaciteta. Koja metrika opisuje ovaj zahtjev?",
+    "options": [
+      "Recovery Point Objective",
+      "Recovery Service Level",
+      "Maximum Tolerable Downtime",
+      "Mean Time Between Failures"
+    ],
+    "answer": 1,
+    "explain": "Recovery Service Level (RSL) je procenat normalnog kapaciteta ili performansi potreban tokom DR stanja. Omogućava manje i jeftinije DR okruženje. RPO je gubitak podataka, MTD granica prekida, a MTBF metrika pouzdanosti."
+  },
+  {
+    "obj": "3.5",
+    "q": "Organizacija je cijelu produkciju izgradila kod jednog javnog providera. Uprava je najviše zabrinuta zbog mogućnosti da provider prestane pružati uslugu zbog bankrota ili pravnog spora. Koja DR strategija NAJBOLJE adresira ovaj rizik?",
+    "options": [
+      "Multi-AZ arhitektura u istom regionu",
+      "DR u drugom regionu istog providera",
+      "Češći snapshoti u istom nalogu",
+      "DR kod drugog providera uz portabilne formate podataka i izlaznu strategiju"
+    ],
+    "answer": 3,
+    "explain": "Rizik je na nivou cijelog providera, pa ga zone i regioni istog providera ne pokrivaju. Potrebna je strategija sa drugim providerom, portabilnim podacima i konfiguracijama (IaC) i ugovornom izlaznom strategijom."
+  },
+  {
+    "obj": "3.5",
+    "q": "Sistem ima RTO 30 minuta i RPO 5 minuta, a budžet ne dozvoljava punu duplu produkciju. Koji cloud DR obrazac je NAJPRIKLADNIJI?",
+    "options": [
+      "Backup and restore sa dnevnim backupom",
+      "Cold site bez replikacije",
+      "Multi-site active/active sa punim kapacitetom na obje lokacije",
+      "Warm standby sa kontinuiranom replikacijom i umanjenim kapacitetom koji se skalira pri prelasku"
+    ],
+    "answer": 3,
+    "explain": "Warm standby daje oporavak u minutama uz manji trošak od active/active. Dnevni backup i cold site ne ispunjavaju RPO od 5 minuta ni RTO od 30 minuta, a active/active je preskup za dati budžet."
+  },
+  {
+    "obj": "3.5",
+    "q": "Uprava želi provjeriti DR plan uz NAJVIŠE povjerenja da tehnički radi, ali bez rizika prekida produkcije. Koji test je NAJBOLJI?",
+    "options": [
+      "Parallel test: DR sistemi obrađuju podatke paralelno dok produkcija radi",
+      "Full interruption test",
+      "Checklist pregled plana",
+      "Tabletop vježba"
+    ],
+    "answer": 0,
+    "explain": "Parallel test dokazuje da DR okruženje stvarno radi, a produkcija ostaje netaknuta. Full interruption daje više povjerenja, ali nosi rizik prekida. Checklist i tabletop ne dokazuju tehničku izvodljivost."
+  },
+  {
+    "obj": "3.5",
+    "q": "Tokom stvarnog ispada tim nije mogao pristupiti DR planu jer je bio pohranjen samo na wikiju u pogođenom cloud okruženju. Šta je trebalo uraditi?",
+    "options": [
+      "Pohraniti plan u isti region, ali drugi bucket.",
+      "Čuvati plan i van sistema koji štiti (druga lokacija, offline kopije) i provjeriti dostupnost tokom testova.",
+      "Plan držati samo u glavi voditelja DR tima.",
+      "Odustati od pisanog plana."
+    ],
+    "answer": 1,
+    "explain": "Plan mora biti dostupan kada primarni sistemi nisu. Čuva se na nezavisnoj lokaciji i u offline obliku, a testovi provjeravaju i njegovu dostupnost. Drugi bucket u istom regionu dijeli isti rizik, a plan u glavi jedne osobe je single point of failure."
+  },
+  {
+    "obj": "3.5",
+    "q": "DR test pokazuje da se aplikacija uspješno podiže u drugom regionu, ali ne može dešifrovati bazu. Koji propust u planiranju je NAJVJEROVATNIJI?",
+    "options": [
+      "Pogrešan tip load balancera",
+      "Premalen broj instanci u DR regionu",
+      "Ključevi enkripcije (KMS) nisu replicirani ili dostupni u DR regionu",
+      "Nedovoljno česti tabletop testovi"
+    ],
+    "answer": 2,
+    "explain": "Zavisnosti poput ključeva enkripcije, IdP-a i DNS-a moraju biti dostupne u DR lokaciji. Bez ključa replicirani podaci su neupotrebljivi. Load balancer i broj instanci ne utiču na dešifrovanje."
+  },
+  {
+    "obj": "3.5",
+    "q": "Šta je MOST important aktivnost nakon svakog DR testa ili stvarnog incidenta?",
+    "options": [
+      "Brisanje logova testa radi uštede prostora",
+      "Promjena DR providera",
+      "Lessons learned analiza, poređenje postignutih RTO/RPO sa ciljevima i ažuriranje plana",
+      "Smanjenje učestalosti budućih testova"
+    ],
+    "answer": 2,
+    "explain": "Svrha testa je pronaći nedostatke. Lessons learned i ažuriranje plana, uz mjerenje postignutih metrika, zatvaraju krug poboljšanja. Brisanje logova, promjena providera bez analize i rjeđi testovi ne doprinose."
+  },
+  {
+    "obj": "3.5",
+    "type": "order",
+    "q": "Poredaj tipove testova BC/DR plana od najmanjeg do najvećeg uticaja na produkciju.",
+    "options": [
+      "Parallel test",
+      "Checklist / read-through",
+      "Full interruption",
+      "Tabletop / structured walkthrough",
+      "Simulation"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "Checklist i tabletop nemaju uticaja na sisteme, simulacija uključuje stvarne aktivnosti bez prebacivanja produkcije, parallel test podiže DR sisteme uz produkciju, a full interruption stvarno gasi produkciju."
+  },
+  {
+    "obj": "3.4",
+    "type": "match",
+    "q": "Upari zahtjev sa kontrolom koja ga NAJBOLJE ispunjava.",
+    "options": [
+      "Administratori trebaju privilegovan pristup samo kada imaju odobren zadatak",
+      "Saobraćaj između on-prem data centra i cloud VPC-a mora biti šifrovan",
+      "Kompromitovan web server ne smije moći direktno pristupiti bazi drugih aplikacija",
+      "Povezati događaje iz IdP-a, cloud API-ja i EDR-a u jedan incident"
+    ],
+    "targets": [
+      "SIEM korelacija",
+      "PAM sa just-in-time pristupom",
+      "Mikrosegmentacija",
+      "IPsec VPN ili šifrovan dedicated link",
+      "Degaussing"
+    ],
+    "answer": [
+      1,
+      3,
+      2,
+      0
+    ],
+    "explain": "JIT privilegovan pristup daje PAM, šifrovanu vezu on-prem i cloud daje IPsec VPN ili šifrovan dedicated link, lateralno kretanje ograničava mikrosegmentacija, a povezivanje događaja iz različitih izvora radi SIEM. Degaussing je metoda sanitizacije medija."
+  },
+  {
+    "obj": "3.5",
+    "type": "multi",
+    "q": "Na osnovu zahtjeva iz BIA i zapisa sa DR testa, koja DVA zahtjeva NISU ispunjena?",
+    "snippet": "BIA (narudžbe): MTD 8 h | RTO 4 h | RPO 15 min | RSL 50 %\nStrategija: warm standby u drugom regionu, asinhrona replikacija baze\nDR test 2026-10-18, simuliran ispad primarnog regiona u 09:00\n09:00        proglašena katastrofa, aktiviran DR plan\n09:05        posljednja replicirana transakcija u DR bazi: 08:20\n11:40        aplikacija dostupna u DR regionu (kapacitet 60 %)\n11:40-17:30  provjera podataka i povratak korisnika u rad (WRT)",
+    "lang": "text",
+    "options": [
+      "RTO nije ispunjen",
+      "RPO nije ispunjen",
+      "RSL nije ispunjen",
+      "Ukupno vrijeme do povratka u rad (RTO + WRT) premašuje MTD"
+    ],
+    "answer": [1, 3],
+    "explain": "RPO: posljednja replicirana transakcija je iz 08:20, a ispad u 09:00, pa je izgubljeno 40 minuta podataka (dozvoljeno 15); asinhronu replikaciju treba ubrzati ili preći na sinhronu za ovaj sistem. MTD: tehnički oporavak traje 2 h 40 min, a provjera i povratak u rad još 5 h 50 min, ukupno 8 h 30 min, što je više od MTD od 8 h (pravilo RTO + WRT ≤ MTD). RTO (2 h 40 min ≤ 4 h) i RSL (60 % ≥ 50 %) su ispunjeni. Rezultat testa ide vlasnicima procesa i upravi, koji odlučuju o ulaganju ili prihvatanju rizika."
+  }
+]

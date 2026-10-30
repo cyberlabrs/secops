@@ -1,0 +1,227 @@
+[
+  {
+    "obj": "3.5",
+    "q": "Napravio si Ingress komandom kubectl create ingress api --class=traefik --rule=\"shop.example.com/api=api:8080\". Zahtjev na /api radi, ali /api/users vraća 404. Zašto?",
+    "options": [
+      "Putanja bez zvjezdice pravi pathType: Exact, pa odgovara samo /api",
+      "Servis api ne sluša na 8080",
+      "Traefik ne podržava ugniježđene putanje",
+      "Nedostaje defaultBackend"
+    ],
+    "answer": 0,
+    "explain": "U kubectl create ingress putanja koja završava sa * postaje Prefix, a bez nje Exact. Da servis ne sluša, i /api bi pao, a defaultBackend bi samo preuzeo zahtjev umjesto 404, ne bi ga poslao na api."
+  },
+  {
+    "obj": "3.5",
+    "q": "Ingress sa pravilom path: /app, pathType: Prefix. Koji zahtjev NEĆE odgovarati ovom pravilu?",
+    "options": [
+      "/app",
+      "/app/",
+      "/application",
+      "/app/v1/users"
+    ],
+    "answer": 2,
+    "explain": "Prefix poredi segmente razdvojene kosom crtom, pa /app odgovara /app, /app/ i svemu ispod /app/. /application je drugi segment i ne odgovara."
+  },
+  {
+    "obj": "3.5",
+    "q": "Dodaješ TLS na Ingress shop u namespaceu shop. Imaš tls.crt i tls.key. Koji je ispravan postupak?",
+    "options": [
+      "kubectl create secret generic shop-tls --from-file=tls.crt --from-file=tls.key -n kube-system i spec.tls[].secretName: kube-system/shop-tls",
+      "kubectl -n shop create secret tls shop-tls --cert=tls.crt --key=tls.key, pa u Ingress spec.tls: [{hosts: [shop.example.com], secretName: shop-tls}]",
+      "Upisati putanje do fajlova u anotaciju Ingressa",
+      "kubectl -n shop create configmap shop-tls --from-file=tls.crt --from-file=tls.key i spec.tls[].secretName: shop-tls"
+    ],
+    "answer": 1,
+    "explain": "Ingress TLS traži Secret tipa kubernetes.io/tls u istom namespaceu, a kubectl create secret tls pravi baš takav. secretName ne prihvata namespace prefiks, a ConfigMap nije podržan za certifikate."
+  },
+  {
+    "obj": "3.5",
+    "q": "Napravio si Ingress sa ingressClassName: nginx, a u klasteru kubectl get ingressclass prikazuje samo traefik. apply je prošao bez greške, ali ništa ne radi. Šta je problem?",
+    "options": [
+      "Ingress mora imati i defaultBackend",
+      "Servis mora biti tipa NodePort",
+      "Treba dodati anotaciju kubernetes.io/ingress.class: traefik pored ingressClassName",
+      "Nijedan kontroler ne obrađuje klasu nginx; treba postaviti ingressClassName: traefik"
+    ],
+    "answer": 3,
+    "explain": "Ingress obrađuje samo kontroler čija IngressClass odgovara imenu klase; nepostojeća klasa ne daje grešku pri apply. Stara anotacija je zastarjela i ne treba je kombinovati, a backend servis može biti ClusterIP."
+  },
+  {
+    "obj": "3.5",
+    "q": "Ingress u namespaceu web treba da pošalje /pay na servis payments u namespaceu billing. Šta je tačno?",
+    "options": [
+      "Dovoljno je napisati backend.service.name: payments.billing",
+      "Treba dodati ReferenceGrant u namespace billing",
+      "Ingress backend mora biti u istom namespaceu; opcije su Ingress u billing, ExternalName servis u web ili prelazak na Gateway API sa ReferenceGrant-om",
+      "Treba dodati backend.service.namespace: billing"
+    ],
+    "answer": 2,
+    "explain": "Ingress backend može pokazivati samo na servis u svom namespaceu i nema polje namespace. ReferenceGrant je Gateway API mehanizam, a ime servisa sa tačkom nije validno ime servisa."
+  },
+  {
+    "obj": "3.5",
+    "q": "Klijent tvrdi da ingress-nginx u produkciji i dalje radi pa nema razloga za promjenu. Šta je tačna procjena stanja u oktobru 2026?",
+    "options": [
+      "Projekat ingress-nginx je povučen: od marta 2026 nema novih verzija ni sigurnosnih zakrpa, pa ranjivosti ostaju otvorene; preporuka je migracija na Gateway API ili drugi kontroler",
+      "Ingress API je uklonjen iz Kubernetesa 1.35, pa će ingress-nginx prestati raditi pri nadogradnji",
+      "ingress-nginx je prešao pod održavanje kompanije F5 i dobija redovne zakrpe",
+      "ingress-nginx je deprecated tek od Kubernetes 1.40"
+    ],
+    "answer": 0,
+    "explain": "Kubernetes blog je najavio kraj održavanja u martu 2026, poslije čega nema ispravki ni sigurnosnih zakrpa, iako postojeće instalacije rade. Ingress API nije uklonjen, a F5 NGINX Ingress Controller je poseban projekat."
+  },
+  {
+    "obj": "3.4",
+    "q": "HTTPRoute shop u namespaceu shop ima parentRefs: [{name: main}]. Gateway main je u namespaceu infra. Ruta nema nikakav status. Šta je greška?",
+    "options": [
+      "Nedostaje ReferenceGrant u namespaceu infra",
+      "parentRefs bez namespace podrazumijeva namespace rute (shop), pa ruta traži nepostojeći Gateway; treba dodati namespace: infra",
+      "hostnames moraju biti prazni",
+      "Gateway mora imati gatewayClassName: shop"
+    ],
+    "answer": 1,
+    "explain": "Bez namespace polja parentRefs gleda namespace same rute, gdje Gateway ne postoji, pa ga nijedan kontroler ne vezuje. Kačenje rute na Gateway iz drugog namespacea kontroliše allowedRoutes, ne ReferenceGrant."
+  },
+  {
+    "obj": "3.4",
+    "q": "HTTPRoute u namespaceu shop ima ispravan parentRefs (name: main, namespace: infra), ali describe pokazuje Accepted=False sa razlogom NotAllowedByListeners. Listener http nema allowedRoutes. Kako popravljaš?",
+    "options": [
+      "Dodaj ReferenceGrant u namespace shop",
+      "Promijeni protokol listenera u HTTPS",
+      "Premjesti Service u namespace infra",
+      "Na listeneru postavi allowedRoutes.namespaces.from: All ili Selector koji bira namespace shop"
+    ],
+    "answer": 3,
+    "explain": "Podrazumijevano allowedRoutes.namespaces.from je Same, pa listener prihvata samo rute iz namespacea Gatewaya. ReferenceGrant služi za reference na objekte u drugom namespaceu (Service, Secret), ne za kačenje rute."
+  },
+  {
+    "obj": "3.4",
+    "q": "HTTPRoute u namespaceu shop ima backendRefs: [{name: payments, namespace: pay, port: 8080}]. Status: ResolvedRefs=False, Reason RefNotPermitted. Šta nedostaje?",
+    "options": [
+      "ReferenceGrant u namespaceu pay sa from: HTTPRoute iz namespacea shop i to: kind Service",
+      "ReferenceGrant u namespaceu shop sa from: Service iz pay",
+      "allowedRoutes.namespaces.from: All na Gatewayu",
+      "NetworkPolicy koja dozvoljava saobraćaj iz shop u pay"
+    ],
+    "answer": 0,
+    "explain": "ReferenceGrant se pravi u namespaceu cilja (pay) i dozvoljava referencu od HTTPRoute iz shop prema Service objektima. allowedRoutes reguliše kačenje na Gateway, a NetworkPolicy ne utiče na status rute."
+  },
+  {
+    "obj": "3.4",
+    "q": "Treba poslati 90% saobraćaja na web-v1 i 10% na web-v2 (oba na portu 80). Koji backendRefs fragment je ispravan?",
+    "options": [
+      "backendRefs: [{name: web-v1, port: 80, percent: 90}, {name: web-v2, port: 80, percent: 10}]",
+      "backendRefs: [{name: web-v1, weight: 90}, {name: web-v2, weight: 10}]",
+      "backendRefs: [{name: web-v1, port: 80, weight: 90}, {name: web-v2, port: 80, weight: 10}]",
+      "filters: [{type: RequestMirror, requestMirror: {backendRef: {name: web-v2, port: 80}}}]"
+    ],
+    "answer": 2,
+    "explain": "Podjela se radi poljem weight uz obavezan port za Service backend. Polje percent ne postoji u backendRefs, bez porta referenca na Service nije ispravna, a RequestMirror kopira saobraćaj umjesto da ga dijeli."
+  },
+  {
+    "obj": "3.4",
+    "q": "Svi HTTP zahtjevi na shop.example.com treba da dobiju 301 redirect na HTTPS. Koji fragment pravila HTTPRoute-a (zakačene na HTTP listener) to radi?",
+    "options": [
+      "filters: [{type: URLRewrite, urlRewrite: {scheme: https}}]",
+      "filters: [{type: RequestHeaderModifier, requestHeaderModifier: {set: [{name: Location, value: https}]}}]",
+      "backendRefs: [{name: web, port: 443}]",
+      "filters: [{type: RequestRedirect, requestRedirect: {scheme: https, statusCode: 301}}]"
+    ],
+    "answer": 3,
+    "explain": "RequestRedirect vraća klijentu redirect sa novom shemom i statusnim kodom (podrazumijevano 302). URLRewrite mijenja zahtjev prema backendu i nema scheme, a izmjena zaglavlja zahtjeva ne pravi redirect."
+  },
+  {
+    "obj": "3.4",
+    "q": "Klijenti zovu /old-api/users, a backend api očekuje /api/users. Klijent ne smije vidjeti redirect. Koji filter koristiš?",
+    "options": [
+      "URLRewrite sa path.type: ReplacePrefixMatch i replacePrefixMatch: /api, uz match PathPrefix /old-api",
+      "RequestRedirect sa path.type: ReplacePrefixMatch i replacePrefixMatch: /api",
+      "RequestHeaderModifier koji postavlja zaglavlje X-Path: /api",
+      "RequestMirror prema api servisu"
+    ],
+    "answer": 0,
+    "explain": "URLRewrite mijenja putanju prije slanja backendu, pa klijent ne vidi promjenu; ReplacePrefixMatch zamjenjuje samo dio koji je odgovarao matchu. RequestRedirect bi klijentu vratio 3xx, a header ili mirror ne mijenjaju putanju."
+  },
+  {
+    "obj": "3.4",
+    "q": "Gateway main ima HTTPS listener sa tls.certificateRefs: [{name: shop-tls}], a kubectl get gateway pokazuje PROGRAMMED False. Secret shop-tls postoji samo u namespaceu shop, a Gateway je u infra. Šta je ispravno rješenje?",
+    "options": [
+      "Dodati tls u HTTPRoute u namespaceu shop",
+      "Kreirati Secret shop-tls u namespaceu infra (ili dodati namespace: shop u certificateRefs uz ReferenceGrant u shop od Gateway prema Secret)",
+      "Promijeniti tls.mode u Passthrough",
+      "Promijeniti tip Secreta u Opaque"
+    ],
+    "answer": 1,
+    "explain": "certificateRefs bez namespace traži Secret u namespaceu Gatewaya; cross-namespace Secret traži ReferenceGrant u namespaceu Secreta. HTTPRoute nema TLS konfiguraciju, Passthrough ne terminira TLS, a Secret treba biti tipa kubernetes.io/tls."
+  },
+  {
+    "obj": "3.4",
+    "q": "U HTTPRoute pravilo ima matches: [{path: {type: PathPrefix, value: /api}, headers: [{name: x-env, value: canary}]}]. Koji zahtjev odgovara pravilu?",
+    "options": [
+      "GET /api/users bez zaglavlja x-env",
+      "GET /web sa zaglavljem x-env: canary",
+      "GET /api/users sa zaglavljem x-env: canary",
+      "Svaki zahtjev sa putanjom /api ili zaglavljem x-env: canary"
+    ],
+    "answer": 2,
+    "explain": "Uslovi unutar jednog match elementa se kombinuju sa AND, pa moraju važiti i putanja i zaglavlje. OR bi se dobio sa dva odvojena elementa u matches listi."
+  },
+  {
+    "obj": "3.4",
+    "q": "U lab klasteru sa Traefikom praviš svoj Gateway sa gatewayClassName: traefik. Listener na portu 80 ostaje neispravan, a listener na 8000 radi. Zašto?",
+    "options": [
+      "Gateway API ne dozvoljava port 80",
+      "Kod Traefika port listenera mora odgovarati portu Traefik entrypointa (8000 web, 8443 websecure), a Service traefik ih spolja izlaže kao 80/443",
+      "Port 80 je rezervisan za Ingress resurse",
+      "Treba dodati allowedRoutes.kinds za port 80"
+    ],
+    "answer": 1,
+    "explain": "To je detalj Traefik implementacije: listener se mapira na entrypoint po portu. Sam Gateway API dozvoljava bilo koji port, a drugi kontroleri često koriste 80/443 direktno."
+  },
+  {
+    "obj": "3.4",
+    "q": "Poredaj resurse redom kojim ih praviš kad u praznom klasteru (CRD-ovi i Traefik instalirani) postavljaš HTTPS ulaz za aplikaciju u namespaceu shop preko Gatewaya u infra.",
+    "type": "order",
+    "options": [
+      "HTTPRoute u shop sa parentRefs na infra/main",
+      "Secret tipa kubernetes.io/tls u infra",
+      "Provjera: kubectl describe httproute (Accepted i ResolvedRefs True) i curl",
+      "Gateway main u infra sa HTTPS listenerom i allowedRoutes koji dozvoljava shop"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Gateway referencira Secret, pa Secret ide prvi da bi listener odmah bio Programmed; ruta se kači na postojeći Gateway; provjera statusa i curl idu na kraju. Redoslijed nije strogo obavezan jer se kontroler usklađuje, ali ovako izbjegavaš privremene greške."
+  },
+  {
+    "obj": "3.4",
+    "q": "Upari Ingress polje sa odgovarajućim poljem u Gateway API-ju.",
+    "type": "match",
+    "options": [
+      "spec.ingressClassName",
+      "spec.tls[].secretName",
+      "spec.rules[].host",
+      "pathType: Prefix"
+    ],
+    "targets": [
+      "HTTPRoute spec.hostnames",
+      "matches[].path.type: PathPrefix",
+      "Gateway spec.gatewayClassName",
+      "Gateway listeners[].tls.certificateRefs",
+      "HTTPRoute filters[].type: URLRewrite"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Klasa prelazi u gatewayClassName, TLS Secret u certificateRefs listenera, host u hostnames rute, a Prefix u PathPrefix. URLRewrite zamjenjuje rewrite anotacije kontrolera, ne nijedno standardno Ingress polje."
+  },
+  {
+    "obj": "3.5",
+    "q": "U klasteru postoji IngressClass traefik sa anotacijom ingressclass.kubernetes.io/is-default-class: \"true\". Kreiraš Ingress bez polja ingressClassName. Šta se dešava?",
+    "options": [
+      "Ingress se odbija jer je ingressClassName obavezno",
+      "Ingress ostaje bez klase i niko ga ne obrađuje",
+      "Ingress obrađuju svi kontroleri u klasteru istovremeno",
+      "Ingress dobija klasu traefik jer je ona označena kao podrazumijevana"
+    ],
+    "answer": 3,
+    "explain": "Admission kontroler upisuje podrazumijevanu IngressClass u Ingress bez klase. ingressClassName nije obavezno polje, a bez default klase Ingress bi mogao ostati neobrađen."
+  }
+]

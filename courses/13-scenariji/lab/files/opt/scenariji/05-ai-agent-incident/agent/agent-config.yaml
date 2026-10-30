@@ -1,0 +1,36 @@
+# Konfiguracija agenta za podršku (stanje 14. 10. 2026)
+agent: support-agent
+model: podrska-llm-v3
+system_prompt_file: system-prompt.txt
+service_account: support-agent@kurs-shop.ba
+kb:
+  index: kb-podrska
+  top_k: 4
+  ingest:
+    schedule: "0 * * * *"
+    sources:
+      - confluence:PODRSKA
+      - ticket_attachments
+    strip_html_comments: false
+tools:
+  search_kb:
+    enabled: true
+  read_ticket:
+    enabled: true
+  run_sql:
+    enabled: true
+    db_role: support_agent_rw   # GRANT ALL ON SCHEMA shop
+  send_email:
+    enabled: true
+    allowed_domains: ["*"]
+  http_get:
+    enabled: true
+    allowed_hosts: ["*"]
+approval:
+  required_for: []
+guard:
+  enabled: false
+  policy: null
+logging:
+  traces: /var/log/agent/traces
+  retention_days: 90

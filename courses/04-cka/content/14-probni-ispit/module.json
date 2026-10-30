@@ -1,0 +1,8 @@
+{
+  "title": "Probni ispit: praktični zadaci na vrijeme",
+  "summary": "Simulacija praktičnog CKA ispita: 17 zadataka iz svih domena na jednom klasteru, sa odbrojavanjem od 120 minuta i automatskim ocjenjivanjem svakog zadatka.",
+  "minutes": 120,
+  "practice": true,
+  "title_en": "Mock exam: timed practical tasks",
+  "summary_en": "A simulation of the hands-on CKA exam: 17 tasks across all domains on a single cluster, with a 120-minute countdown and automatic grading of every task."
+}

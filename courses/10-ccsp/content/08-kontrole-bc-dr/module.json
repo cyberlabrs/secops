@@ -1,0 +1,12 @@
+{
+  "title": "Sigurnosne kontrole, BC i DR",
+  "summary": "Fizičke, IAA, sistemske, storage i komunikacijske kontrole i audit mehanizmi u cloudu; BC/DR strategija, BIA i metrike RTO, RPO, RSL i MTD, cloud DR obrasci te izrada i testiranje plana.",
+  "minutes": 75,
+  "domain": 3,
+  "objectives": [
+    "3.4",
+    "3.5"
+  ],
+  "title_en": "Security controls, BC, and DR",
+  "summary_en": "Physical, IAA, system, storage, and communication controls and audit mechanisms in the cloud; BC/DR strategy, BIA and the RTO, RPO, RSL, and MTD metrics, cloud DR patterns, and plan creation and testing."
+}

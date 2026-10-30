@@ -1,0 +1,4 @@
+# Noćno arhiviranje logova na NAS
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+25 6 * * * root /usr/local/bin/arhiviraj-logove.sh >/dev/null 2>&1

@@ -1,0 +1,12 @@
+{
+  "title": "Analiza nalaza i prioritizacija (CVSS, EPSS, KEV)",
+  "title_en": "Analyzing findings and prioritization (CVSS, EPSS, KEV)",
+  "summary": "Tumačenje izlaza alata (Nmap, Masscan, Nessus, Nuclei, OpenVAS, Nikto, ZAP, Burp, Prowler, ScoutSuite, Trivy, Checkov, BAS) i prioritizacija ranjivosti: true/false positive i negative, CVSS 3.1 i 4.0 vektori, EPSS, CISA KEV, SSVC, kontekst imovine, strategije ublažavanja i validacija ispravke.",
+  "summary_en": "Interpreting tool output (Nmap, Masscan, Nessus, Nuclei, OpenVAS, Nikto, ZAP, Burp, Prowler, ScoutSuite, Trivy, Checkov, BAS) and prioritizing vulnerabilities: true/false positives and negatives, CVSS 3.1 and 4.0 vectors, EPSS, CISA KEV, SSVC, asset context, mitigation strategies, and remediation validation.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.2",
+    "2.3"
+  ]
+}

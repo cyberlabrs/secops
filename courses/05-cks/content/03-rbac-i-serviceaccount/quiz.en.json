@@ -1,0 +1,246 @@
+[
+  {
+    "obj": "2.1",
+    "q": "The ServiceAccount ci-bot in the build namespace has a Role with 'create' on 'pods' and nothing else. The namespace also has a ServiceAccount deployer with a ClusterRoleBinding to cluster-admin. What can an attacker with the ci-bot token achieve?",
+    "options": [
+      "Nothing significant, because it can't read Secrets",
+      "Only run pods with its own ServiceAccount",
+      "Create a pod with serviceAccountName: deployer and get cluster-admin through its token",
+      "Only run pods on node node01"
+    ],
+    "answer": 2,
+    "explain": "Whoever may create a pod in a namespace may choose any ServiceAccount from that namespace, and with it its token. That is why create on pods is escalation, not just running containers."
+  },
+  {
+    "obj": "2.1",
+    "q": "A Role allows the ServiceAccount monitor only 'list' on 'secrets' (no get). What does an attacker get with that token?",
+    "options": [
+      "Only the names of Secrets, without contents",
+      "The contents of all Secrets in the namespace, because the list response contains complete objects",
+      "Nothing, because list doesn't work without get",
+      "Only Secrets of type Opaque"
+    ],
+    "answer": 1,
+    "explain": "List returns complete objects with the data field, so list (and watch) on secrets is as dangerous as get. RBAC has no filtering by Secret type."
+  },
+  {
+    "obj": "2.1",
+    "q": "The user dev has a Role with 'create' on 'rolebindings' in the team namespace, but no other permissions. They try to create a RoleBinding that grants them the ClusterRole admin in that namespace. What happens?",
+    "options": [
+      "It succeeds, because they may create rolebindings",
+      "It succeeds only if they use --dry-run=server",
+      "Denied, because a RoleBinding can't reference a ClusterRole",
+      "Denied, because RBAC doesn't allow binding a role with permissions the user doesn't have, except with the bind verb"
+    ],
+    "answer": 3,
+    "explain": "The built-in escalation protection requires the user to already have all the permissions in the role, or the bind verb on that role. A RoleBinding to a ClusterRole is otherwise allowed."
+  },
+  {
+    "obj": "2.1",
+    "q": "Which command shows ALL permissions of the ServiceAccount reporter in the finance namespace?",
+    "options": [
+      "kubectl auth can-i --list -n finance --as=system:serviceaccount:finance:reporter",
+      "kubectl auth can-i --list -n finance --as=reporter",
+      "kubectl describe serviceaccount reporter -n finance",
+      "kubectl get role -n finance --as=system:serviceaccount:finance:reporter"
+    ],
+    "answer": 0,
+    "explain": "A ServiceAccount is impersonated as system:serviceaccount:<ns>:<name>, and --list prints all permissions. --as=reporter is a regular user with that name, describe sa doesn't show permissions, and the fourth command just lists Roles as that SA."
+  },
+  {
+    "obj": "2.1",
+    "q": "Task: find all subjects that have been assigned cluster-admin. What is fastest and complete?",
+    "options": [
+      "kubectl get clusterrolebindings cluster-admin -o yaml",
+      "kubectl describe clusterrole cluster-admin",
+      "kubectl get rolebindings,clusterrolebindings -A -o wide | grep -w cluster-admin",
+      "kubectl auth can-i '*' '*' --list"
+    ],
+    "answer": 2,
+    "explain": "-o wide shows the role and the USERS, GROUPS and SERVICEACCOUNTS columns for all bindings, including RoleBindings to cluster-admin in namespaces. The first option sees only one binding with that name, describe clusterrole doesn't show subjects, and the fourth asks only about the current user."
+  },
+  {
+    "obj": "2.1",
+    "q": "A team asks for a role that allows 'get' on 'nodes/proxy' for a tool that 'only reads metrics'. Why is that risky?",
+    "options": [
+      "nodes/proxy is deprecated and doesn't work in v1.35",
+      "The kubelet API via nodes/proxy includes exec into containers, and some WebSocket connections are authorized with the get verb",
+      "get on nodes/proxy allows deleting nodes",
+      "It isn't risky; this is the recommended permission for metrics"
+    ],
+    "answer": 1,
+    "explain": "nodes/proxy covers all kubelet paths without a dedicated subresource, including command execution, so get is not just reading. For metrics there are the narrower subresources nodes/metrics and nodes/stats."
+  },
+  {
+    "obj": "2.1",
+    "q": "You reduced the permissions of the ServiceAccount reporter by deleting the RoleBinding to edit, but 'kubectl auth can-i delete pods -n finance --as=system:serviceaccount:finance:reporter' still returns yes. What is most likely?",
+    "options": [
+      "There is another binding, e.g. a ClusterRoleBinding for the SA or for the group system:serviceaccounts:finance",
+      "can-i caches the result for 10 minutes",
+      "kube-apiserver must be restarted",
+      "The ServiceAccount must be deleted and recreated"
+    ],
+    "answer": 0,
+    "explain": "Permissions are the union of all bindings for the user and their groups, so there is another one somewhere. can-i is evaluated live, and restarting the API server or recreating the SA isn't needed."
+  },
+  {
+    "obj": "2.1",
+    "q": "An application needs to read only the ConfigMap app-config in the shop namespace. Which Role rule is the narrowest correct one?",
+    "options": [
+      "{apiGroups: [''], resources: ['configmaps'], verbs: ['get', 'list', 'watch']}",
+      "{apiGroups: ['*'], resources: ['configmaps'], resourceNames: ['app-config'], verbs: ['*']}",
+      "{apiGroups: [''], resources: ['configmaps'], resourceNames: ['app-config'], verbs: ['create']}",
+      "{apiGroups: [''], resources: ['configmaps'], resourceNames: ['app-config'], verbs: ['get']}"
+    ],
+    "answer": 3,
+    "explain": "resourceNames restricts the rule to one object, and get is enough for reading. The first option reads all ConfigMaps, the second uses wildcard verbs, and resourceNames can't restrict create."
+  },
+  {
+    "obj": "2.1",
+    "type": "match",
+    "q": "Match the permission with how it is abused.",
+    "options": [
+      "impersonate on groups",
+      "escalate on clusterroles",
+      "create on serviceaccounts/token",
+      "update on mutatingwebhookconfigurations"
+    ],
+    "targets": [
+      "issuing a token for any SA in the namespace",
+      "modifying every object that passes through the API server",
+      "kubectl --as-group=system:masters",
+      "adding permissions the user doesn't have to an existing role",
+      "reading kubelet logs"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "impersonate lets you act on behalf of a group (including system:masters), escalate bypasses the protection when modifying roles, serviceaccounts/token issues tokens, and a mutating webhook sees and changes objects. Kubelet logs are nodes/log."
+  },
+  {
+    "obj": "2.1",
+    "type": "order",
+    "q": "Order the steps to reduce the permissions of the SA reporter (finance), which currently has a ClusterRoleBinding to edit, so that it may only get/list pods.",
+    "options": [
+      "kubectl delete clusterrolebinding reporter-edit",
+      "kubectl -n finance create role reporter-read --verb=get,list --resource=pods",
+      "kubectl get rolebindings,clusterrolebindings -A -o wide | grep finance/reporter",
+      "kubectl auth can-i --list -n finance --as=system:serviceaccount:finance:reporter",
+      "kubectl -n finance create rolebinding reporter-read --role=reporter-read --serviceaccount=finance:reporter"
+    ],
+    "answer": [2, 1, 4, 0, 3],
+    "explain": "First you find all existing bindings, then create the narrow role and binding, then remove the overly broad binding (so the application has no gap without permissions), and finally verify the result."
+  },
+  {
+    "obj": "2.2",
+    "q": "The ServiceAccount backend-sa has automountServiceAccountToken: false. A pod using it has automountServiceAccountToken: true in its spec. Is the token mounted?",
+    "options": [
+      "No, the ServiceAccount takes precedence",
+      "No, false always wins",
+      "Yes, the value on the Pod takes precedence over the ServiceAccount",
+      "The pod is rejected at creation because of the conflict"
+    ],
+    "answer": 2,
+    "explain": "The setting on the Pod overrides the setting on the ServiceAccount, in both directions. There is no conflict or rejection, so such a pod gets the token."
+  },
+  {
+    "obj": "2.2",
+    "q": "Task: the pod web in the prod namespace must not get a token, and the ServiceAccount must not be changed (other pods share it). What do you do?",
+    "options": [
+      "kubectl -n prod patch pod web -p '{\"spec\":{\"automountServiceAccountToken\":false}}'",
+      "Add automountServiceAccountToken: false to the pod spec and recreate it (kubectl replace --force)",
+      "Delete the Secret with the token from the namespace",
+      "Add securityContext.readOnlyRootFilesystem: true"
+    ],
+    "answer": 1,
+    "explain": "The field on the pod is the only solution without changing the SA, but it is immutable on an existing pod, so the pod has to be recreated. The patch is rejected, bound tokens aren't in a Secret, and readOnlyRootFilesystem doesn't affect token mounting."
+  },
+  {
+    "obj": "2.2",
+    "q": "The Deployment backend in the prod namespace needs to use the new ServiceAccount backend-sa. Which command does that fastest?",
+    "options": [
+      "kubectl -n prod set serviceaccount deploy/backend backend-sa",
+      "kubectl -n prod patch pod -l app=backend -p '{\"spec\":{\"serviceAccountName\":\"backend-sa\"}}'",
+      "kubectl -n prod create rolebinding backend --serviceaccount=prod:backend-sa --role=backend",
+      "kubectl -n prod label deploy backend serviceaccount=backend-sa"
+    ],
+    "answer": 0,
+    "explain": "kubectl set serviceaccount changes spec.template.spec.serviceAccountName and triggers a rollout of new pods. serviceAccountName of an existing pod can't be changed, a binding doesn't change the pod's SA, and a label has no effect."
+  },
+  {
+    "obj": "2.2",
+    "q": "The exam cluster has a Secret api-sa-token of type kubernetes.io/service-account-token with the annotation kubernetes.io/service-account.name: api-sa. Why should it be removed if it isn't essential?",
+    "options": [
+      "It takes up too much space in etcd",
+      "It prevents the kubelet from mounting the bound token",
+      "It is deprecated and doesn't work in v1.35",
+      "It contains a token that never expires and isn't bound to a pod, so a leaked token gives permanent access"
+    ],
+    "answer": 3,
+    "explain": "Secret tokens have no expiry and are valid as long as the Secret and SA exist; anyone who reads Secrets can take them. They still work in v1.35 and don't affect projected tokens."
+  },
+  {
+    "obj": "2.2",
+    "q": "Which command finds all long-lived ServiceAccount tokens stored in Secrets in the cluster?",
+    "options": [
+      "kubectl get serviceaccounts -A -o wide",
+      "kubectl get secrets -A --field-selector type=kubernetes.io/service-account-token",
+      "kubectl get secrets -A -l kubernetes.io/service-account.name",
+      "kubectl get tokenrequests -A"
+    ],
+    "answer": 1,
+    "explain": "The Secret type can be filtered with a field selector. kubernetes.io/service-account.name is an annotation, not a label, so -l finds nothing; TokenRequest isn't a listable resource, and listing SAs doesn't show Secrets."
+  },
+  {
+    "obj": "2.2",
+    "q": "An attacker stole the token from /var/run/secrets/kubernetes.io/serviceaccount/token in the pod api (a bound token, v1.35). You delete the pod api. What happens to the stolen token?",
+    "options": [
+      "The API server rejects it, because a bound token is tied to a pod that no longer exists",
+      "It is valid until it expires, because deleting the pod doesn't affect the token",
+      "It is valid forever as long as the ServiceAccount exists",
+      "It is valid until kube-apiserver is restarted"
+    ],
+    "answer": 0,
+    "explain": "A bound token carries the pod's name and UID, and the API server checks that the pod still exists. Only old Secret tokens are permanent, and restarting the API server doesn't invalidate tokens."
+  },
+  {
+    "obj": "2.2",
+    "q": "An application must get a token for Vault (audience: vault) that expires in 10 minutes, and doesn't need the Kubernetes API token. What is missing in this pod? spec: {serviceAccountName: api-sa, automountServiceAccountToken: false, containers: [...volumeMounts vault-token...], volumes: [{name: vault-token, projected: {sources: [{serviceAccountToken: {path: token}}]}}]}",
+    "options": [
+      "automountServiceAccountToken: true",
+      "A Secret of type kubernetes.io/service-account-token with audience vault",
+      "audience: vault and expirationSeconds: 600 in the serviceAccountToken source",
+      "The configMap kube-root-ca.crt in the projected sources"
+    ],
+    "answer": 2,
+    "explain": "The audience and lifetime are set in the serviceAccountToken source of the projected volume (minimum 600 seconds). automount would also add an unneeded API token, Secret tokens have no audience or expiry, and Vault doesn't need the Kubernetes CA certificate."
+  },
+  {
+    "obj": "2.2",
+    "q": "A colleague gave a Role with 'get' and 'list' on 'pods' to the ServiceAccount default in the prod namespace, because 'one pod needed it'. What is the correct fix?",
+    "options": [
+      "Leave it, because get and list on pods aren't dangerous",
+      "Set automountServiceAccountToken: false on the default SA and keep the binding",
+      "Move the binding to the group system:serviceaccounts:prod",
+      "Create a dedicated SA for that pod, bind the Role to it and remove the binding from the default SA"
+    ],
+    "answer": 3,
+    "explain": "default is used by every pod without serviceAccountName, so a binding to it grants permissions to all such pods. The namespace group is even broader, and disabling automount doesn't remove the permission, it only hides it."
+  },
+  {
+    "type": "multi",
+    "obj": "2.1",
+    "q": "This Role is granted via a RoleBinding to ServiceAccount ci in namespace prod. Which statements are true? (select all that apply)",
+    "snippet": "apiVersion: rbac.authorization.k8s.io/v1\nkind: Role\nmetadata:\n  name: ci-deployer\n  namespace: prod\nrules:\n- apiGroups: [\"apps\"]\n  resources: [\"deployments\"]\n  verbs: [\"get\", \"list\", \"patch\"]\n- apiGroups: [\"\"]\n  resources: [\"secrets\"]\n  verbs: [\"list\"]\n- apiGroups: [\"\"]\n  resources: [\"pods\", \"pods/exec\"]\n  verbs: [\"get\", \"create\"]",
+    "lang": "yaml",
+    "options": [
+      "ci can read the contents of all Secrets in prod, even without the get verb on secrets",
+      "ci can run commands in any Pod in prod (kubectl exec)",
+      "ci can read Secrets in other namespaces too, because the rule has no resourceNames",
+      "ci can create new Deployments in prod"
+    ],
+    "answer": [
+      0,
+      1
+    ],
+    "explain": "list (and watch) on secrets returns whole objects including the data field, which is the same as reading every Secret. get on pods and create on pods/exec are enough for kubectl exec into any Pod in the namespace (create on pods also allows creating new Pods). A Role applies only in its own namespace, and create on deployments is not granted (patch only modifies existing ones). For least privilege, remove secrets/list and pods/exec if CI does not need them."
+  }
+]

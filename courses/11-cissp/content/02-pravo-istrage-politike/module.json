@@ -1,0 +1,13 @@
+{
+  "title": "Pravo, istrage i politike",
+  "summary": "Kategorije prava i standardi dokazivanja, kibernetički kriminal i povrede podataka (GDPR 72 h, HIPAA, NIS2, DORA, SOX, GLBA), intelektualna svojina i licence, kontrole izvoza (ITAR, EAR, Wassenaar), prekogranični tok podataka (adequacy, SCC, BCR), zakoni o privatnosti (GDPR, CCPA/CPRA, PIPL, POPIA, HIPAA), administrativne, krivične, građanske i regulatorne istrage uz legal hold, te hijerarhija politika, standarda, baselinea, procedura i smjernica.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.4",
+    "1.5",
+    "1.6"
+  ],
+  "title_en": "Law, Investigations and Policies",
+  "summary_en": "Categories of law and standards of proof, cybercrime and data breaches (GDPR 72 h, HIPAA, NIS2, DORA, SOX, GLBA), intellectual property and licensing, export controls (ITAR, EAR, Wassenaar), transborder data flow (adequacy, SCC, BCR), privacy laws (GDPR, CCPA/CPRA, PIPL, POPIA, HIPAA), administrative, criminal, civil and regulatory investigations with legal hold, and the hierarchy of policies, standards, baselines, procedures and guidelines."
+}

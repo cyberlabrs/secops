@@ -1,0 +1,263 @@
+[
+  {
+    "obj": "1.6",
+    "q": "Zadatak: instaliraj Traefik chart iz /opt/kurs/charts/traefik-*.tgz kao release traefik u namespace ingress (namespace ne postoji), sa deployment.replicas=2. Koja komanda je ispravna?",
+    "options": [
+      "helm install traefik /opt/kurs/charts/traefik-*.tgz -n ingress --create-namespace --set deployment.replicas=2",
+      "helm install /opt/kurs/charts/traefik-*.tgz traefik -n ingress --set deployment.replicas=2",
+      "helm upgrade traefik /opt/kurs/charts/traefik-*.tgz -n ingress --set deployment.replicas=2",
+      "helm template traefik /opt/kurs/charts/traefik-*.tgz -n ingress --create-namespace --set deployment.replicas=2"
+    ],
+    "answer": 0,
+    "explain": "helm install prima prvo ime releasea pa chart, a --create-namespace pravi nepostojeći namespace. Obrnut redoslijed argumenata je pogrešan, upgrade bez --install pada jer release ne postoji, a template ne instalira ništa."
+  },
+  {
+    "obj": "1.6",
+    "q": "Release web je instaliran sa `--set image.tag=1.28 --set replicaCount=3`. Kolega pokreće `helm upgrade web ./web-chart --set replicaCount=5`. Šta se dešava sa image.tag?",
+    "options": [
+      "Ostaje 1.28, jer Helm uvijek pamti prethodne vrijednosti",
+      "Vraća se na podrazumijevanu vrijednost iz values.yaml charta",
+      "Upgrade pada jer nedostaje image.tag",
+      "Ostaje 1.28 samo ako je release instaliran sa --atomic"
+    ],
+    "answer": 1,
+    "explain": "Bez --reuse-values (ili -f sa svim vrijednostima) upgrade računa vrijednosti iz defaulta charta plus onoga što je zadato u toj komandi. --atomic (u Helm 4 --rollback-on-failure) nema veze sa vrijednostima."
+  },
+  {
+    "obj": "1.6",
+    "q": "`helm history api -n prod` prikazuje revizije 1 (superseded), 2 (superseded), 3 (deployed). Izvršiš `helm rollback api 1 -n prod`. Šta pokazuje history nakon toga?",
+    "options": [
+      "Revizije 2 i 3 su obrisane, revizija 1 je deployed",
+      "Revizija 1 je deployed, revizije 2 i 3 su superseded",
+      "Nova revizija 4 sa sadržajem revizije 1 je deployed",
+      "Revizija 3 ostaje deployed dok se ne pokrene helm upgrade"
+    ],
+    "answer": 2,
+    "explain": "Rollback pravi novu reviziju sa konfiguracijom tražene revizije; istorija se ne briše niti mijenja. Zato je nakon rollbacka moguće ponovo vratiti stanje revizije 3."
+  },
+  {
+    "obj": "1.6",
+    "q": "Instalirao si release monitoring u namespace observability. `helm list` vraća praznu listu. Najvjerovatniji razlog?",
+    "options": [
+      "Release je instaliran sa --wait pa još nije završen",
+      "Helm 4 čuva release u ConfigMapi koju helm list ne čita",
+      "Release je instaliran pomoću helm template",
+      "helm list gleda samo trenutni namespace; treba helm list -n observability ili -A"
+    ],
+    "answer": 3,
+    "explain": "Helm radi u namespaceu iz konteksta ako se ne navede -n, pa release u drugom namespaceu nije vidljiv. Helm čuva stanje u Secretima, a helm install nije isto što i helm template."
+  },
+  {
+    "obj": "1.6",
+    "q": "Zadatak traži da manifeste koje bi chart /opt/kurs/charts/traefik-*.tgz napravio (sa service.spec.type=NodePort) sačuvaš u /root/traefik.yaml, bez instalacije. Koja komanda?",
+    "options": [
+      "helm template traefik /opt/kurs/charts/traefik-*.tgz --set service.spec.type=NodePort > /root/traefik.yaml",
+      "helm show values /opt/kurs/charts/traefik-*.tgz --set service.spec.type=NodePort > /root/traefik.yaml",
+      "helm get manifest traefik > /root/traefik.yaml",
+      "helm pull /opt/kurs/charts/traefik-*.tgz --untar -d /root/traefik.yaml"
+    ],
+    "answer": 0,
+    "explain": "helm template renderuje manifeste lokalno sa zadatim vrijednostima. show values ispisuje samo values.yaml charta, get manifest traži postojeći release, a pull samo raspakuje chart."
+  },
+  {
+    "obj": "1.6",
+    "q": "Imaš Helm 3 skriptu sa `helm upgrade --install app ./chart --atomic --force`. Šta se dešava u Helm 4?",
+    "options": [
+      "Komanda pada jer su oba flaga uklonjena",
+      "Komanda radi, ali uz upozorenja; novi nazivi su --rollback-on-failure i --force-replace",
+      "Komanda radi bez upozorenja; flagovi su nepromijenjeni",
+      "--atomic radi, a --force je preimenovan u --server-side"
+    ],
+    "answer": 1,
+    "explain": "Helm 4 je preimenovao --atomic u --rollback-on-failure i --force u --force-replace; stari nazivi još rade uz deprecation upozorenje. --server-side je zaseban flag za metod primjene."
+  },
+  {
+    "obj": "1.6",
+    "q": "Koje DVIJE komande prikazuju ispravne nazive vrijednosti charta prije instalacije, da ne pogađaš ključeve? (Izaberi DVA.)",
+    "options": [
+      "helm show values traefik/traefik",
+      "helm get values traefik -n traefik",
+      "helm show values /opt/kurs/charts/traefik-*.tgz",
+      "helm status traefik -n traefik",
+      "helm history traefik -n traefik"
+    ],
+    "answer": [0, 2],
+    "explain": "helm show values radi i sa repo/chart i sa lokalnim .tgz i ne zahtijeva release. get values, status i history rade samo nad već instaliranim releaseom."
+  },
+  {
+    "obj": "1.6",
+    "q": "U direktoriju overlays/prod je kustomization.yaml sa resources: [../../base] i images: [{name: nginx, newTag: \"1.28\"}]. Pokreneš `kubectl apply -f overlays/prod/`. Šta se dešava?",
+    "options": [
+      "Primijeni se base sa image tagom 1.28",
+      "kubectl prepozna kustomization.yaml i ponaša se kao apply -k",
+      "Primijeni se samo base bez izmjena",
+      "kubectl pokušava primijeniti kustomization.yaml kao običan manifest i prijavljuje grešku, a overlay se ne primjenjuje"
+    ],
+    "answer": 3,
+    "explain": "-f čita YAML fajlove iz direktorija kao obične manifeste; Kustomization nije API objekat, pa apply pada. Za Kustomize treba kubectl apply -k overlays/prod."
+  },
+  {
+    "obj": "1.6",
+    "q": "Nakon što si u kustomization.yaml dodao `commonLabels: {team: payments}` i pokrenuo `kubectl apply -k .` nad postojećim Deploymentom, dobijaš grešku: spec.selector: Invalid value ... field is immutable. Kako da dodaš labelu bez ove greške?",
+    "options": [
+      "Koristi labels sa pairs: {team: payments} i includeSelectors: false",
+      "Dodaj namePrefix: payments-",
+      "Pokreni kubectl apply -k . --force",
+      "Prebaci labelu u configMapGenerator"
+    ],
+    "answer": 0,
+    "explain": "commonLabels uvijek dodaje labele i u selectore, a selector Deploymenta je immutable. Polje labels bez includeSelectors mijenja samo metadata labele. namePrefix bi napravio novi Deployment, a generator ne dodaje labele objektima."
+  },
+  {
+    "obj": "1.6",
+    "q": "Overlay sadrži configMapGenerator za app-config. Kad promijeniš literal LOG_LEVEL=debug i ponovo uradiš apply -k, šta se dešava?",
+    "options": [
+      "ConfigMap app-config se ažurira, Podovi ne vide promjenu do ručnog restarta",
+      "Nastaje ConfigMap sa novim hash sufiksom, Deployment dobija novu referencu i radi rolling update",
+      "apply pada jer ConfigMap sa generisanim imenom ne može da se mijenja",
+      "Kustomize briše stari Deployment i pravi novi"
+    ],
+    "answer": 1,
+    "explain": "Generator dodaje hash sadržaja u ime i ažurira reference, pa promjena sadržaja mijenja Pod template i pokreće rollout. Bez hasha (disableNameSuffixHash) ponašanje bi bilo kao u prvoj opciji."
+  },
+  {
+    "obj": "1.6",
+    "q": "Šta nedostaje u ovom unosu u kustomization.yaml?\n\npatches:\n- patch: |-\n    - op: replace\n      path: /spec/replicas\n      value: 5",
+    "options": [
+      "Polje path sa imenom fajla",
+      "apiVersion i kind u samom patchu",
+      "target (npr. kind: Deployment, name: web), jer JSON 6902 patch uvijek traži target",
+      "Polje options.allowNameChange: true"
+    ],
+    "answer": 2,
+    "explain": "JSON 6902 patch je lista operacija bez identifikacije objekta, pa Kustomize mora znati na koji resurs se odnosi. apiVersion/kind se navode u strategic merge patchu, a allowNameChange služi za promjenu imena."
+  },
+  {
+    "obj": "1.8",
+    "q": "Primjenjuješ CRD sa metadata.name: backup.kurs.local, spec.group: kurs.local, names.plural: backups. API server ga odbija. Zašto?",
+    "options": [
+      "Grupa mora sadržati bar dvije tačke",
+      "scope nije naveden, a nema podrazumijevanu vrijednost Namespaced",
+      "kind mora biti identičan pluralu",
+      "metadata.name mora biti <plural>.<group>, dakle backups.kurs.local"
+    ],
+    "answer": 3,
+    "explain": "Ime CRD-a se mora poklapati sa names.plural i spec.group. Grupa samo treba tačku, a kind je CamelCase singular (Backup)."
+  },
+  {
+    "obj": "1.8",
+    "q": "Pokušavaš `kubectl apply -f backup.yaml` (kind: Backup, apiVersion: kurs.local/v1) i dobijaš: no matches for kind \"Backup\" in version \"kurs.local/v1\". Šta prvo provjeriš?",
+    "options": [
+      "kubectl get crd | grep kurs.local i da li CRD servira verziju v1",
+      "Da li postoji RoleBinding za korisnika",
+      "Logove kube-schedulera",
+      "Da li operator Pod radi"
+    ],
+    "answer": 0,
+    "explain": "Poruka znači da API server ne zna za taj kind u toj verziji: CRD nije instaliran, nije Established ili verzija nema served: true. RBAC bi dao forbidden, a operator ne utiče na to da li se CR može kreirati."
+  },
+  {
+    "obj": "1.8",
+    "q": "Operator backup-operator radi, ali novi Backup objekti nikad ne dobiju status. U logovima operatora: backups.kurs.local \"db-nightly\" is forbidden: User \"system:serviceaccount:backup-system:backup-operator\" cannot update resource \"backups/status\". Šta je rješenje?",
+    "options": [
+      "Dodati verb update na resurs backups u ClusterRole",
+      "Dodati subresurs backups/status sa verbovima update i patch u ClusterRole operatora",
+      "Promijeniti scope CRD-a na Cluster",
+      "Postaviti automountServiceAccountToken: false na operatoru"
+    ],
+    "answer": 1,
+    "explain": "Status se upisuje kroz zaseban subresurs /status, koji zahtijeva posebno pravilo. Pravo na backups ne pokriva backups/status, a scope CRD-a i token nisu uzrok."
+  },
+  {
+    "obj": "1.8",
+    "q": "Šta se dešava kada izvršiš `kubectl delete crd backups.kurs.local` u klasteru u kojem postoji 40 Backup objekata?",
+    "options": [
+      "Brisanje pada dok postoje Backup objekti",
+      "CRD se briše, Backup objekti ostaju u etcd-u i vraćaju se kad se CRD ponovo kreira",
+      "CRD i svi Backup objekti se brišu",
+      "Brišu se samo objekti u namespaceu default"
+    ],
+    "answer": 2,
+    "explain": "Brisanje CRD-a uklanja API endpoint i sve custom resurse tog tipa; ponovo kreiran CRD je prazan. Zato Helm ne briše CRD-ove pri uninstallu."
+  },
+  {
+    "obj": "1.8",
+    "q": "Zadatak: u fajl /root/backup-spec.txt upiši dokumentaciju svih polja spec resursa Backup (CRD backups.kurs.local ima openAPIV3Schema sa opisima). Najbrže rješenje?",
+    "options": [
+      "kubectl get crd backups.kurs.local -o yaml > /root/backup-spec.txt",
+      "kubectl describe backups > /root/backup-spec.txt",
+      "kubectl api-resources --api-group=kurs.local > /root/backup-spec.txt",
+      "kubectl explain backup.spec --recursive > /root/backup-spec.txt"
+    ],
+    "answer": 3,
+    "explain": "kubectl explain čita OpenAPI schemu koju CRD objavljuje i ispisuje polja sa opisima. get crd daje cijeli CRD YAML, describe opisuje postojeće objekte, a api-resources samo listu tipova."
+  },
+  {
+    "obj": "1.8",
+    "q": "CRD ima schemu sa spec.properties: schedule (string) i target (string). Primijeniš CR sa dodatnim poljem spec.retentionDays: 7. Šta se dešava (kubectl v1.35, podrazumijevana strict validacija)?",
+    "options": [
+      "kubectl prijavljuje grešku o nepoznatom polju spec.retentionDays",
+      "Polje se tiho sačuva u etcd-u",
+      "Operator automatski proširuje CRD schemu",
+      "API server dodaje polje u schemu kao string"
+    ],
+    "answer": 0,
+    "explain": "kubectl podrazumijevano šalje strict field validation, pa nepoznato polje koje nije u schemi daje grešku; sa slabijom validacijom polje bi bilo odbačeno (pruning), ne sačuvano. Schema se mijenja samo izmjenom CRD-a."
+  },
+  {
+    "obj": "1.6",
+    "type": "order",
+    "q": "Poredaj korake za nadogradnju Helm releasea ingress na novi chart uz zadržavanje postojećih vrijednosti i provjeru, sa mogućnošću vraćanja.",
+    "options": [
+      "helm upgrade ingress /opt/kurs/charts/traefik-*.tgz -n ingress --reuse-values",
+      "helm history ingress -n ingress",
+      "helm get values ingress -n ingress",
+      "helm rollback ingress -n ingress (ako nova revizija ne radi)",
+      "kubectl get pods -n ingress"
+    ],
+    "answer": [2, 0, 4, 1, 3],
+    "explain": "Prvo pogledaš trenutne vrijednosti, pa upgrade sa --reuse-values, provjeriš Podove, u history vidiš novu reviziju i po potrebi rollback na prethodnu."
+  },
+  {
+    "obj": "1.8",
+    "type": "match",
+    "q": "Upari polje CRD-a sa njegovom svrhom.",
+    "options": [
+      "spec.scope",
+      "versions[].storage",
+      "versions[].schema.openAPIV3Schema",
+      "names.shortNames",
+      "versions[].additionalPrinterColumns"
+    ],
+    "targets": [
+      "Dodatne kolone u kubectl get ispisu",
+      "Validacija i pruning polja custom resursa",
+      "Namespaced ili Cluster",
+      "Kratko ime za kubectl (npr. bk)",
+      "Verzija u kojoj se objekti čuvaju u etcd-u (tačno jedna)",
+      "Broj replika controllera"
+    ],
+    "answer": [2, 4, 1, 3, 0],
+    "explain": "scope određuje da li su CR-ovi namespaced, storage označava verziju za etcd, openAPIV3Schema validira polja, shortNames daju alias, a additionalPrinterColumns dodaju kolone. CRD nema polje za replike controllera."
+  },
+  {
+    "obj": "1.6",
+    "type": "match",
+    "q": "Upari Kustomize polje sa efektom.",
+    "options": [
+      "namePrefix: prod-",
+      "images: [{name: nginx, newTag: \"1.28\"}]",
+      "secretGenerator",
+      "resources: [../../base]"
+    ],
+    "targets": [
+      "Uključuje manifeste iz bazne kustomizacije",
+      "Pravi Secret sa hash sufiksom u imenu",
+      "Mijenja tag svih kontejnera sa imageom nginx",
+      "Dodaje prefiks imenima objekata i ažurira reference",
+      "Dodaje labelu u selectore"
+    ],
+    "answer": [3, 2, 1, 0],
+    "explain": "namePrefix mijenja imena i reference, images mijenja image tag, secretGenerator pravi Secret sa hashom, a resources uvlači base. Selectore mijenjaju commonLabels ili labels sa includeSelectors."
+  }
+]

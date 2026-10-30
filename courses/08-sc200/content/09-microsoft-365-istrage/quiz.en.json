@@ -1,0 +1,314 @@
+[
+  {
+    "obj": "2.3",
+    "q": "Your organization has Microsoft 365 E3 licenses. During an investigation you need to find activities of a compromised account from eight months ago in the unified audit log. The search returns nothing older than six months. What is the reason?",
+    "options": [
+      "Audit (Standard) keeps records for 180 days, so older records no longer exist.",
+      "Search in the Purview portal supports a range of at most 90 days.",
+      "Audit log search is turned off for that account.",
+      "Records older than 180 days are moved to an Archive and searched with the Search-UnifiedAuditLog -Archive cmdlet."
+    ],
+    "answer": 0,
+    "explain": "Audit (Standard) retains records for 180 days. One year (Entra, Exchange, OneDrive, SharePoint) requires Audit (Premium). The search range is up to 180 days, and the -Archive parameter does not exist."
+  },
+  {
+    "obj": "2.3",
+    "q": "An administrator wants to check whether the unified audit log is enabled in the tenant. They run Get-AdminAuditLogConfig in Security & Compliance PowerShell and get UnifiedAuditLogIngestionEnabled = False. What should they do?",
+    "options": [
+      "Immediately run Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true in Security & Compliance PowerShell.",
+      "Run the same cmdlet in Exchange Online PowerShell, because the value is correct there.",
+      "Assign Audit (Premium) licenses to users.",
+      "Enable the Microsoft 365 connector in Sentinel."
+    ],
+    "answer": 1,
+    "explain": "In Security & Compliance PowerShell this property always shows False. The actual state is checked in Exchange Online PowerShell. Licenses and the Sentinel connector have nothing to do with whether audit is enabled."
+  },
+  {
+    "obj": "2.3",
+    "q": "A regulator requires that audit records of all board members be kept for 10 years. The organization has Microsoft 365 E5. Which TWO steps should be taken? (Choose TWO.)",
+    "options": [
+      "Assign the 10-Year Audit Log Retention add-on license to the board members.",
+      "Increase the retention of the OfficeActivity table in Sentinel to 10 years.",
+      "Create an audit log retention policy with a 10-year duration for those users.",
+      "Enable Audit (Standard) for those users.",
+      "Export the audit log to CSV once a year."
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Ten-year retention in Purview requires a per-user add-on license and a 10-year audit log retention policy. The policy is not retroactive. Sentinel retention and CSV export are not a Purview Audit solution."
+  },
+  {
+    "obj": "2.3",
+    "q": "Ten minutes ago an analyst saw that a user shared a document with an anonymous link. A search in Microsoft Purview Audit for AnonymousLinkCreated returns no results. What is MOST LIKELY?",
+    "options": [
+      "The user does not have an Audit (Premium) license.",
+      "The analyst does not have the Audit Logs role.",
+      "SharePoint audit is not enabled.",
+      "The record has not arrived yet; for SharePoint and Exchange the delay is usually 60–90 minutes."
+    ],
+    "answer": 3,
+    "explain": "Audit records arrive with a delay of typically 60–90 minutes for the main services. Sharing is recorded in Audit (Standard), and without the role the analyst could not even run the search."
+  },
+  {
+    "obj": "2.3",
+    "q": "You need to determine which mails the attacker accessed in a compromised mailbox and which sensitivity labels those mails had. Which activity and license are you looking for?",
+    "options": [
+      "The MailItemsAccessed activity with Audit (Premium), which adds the SensitivityLabel property.",
+      "The New-InboxRule activity with Audit (Standard).",
+      "The FileAccessed activity with Audit (Standard).",
+      "The Send activity with Defender for Office 365 Plan 1."
+    ],
+    "answer": 0,
+    "explain": "MailItemsAccessed records access to mails, and Audit (Premium) adds the SensitivityLabel property. New-InboxRule is a rule, FileAccessed is SharePoint/OneDrive, and Send records sending."
+  },
+  {
+    "obj": "2.3",
+    "q": "An analyst runs audit searches in the Purview portal. They have 10 active searches and try to start an eleventh. What happens?",
+    "options": [
+      "The eleventh search is queued and starts automatically.",
+      "The oldest search is cancelled automatically.",
+      "They must wait for a search to finish or delete an existing job.",
+      "They must close the browser because searches run only while the window is open."
+    ],
+    "answer": 2,
+    "explain": "Up to 10 concurrent search jobs are allowed per user (one without filters). Jobs keep running when the browser is closed, and a new job is not queued automatically."
+  },
+  {
+    "obj": "2.3",
+    "q": "You have a Microsoft Sentinel workspace with the Microsoft 365 connector enabled. You need to find who created an inbox rule that forwards mails to an external address. Which table do you use?",
+    "options": [
+      "AuditLogs",
+      "SigninLogs",
+      "EmailEvents",
+      "OfficeActivity"
+    ],
+    "answer": 3,
+    "explain": "Exchange admin and user activities (New-InboxRule, Set-InboxRule) from the Microsoft 365 connector go to OfficeActivity. AuditLogs is the Entra ID audit, SigninLogs are sign-ins, and EmailEvents is mail delivery."
+  },
+  {
+    "obj": "2.3",
+    "q": "Complete the query so that it returns file downloads from SharePoint and OneDrive in Sentinel:\n\nOfficeActivity\n| where OfficeWorkload in (\"SharePoint\", \"OneDrive\")\n| where ______ == \"FileDownloaded\"",
+    "options": [
+      "ActionType",
+      "Operation",
+      "RecordType",
+      "EventID"
+    ],
+    "answer": 1,
+    "explain": "In the OfficeActivity table the activity name is in the Operation column. ActionType is used in Defender tables (CloudAppEvents), and EventID in SecurityEvent."
+  },
+  {
+    "obj": "2.3",
+    "q": "A phishing mail with the subject \"Action required\" arrived in hundreds of mailboxes. The organization only has Microsoft 365 E3 (without Defender for Office 365 Plan 2). How do you remove the messages with the LEAST manual effort?",
+    "options": [
+      "Create a transport rule that deletes messages with that subject.",
+      "Use Threat Explorer > Take action > Soft delete.",
+      "Create a Content search and run New-ComplianceSearchAction -Purge -PurgeType SoftDelete.",
+      "Ask users to delete the message."
+    ],
+    "answer": 2,
+    "explain": "Without MDO P2 there is no Threat Explorer. Search and purge through Content search deletes already delivered messages. A transport rule only acts on future messages."
+  },
+  {
+    "obj": "2.3",
+    "q": "An analyst is a member of the eDiscovery Manager role group. They run New-ComplianceSearchAction -Purge and get the error: A parameter can't be found that matches parameter name 'Purge'. What should be done?",
+    "options": [
+      "Add them to Organization Management in Exchange Online.",
+      "Assign them the Search And Purge role in the Microsoft Purview portal.",
+      "Assign them the View-Only Audit Logs role.",
+      "Assign them the Security Reader Entra role."
+    ],
+    "answer": 1,
+    "explain": "Deletion requires the Search And Purge role (or Organization Management) in the Purview portal. Organization Management in Exchange Online is a different group and does not grant that right."
+  },
+  {
+    "obj": "2.3",
+    "q": "A search and purge action through PowerShell on a case without Premium features did not delete all matching messages in one mailbox. What is the reason?",
+    "options": [
+      "Purge only works on OneDrive.",
+      "HardDelete requires approval in the Action center.",
+      "A single action deletes at most 10 items per location.",
+      "Search and purge deletes only unindexed items."
+    ],
+    "answer": 2,
+    "explain": "A PowerShell purge deletes up to 10 items per location (up to 100 through Graph in a Premium case). Unindexed items are not deleted, and SharePoint/OneDrive are not supported."
+  },
+  {
+    "obj": "2.3",
+    "q": "Which KeyQL query returns ONLY email messages from billing@contoso-invoices.com whose subject contains the word invoice?",
+    "options": [
+      "from: billing@contoso-invoices.com subject: invoice",
+      "from:billing@contoso-invoices.com subject:invoice kind:email",
+      "from:billing@contoso-invoices.com and subject:*voice and kind:email",
+      "from:billing@contoso-invoices.com AND subject:invoice AND kind:email"
+    ],
+    "answer": 3,
+    "explain": "Operators must be uppercase, a space between expressions means OR, a space after the colon turns the condition into a plain word, and a suffix wildcard (*voice) is not supported."
+  },
+  {
+    "obj": "2.3",
+    "q": "The legal team asks for the content of one employee's mailbox and OneDrive to be preserved while an internal investigation is running. You used a search in the Content Search case. What should you do?",
+    "options": [
+      "Create a new eDiscovery case and place a hold on the sources in it.",
+      "Add a hold to the existing search in the Content Search case.",
+      "Export the results and delete the originals.",
+      "Enable Audit (Premium) for that user."
+    ],
+    "answer": 0,
+    "explain": "Since February 2026, Content Search is a find-and-export tool, without holds and review sets. To preserve content you create a full eDiscovery case with a hold policy."
+  },
+  {
+    "obj": "2.3",
+    "q": "Before exporting, you want to quickly check whether the search finds the right messages at all, without processing the whole result. Which results view do you choose on Run query?",
+    "options": [
+      "Statistics with Investigate partially indexed items",
+      "Sample",
+      "Export report",
+      "Query keywords report"
+    ],
+    "answer": 1,
+    "explain": "Sample gives a representative sample of actual items (1, 10 or 100 per location) for review. Statistics and the keywords report give numbers, not content."
+  },
+  {
+    "obj": "2.3",
+    "q": "You want to analyze in a Sentinel workspace which Microsoft Graph API calls the apps in the tenant send. What is the prerequisite?",
+    "options": [
+      "A Microsoft Entra ID P1 or P2 license and a diagnostic setting with the MicrosoftGraphActivityLogs category.",
+      "An Audit (Premium) license for all users.",
+      "Defender for Cloud Apps with the app governance add-on.",
+      "The Microsoft 365 connector enabled in Sentinel."
+    ],
+    "answer": 0,
+    "explain": "Graph activity logs require Entra ID P1/P2 and a diagnostic setting that sends the MicrosoftGraphActivityLogs category to Log Analytics, Storage or Event Hubs."
+  },
+  {
+    "obj": "2.3",
+    "q": "Graph activity logs generate too much data and the Log Analytics cost is high. You are only interested in requests with the POST, PATCH and DELETE methods. What should you do?",
+    "options": [
+      "Add a filter on RequestMethod in the Entra diagnostic setting.",
+      "Turn off the diagnostic setting and use Purview Audit.",
+      "Add a workspace transformation (DCR) on the MicrosoftGraphActivityLogs table that drops the other rows.",
+      "Set a daily cap on the workspace."
+    ],
+    "answer": 2,
+    "explain": "Diagnostic settings do not support filtering Graph activity logs. Rows are dropped with a workspace transformation, or the table is moved to a cheaper plan. A daily cap would also drop important data."
+  },
+  {
+    "obj": "2.3",
+    "q": "Complete the query that links Graph API calls to sign-ins:\n\nMicrosoftGraphActivityLogs\n| join kind=leftouter (SigninLogs) on $left.______ == $right.UniqueTokenIdentifier",
+    "options": [
+      "RequestId",
+      "UniqueTokenId",
+      "SessionId",
+      "SignInActivityId"
+    ],
+    "answer": 3,
+    "explain": "SignInActivityId in Graph activity logs matches UniqueTokenIdentifier in the sign-in logs. RequestId and SessionId identify the request and the session, not the sign-in."
+  },
+  {
+    "obj": "2.3",
+    "q": "An analyst is investigating a suspicious OAuth app that read mails through Microsoft Graph. Which TWO sources provide direct evidence? (Choose TWO.)",
+    "options": [
+      "Purview Audit / AuditLogs for the moment consent was granted and a secret was added to the app",
+      "DeviceProcessEvents on the user's device",
+      "MicrosoftGraphActivityLogs for GET calls to /messages with the app's AppId",
+      "Content search with the query kind:im",
+      "The Statistics view in eDiscovery"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Audit shows when the app received consent and credentials, and Graph activity logs show which API calls it sent. Endpoint telemetry and eDiscovery statistics do not show API access."
+  },
+  {
+    "obj": "2.3",
+    "type": "order",
+    "q": "Order the steps for removing a delivered phishing mail with search and purge, from first to last.",
+    "options": [
+      "Run New-ComplianceSearchAction -Purge -PurgeType SoftDelete.",
+      "Connect with Connect-IPPSSession -EnableSearchOnlySession.",
+      "Check the status with Get-ComplianceSearchAction.",
+      "Create and run the search (New-ComplianceSearch, Start-ComplianceSearch).",
+      "Check the item count and the export report to make sure the search returns only the targeted messages."
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "First the session is established, then the search is created and run, and the scope is checked (deletion cannot be undone). Only then is the purge run and its status tracked."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Match the investigation requirement with the tool that BEST fulfills it.",
+    "options": [
+      "Determine who created a forwarding inbox rule.",
+      "Find all mailboxes that contain a mail with a specific subject.",
+      "See which Graph endpoints an app called and from which IP address.",
+      "Keep audit records for 10 years.",
+      "Preserve a user's content during an investigation."
+    ],
+    "targets": [
+      "Microsoft Graph activity logs",
+      "eDiscovery case with a hold",
+      "Microsoft Purview Audit",
+      "Content search (eDiscovery)",
+      "Audit (Premium) with the add-on license and a retention policy"
+    ],
+    "answer": [
+      2,
+      3,
+      0,
+      4,
+      1
+    ],
+    "explain": "User activities are in Audit, finding content is Content search, API calls are in Graph activity logs, long-term retention requires Audit (Premium) with the add-on, and preserving content requires a hold in an eDiscovery case."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Match the KeyQL expression with its meaning.",
+    "options": [
+      "subject:\"Action required\"",
+      "to: pilarp",
+      "-from:\"Sara Davis\"",
+      "kind:microsoftteams",
+      "invoic*"
+    ],
+    "targets": [
+      "Excludes messages sent by Sara Davis",
+      "Searches for the word pilarp anywhere (space after the colon)",
+      "Prefix search for words starting with invoic",
+      "Exact phrase in the subject",
+      "Chats, meetings and calls from Teams"
+    ],
+    "answer": [
+      3,
+      1,
+      0,
+      4,
+      2
+    ],
+    "explain": "Quotes search for a phrase, a space after the colon turns the condition into a plain word, minus excludes, kind:microsoftteams returns Teams items, and * works only as a prefix."
+  },
+  {
+    "obj": "2.3",
+    "q": "Ana normally works from Belgrade from address 93.87.10.20. Based on this result, what is the most likely explanation?",
+    "snippet": "OfficeActivity | where UserId == \"ana@contoso.com\" | project TimeGenerated, Operation, ClientIP, Parameters\n\nTimeGenerated     Operation          ClientIP       Parameters\n2026-10-14 07:40  UserLoggedIn       93.87.10.20\n2026-10-14 08:01  UserLoggedIn       185.220.101.4\n2026-10-14 08:02  MailItemsAccessed  185.220.101.4  MailAccessType=Bind\n2026-10-14 08:04  New-InboxRule      185.220.101.4  Name=. ; SubjectContainsWords=invoice;payment\n                                                    ForwardTo=fin-ops@outl00k-mail.net ; DeleteMessage=True\n2026-10-14 08:09  Send               185.220.101.4  Subject=Updated bank details for invoice 4471",
+    "lang": "text",
+    "options": [
+      "A compromised mailbox (BEC): the attacker reads mail, creates a hidden rule that forwards and deletes invoice emails, and sends a fake notice about changed bank details",
+      "Ana created a rule herself to archive invoices to another account; no signs of compromise",
+      "Just Outlook syncing on a new device (MailItemsAccessed Bind), with no impact",
+      "A phishing email arrived in the mailbox but Ana did not open it"
+    ],
+    "answer": 0,
+    "explain": "From 08:01 every action comes from a different address than the usual one. New-InboxRule named \".\", forwarding to an external look-alike domain and DeleteMessage for the words invoice and payment is a typical BEC trace (T1114.003 plus hiding tracks), and the Send about bank details is the fraud itself. Response: revoke sessions and reset credentials, remove the rule, check mailbox forwarding, find the sent emails (eDiscovery) and notify the recipients."
+  }
+]

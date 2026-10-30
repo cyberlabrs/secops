@@ -1,0 +1,299 @@
+[
+  {
+    "obj": "6.2",
+    "q": "Security tim mora u svim nalozima produkcijskog OU deployovati IAM rolu za SOC i EventBridge pravila koja šalju događaje u security nalog. Nalozi koji se kasnije dodaju u OU moraju automatski dobiti iste resurse. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "CloudFormation StackSet sa service-managed permissions, ciljem na OU i uključenim automatic deployment",
+      "CloudFormation StackSet sa self-managed permissions i listom ID-jeva naloga",
+      "Terraform workspace po nalogu, pokrenut ručno nakon kreiranja naloga",
+      "Lambda funkcija koja na događaj CreateAccount kreira resurse kroz SDK"
+    ],
+    "answer": 0,
+    "explain": "Service-managed StackSet cilja OU i automatski deployuje stack u nove naloge u tom OU. Self-managed traži ručno dodavanje naloga i role, a Terraform po nalogu i Lambda rješenje traže dodatan rad i održavanje."
+  },
+  {
+    "obj": "6.2",
+    "q": "Platform tim želi da Security Tooling nalog upravlja StackSets-ima za cijelu organizaciju, bez korištenja management naloga. Šta treba uraditi?",
+    "options": [
+      "Kreirati AWSCloudFormationStackSetExecutionRole u Security Tooling nalogu",
+      "Registrovati Security Tooling nalog kao delegated administrator za CloudFormation StackSets i koristiti --call-as DELEGATED_ADMIN",
+      "Dati Security Tooling nalogu AdministratorAccess u management nalogu",
+      "Prebaciti Security Tooling nalog u root OU"
+    ],
+    "answer": 1,
+    "explain": "Delegated administrator za StackSets može kreirati service-managed StackSets za organizaciju bez rada iz management naloga. Davanje administratorskih prava u management nalogu krši princip minimalne upotrebe tog naloga."
+  },
+  {
+    "obj": "6.2",
+    "q": "Produkcijski CloudFormation stack sadrži RDS bazu. Nakon greške u šablonu, ažuriranje je zamalo zamijenilo bazu novom instancom. Tim želi spriječiti da ijedno ažuriranje stacka zamijeni ili obriše tu bazu, a da ostali resursi i dalje mogu biti ažurirani. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Uključiti termination protection na stacku",
+      "Dodati DeletionPolicy: Snapshot na bazu",
+      "Postaviti stack policy koja zabranjuje Update:Replace i Update:Delete za logički ID baze",
+      "Uključiti drift detection na stacku"
+    ],
+    "answer": 2,
+    "explain": "Stack policy kontroliše koja ažuriranja su dozvoljena po resursu, pa može zabraniti zamjenu i brisanje baze. Termination protection štiti samo od brisanja cijelog stacka, DeletionPolicy djeluje pri brisanju, a drift detection samo otkriva ručne izmjene."
+  },
+  {
+    "obj": "6.2",
+    "q": "Auditor sumnja da su administratori ručno mijenjali security grupe koje je kreirao CloudFormation u produkciji. Koji alat NAJBRŽE pokazuje koje se vrijednosti razlikuju od šablona?",
+    "options": [
+      "cfn-lint nad šablonom",
+      "CloudFormation Guard nad šablonom",
+      "AWS Artifact izvještaj",
+      "CloudFormation drift detection na stacku"
+    ],
+    "answer": 3,
+    "explain": "Drift detection upoređuje stvarnu konfiguraciju resursa sa šablonom i pokazuje izmijenjena svojstva. cfn-lint i Guard provjeravaju šablon, a ne stvarno stanje resursa."
+  },
+  {
+    "obj": "6.2",
+    "q": "DevSecOps tim želi u CI pipeline-u odbiti svaki CloudFormation šablon koji kreira S3 bucket bez enkripcije ili bez blokiranog javnog pristupa, prema pravilima koja security tim piše kao policy-as-code. Koji alat ispunjava zahtjev?",
+    "options": [
+      "AWS CloudFormation Guard (cfn-guard validate) sa pravilima security tima",
+      "cfn-lint sa podrazumijevanim pravilima",
+      "AWS Config managed pravilo s3-bucket-server-side-encryption-enabled",
+      "Amazon Inspector skeniranje šablona"
+    ],
+    "answer": 0,
+    "explain": "CloudFormation Guard provjerava šablone prema vlastitim policy-as-code pravilima prije deploya. cfn-lint provjerava ispravnost šablona, Config ocjenjuje tek kreirane resurse, a Inspector ne skenira CloudFormation šablone."
+  },
+  {
+    "obj": "6.2",
+    "q": "Neki timovi deployuju CloudFormation stackove direktno iz konzole, mimo CI pipeline-a sa cfn-guard provjerom. Security tim mora spriječiti kreiranje nešifrovanih EBS volumena kroz CloudFormation bez obzira odakle se deploy pokreće. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Dodati cfn-lint u pre-commit hook",
+      "Aktivirati CloudFormation Hook (npr. Guard hook) u FAIL modu koji provjerava AWS::EC2::Volume prije kreiranja",
+      "Uključiti AWS Config pravilo encrypted-volumes bez remedijacije",
+      "Napisati Wiki stranicu sa pravilima"
+    ],
+    "answer": 1,
+    "explain": "Hook se izvršava unutar CloudFormation servisa prije kreiranja resursa, pa važi i za deploy iz konzole. Pre-commit i CI provjere se mogu zaobići, a Config samo detektuje nakon kreiranja."
+  },
+  {
+    "obj": "6.2",
+    "q": "Kompanija koristi Terraform za svu infrastrukturu. Security tim želi da pull request bude blokiran ako kod otvara SSH prema 0.0.0.0/0 ili kreira nešifrovan RDS. Koje rješenje je NAJPRIKLADNIJE?",
+    "options": [
+      "CloudFormation StackSets drift detection",
+      "AWS Firewall Manager security group politika",
+      "Pokretati Checkov (ili tfsec/Trivy) nad Terraform kodom u CI i zaustaviti build pri nalazima",
+      "Amazon GuardDuty"
+    ],
+    "answer": 2,
+    "explain": "Checkov i slični skeneri provjeravaju Terraform kod prije apply-a i mogu blokirati pull request. Firewall Manager i GuardDuty rade nad postojećim resursima ili aktivnošću, a drift detection je za CloudFormation stackove."
+  },
+  {
+    "obj": "6.2",
+    "q": "Billing izvještaji pokazuju troškove pod tagovima costcenter, CostCenter i cost-center, sa neispravnim vrijednostima. Finansije traže jedan standardni ključ i vrijednosti iz odobrene liste u svim nalozima. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "Lambda funkcija koja svake noći ispravlja tagove",
+      "AWS Config pravilo required-tags u svakom nalogu",
+      "Ručno ispravljanje kroz Tag Editor jednom mjesečno",
+      "Tag policy u AWS Organizations sa definisanim ključem CostCenter, dozvoljenim vrijednostima i enforced_for za ključne tipove resursa"
+    ],
+    "answer": 3,
+    "explain": "Tag policy standardizuje pisanje ključa i vrijednosti u cijeloj organizaciji i može odbiti neusklađeno tagovanje. Config pravilo samo provjerava prisustvo, a Lambda i ručni rad traže stalno održavanje."
+  },
+  {
+    "obj": "6.2",
+    "q": "Kompanija koristi ABAC: developeri smiju zaustavljati EC2 instance čiji tag Team odgovara njihovom tagu Team iz IdP-a. Security tim primjećuje da developer može sebi dati pristup tuđoj instanci. Šta je NAJVJEROVATNIJI propust?",
+    "options": [
+      "Developeri mogu mijenjati tag Team na instancama jer politika ne zabranjuje ec2:CreateTags za taj ključ",
+      "Politika koristi aws:ResourceTag umjesto aws:RequestTag",
+      "IAM Identity Center ne podržava session tagove",
+      "EC2 ne podržava ABAC"
+    ],
+    "answer": 0,
+    "explain": "ABAC je siguran samo ako korisnik ne može promijeniti tag koji odlučuje o pristupu; treba Deny za ec2:CreateTags i DeleteTags za ključ Team. aws:ResourceTag je ispravan ključ za postojeće resurse, a EC2 i Identity Center podržavaju ABAC."
+  },
+  {
+    "obj": "6.2",
+    "q": "Kompanija ima 150 naloga. Svaki ALB i API Gateway u produkcijskim nalozima mora imati web ACL sa AWS Managed Rules (Core rule set i Known bad inputs), uključujući resurse i naloge koji se kasnije kreiraju. Aplikacioni timovi smiju dodati svoja pravila. Koje rješenje ispunjava zahtjeve uz NAJMANJE operativnog napora?",
+    "options": [
+      "CloudFormation StackSet koji kreira web ACL u svakom nalogu",
+      "AWS Firewall Manager WAF politika sa obaveznim rule grupama kao first rule groups i scope-om na produkcijski OU",
+      "AWS Config pravilo koje detektuje ALB bez web ACL",
+      "Shield Advanced na svim ALB-ovima"
+    ],
+    "answer": 1,
+    "explain": "Firewall Manager WAF politika automatski kači web ACL na postojeće i nove resurse u scope-u, a timovi mogu dodati pravila između obaveznih grupa. StackSet ne kači ACL na nove resurse, Config samo detektuje, a Shield Advanced ne zamjenjuje WAF pravila."
+  },
+  {
+    "obj": "6.2",
+    "q": "Security tim želi u svim nalozima automatski pronaći i ukloniti pravila security grupa koja dozvoljavaju SSH i RDP sa 0.0.0.0/0. Šta je NAJBOLJE rješenje?",
+    "options": [
+      "Route 53 Resolver DNS Firewall politika",
+      "AWS Network Firewall u svakom VPC-u",
+      "Firewall Manager security group content audit politika sa automatskom remedijacijom",
+      "Trusted Advisor provjera security grupa"
+    ],
+    "answer": 2,
+    "explain": "Content audit politika u Firewall Manageru provjerava pravila SG prema zabranjenim obrascima u svim nalozima i može ih automatski ukloniti. DNS Firewall i Network Firewall ne mijenjaju SG pravila, a Trusted Advisor samo prijavljuje."
+  },
+  {
+    "obj": "6.2",
+    "q": "Administrator pokušava kreirati prvu AWS Firewall Manager politiku, ali politika ne prikazuje usklađenost resursa u member nalozima. Organizations sa all features i Firewall Manager administrator su podešeni. Šta NAJVJEROVATNIJE nedostaje?",
+    "options": [
+      "AWS Shield Advanced pretplata",
+      "IAM Identity Center",
+      "Amazon GuardDuty u svim nalozima",
+      "AWS Config uključen u member nalozima i regionima koje politika pokriva"
+    ],
+    "answer": 3,
+    "explain": "Firewall Manager koristi AWS Config za praćenje resursa, pa Config mora biti uključen u nalozima i regionima u scope-u. Shield Advanced treba samo za Shield politike, a GuardDuty i Identity Center nisu preduslovi."
+  },
+  {
+    "obj": "6.2",
+    "q": "Developeri moraju moći sami kreirati odobrene RDS baze (šifrovane, privatne, sa backupom), ali security tim ne želi da imaju direktna IAM prava za rds:CreateDBInstance. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "AWS Service Catalog proizvod sa RDS šablonom i launch constraint koji koristi rolu sa potrebnim pravima",
+      "Dati developerima rds:* uz permission boundary",
+      "AWS RAM dijeljenje RDS baze iz centralnog naloga",
+      "SCP koja dozvoljava rds:CreateDBInstance samo sa enkripcijom"
+    ],
+    "answer": 0,
+    "explain": "Launch constraint omogućava da Service Catalog kreira resurs pomoću posebne role, pa korisnik treba samo pravo da pokrene proizvod. rds:* sa boundary i dalje daje direktna prava, RAM dijeli postojeće resurse, a SCP ne daje dozvole."
+  },
+  {
+    "obj": "6.2",
+    "q": "Network tim upravlja VPC-ovima u centralnom Network nalogu. Aplikacioni nalozi trebaju pokretati EC2 i EKS čvorove u tim subnetima, bez vlastitih VPC-ova i bez peeringa, a ne smiju mijenjati rute ni NACL. Koje rješenje ispunjava zahtjeve?",
+    "options": [
+      "Transit Gateway attachment iz svakog naloga",
+      "VPC sharing: dijeliti subnete kroz AWS RAM sa aplikacionim OU",
+      "AWS Service Catalog proizvod koji kreira VPC u svakom nalogu",
+      "VPC peering između Network naloga i svakog aplikacionog naloga"
+    ],
+    "answer": 1,
+    "explain": "VPC sharing kroz RAM omogućava učesnicima da kreiraju resurse u dijeljenim subnetima, dok vlasnik zadržava kontrolu nad VPC-om, rutama i NACL-ovima. TGW i peering traže vlastite VPC-ove, a Service Catalog bi kreirao zasebne mreže."
+  },
+  {
+    "obj": "6.3",
+    "q": "Compliance traži da se svaki S3 bucket koji postane javno čitljiv automatski vrati na privatno u roku od nekoliko minuta, uz zapis o akciji. Koje rješenje ispunjava zahtjev uz NAJMANJE razvoja?",
+    "options": [
+      "Amazon Macie sa dnevnim discovery poslom",
+      "AWS Config pravilo s3-bucket-public-read-prohibited sa automatskom remedijacijom kroz SSM Automation runbook AWS-DisableS3BucketPublicReadWrite",
+      "Lambda funkcija pokrenuta svakih sat vremena koja provjerava sve buckete",
+      "AWS Artifact izvještaj o usklađenosti S3"
+    ],
+    "answer": 1,
+    "explain": "Config pravilo reaguje na promjenu konfiguracije, a automatska remedijacija pokreće gotov SSM runbook i bilježi izvršenje. Macie i Lambda po rasporedu nisu skoro u realnom vremenu, a Artifact sadrži AWS-ove izvještaje."
+  },
+  {
+    "obj": "6.3",
+    "q": "Security tim želi jedan pogled na usklađenost AWS Config pravila u svih 200 naloga i 4 regiona, iz Security Tooling naloga. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "Config conformance pack u Security Tooling nalogu",
+      "CloudTrail organization trail",
+      "Organization Config aggregator u Security Tooling nalogu registrovanom kao delegated administrator za Config",
+      "Kopiranje Config snapshotova u S3 i Athena upiti svake sedmice"
+    ],
+    "answer": 2,
+    "explain": "Organization aggregator objedinjuje konfiguraciju i usklađenost iz svih naloga i regiona u jedan nalog. Conformance pack je skup pravila, a ne agregacija, CloudTrail bilježi API pozive, a Athena rješenje traži ručni rad."
+  },
+  {
+    "obj": "6.3",
+    "q": "Kompanija mora pokazati usklađenost sa CIS AWS Foundations Benchmarkom za sve naloge u organizaciji, sa automatskim uključivanjem novih naloga i centralnim pregledom nalaza. Koje rješenje ispunjava zahtjev uz NAJMANJE operativnog napora?",
+    "options": [
+      "Ručno pokretati CIS skripte u svakom nalogu jednom mjesečno",
+      "Well-Architected Tool review za svaki nalog",
+      "Amazon Inspector sa CIS skeniranjem EC2 instanci",
+      "Security Hub CSPM sa delegated administratorom i central configuration politikom koja uključuje CIS AWS Foundations Benchmark standard za sve naloge"
+    ],
+    "answer": 3,
+    "explain": "Security Hub CSPM sa central configuration uključuje CIS standard u svim nalozima, uključujući nove, i agregira nalaze kod delegated admina. Inspector CIS skeniranje je za operativni sistem instanci, a Well-Architected Tool nije kontinuirana provjera kontrola."
+  },
+  {
+    "obj": "6.3",
+    "q": "Security Hub CSPM generiše nalaze za razvojni nalog koji je zvanično izuzet od jedne kontrole, a za produkcijske naloge severity treba automatski podići na CRITICAL. Koje rješenje ispunjava zahtjeve uz NAJMANJE razvoja?",
+    "options": [
+      "Security Hub automation rules koje suppress-uju nalaze za dev nalog i mijenjaju severity za produkcijske naloge",
+      "Isključiti Security Hub u razvojnom nalogu",
+      "Lambda funkcija pokrenuta EventBridge pravilom koja poziva BatchUpdateFindings",
+      "Izvoziti nalaze u CSV i ručno ih filtrirati"
+    ],
+    "answer": 0,
+    "explain": "Automation rules automatski mijenjaju polja nalaza po kriterijima kao što su nalog i kontrola, bez koda. Lambda rješenje radi, ali traži razvoj, a isključivanje Security Huba uklanja i sve ostale kontrole."
+  },
+  {
+    "obj": "6.3",
+    "q": "Pred PCI DSS audit, kompanija mora kontinuirano prikupljati dokaze o svojim kontrolama (Config ocjene, CloudTrail aktivnost, ručno dostavljene politike) mapirane na zahtjeve standarda i auditoru predati izvještaj. Koja dva koraka ispunjavaju zahtjev? (Izaberi DVA.)",
+    "options": [
+      "Kreirati AWS Audit Manager assessment na osnovu PCI DSS frameworka za relevantne naloge",
+      "Preuzeti AWS-ov PCI DSS Attestation of Compliance iz AWS Artifact kao dokaz za dio odgovornosti koji pripada AWS-u",
+      "Uključiti Amazon Detective",
+      "Uključiti AWS Shield Advanced",
+      "Koristiti Well-Architected Tool milestones kao jedini dokaz"
+    ],
+    "answer": [0, 1],
+    "explain": "Audit Manager prikuplja i mapira dokaze o kontrolama kompanije, a Artifact daje AWS-ov AOC za infrastrukturu koju održava AWS (shared responsibility). Detective, Shield i Well-Architected Tool ne prikupljaju audit dokaze za PCI."
+  },
+  {
+    "obj": "6.3",
+    "q": "Arhitekta treba procijeniti novi workload prema AWS sigurnosnim najboljim praksama, dobiti listu visokorizičnih problema sa planom poboljšanja i pratiti napredak kroz kvartale. Koje rješenje ispunjava zahtjev?",
+    "options": [
+      "AWS Trusted Advisor",
+      "AWS Audit Manager",
+      "AWS Well-Architected Tool review sa Security pillar pitanjima i milestones",
+      "AWS Config conformance pack"
+    ],
+    "answer": 2,
+    "explain": "Well-Architected Tool daje high-risk issues, improvement plan i milestones za praćenje napretka workloada. Trusted Advisor i Config rade automatske provjere resursa, a Audit Manager prikuplja dokaze za audit."
+  },
+  {
+    "obj": "6.3",
+    "type": "order",
+    "q": "Poredaj korake uvođenja automatske remedijacije neusklađenih resursa preko AWS Config ispravnim redom.",
+    "options": [
+      "Kreirati IAM rolu koju SSM Automation preuzima za izmjenu resursa",
+      "Uključiti AWS Config recorder u nalogu i regionu",
+      "Pridružiti pravilu SSM Automation runbook sa Automatic=true i brojem pokušaja",
+      "Dodati managed Config pravilo koje detektuje neusklađenost",
+      "Napraviti EventBridge pravilo na Config Rules Compliance Change za obavještenje tima"
+    ],
+    "answer": [1, 3, 0, 2, 4],
+    "explain": "Bez recordera nema podataka za pravila; zatim se dodaje pravilo, priprema rola za runbook i podešava automatska remedijacija. Obavještenje o promjeni usklađenosti dodaje se na kraju."
+  },
+  {
+    "obj": "6.2",
+    "type": "match",
+    "q": "Upari zahtjev sa NAJPRIKLADNIJIM alatom.",
+    "options": [
+      "Provjeriti da šablon nema nepostojeća svojstva i pogrešne tipove",
+      "Pisati vlastita policy-as-code pravila za CloudFormation šablone u CI",
+      "Blokirati neusklađen resurs unutar CloudFormation-a i kada se deploy pokreće iz konzole",
+      "Skenirati Terraform kod u pull requestu",
+      "Pronaći ručne izmjene resursa nakon deploya"
+    ],
+    "targets": [
+      "Drift detection",
+      "Checkov",
+      "cfn-lint",
+      "CloudFormation Hooks",
+      "AWS Artifact",
+      "CloudFormation Guard"
+    ],
+    "answer": [2, 5, 3, 1, 0],
+    "explain": "cfn-lint provjerava ispravnost šablona, Guard izvršava vlastita pravila, Hooks blokiraju u samom servisu, Checkov skenira Terraform, a drift detection pokazuje ručne izmjene. Artifact nema veze sa IaC-om."
+  },
+  {
+    "obj": "6.3",
+    "type": "match",
+    "q": "Upari zahtjev auditora ili security tima sa servisom.",
+    "options": [
+      "AWS-ov SOC 2 Type II izvještaj",
+      "Potpisati HIPAA BAA za sve naloge u organizaciji",
+      "Kontinuirani dokazi o našim kontrolama mapirani na framework",
+      "Usklađenost sa FSBP standardom u svim nalozima"
+    ],
+    "targets": [
+      "AWS Audit Manager",
+      "Security Hub CSPM",
+      "AWS Artifact (reports)",
+      "AWS Artifact (organization agreements)",
+      "Amazon Detective"
+    ],
+    "answer": [2, 3, 0, 1],
+    "explain": "Artifact reports daje AWS-ove izvještaje, a Artifact organization agreements omogućava prihvatanje BAA za cijelu organizaciju. Audit Manager prikuplja dokaze o kontrolama kompanije, a Security Hub CSPM mjeri usklađenost sa FSBP."
+  }
+]

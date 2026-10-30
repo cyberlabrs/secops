@@ -1,0 +1,282 @@
+[
+  {
+    "obj": "6.1",
+    "q": "A company has 120 accounts in AWS Organizations. The security team must prevent anyone in the member accounts, including administrators, from disabling CloudTrail or deleting a GuardDuty detector. The rule must also apply to future accounts. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "An SCP with a Deny for cloudtrail:StopLogging, cloudtrail:DeleteTrail, and guardduty:DeleteDetector, attached to the organization root",
+      "An IAM permissions boundary on all roles in all accounts",
+      "An AWS Config rule that detects a disabled CloudTrail and re-enables it automatically",
+      "An RCP with a Deny for the same actions attached to the organization root"
+    ],
+    "answer": 0,
+    "explain": "An SCP limits principals in all member accounts and automatically applies to new accounts in the OU. A permissions boundary must be set on every role, Config only detects after the event, and an RCP limits access to resources and is not meant for these service configuration actions."
+  },
+  {
+    "obj": "6.1",
+    "q": "An engineer mistakenly added an Allow for a partner account outside the organization to one bucket's bucket policy. The security team wants a guarantee that S3 buckets, KMS keys, and SQS queues in all member accounts can never be accessible to principals outside the organization, regardless of the resource policy. Which solution meets the requirement?",
+    "options": [
+      "An SCP that denies s3:PutBucketPolicy to all principals",
+      "An RCP with a Deny when aws:PrincipalOrgID is not the organization ID (except for AWS services), attached to the root",
+      "IAM Access Analyzer with the organization as the zone of trust",
+      "The AWS Config rule s3-bucket-policy-grantee-check with automatic remediation"
+    ],
+    "answer": 1,
+    "explain": "An RCP sets the maximum permissions on resources and also applies to principals from other organizations, so it overrides a mistaken Allow in a bucket policy. An SCP cannot limit external principals, and Access Analyzer and Config only detect the problem after it occurs."
+  },
+  {
+    "obj": "6.1",
+    "q": "A team attached an SCP with a Deny for ec2:RunInstances outside eu-central-1 to the organization root. An engineer in the management account can still launch instances in us-east-1. Why?",
+    "options": [
+      "An SCP takes effect only after 24 hours",
+      "The engineer uses a service-linked role",
+      "An SCP does not apply to principals in the management account",
+      "The organization root cannot have a Deny SCP"
+    ],
+    "answer": 2,
+    "explain": "SCPs and RCPs do not affect the management account, which is why workloads are not kept there. An SCP takes effect immediately, and a Deny SCP can be attached to the root."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company wants to forbid public sharing of AMIs and EBS snapshots and require IMDSv2 for new instances in all accounts. The control must stay in effect even when EC2 adds new APIs, and users must get a message with a link to the internal policy. Which solution meets the requirements with the LEAST maintenance?",
+    "options": [
+      "An SCP with a list of EC2 API actions that change AMI and snapshot sharing",
+      "AWS Config rules with SSM Automation remediation",
+      "A Lambda function triggered by an EventBridge rule that resets sharing to private",
+      "An EC2 declarative policy in AWS Organizations with image and snapshot block public access, IMDS defaults, and a custom error message"
+    ],
+    "answer": 3,
+    "explain": "A declarative policy maintains configuration at the service level, applies to new APIs and new accounts, and supports a custom error message. An SCP list of APIs requires maintenance, and Config and Lambda react after the event."
+  },
+  {
+    "obj": "6.1",
+    "q": "The legal department requires that no AWS AI service (e.g., Amazon Rekognition, Amazon Transcribe) use the company's content to improve the service, in all current and future accounts. Which solution meets the requirement?",
+    "options": [
+      "An AI services opt-out policy with default optOut at the organization root and changes forbidden in child policies",
+      "An SCP that denies all rekognition:* and transcribe:* actions",
+      "Submit a request to AWS Support for each account",
+      "Enable CloudTrail data events for AI services"
+    ],
+    "answer": 0,
+    "explain": "An AI services opt-out policy at the root disables content use for all supported services and is inherited by new accounts. An SCP would forbid using the services, which is not the requirement, and individual requests do not scale."
+  },
+  {
+    "obj": "6.1",
+    "q": "A startup with a single account is moving to a multi-account environment. They need centralized logging, access through IAM Identity Center, ready-made preventive and detective controls, and standardized creation of new accounts. The team is small and wants the LEAST operational overhead. What should be recommended?",
+    "options": [
+      "Manually create Organizations, OUs, and SCPs, plus CloudFormation StackSets for logging",
+      "Set up an AWS Control Tower landing zone and use Account Factory for new accounts",
+      "Create accounts through Terraform and configure CloudTrail manually in each",
+      "Use a single account with separate VPCs per team"
+    ],
+    "answer": 1,
+    "explain": "Control Tower automatically creates a landing zone with a Security OU, Log Archive and Audit accounts, controls, and Account Factory. Building it manually gives the same result with much more work, and a single account provides no isolation."
+  },
+  {
+    "obj": "6.1",
+    "q": "An organization uses AWS Control Tower. The security team wants a CloudFormation deployment that tries to create an S3 bucket without versioning enabled to be rejected BEFORE the resource is created. Which type of control should be enabled?",
+    "options": [
+      "A detective control based on an AWS Config rule",
+      "A preventive control based on an SCP",
+      "A proactive control based on CloudFormation Hooks",
+      "The Security Hub CSPM FSBP standard"
+    ],
+    "answer": 2,
+    "explain": "Proactive controls are CloudFormation Hooks that check a resource before provisioning. A detective control finds the problem only after creation, and an SCP cannot easily check the configuration of resource properties in a template."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company already has an organization with 15 OUs and 400 accounts. It wants to adopt AWS Control Tower without recreating accounts. How can the existing accounts be brought under Control Tower management?",
+    "options": [
+      "Close the existing accounts and recreate them through Account Factory",
+      "Create a new organization and invite the accounts into it",
+      "Manually copy Control Tower's SCPs to the existing OUs",
+      "Set up the landing zone in the existing organization, then register the existing OUs so that their accounts are enrolled"
+    ],
+    "answer": 3,
+    "explain": "Control Tower can be set up in an existing organization, and Register OU enrolls the accounts, adds the AWSControlTowerExecution role, and applies the controls. Recreating accounts or a new organization is unnecessary and risky."
+  },
+  {
+    "obj": "6.1",
+    "q": "After registering an OU in AWS Control Tower, one of five accounts has the status Enrollment failed. What is the MOST LIKELY cause and procedure?",
+    "options": [
+      "The account does not meet the prerequisites (e.g., an existing AWS Config recorder or delivery channel); fix the problem and register the OU again",
+      "The account has too many IAM roles; delete the extra roles",
+      "Control Tower supports at most four accounts per OU; move the account to a new OU",
+      "The account is not in the landing zone Region; move the account to another Region"
+    ],
+    "answer": 0,
+    "explain": "A failed enrollment usually means the account does not meet the prerequisites, and existing Config resources in conflict are common. After the fix, re-register the OU. There is no limit of four accounts per OU, and accounts are not tied to a Region."
+  },
+  {
+    "obj": "6.1",
+    "q": "According to the AWS Security Reference Architecture, where should the delegated administrator for Amazon GuardDuty, AWS Security Hub, and Amazon Macie be?",
+    "options": [
+      "In the organization's management account",
+      "In the Security Tooling (Audit) account in the Security OU",
+      "In the Log Archive account",
+      "In each production account separately"
+    ],
+    "answer": 1,
+    "explain": "The SRA places security service management in the Security Tooling account, and the management account stays minimal. Log Archive serves only for immutable log storage with very limited access."
+  },
+  {
+    "obj": "6.1",
+    "q": "The SOC team must see Amazon GuardDuty findings from all 250 accounts and all Regions in use, and every new account must be protected automatically. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Enable GuardDuty in every account and send findings to the SOC's S3 bucket",
+      "Send invitations from the SOC account to all accounts and accept them manually",
+      "From the management account, register the Security Tooling account as the GuardDuty delegated administrator in every Region and enable auto-enable for all organization members",
+      "Enable GuardDuty only in the management account because it covers the entire organization"
+    ],
+    "answer": 2,
+    "explain": "A delegated administrator with auto-enable automatically enables existing and new accounts and centralizes findings; GuardDuty is regional, so it is configured per Region. Invitations and manual enablement do not scale, and the management account does not cover other accounts by itself."
+  },
+  {
+    "obj": "6.1",
+    "q": "The security team wants root users in 300 member accounts not to exist as identities that can sign in, and new accounts not to receive root credentials at all. Which solution meets the requirements with the LEAST operational overhead?",
+    "options": [
+      "Set up a hardware MFA device on root in every account and keep the devices in a safe",
+      "An SCP that denies all actions for the root user's aws:PrincipalArn",
+      "Change every account's root email to a nonexistent address",
+      "Enable centralized root access management (root credentials management) in IAM and delete the root credentials of the member accounts"
+    ],
+    "answer": 3,
+    "explain": "Root credentials management deletes the root password, keys, and MFA in member accounts, and accounts created through Organizations have no root credentials. MFA for 300 accounts is a large operational burden, an SCP does not remove credentials, and a nonexistent email removes control."
+  },
+  {
+    "obj": "6.1",
+    "q": "In a member account with deleted root credentials, a bucket policy with a Deny for Principal * locked an S3 bucket, and no one can read or fix it. Which solution enables the fix with the LEAST privilege?",
+    "options": [
+      "From the IAM delegated admin account, run sts:AssumeRoot against that account with the S3UnlockBucketPolicy task policy and delete the bucket policy",
+      "Allow password recovery for root, sign in as root, and delete the policy",
+      "Open a ticket with AWS Support to delete the bucket",
+      "Attach an SCP with Allow s3:* to the account"
+    ],
+    "answer": 0,
+    "explain": "AssumeRoot with the S3UnlockBucketPolicy task policy provides a short session limited to exactly that task. Restoring the root password grants much broader privileges, and an SCP never grants permissions and does not override a Deny in a bucket policy."
+  },
+  {
+    "obj": "6.1",
+    "q": "The platform team wants to restrict its automation so that it may use sts:AssumeRoot only to audit the state of root credentials, not to delete bucket policies. Which mechanism enables this?",
+    "options": [
+      "The aws:MultiFactorAuthPresent condition in the trust policy",
+      "The sts:TaskPolicyArn condition in the automation's IAM policy, restricted to IAMAuditRootUserCredentials",
+      "An RCP on the member accounts' S3 buckets",
+      "A permissions boundary on the member accounts' root users"
+    ],
+    "answer": 1,
+    "explain": "The sts:TaskPolicyArn key restricts which task policies a principal may request on AssumeRoot. An MFA condition does not select the task, and a permissions boundary cannot be assigned to root users."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company uses IAM Identity Center with an external IdP for all access. The security team must ensure administrator access if the IdP becomes unavailable. What is the BEST break-glass practice? (Choose TWO.)",
+    "options": [
+      "Create a small number of break-glass IAM users with hardware MFA, whose passwords are in a safe under two-person control",
+      "Give all administrators long-lived access keys as a backup",
+      "Create an EventBridge rule that sends a high-priority alarm on every sign-in of a break-glass identity",
+      "Disable CloudTrail for break-glass accounts to reduce noise",
+      "Share the management account root password in the team chat"
+    ],
+    "answer": [0, 2],
+    "explain": "Break-glass identities should be few, protected by MFA and two-person control, and every use must raise an alarm. Long-lived keys, disabled CloudTrail, and sharing the root password directly increase risk."
+  },
+  {
+    "obj": "6.1",
+    "q": "The security team wants a notification within a few minutes whenever any root user in the organization signs in or uses the API. An organization CloudTrail trail already exists. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "A daily Athena query over CloudTrail logs in S3",
+      "An Amazon Inspector rule for root activity",
+      "An EventBridge rule that catches CloudTrail events where userIdentity.type = Root and sends them to SNS",
+      "The AWS Config rule root-account-mfa-enabled"
+    ],
+    "answer": 2,
+    "explain": "EventBridge reacts to CloudTrail events in near real time and filters on the Root identity type. An Athena query is daily, Inspector does not track API activity, and the Config rule only checks whether MFA is enabled."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company wants all resources in the production OU to have the CostCenter tag spelled exactly that way and with values from an approved list, and wants creation of EC2 instances with an invalid value to be rejected. Which solution meets the requirement?",
+    "options": [
+      "The AWS Config rule required-tags",
+      "An SCP that requires aws:RequestTag/CostCenter",
+      "AWS Resource Groups Tag Editor",
+      "A tag policy with the key and values defined and enforced_for for ec2:instance"
+    ],
+    "answer": 3,
+    "explain": "A tag policy standardizes the key spelling and allowed values, and enforced_for rejects noncompliant tagging operations for the listed resource types. Config only detects, an SCP checks for the presence of the tag but makes it hard to maintain the list of values and spelling, and Tag Editor is a manual tool."
+  },
+  {
+    "obj": "6.1",
+    "q": "Compliance requires EBS volumes and RDS databases in all production accounts to have a daily backup with a 35-day retention and a copy to another Region. New accounts must automatically get the same. Which solution meets the requirement with the LEAST operational overhead?",
+    "options": [
+      "An AWS Organizations backup policy attached to the production OU",
+      "A Data Lifecycle Manager policy created manually in every account",
+      "A Lambda function that creates snapshots every day in all accounts",
+      "A CloudFormation StackSet with an AWS Backup plan for existing accounts only"
+    ],
+    "answer": 0,
+    "explain": "A backup policy centrally defines AWS Backup plans (schedule, retention, cross-Region copy) and is inherited by new accounts in the OU. Manual policies and Lambda require maintenance, and a StackSet limited to existing accounts does not cover new ones."
+  },
+  {
+    "obj": "6.1",
+    "type": "order",
+    "q": "Order the steps for introducing centralized root access and fixing a locked S3 bucket in a member account.",
+    "options": [
+      "Run aws sts assume-root with the S3UnlockBucketPolicy task policy against the member account",
+      "Enable trusted access for IAM in AWS Organizations",
+      "Register the Security Tooling account as the delegated administrator for iam.amazonaws.com",
+      "Enable root credentials management and privileged root actions (root sessions)",
+      "Delete the faulty bucket policy with the temporary credentials and set a correct one"
+    ],
+    "answer": [1, 3, 2, 0, 4],
+    "explain": "First trusted access for IAM, then enabling both capabilities, then registering the delegated administrator. Only then is the AssumeRoot session started and used to delete the faulty policy."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Match the requirement with the type of organization policy that BEST meets it.",
+    "options": [
+      "Forbid developers in member accounts from leaving the organization",
+      "Prevent access to the organization's S3 and KMS resources by principals outside the organization",
+      "Require IMDSv2 and block public sharing of snapshots, including for future APIs",
+      "Opt out of content use for improving AWS AI services",
+      "Standardize the key and values of the CostCenter tag"
+    ],
+    "targets": [
+      "Tag policy",
+      "Backup policy",
+      "Resource control policy (RCP)",
+      "Service control policy (SCP)",
+      "AI services opt-out policy",
+      "Declarative policy (EC2)"
+    ],
+    "answer": [3, 2, 5, 4, 0],
+    "explain": "An SCP limits principals, an RCP limits resources and external principals, a declarative policy maintains service configuration, AI opt-out controls content use, and a tag policy standardizes tags. The backup policy is a distractor."
+  },
+  {
+    "obj": "6.1",
+    "type": "match",
+    "q": "Match the AWS Control Tower control with the mechanism that implements it.",
+    "options": [
+      "Reject a CloudFormation stack that creates an unencrypted EBS volume before creation",
+      "Detect existing S3 buckets with public read access",
+      "Forbid deleting the CloudTrail trail that Control Tower set up"
+    ],
+    "targets": [
+      "AWS Config rule (detective)",
+      "IAM permissions boundary",
+      "SCP (preventive)",
+      "CloudFormation Hook (proactive)"
+    ],
+    "answer": [3, 0, 2],
+    "explain": "Proactive controls are CloudFormation Hooks, detective controls are Config rules, and preventive controls are SCPs, RCPs, and declarative policies. Control Tower does not use permissions boundaries for controls."
+  },
+  {
+    "obj": "6.1",
+    "type": "spot",
+    "q": "The SCP should deny everyone except the OrgPlatformAdmin role from disabling security services, and deny everyone from working outside eu-central-1 and eu-west-1 (global services are exempt). Click the lines with a mistake.",
+    "lang": "json",
+    "snippet": "{\"Version\": \"2012-10-17\", \"Statement\": [\n  {\n    \"Sid\": \"ProtectSecurityServices\",\n    \"Effect\": \"Deny\",\n    \"Action\": [\"guardduty:DeleteDetector\", \"cloudtrail:StopLogging\", \"cloudtrail:DeleteTrail\",\n               \"config:StopConfigurationRecorder\", \"organizations:LeaveOrganization\"],\n    \"Resource\": \"*\",\n    \"Condition\": {\"ArnNotLike\": {\"aws:PrincipalArn\": \"arn:aws:iam::*:role/*\"}}\n  },\n  {\n    \"Sid\": \"DenyOtherRegions\",\n    \"Effect\": \"Deny\",\n    \"NotAction\": [\"iam:*\", \"organizations:*\", \"sts:*\", \"support:*\", \"cloudfront:*\", \"route53:*\"],\n    \"Resource\": \"*\",\n    \"Condition\": {\"StringEquals\": {\"aws:RequestedRegion\": [\"eu-central-1\", \"eu-west-1\"]}}\n  }\n]}",
+    "answer": [7, 14],
+    "explain": "Line 8: the exception arn:aws:iam::*:role/* exempts EVERY role, so the deny applies only to IAM users; use arn:aws:iam::*:role/OrgPlatformAdmin. Line 15: StringEquals denies exactly the approved Regions and allows all others; use StringNotEquals. NotAction with the global services (IAM, STS, CloudFront, Route 53) is correct, otherwise the Region condition would block them."
+  }
+]

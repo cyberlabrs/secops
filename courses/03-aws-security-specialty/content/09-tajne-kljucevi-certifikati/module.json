@@ -1,0 +1,11 @@
+{
+  "title": "Tajne, ključevi i certifikati",
+  "summary": "Secrets Manager i rotacija tajni, Parameter Store SecureString, KMS ključevi i njihove politike, imported key material i custom key stores, maskiranje osjetljivih podataka u logovima i porukama, te ACM i AWS Private CA u jednom ili više regiona.",
+  "minutes": 110,
+  "domain": 5,
+  "objectives": [
+    "5.3"
+  ],
+  "title_en": "Secrets, keys, and certificates",
+  "summary_en": "Secrets Manager and secret rotation, Parameter Store SecureString, KMS keys and their policies, imported key material and custom key stores, masking sensitive data in logs and messages, and ACM and AWS Private CA in one or more Regions."
+}

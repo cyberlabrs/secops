@@ -1,0 +1,301 @@
+[
+  {
+    "obj": "1.7",
+    "q": "An organization is beginning to develop a business continuity plan. What is the FIRST step?",
+    "options": [
+      "Selecting an alternate site (hot site)",
+      "Conducting a Business Impact Analysis",
+      "Defining the project scope and securing management support and sponsorship",
+      "Testing backups"
+    ],
+    "answer": 2,
+    "explain": "BCP starts with project scope and planning: a management sponsor, the BCP team, resources, and requirements. The BIA follows, and site selection and testing come later."
+  },
+  {
+    "obj": "1.7",
+    "q": "The owner of the online payments process estimates that the organization can withstand at most 10 hours of outage. After technical restoration, 3 hours are needed to reconcile transactions. What is the MAXIMUM acceptable RTO?",
+    "options": [
+      "13 hours",
+      "10 hours",
+      "3 hours",
+      "7 hours"
+    ],
+    "answer": 3,
+    "explain": "RTO + WRT ≤ MTD, so RTO ≤ 10 − 3 = 7 hours."
+  },
+  {
+    "obj": "1.7",
+    "q": "Which BIA metric PRIMARILY determines how often backups must be made or data replicated?",
+    "options": [
+      "RPO",
+      "RTO",
+      "MTD",
+      "MTBF"
+    ],
+    "answer": 0,
+    "explain": "The RPO is the maximum acceptable data loss expressed in time; the backup or replication frequency must be equal to or shorter than the RPO."
+  },
+  {
+    "obj": "1.7",
+    "q": "What is the PRIMARY goal of a Business Impact Analysis?",
+    "options": [
+      "Identify all threats and their likelihood",
+      "Determine critical business functions, the impact of their disruption over time, and recovery time objectives",
+      "Select a data replication technology",
+      "Test the disaster recovery plan"
+    ],
+    "answer": 1,
+    "explain": "The BIA analyzes the impact of losing functions (financial, operational, legal, reputational) and determines the MTD, RTO, and RPO. Threats and likelihood are analyzed by the risk assessment."
+  },
+  {
+    "obj": "1.7",
+    "q": "Who should determine the maximum tolerable downtime (MTD) for the order processing process?",
+    "options": [
+      "IT operations, because they restore the systems",
+      "The CISO",
+      "The ERP system vendor",
+      "The business process owner and management"
+    ],
+    "answer": 3,
+    "explain": "The MTD is a business decision based on the impact on the business. IT proposes technical solutions to achieve an RTO within the MTD."
+  },
+  {
+    "obj": "1.7",
+    "q": "The BIA shows that all SaaS applications depend on a single cloud identity provider (IdP). What is the BEST conclusion from the perspective of external dependencies?",
+    "options": [
+      "The IdP is a critical external dependency and a possible cascading single point of failure, so its SLA, BC plan, and alternative emergency access should be assessed",
+      "The IdP is not relevant to the BIA because it is managed by a third party",
+      "The organization should immediately move to an on-premises Active Directory",
+      "The dependency is addressed with stronger passwords"
+    ],
+    "answer": 0,
+    "explain": "External dependencies are mapped and assessed just like internal ones. An IdP outage disables all dependent applications, so an SLA, verification of the provider's continuity, and a break-glass procedure are needed."
+  },
+  {
+    "obj": "1.7",
+    "q": "A cloud provider's SLA guarantees 99.9% monthly availability. Approximately how much downtime is allowed per month?",
+    "options": [
+      "About 4 minutes",
+      "About 7 hours",
+      "About 44 minutes",
+      "About 8.8 hours"
+    ],
+    "answer": 2,
+    "explain": "0.1% of about 730 hours per month is about 43.8 minutes. 8.76 hours is the annual value for 99.9%, and 7.3 hours per month corresponds to 99%."
+  },
+  {
+    "obj": "1.8",
+    "q": "An employee with administrator access is to be informed of their termination for a policy violation. When should their access be revoked?",
+    "options": [
+      "At the end of the notice period",
+      "After the exit interview",
+      "On the next business day",
+      "Immediately before or at the moment the termination is communicated, coordinated with HR"
+    ],
+    "answer": 3,
+    "explain": "In a hostile termination, access is revoked at the moment of notification or immediately before, to prevent sabotage or data theft."
+  },
+  {
+    "obj": "1.8",
+    "q": "A review shows that an employee who worked in three departments over five years still has rights from all of them. What problem has been identified, and which control BEST prevents it?",
+    "options": [
+      "Collusion; job rotation",
+      "Privilege creep; revoking old rights on transfer and periodic access reviews",
+      "Separation of duties; mandatory vacation",
+      "Aggregation; encryption"
+    ],
+    "answer": 1,
+    "explain": "The accumulation of rights through transfers is privilege creep. It is prevented by a transfer process that revokes old rights and by regular access reviews."
+  },
+  {
+    "obj": "1.8",
+    "q": "A bank requires loan officers to take two consecutive weeks of vacation per year, during which a colleague performs their work. What is the PRIMARY purpose of this control?",
+    "options": [
+      "Detecting fraud and irregularities that the employee would otherwise conceal",
+      "Improving employee satisfaction",
+      "Preventing privilege creep",
+      "Compliance with labor law"
+    ],
+    "answer": 0,
+    "explain": "Mandatory vacation is a detective administrative control: the replacement uncovers hidden activities that require the perpetrator's constant presence."
+  },
+  {
+    "obj": "1.8",
+    "q": "In the finance department, the same person can create a new vendor in the system and approve payment to that vendor. Which control BEST addresses this risk?",
+    "options": [
+      "Job rotation",
+      "Mandatory vacation",
+      "Separation of duties",
+      "Least privilege for reading reports"
+    ],
+    "answer": 2,
+    "explain": "Separation of duties splits a critical process so that fraud requires collusion between two people. Rotation and vacation are detective and do not directly prevent it."
+  },
+  {
+    "obj": "1.8",
+    "q": "The depth of a candidate background check should depend PRIMARILY on what?",
+    "options": [
+      "On the sensitivity of the position and the level of access the candidate will have, in accordance with the law",
+      "On the candidate's years of experience",
+      "On whether the candidate was referred by an employee",
+      "On the HR department's budget"
+    ],
+    "answer": 0,
+    "explain": "The screening is determined by the position sensitivity classification in the job description, while respecting labor law and privacy."
+  },
+  {
+    "obj": "1.8",
+    "q": "An organization engages an external firm to manage its SOC. Which contractual element BEST defines measurable commitments, such as responding to a critical alert within 15 minutes?",
+    "options": [
+      "NDA",
+      "MOU",
+      "ISA",
+      "SLA"
+    ],
+    "answer": 3,
+    "explain": "An SLA contains measurable service levels and the consequences of non-compliance. An NDA protects confidentiality, an MOU is a less formal agreement, and an ISA defines the security of network interconnections."
+  },
+  {
+    "obj": "1.8",
+    "q": "Two organizations connect their networks with a VPN tunnel to exchange data. Which document PRIMARILY defines the technical and security requirements of that connection?",
+    "options": [
+      "OLA",
+      "Interconnection Security Agreement (ISA)",
+      "SOW",
+      "AUP"
+    ],
+    "answer": 1,
+    "explain": "An ISA documents the technical and security requirements for connecting the systems of two organizations, often together with an MOU that describes the business relationship."
+  },
+  {
+    "obj": "1.9",
+    "q": "A server is worth EUR 120,000. A fire would destroy 75% of its value and is expected once every 15 years. What is the ALE?",
+    "options": [
+      "EUR 90,000",
+      "EUR 8,000",
+      "EUR 6,000",
+      "EUR 1,200"
+    ],
+    "answer": 2,
+    "explain": "SLE = 120,000 × 0.75 = EUR 90,000; ARO = 1/15 ≈ 0.0667; ALE = 90,000 / 15 = EUR 6,000."
+  },
+  {
+    "obj": "1.9",
+    "q": "The current ALE for laptop theft is EUR 50,000. Disk encryption costs EUR 12,000 per year and reduces the ALE to EUR 5,000. What is the annual value of the control?",
+    "options": [
+      "EUR 33,000",
+      "EUR 45,000",
+      "EUR 38,000",
+      "EUR 57,000"
+    ],
+    "answer": 0,
+    "explain": "Value = (ALE before − ALE after) − annual cost = (50,000 − 5,000) − 12,000 = EUR 33,000."
+  },
+  {
+    "obj": "1.9",
+    "q": "An organization buys cyber insurance that covers the costs of responding to ransomware. What is TRUE about this decision?",
+    "options": [
+      "The risk has been eliminated",
+      "Accountability for data protection has passed to the insurer",
+      "The organization no longer needs to have backups",
+      "The financial impact has been partially transferred, but accountability and reputational risk remain with the organization"
+    ],
+    "answer": 3,
+    "explain": "Risk transfer moves the financial consequences, not accountability. Insurers also require minimum controls such as MFA and offline backups."
+  },
+  {
+    "obj": "1.9",
+    "q": "The cost of the only available control for a low-impact risk is many times greater than the expected annual loss. What is the MOST appropriate treatment?",
+    "options": [
+      "Ignore the risk because it is small",
+      "Have the risk owner formally accept the risk, documented in the risk register",
+      "Implement the control anyway to comply with best practice",
+      "Transfer the risk to the IT department"
+    ],
+    "answer": 1,
+    "explain": "When a control costs more than its benefit and the risk is below the appetite, conscious and documented acceptance is correct. Ignoring is not a treatment, and a \"transfer\" within the organization is not a transfer."
+  },
+  {
+    "obj": "1.9",
+    "q": "A legacy system does not support MFA, and replacement is not possible for the next year. Access exclusively through a PAM jump host with session recording is introduced. What kind of control is this?",
+    "options": [
+      "Deterrent",
+      "Directive",
+      "Compensating",
+      "Recovery"
+    ],
+    "answer": 2,
+    "explain": "A compensating control is an alternative when the primary control is not feasible, providing approximately the same level of protection."
+  },
+  {
+    "obj": "1.9",
+    "q": "A team uses anonymous rounds of questionnaires with experts until consensus is reached on the likelihood and impact of risks. Which technique is being used?",
+    "options": [
+      "The Delphi technique, as part of qualitative analysis",
+      "Monte Carlo simulation",
+      "Quantitative ALE analysis",
+      "Fault tree analysis"
+    ],
+    "answer": 0,
+    "explain": "The Delphi technique is a qualitative method of anonymous expert consensus that reduces the influence of dominant individuals."
+  },
+  {
+    "obj": "1.9",
+    "q": "An assessor reviews the configuration, interviews administrators, and tests a control to determine whether it works as intended. Which NIST document describes this approach to control assessment?",
+    "options": [
+      "SP 800-37",
+      "SP 800-61",
+      "SP 800-137",
+      "SP 800-53A"
+    ],
+    "answer": 3,
+    "explain": "SP 800-53A defines procedures for assessing security and privacy controls through the examine, interview, and test methods. 800-37 is the RMF, 800-137 ISCM, 800-61 incident response."
+  },
+  {
+    "obj": "1.9",
+    "q": "Management wants an indicator that will signal IN ADVANCE that the risk of account compromise is rising. What is the BEST choice?",
+    "options": [
+      "The number of projects completed in the quarter",
+      "A KRI, such as a rising number of accounts without MFA and a rising number of successful phishing simulations",
+      "The total security budget",
+      "The number of SOC employees"
+    ],
+    "answer": 1,
+    "explain": "A Key Risk Indicator is an early signal of a change in risk exposure. A KPI measures process performance, and budget and headcount are inputs, not risk indicators."
+  },
+  {
+    "obj": "1.9",
+    "type": "order",
+    "q": "Order the steps of the NIST Risk Management Framework (SP 800-37 Rev. 2).",
+    "options": [
+      "Select",
+      "Authorize",
+      "Prepare",
+      "Assess",
+      "Categorize",
+      "Monitor",
+      "Implement"
+    ],
+    "answer": [2, 4, 0, 6, 3, 1, 5],
+    "explain": "Prepare, Categorize, Select, Implement, Assess, Authorize, Monitor. The Authorizing Official makes the ATO decision after the assessment, and monitoring is continuous."
+  },
+  {
+    "obj": "1.9",
+    "type": "match",
+    "q": "Match the control with its PRIMARY functional type.",
+    "options": [
+      "CCTV footage that is reviewed after an incident",
+      "A mantrap at the data center entrance",
+      "Restoring a database from an offline backup",
+      "A sign reading \"This area is under video surveillance\""
+    ],
+    "targets": [
+      "Deterrent",
+      "Preventive",
+      "Recovery",
+      "Detective"
+    ],
+    "answer": [3, 1, 2, 0],
+    "explain": "Footage reviewed after the fact is detective, a mantrap physically prevents unauthorized entry, a restore returns the system to operation, and a warning sign deters."
+  }
+]

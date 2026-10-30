@@ -1,0 +1,14 @@
+{
+  "title": "Operacije: kontrole, ranjivosti i monitoring",
+  "summary": "Mitigacione kontrole (od segmentacije i honeypota do EDR-a, NAC-a i SPF/DKIM/DMARC), upravljanje imovinom, životni ciklus upravljanja ranjivostima i alati za alerting i monitoring (SIEM, NetFlow, SNMP, syslog, SCAP).",
+  "minutes": 120,
+  "domain": 4,
+  "objectives": [
+    "4.1",
+    "4.2",
+    "4.3",
+    "4.4"
+  ],
+  "title_en": "Operations: controls, vulnerabilities, and monitoring",
+  "summary_en": "Mitigating controls (from segmentation and honeypots to EDR, NAC, and SPF/DKIM/DMARC), asset management, the vulnerability management lifecycle, and alerting and monitoring tools (SIEM, NetFlow, SNMP, syslog, SCAP)."
+}

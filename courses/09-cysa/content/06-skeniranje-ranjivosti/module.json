@@ -1,0 +1,11 @@
+{
+  "title": "Skeniranje ranjivosti",
+  "title_en": "Vulnerability scanning",
+  "summary": "Program skeniranja ranjivosti: asset inventory, planiranje (raspored, performanse, osjetljivost, segmentacija, regulativa), internal/external, agent/agentless, credentialed/non-credentialed, passive/active, discovery (mapping, fingerprinting) i baseline skeniranje prema PCI DSS, CIS i ISO 27000.",
+  "summary_en": "A vulnerability scanning program: asset inventory, planning (scheduling, performance, sensitivity, segmentation, regulations), internal/external, agent/agentless, credentialed/non-credentialed, passive/active, discovery (mapping, fingerprinting), and baseline scanning against PCI DSS, CIS, and ISO 27000.",
+  "minutes": 75,
+  "domain": 2,
+  "objectives": [
+    "2.1"
+  ]
+}

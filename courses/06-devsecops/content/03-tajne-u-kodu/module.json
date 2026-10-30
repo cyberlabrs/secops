@@ -1,0 +1,13 @@
+{
+  "title": "Tajne u kodu i git istoriji",
+  "summary": "Otkrivanje tajni u kodu i git istoriji gitleaksom i TruffleHogom, sprječavanje curenja pre-commit hookom, push protectionom, baselineom i allowlistama, i odgovor na procurjelu tajnu: opoziv, rotacija, istraga i prepisivanje istorije.",
+  "minutes": 90,
+  "domain": 2,
+  "objectives": [
+    "2.1",
+    "2.2",
+    "2.3"
+  ],
+  "title_en": "Secrets in code and git history",
+  "summary_en": "Detecting secrets in code and git history with gitleaks and TruffleHog, preventing leaks with a pre-commit hook, push protection, baselines and allowlists, and responding to a leaked secret: revoke, rotate, investigate and rewrite history."
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Sigma i detection as code",
+  "summary": "Pisanje Sigma pravila (logsource, detection, modifikatori, uslovi, korelacije), konverzija sa sigma-cli u Splunk, Elastic i KQL uz pipeline, testiranje Zircoliteom i životni ciklus detekcije kao koda.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": [
+    "3.2",
+    "3.3"
+  ],
+  "title_en": "Sigma and detection as code",
+  "summary_en": "Writing Sigma rules (logsource, detection, modifiers, conditions, correlations), converting with sigma-cli to Splunk, Elastic and KQL using pipelines, testing with Zircolite, and the detection-as-code lifecycle."
+}

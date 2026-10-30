@@ -1,0 +1,303 @@
+[
+  {
+    "obj": "4.1",
+    "q": "The AppSec team notices that IDOR-type vulnerabilities (accessing other users' objects by changing an ID) recur in the applications of seven different development teams, even though all the teams use SAST. What is the BEST next step?",
+    "options": [
+      "Replace the existing SAST tool with a commercial tool with better detection.",
+      "Block the deployment of every application until the AppSec team manually reviews the code.",
+      "Introduce targeted training on object-level authorization and a network of security champions in the teams.",
+      "Add a WAF rule that blocks requests with numeric IDs in the URL."
+    ],
+    "answer": 2,
+    "explain": "The same error across multiple teams points to a lack of knowledge, so training with security champions addresses the root cause. SAST is poor at catching authorization errors because they are business logic errors, so a new tool helps little. Manual review of everything does not scale, and a WAF rule is a fragile compensating measure that does not fix the application."
+  },
+  {
+    "obj": "4.1",
+    "q": "A bank is contracting application development with an external firm and wants to include measurable, verifiable security requirements for the application in the contract. Which document is it BEST to refer to?",
+    "options": [
+      "OWASP ASVS, specifying the required verification level (e.g., Level 2).",
+      "OWASP Top 10, with an obligation that the application has none of the categories on the list.",
+      "CWE/SANS Top 25, with an obligation that the code contains none of the listed weaknesses.",
+      "OWASP API Security Top 10, because the application uses a REST API."
+    ],
+    "answer": 0,
+    "explain": "ASVS is a verification standard with verifiable requirements by level, so it is suitable for contracts and acceptance testing. The Top 10 lists are awareness documents that describe risk categories, not measurable requirements. The CWE Top 25 is a useful list of weaknesses, but it does not cover all application requirements."
+  },
+  {
+    "obj": "4.1",
+    "q": "An internal AI assistant has tools for sending email and deleting tickets. A user hid an instruction in a shared document for the assistant to delete all open tickets, and the assistant did so when it summarized the document. Which control MOST reduces the impact of such attacks?",
+    "options": [
+      "Extend the system prompt with a clear prohibition on deleting tickets.",
+      "Restrict the assistant's tools to the minimum necessary permissions and require human confirmation for destructive actions.",
+      "Switch the assistant to a larger model that understands instructions better.",
+      "Encrypt the documents in the shared repository with a customer-managed key."
+    ],
+    "answer": 1,
+    "explain": "This is indirect prompt injection amplified by excessive permissions (excessive agency). Least privilege for tools and human-in-the-loop are verifiable controls that limit damage. Instructions in the prompt and a larger model guarantee nothing, and encryption does not affect content that the assistant legitimately reads."
+  },
+  {
+    "obj": "4.1",
+    "q": "A team is moving a monolithic application from on-prem servers to the cloud with autoscaling. After the migration, users are randomly logged out. Which common pitfall is the MOST likely cause?",
+    "options": [
+      "Vendor lock-in due to the use of the CSP's proprietary services.",
+      "Lack of encryption of data at rest on volumes.",
+      "Exceeding the CSP's API rate limits.",
+      "The application is not cloud-ready: it stores session state locally on an instance that is shut down or replaced."
+    ],
+    "answer": 3,
+    "explain": "Applications written for fixed servers often store sessions on local disk or in memory; with autoscaling, requests go to other instances, so the session disappears. The solution is external state storage. The other options are real risks, but do not explain the symptom."
+  },
+  {
+    "obj": "4.2",
+    "q": "A project director asks when it is MOST cost-effective to involve the security team in the development of a new cloud application that will process health data.",
+    "options": [
+      "In the testing phase, when there is an application that can be tested.",
+      "In the business requirements gathering phase, before design.",
+      "In the design phase, when the architect draws the diagrams.",
+      "Immediately before deployment, through a penetration test."
+    ],
+    "answer": 1,
+    "explain": "Data classification, regulatory obligations (e.g., HIPAA, GDPR), and security requirements must be in the business requirements, otherwise the design will not cover them. Every later phase is more expensive for corrections. Design is good, but it comes after requirements."
+  },
+  {
+    "obj": "4.2",
+    "q": "An organization is moving from a waterfall model to agile with two-week sprints. The security team still requires a manual pentest before every release, so releases are delayed. What is the BEST approach?",
+    "options": [
+      "Abolish the pentest because it is not compatible with the agile methodology.",
+      "Return to waterfall for applications that process sensitive data.",
+      "Perform a pentest once a year and accept the risk for interim releases.",
+      "Automate SAST, SCA, and DAST in the pipeline, introduce security user stories, and keep a manual pentest for significant changes."
+    ],
+    "answer": 3,
+    "explain": "In an agile and DevSecOps environment, security is built into every sprint and automated in the pipeline, while the manual pentest is kept for larger changes based on risk. Abolishing testing or an annual pentest leaves a gap, and returning to waterfall solves an organizational problem with the wrong tool."
+  },
+  {
+    "obj": "4.2",
+    "q": "Which SDLC phase is MOST often neglected in a cloud environment, and covers revocation of keys and access and secure removal of data, often through crypto-shredding?",
+    "options": [
+      "Disposal / decommissioning",
+      "Deployment",
+      "Testing",
+      "Requirements"
+    ],
+    "answer": 0,
+    "explain": "The disposal phase covers retiring the system: revoking access, rotating and destroying keys, and removing data. Since the customer has no physical access to disks in the cloud, crypto-shredding is the main technique. The other phases are not related to system retirement."
+  },
+  {
+    "obj": "4.2",
+    "q": "In which development model is security MOST often implemented as a formal gate at the end of each phase, with the risk that defects are discovered late?",
+    "options": [
+      "Agile (Scrum)",
+      "DevSecOps",
+      "Waterfall",
+      "Kanban"
+    ],
+    "answer": 2,
+    "explain": "Waterfall is sequential, and security reviews are usually gates at phase transitions, so design problems are discovered only in testing. Agile, Kanban, and DevSecOps are iterative and handle security continuously."
+  },
+  {
+    "obj": "4.3",
+    "q": "An architect needs a methodology that starts from business objectives, goes through application decomposition and attack modeling, and ends with an analysis of risk and business impact. Which methodology should be chosen?",
+    "options": [
+      "STRIDE",
+      "DREAD",
+      "ATASM",
+      "PASTA"
+    ],
+    "answer": 3,
+    "explain": "PASTA is a risk-centric methodology in seven stages, from defining business objectives to risk and impact analysis. STRIDE classifies threats by category, DREAD scores them, and ATASM is an architectural approach without explicit linking to business objectives through stages."
+  },
+  {
+    "obj": "4.3",
+    "q": "During threat modeling, the team identified 40 threats and now needs to rank them by damage, reproducibility, ease of exploitation, number of affected users, and ease of discovery. Which model are they using?",
+    "options": [
+      "STRIDE",
+      "PASTA",
+      "DREAD",
+      "ATASM"
+    ],
+    "answer": 2,
+    "explain": "DREAD is a rating model (Damage, Reproducibility, Exploitability, Affected users, Discoverability) for prioritizing already identified threats. STRIDE is used for identification and classification, and PASTA and ATASM are broader processes."
+  },
+  {
+    "obj": "4.3",
+    "q": "An administrator deletes a production database and later claims not to have done so. Logs exist only locally on the server the administrator managed. Which STRIDE category does this scenario BEST illustrate, and what is the control?",
+    "options": [
+      "Repudiation; centralized immutable audit logs outside the administrator's control.",
+      "Tampering; signing the database.",
+      "Elevation of privilege; MFA for administrators.",
+      "Spoofing; a stronger password policy."
+    ],
+    "answer": 0,
+    "explain": "Denying an action without reliable evidence is repudiation, and the control is non-repudiation through central, immutable logs that the administrator cannot alter. The other categories do not describe denial, and MFA and passwords do not provide evidence of who did what."
+  },
+  {
+    "obj": "4.3",
+    "q": "The legal team is concerned that CSP employees with privileged access could see clients' confidential data. Which combination BEST addresses this cloud-specific risk?",
+    "options": [
+      "Dedicated hosts and stronger passwords for application users.",
+      "Encryption with keys under customer control (BYOK/HYOK), approval of CSP support access, and contractual obligations with review of SOC 2 reports.",
+      "A penetration test of the CSP's infrastructure by the organization's own team.",
+      "Moving to another region of the same CSP."
+    ],
+    "answer": 1,
+    "explain": "The CSP insider threat is mitigated through technical control of keys, access approval mechanisms (customer lockbox / access approval), and contractual and audit assurance. Dedicated hosts address shared hardware, not the insider; a pentest of CSP infrastructure is usually not allowed; changing regions does not change the insider risk."
+  },
+  {
+    "obj": "4.3",
+    "q": "The production configuration of a cloud environment is often changed manually through the console, and nobody knows which version is currently approved. What is the BEST long-term measure?",
+    "options": [
+      "Enable additional alerts on every change in the console.",
+      "Prohibit console access to all engineers except one administrator.",
+      "Introduce infrastructure as code under version control with a baseline, code review, and a change control process.",
+      "Take monthly screenshots of the configuration for audit."
+    ],
+    "answer": 2,
+    "explain": "Software configuration management requires that the configuration be versioned, that there is an approved baseline and a trace of every change, with the ability to roll back. Alerts detect the symptom, a single administrator is a single point of failure and violates separation of duties, and screenshots are not a control."
+  },
+  {
+    "obj": "4.4",
+    "q": "An organization uses a SaaS HR application and has a contractual right to security testing, but no access to the source code. Which technique is the MOST appropriate?",
+    "options": [
+      "SAST",
+      "SCA",
+      "IAST",
+      "DAST"
+    ],
+    "answer": 3,
+    "explain": "DAST tests the running application from the outside, without needing the code (black box). SAST and SCA require the code or dependencies, and IAST requires an agent installed in the application, which is not possible with SaaS."
+  },
+  {
+    "obj": "4.4",
+    "q": "Developers ignore the reports of a DAST tool because they contain many false positives and do not say where the problem is in the code. Which technique BEST solves this problem while keeping dynamic testing?",
+    "options": [
+      "IAST, because an agent in the application monitors execution and gives a precise location with fewer false positives.",
+      "SCA, because it analyzes dependencies.",
+      "A black box penetration test once a year.",
+      "RASP, because it blocks attacks in production."
+    ],
+    "answer": 0,
+    "explain": "IAST combines the runtime perspective with code visibility, so it reduces false positives and shows the line of code. SCA covers only dependencies, an annual pentest does not solve the day-to-day flow, and RASP is protection in production, not testing."
+  },
+  {
+    "obj": "4.4",
+    "q": "The QA team writes a test in which a customer simultaneously sends 50 parallel requests to apply the same single-use coupon. What is this type of testing called?",
+    "options": [
+      "Regression testing",
+      "Abuse case testing",
+      "User acceptance testing",
+      "Load testing"
+    ],
+    "answer": 1,
+    "explain": "The test simulates abuse of a legitimate function (a race condition in business logic), which is an abuse/misuse case. Regression checks that old functions still work, UAT confirms requirements with users, and a load test measures performance under load, not abuse."
+  },
+  {
+    "obj": "4.4",
+    "q": "Which statement BEST describes the difference between quality assurance (QA) and quality control (QC)?",
+    "options": [
+      "QA is done only in the waterfall model, and QC only in agile.",
+      "QA is automated testing, and QC is manual testing.",
+      "QA ensures that the development process follows standards, while QC checks the product itself through testing.",
+      "QA is the responsibility of the security team, and QC of the development team."
+    ],
+    "answer": 2,
+    "explain": "QA is focused on the process (are we developing the right way), and QC on the product (does the product meet the requirements). The other statements are incorrect divisions by methodology, automation, or team."
+  },
+  {
+    "obj": "4.5",
+    "q": "A critical vulnerability has been published in a widely used open-source library. The CISO requests a list of affected applications within an hour. Which previously introduced practice would MOST enable this?",
+    "options": [
+      "An annual penetration test of all applications.",
+      "A WAF in front of all public applications.",
+      "Code review of every pull request.",
+      "An SBOM for every application, centrally stored and searchable."
+    ],
+    "answer": 3,
+    "explain": "An SBOM is an inventory of components and versions, so affected applications are found by searching. A pentest and code review do not provide an inventory, and a WAF can mitigate an attack, but does not answer the question of where the library is used."
+  },
+  {
+    "obj": "4.5",
+    "q": "Developers install packages directly from public registries without any verification. What is the BEST management measure?",
+    "options": [
+      "Prohibit the use of open-source software in the organization.",
+      "Introduce a policy and an internal approved repository (proxy) with SCA checks for vulnerabilities and licenses, with version pinning.",
+      "Ask developers to manually check every package on the internet.",
+      "Scan production once a month with a vulnerability scanner."
+    ],
+    "answer": 1,
+    "explain": "Controlled use through an approved repository, automatic SCA checks, and version pinning manages the risk without blocking work. A ban is unrealistic, manual checks do not scale, and monthly production scanning discovers the problem late."
+  },
+  {
+    "obj": "4.5",
+    "q": "An organization downloads a supplier's container image and wants to confirm that the image really comes from that supplier and has not been modified. Which control BEST ensures this?",
+    "options": [
+      "Verifying the image's digital signature (e.g., cosign) and provenance attestation before deployment.",
+      "Scanning the image for known vulnerabilities.",
+      "Running the image in an isolated namespace.",
+      "Checking that the image has a tag with a semantic version."
+    ],
+    "answer": 0,
+    "explain": "A digital signature proves authenticity (source) and integrity (unmodified), and provenance shows how the artifact was built. Vulnerability scanning does not prove origin, isolation limits damage, and a tag is easily changed and proves nothing."
+  },
+  {
+    "obj": "4.5",
+    "q": "A mobile application needs to read a user's documents from a third party's cloud storage, without the user giving their password to the application. Which mechanism is the MOST appropriate?",
+    "options": [
+      "A static API key embedded in the application.",
+      "HTTP Basic authentication over TLS.",
+      "OAuth 2.0 delegated authorization with a limited scope.",
+      "A SAML assertion that the application signs itself."
+    ],
+    "answer": 2,
+    "explain": "OAuth 2.0 enables delegated access with a limited scope, without sharing a password. An API key identifies the application, not the user, and is easily extracted from a mobile application; Basic auth requires the password; a SAML assertion signed by the application itself makes no sense because the IdP provides the signature."
+  },
+  {
+    "obj": "4.5",
+    "q": "For a critical application, an organization uses software from a small supplier. Management is concerned about what will happen if the supplier ceases to exist. Which contractual measure BEST addresses this risk?",
+    "options": [
+      "The right to an annual audit of the supplier.",
+      "A software escrow agreement under which a third party holds the source code.",
+      "An SLA with penalties for unavailability.",
+      "An obligation for the supplier to provide a SOC 2 Type II report."
+    ],
+    "answer": 1,
+    "explain": "Escrow keeps the source code with a neutral third party and hands it over to the customer if the supplier goes out of business or stops supporting the product. Audit, SLA, and SOC 2 are useful, but do not address the disappearance of the supplier."
+  },
+  {
+    "obj": "4.3",
+    "type": "order",
+    "q": "Arrange the stages of the PASTA methodology from first to last.",
+    "options": [
+      "Threat analysis",
+      "Define technical scope",
+      "Risk and impact analysis",
+      "Define objectives",
+      "Attack modeling",
+      "Application decomposition",
+      "Vulnerability and weakness analysis"
+    ],
+    "answer": [3, 1, 5, 0, 6, 4, 2],
+    "explain": "PASTA begins with business objectives, then technical scope and application decomposition, continues with threat and vulnerability analysis and attack modeling, and ends with an analysis of risk and business impact."
+  },
+  {
+    "obj": "4.4",
+    "type": "match",
+    "q": "Match each situation with the MOST appropriate security testing technique.",
+    "options": [
+      "Checking every pull request for SQL injection in the source code",
+      "Discovering a vulnerable library version and a GPL license in dependencies",
+      "Testing a SaaS application without access to the code",
+      "An agent in the test environment monitors execution during functional tests",
+      "Verifying that a user cannot access another user's invoice by changing the ID"
+    ],
+    "targets": [
+      "DAST",
+      "Abuse case testing",
+      "SAST",
+      "IAST",
+      "SCA"
+    ],
+    "answer": [2, 4, 0, 3, 1],
+    "explain": "SAST analyzes code early in the PR. SCA analyzes dependencies and licenses. DAST tests the running application without code. IAST uses an agent during testing. An attempt to access another user's object is an abuse case that catches a business logic error."
+  }
+]

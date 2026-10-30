@@ -1,0 +1,302 @@
+[
+  {
+    "obj": "3.1",
+    "q": "In the procurement process, the same person can create a new vendor in the system and approve payment to that vendor. Which control BEST prevents fraud?",
+    "options": [
+      "Rotation of duties",
+      "Separation of duties",
+      "Mandatory vacation",
+      "Defense in depth"
+    ],
+    "answer": 1,
+    "explain": "Separation of duties splits the critical steps of a process among different people, so one person cannot commit fraud alone. Rotation and mandatory vacation help DETECT existing fraud, and defense in depth is a general principle of layers."
+  },
+  {
+    "obj": "3.1",
+    "q": "An electronic lock on a data center emergency exit door should behave in a particular way on power loss. What is CORRECT?",
+    "options": [
+      "Fail-secure, because the assets in the data center are of high value",
+      "It stays in the state it was in before the power loss",
+      "Fail-safe (unlocks), because human life comes first",
+      "It locks and triggers an alarm"
+    ],
+    "answer": 2,
+    "explain": "For emergency exits, human safety takes priority over asset protection, so the lock unlocks (fail-safe/fail-open). Fail-secure is used for doors that are not an evacuation route, e.g., media cabinets."
+  },
+  {
+    "obj": "3.1",
+    "q": "An organization is introducing a Zero Trust architecture per NIST SP 800-207. Which component in the data plane enables, monitors and terminates the connection between the subject and the resource based on the decision?",
+    "options": [
+      "Policy Enforcement Point (PEP)",
+      "Policy Engine (PE)",
+      "Policy Administrator (PA)",
+      "Continuous diagnostics and mitigation (CDM) system"
+    ],
+    "answer": 0,
+    "explain": "The PEP is in the data plane and enforces the decision. The Policy Engine makes the decision, and the Policy Administrator executes it in the control plane (together they form the PDP). CDM is a source of device posture data."
+  },
+  {
+    "obj": "3.1",
+    "q": "Opening the safe with the smart cards for activating the root CA requires two authorized people to be present at the same time and each to enter their part. Which principle is applied?",
+    "options": [
+      "Separation of duties",
+      "Rotation of duties",
+      "Least privilege",
+      "Two-person integrity (dual control)"
+    ],
+    "answer": 3,
+    "explain": "Two-person integrity/dual control requires two people for the SAME critical action at the same time. SoD splits DIFFERENT steps of a process among different people. If each person knows only part of the secret, split knowledge is additionally applied."
+  },
+  {
+    "obj": "3.1",
+    "q": "A team is developing a new application for health data and wants to identify privacy threats such as record linking and patient identification. Which threat modeling methodology is MOST appropriate?",
+    "options": [
+      "DREAD",
+      "STRIDE",
+      "LINDDUN",
+      "Attack trees for physical security"
+    ],
+    "answer": 2,
+    "explain": "LINDDUN is intended for privacy threats (Linkability, Identifiability, Non-repudiation, Detectability, Disclosure, Unawareness, Non-compliance). STRIDE covers security categories, and DREAD is a ranking method."
+  },
+  {
+    "obj": "3.2",
+    "q": "In a military system, a user with a Secret clearance tries to save an excerpt from a Secret report to a file labeled Confidential. The system refuses. Which rule was applied?",
+    "options": [
+      "Biba simple integrity property",
+      "Bell-LaPadula * (star) security property",
+      "Bell-LaPadula simple security property",
+      "Clark-Wilson IVP"
+    ],
+    "answer": 1,
+    "explain": "The star property in BLP forbids writing down (no write down) so that higher-level information does not leak into a lower-level object. The simple security property forbids reading up."
+  },
+  {
+    "obj": "3.2",
+    "q": "A drug quality control system must not allow data from an untrusted source (a web form) to enter the validated results database directly. Which model BEST describes this requirement?",
+    "options": [
+      "Bell-LaPadula",
+      "Brewer-Nash",
+      "Take-Grant",
+      "Biba"
+    ],
+    "answer": 3,
+    "explain": "Biba protects integrity: no write up prevents a lower-integrity subject/data from writing to a higher-integrity object. BLP protects confidentiality, Brewer-Nash conflict of interest, and Take-Grant the propagation of rights."
+  },
+  {
+    "obj": "3.2",
+    "q": "An accounting system allows changes to the general ledger exclusively through verified programs, and a periodic procedure checks data consistency. Users have no direct access to the tables. Which model is implemented?",
+    "options": [
+      "Clark-Wilson",
+      "Biba",
+      "Graham-Denning",
+      "Noninterference"
+    ],
+    "answer": 0,
+    "explain": "Clark-Wilson uses the access triple (subject-program-object): CDIs are changed only through TPs (well-formed transactions), and the IVP verifies integrity. Biba has no concept of access only through a program."
+  },
+  {
+    "obj": "3.2",
+    "q": "An audit firm has several clients from the same industry. When an auditor accesses one client's documents, the system automatically denies them access to competitors' documents. Which model is this?",
+    "options": [
+      "Bell-LaPadula with the strong star property",
+      "Lipner",
+      "Brewer-Nash (Chinese Wall)",
+      "Harrison-Ruzzo-Ullman"
+    ],
+    "answer": 2,
+    "explain": "Brewer-Nash dynamically changes rights based on previous accesses to prevent conflicts of interest. The other models have static rules or deal with rights management."
+  },
+  {
+    "obj": "3.2",
+    "q": "Which statement about the Biba model is TRUE?",
+    "options": [
+      "It addresses all three integrity goals",
+      "It protects confidentiality by forbidding reading up",
+      "It is based on dynamically changing rights",
+      "It only prevents unauthorized users from modifying data, not errors by authorized users or internal consistency"
+    ],
+    "answer": 3,
+    "explain": "Biba addresses only the first integrity goal (unauthorized modifications). Clark-Wilson addresses all three, including preventing unauthorized modifications by authorized users and consistency. Protecting confidentiality is BLP."
+  },
+  {
+    "obj": "3.3",
+    "q": "A technical assessment showed that a new system meets most security requirements, with a few remaining risks. Who decides, and how, whether the system may go into production?",
+    "options": [
+      "The authorizing official formally accepts the residual risk and issues an authorization (accreditation/ATO)",
+      "The team that performed the assessment automatically approves operation",
+      "The system administrator decides after patching the remaining vulnerabilities",
+      "The software vendor issues a certificate of compliance"
+    ],
+    "answer": 0,
+    "explain": "Certification is a technical evaluation, and accreditation (authorization) is the formal management decision to accept residual risk. The assessor, administrator and vendor cannot accept risk on behalf of the organization."
+  },
+  {
+    "obj": "3.3",
+    "q": "A firewall vendor claims the product was evaluated at Common Criteria EAL4+. What should the CISO do FIRST before the procurement decision?",
+    "options": [
+      "Buy the product because EAL4 guarantees security",
+      "Require EAL7 because a higher level is always better",
+      "Compare the Security Target and the evaluated configuration with the organization's security requirements",
+      "Reject the product because EAL is not relevant"
+    ],
+    "answer": 2,
+    "explain": "EAL measures confidence in the evaluation (assurance), and the evaluation applies to the Security Target and the evaluated configuration. You need to check whether that matches your requirements (or Protection Profile). EAL7 is rare and expensive, and a higher level does not mean the product covers your needs."
+  },
+  {
+    "obj": "3.3",
+    "q": "In a Common Criteria evaluation, which document describes the user requirements for a particular class of products, independent of a specific vendor?",
+    "options": [
+      "Security Target",
+      "Protection Profile",
+      "Target of Evaluation",
+      "Evaluation Assurance Level"
+    ],
+    "answer": 1,
+    "explain": "A Protection Profile is a set of requirements for a product class (e.g., firewall), independent of the implementation. The Security Target is the vendor's claims about a specific product, the TOE is the product being evaluated, and the EAL is the assurance level."
+  },
+  {
+    "obj": "3.3",
+    "q": "A new system processes public information (low impact) and financial transactions (moderate impact on integrity and confidentiality, high on availability). Which category does the system get under FIPS 199 before selecting a baseline?",
+    "options": [
+      "Low, because most of the data is public",
+      "Moderate, as an average",
+      "It depends on the budget for controls",
+      "High, by the high-water mark principle"
+    ],
+    "answer": 3,
+    "explain": "A system is categorized by the highest impact of any information type and any objective (high-water mark), so high impact on availability gives the High category and the corresponding baseline. The budget does not determine the category."
+  },
+  {
+    "obj": "3.4",
+    "q": "An organization wants servers, at startup, to prove to a remote service that the bootloader and kernel have not been modified before they receive the keys to decrypt data. Which technology enables this?",
+    "options": [
+      "TPM with measured boot and remote attestation",
+      "HSM in the data center",
+      "DEP and ASLR",
+      "RAID 1"
+    ],
+    "answer": 0,
+    "explain": "The TPM records boot chain measurements in PCR registers and signs them for remote attestation; keys can be sealed to the correct state. An HSM stores keys centrally but does not measure an individual server's boot. DEP/ASLR protect memory."
+  },
+  {
+    "obj": "3.4",
+    "q": "Which THREE properties must a reference monitor have?",
+    "options": [
+      "Fast, cheap and distributed",
+      "Based on DAC, MAC and RBAC",
+      "Encrypted, redundant and auditable",
+      "Tamperproof, always invoked (complete mediation) and small enough to be verified"
+    ],
+    "answer": 3,
+    "explain": "The reference monitor must be protected from modification, mediate every access and be small enough for analysis and testing. It is implemented by the security kernel within the TCB."
+  },
+  {
+    "obj": "3.4",
+    "q": "A bank needs to store the keys for signing payment transactions so that the keys never leave the device in plaintext, with FIPS 140-3 Level 3 validation and high performance. What is the BEST choice?",
+    "options": [
+      "A TPM in each application server",
+      "An encrypted key file on the server",
+      "Hardware Security Module (HSM)",
+      "A secure enclave in the administrator's laptop"
+    ],
+    "answer": 2,
+    "explain": "An HSM is a dedicated high-performance device for generating, storing and using keys, with tamper protection and FIPS validation. A TPM is bound to a single platform and is not intended for high-volume central operations."
+  },
+  {
+    "obj": "3.4",
+    "q": "A system processes data at multiple classification levels, and users have different clearance levels; the system itself enforces separation. In which security mode does the system operate?",
+    "options": [
+      "Dedicated",
+      "Multilevel",
+      "System high",
+      "Compartmented"
+    ],
+    "answer": 1,
+    "explain": "In multilevel mode, users do not have the same clearance for all data, so the system must reliably enforce separation (requires a strong TCB). In dedicated, system high and compartmented modes, all users have clearance for the highest level."
+  },
+  {
+    "obj": "3.5",
+    "q": "An employee without access rights to salaries sees the total salary budget of their department and the individual salaries of all colleagues except the boss, and calculates the boss's salary. What is this vulnerability called and which control helps?",
+    "options": [
+      "Aggregation; database encryption",
+      "Inference; context control, cell suppression or perturbation",
+      "Polyinstantiation; deleting records",
+      "TOCTOU; table locking"
+    ],
+    "answer": 1,
+    "explain": "Inference is deriving confidential information from available data. Context-dependent access control, cell suppression and perturbation help. Encryption does not help because the user legitimately sees the data they use."
+  },
+  {
+    "obj": "3.5",
+    "q": "The security team proposes automatic weekly vulnerability scanning and patching of all PLC controllers in a chemical processing plant. What is the CISO's BEST response?",
+    "options": [
+      "Approve the plan because patching always has priority",
+      "Disconnect the PLCs from the network permanently",
+      "Replace all PLCs with standard servers",
+      "Availability and human safety are the priority: segmentation per the Purdue model, passive monitoring and planned, tested changes agreed with operations"
+    ],
+    "answer": 3,
+    "explain": "In an OT/ICS environment, active scanning and unplanned restarts can cause process interruption and physical danger. Segmentation, passive monitoring and carefully tested changes are the balance between security and safety."
+  },
+  {
+    "obj": "3.5",
+    "q": "An organization stores medical data that must remain confidential for 25 years. Which threat is MOST relevant to today's choice of cryptography for transmitting that data?",
+    "options": [
+      "Harvest now, decrypt later attacks with future quantum computers",
+      "VM sprawl",
+      "Covert timing channel in the database",
+      "Polyinstantiation"
+    ],
+    "answer": 0,
+    "explain": "An attacker can record encrypted traffic today and decrypt it when a cryptographically relevant quantum computer breaks the asymmetric key exchange. For long-term confidential data, migration to PQC and crypto agility should be planned."
+  },
+  {
+    "obj": "3.5",
+    "q": "A Kubernetes cluster runs containers as root in privileged mode, and images come from public registries without verification. Which combination of measures BEST reduces the risk?",
+    "options": [
+      "Move the cluster to another cloud region",
+      "Add more worker nodes",
+      "Non-root and unprivileged containers, image scanning and signing with admission control, network policies",
+      "Disable logging for performance"
+    ],
+    "answer": 2,
+    "explain": "Containers share the host kernel, so a privileged root container makes container escape easier. Limiting privileges, verifying image provenance and vulnerabilities, and segmentation directly reduce the risk. The other options do not affect vulnerabilities."
+  },
+  {
+    "obj": "3.2",
+    "type": "match",
+    "q": "Match each scenario with the security model that BEST describes it.",
+    "options": [
+      "A military system does not allow writing Top Secret content into a Secret document",
+      "A banking application allows changing account balances only through verified transactions with SoD",
+      "A consultant who worked for oil company A must not see company B's data",
+      "Rules for creating and deleting subjects and objects and transferring access rights",
+      "A production process must not use data from an untrusted sensor to update validated records"
+    ],
+    "targets": [
+      "Brewer-Nash",
+      "Biba",
+      "Bell-LaPadula",
+      "Clark-Wilson",
+      "Graham-Denning"
+    ],
+    "answer": [2, 3, 0, 4, 1],
+    "explain": "No write down is BLP; transactions and SoD are Clark-Wilson; conflict of interest is Brewer-Nash; creating/deleting subjects, objects and rights is Graham-Denning; protecting trusted data from untrusted input is Biba."
+  },
+  {
+    "obj": "3.3",
+    "type": "order",
+    "q": "Order the steps of the NIST Risk Management Framework (SP 800-37) after Prepare.",
+    "options": [
+      "Authorize",
+      "Select",
+      "Monitor",
+      "Categorize",
+      "Assess",
+      "Implement"
+    ],
+    "answer": [3, 1, 5, 4, 0, 2],
+    "explain": "The order is Categorize, Select, Implement, Assess, Authorize, Monitor. Categorization determines the baseline, controls are selected and implemented, assessed, the official accepts the risk and issues the ATO, followed by continuous monitoring."
+  }
+]

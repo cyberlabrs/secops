@@ -1,0 +1,224 @@
+[
+  {
+    "obj": "1.3",
+    "q": "Task: initialize the cluster on controlplane so that Flannel works with its default configuration (network 10.244.0.0/16). Which command is correct?",
+    "options": [
+      "kubeadm init --service-cidr=10.244.0.0/16",
+      "kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=v1.35.0",
+      "kubeadm init --control-plane-endpoint=10.244.0.0/16",
+      "kubeadm init --apiserver-advertise-address=10.244.0.0"
+    ],
+    "answer": 1,
+    "explain": "The Pod network is set with `--pod-network-cidr` and must match the CNI configuration. `--service-cidr` is for ClusterIP Services, and `--control-plane-endpoint` and `--apiserver-advertise-address` are API server addresses, not ranges."
+  },
+  {
+    "obj": "1.3",
+    "q": "After a successful `kubeadm init` and copying admin.conf, `kubectl get nodes` shows controlplane as NotReady, and the CoreDNS Pods are Pending. What is the next step?",
+    "options": [
+      "kubectl taint node controlplane node-role.kubernetes.io/control-plane:NoSchedule-",
+      "kubectl -n kube-system rollout restart deployment coredns",
+      "Install a CNI plugin, e.g. kubectl apply -f /opt/kurs/manifests/kube-flannel.yaml",
+      "systemctl restart kubelet"
+    ],
+    "answer": 2,
+    "explain": "Without a Pod network the node stays NotReady, and CoreDNS waits because the node has the not-ready taint. Removing the control-plane taint or restarting CoreDNS or the kubelet does not fix the missing CNI."
+  },
+  {
+    "obj": "1.3",
+    "q": "The cluster was created three days ago. You need to add node01. Which command on the controlplane node gives you the complete join command?",
+    "options": [
+      "kubeadm token list",
+      "kubeadm init phase bootstrap-token",
+      "kubeadm join --print-join-command",
+      "kubeadm token create --print-join-command"
+    ],
+    "answer": 3,
+    "explain": "The original token has expired (24h), so `token create --print-join-command` creates a new one and prints the full command with the CA hash. `token list` only lists tokens, and `kubeadm join` has no `--print-join-command` flag."
+  },
+  {
+    "obj": "1.3",
+    "q": "On node01, `kubeadm join` fails with `could not find a JWS signature in the cluster-info ConfigMap for token ID \"abcdef\"`. What is the cause?",
+    "options": [
+      "The token has expired or was deleted",
+      "Wrong --discovery-token-ca-cert-hash",
+      "containerd is not running on node01",
+      "No CNI is installed on controlplane"
+    ],
+    "answer": 0,
+    "explain": "A JWS signature in the cluster-info ConfigMap exists only for valid tokens, so this message means the token no longer exists. A wrong hash produces an error when validating the API server identity, and the runtime and CNI are not part of the discovery step."
+  },
+  {
+    "obj": "1.3",
+    "q": "node01 was previously in another cluster. `kubeadm join` reports `[ERROR FileAvailable--etc-kubernetes-kubelet.conf]: /etc/kubernetes/kubelet.conf already exists`. What do you do?",
+    "options": [
+      "kubeadm join ... --ignore-preflight-errors=all",
+      "Run kubeadm reset -f on node01, clean up /etc/cni/net.d and repeat the join",
+      "Delete only /etc/kubernetes/kubelet.conf and repeat the join",
+      "kubectl delete node node01 on controlplane"
+    ],
+    "answer": 1,
+    "explain": "`kubeadm reset` removes the old cluster state (kubeconfig, PKI, kubelet data), and leftover CNI configuration is deleted by hand. Ignoring the error or deleting a single file leaves the old certificates and CA, and `delete node` changes nothing on the node itself."
+  },
+  {
+    "obj": "1.3",
+    "q": "You are writing a kubeadm configuration with `apiVersion: kubeadm.k8s.io/v1beta4` and want to add the `--audit-log-maxage=30` flag to the API server. Which ClusterConfiguration snippet is correct?",
+    "options": [
+      "apiServer:\n  extraArgs:\n    audit-log-maxage: \"30\"",
+      "apiServer:\n  args:\n    - --audit-log-maxage=30",
+      "apiServer:\n  extraArgs:\n    - name: audit-log-maxage\n      value: \"30\"",
+      "extraArgs:\n  kube-apiserver:\n    audit-log-maxage: \"30\""
+    ],
+    "answer": 2,
+    "explain": "In v1beta4, `extraArgs` is a list of `name`/`value` objects with the flag name without dashes. A key: value map is the v1beta3 format, and the `args` field and a top-level `extraArgs` do not exist."
+  },
+  {
+    "obj": "1.3",
+    "q": "Which command gives a complete InitConfiguration and ClusterConfiguration skeleton for the current kubeadm version, as a starting point for your own file?",
+    "options": [
+      "kubectl -n kube-system get cm kubeadm-config -o yaml",
+      "kubeadm config images list",
+      "kubeadm config validate --config init.yaml",
+      "kubeadm config print init-defaults"
+    ],
+    "answer": 3,
+    "explain": "`print init-defaults` prints all documents with default values. The kubeadm-config ConfigMap exists only after init, `images list` gives a list of images, and `validate` only checks an existing file."
+  },
+  {
+    "obj": "1.3",
+    "q": "You run `kubeadm init --config init.yaml --pod-network-cidr=10.244.0.0/16` and kubeadm refuses to continue. Why?",
+    "options": [
+      "--config cannot be mixed with flags that belong in the configuration; the CIDR goes into networking.podSubnet",
+      "The --pod-network-cidr flag does not exist in kubeadm 1.35",
+      "init.yaml must have a .conf extension",
+      "The Pod CIDR must be smaller than /16"
+    ],
+    "answer": 0,
+    "explain": "When you use a configuration file, settings such as the Pod CIDR go into the file (`networking.podSubnet`), and kubeadm refuses to mix them. The flag exists, the extension does not matter, and /16 is a common Pod CIDR."
+  },
+  {
+    "obj": "1.5",
+    "q": "The cluster was initialized with `kubeadm init --pod-network-cidr=10.244.0.0/16` and no other flags. Now you need to add a second control plane node. What is the main obstacle?",
+    "options": [
+      "The KubeProxyConfiguration is missing",
+      "The cluster has no controlPlaneEndpoint, so there is no shared stable address for multiple API servers",
+      "The token was created without --upload-certs",
+      "Flannel does not support multiple control plane nodes"
+    ],
+    "answer": 1,
+    "explain": "Without a controlPlaneEndpoint, all nodes and kubeconfig files point to the IP of the first API server, so kubeadm does not allow adding control plane nodes. Certificates can be uploaded later with the upload-certs phase, and the CNI and kube-proxy configuration are not obstacles."
+  },
+  {
+    "obj": "1.5",
+    "q": "An HA cluster was created with `--upload-certs` five hours ago. Joining a new control plane node with the `--certificate-key` from the init output fails because the kubeadm-certs Secret does not exist. What do you do on an existing control plane node?",
+    "options": [
+      "kubeadm certs renew all",
+      "kubeadm token create --ttl 0",
+      "kubeadm init phase upload-certs --upload-certs, then join with the new certificate key",
+      "kubectl -n kube-system create secret generic kubeadm-certs --from-file=/etc/kubernetes/pki"
+    ],
+    "answer": 2,
+    "explain": "The uploaded certificates and the decryption key are deleted after two hours; the upload-certs phase encrypts them again and prints a new key. `certs renew` extends the certificates on disk, the token TTL does not affect the Secret, and a manually created Secret is not encrypted in the format kubeadm expects."
+  },
+  {
+    "obj": "1.5",
+    "q": "You have a token, a hash and a certificate key. Which command joins cp2 as an additional control plane node?",
+    "options": [
+      "kubeadm join k8s-api.lab.local:6443 --token <t> --discovery-token-ca-cert-hash sha256:<h> --upload-certs",
+      "kubeadm init --control-plane-endpoint k8s-api.lab.local:6443 --certificate-key <k>",
+      "kubeadm join k8s-api.lab.local:6443 --token <t> --discovery-token-ca-cert-hash sha256:<h>",
+      "kubeadm join k8s-api.lab.local:6443 --token <t> --discovery-token-ca-cert-hash sha256:<h> --control-plane --certificate-key <k>"
+    ],
+    "answer": 3,
+    "explain": "`--control-plane` requests a control plane installation, and `--certificate-key` decrypts the shared certificates from the kubeadm-certs Secret. Without those flags the node becomes a worker; `init` would create a new cluster, and `--upload-certs` is not a join flag."
+  },
+  {
+    "obj": "1.5",
+    "q": "A team is planning a stacked etcd HA cluster and asks how many control plane nodes are needed for the cluster to survive two nodes failing at the same time. How many?",
+    "options": [
+      "5",
+      "4",
+      "3",
+      "2"
+    ],
+    "answer": 0,
+    "explain": "Quorum is n/2+1: with 5 members you need 3 for quorum, so two can fail. With 4 members quorum is 3 and only one failure is tolerated, and with 3 members also only one."
+  },
+  {
+    "obj": "1.5",
+    "q": "Match each HA concept with the correct description.",
+    "type": "match",
+    "options": ["Stacked etcd", "External etcd", "controlPlaneEndpoint", "Leader election"],
+    "targets": [
+      "Only one kube-scheduler and kube-controller-manager is active, via Lease objects",
+      "An etcd member runs as a static Pod on every control plane node",
+      "etcd runs on separate machines and is listed in etcd.external",
+      "A stable DNS address of the load balancer in front of all API servers",
+      "Each API server has its own etcd database without replication"
+    ],
+    "answer": [1, 2, 3, 0],
+    "explain": "Stacked etcd shares the node with the control plane, external etcd is separate, controlPlaneEndpoint is the LB address, and leader election ensures a single active scheduler and controller-manager. The last description is wrong: etcd members always replicate data."
+  },
+  {
+    "obj": "1.5",
+    "q": "Put the steps for building a stacked etcd HA cluster (three control plane nodes, a load balancer) in order.",
+    "type": "order",
+    "options": [
+      "On cp2 and cp3 run kubeadm join ... --control-plane --certificate-key <k>",
+      "Set up the load balancer (TCP 6443) and the DNS name k8s-api.lab.local",
+      "On cp1 run kubeadm init --control-plane-endpoint k8s-api.lab.local:6443 --upload-certs",
+      "Install the CNI",
+      "Join the worker nodes with kubeadm join without --control-plane"
+    ],
+    "answer": [1, 2, 3, 0, 4],
+    "explain": "The load balancer and name must exist before init because they go into the certificates and kubeconfig. After init on cp1 the CNI is installed, then the other control plane nodes join, and finally the workers."
+  },
+  {
+    "obj": "1.3",
+    "q": "You need to permanently remove node01 from the cluster. Put the steps in order.",
+    "type": "order",
+    "options": [
+      "On node01: kubeadm reset -f",
+      "On node01: delete /etc/cni/net.d and clean up iptables rules",
+      "kubectl delete node node01",
+      "kubectl drain node01 --ignore-daemonsets --delete-emptydir-data"
+    ],
+    "answer": [3, 2, 0, 1],
+    "explain": "First the Pods are moved off cleanly (drain), then the node object is removed from the API, then the kubeadm state is reverted on the node. reset does not delete the CNI configuration and iptables, so that is cleaned up by hand at the end."
+  },
+  {
+    "obj": "1.2",
+    "q": "`kubeadm init` fails in the preflight phase with `[ERROR CRI]: container runtime is not running`. What do you check first?",
+    "options": [
+      "kubectl get nodes",
+      "systemctl status containerd and whether the socket /run/containerd/containerd.sock exists",
+      "Whether the CNI is installed in /etc/cni/net.d",
+      "Whether the token has expired"
+    ],
+    "answer": 1,
+    "explain": "Preflight talks to the runtime through the CRI socket; if containerd is not running or the socket does not exist, init cannot start the control plane. kubectl has no cluster yet, and the CNI and token are not part of the runtime preflight check."
+  },
+  {
+    "obj": "1.2",
+    "q": "Both containerd and CRI-O are installed on the server. `kubeadm init` reports that multiple CRI endpoints were found. How do you specify containerd?",
+    "options": [
+      "kubeadm init --cri-socket=unix:///run/containerd/containerd.sock",
+      "kubeadm init --container-runtime=containerd",
+      "export CONTAINER_RUNTIME_ENDPOINT=containerd then kubeadm init",
+      "kubeadm init --ignore-preflight-errors=CRI"
+    ],
+    "answer": 0,
+    "explain": "When there are several runtimes, kubeadm needs an explicit socket via `--cri-socket` (or `nodeRegistration.criSocket` in the configuration). The `--container-runtime` flag does not exist in kubeadm, and ignoring the check does not pick a runtime."
+  },
+  {
+    "obj": "1.3",
+    "q": "A task asks you to write the value for --discovery-token-ca-cert-hash to /opt/hash.txt without creating a new token. What is the hash computed from?",
+    "options": [
+      "From /etc/kubernetes/pki/apiserver.crt",
+      "From the client-certificate-data field of /etc/kubernetes/admin.conf",
+      "From /etc/kubernetes/pki/sa.pub",
+      "SHA-256 of the public key from /etc/kubernetes/pki/ca.crt"
+    ],
+    "answer": 3,
+    "explain": "The hash is SHA-256 over the public key of the cluster CA certificate (openssl x509 -pubkey ... | openssl dgst -sha256). The API server certificate and the admin client certificate are not the CA, and sa.pub is used to sign ServiceAccount tokens."
+  }
+]

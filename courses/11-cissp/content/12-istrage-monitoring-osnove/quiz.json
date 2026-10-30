@@ -1,0 +1,352 @@
+[
+  {
+    "obj": "7.1",
+    "q": "Tokom rutinske administrativne istrage zloupotrebe interneta, analitičar na službenom laptopu zaposlenog pronađe materijal koji ukazuje na teško krivično djelo. Šta treba uraditi PRVO?",
+    "options": [
+      "Nastaviti analizu da prikupi što više dokaza prije nego što obavijesti bilo koga.",
+      "Obrisati sporni materijal kako se ne bi dalje širio na mreži organizacije.",
+      "Zaustaviti dalju analizu, sačuvati dokaze i obavijestiti pravnu službu ili višeg menadžera po politici.",
+      "Odmah lično pozvati policiju i predati im laptop."
+    ],
+    "answer": 2,
+    "explain": "Kada administrativna istraga preraste u moguću krivičnu, analitičar prekida rad koji može narušiti dokaz, čuva dokaze i eskalira po politici; odluku o prijavi policiji donose pravna služba i menadžment. Brisanje uništava dokaz, a samoinicijativno nastavljanje ili zvanje policije zaobilazi ovlašćenja."
+  },
+  {
+    "obj": "7.1",
+    "q": "Server za koji se sumnja da je kompromitovan i dalje radi. IR plan ne zahtijeva hitno gašenje. Šta forenzičar treba da prikupi PRVO?",
+    "options": [
+      "Sadržaj RAM memorije i stanje mrežnih konekcija",
+      "Bit-stream image sistemskog diska",
+      "Kopiju udaljenih logova sa SIEM-a",
+      "Backup trake iz offsite trezora"
+    ],
+    "answer": 0,
+    "explain": "Po redoslijedu volatilnosti (RFC 3227) prvo se uzima ono što najbrže nestaje: memorija, procesi i mrežne veze. Disk, udaljeni logovi i arhivski mediji su stabilniji i dolaze kasnije."
+  },
+  {
+    "obj": "7.1",
+    "q": "Advokat suprotne strane osporava logove kao dokaz tvrdeći da su mogli biti izmijenjeni nakon prikupljanja. Šta NAJBOLJE pobija tu tvrdnju?",
+    "options": [
+      "Izjava administratora da niko nije pristupao serveru.",
+      "Činjenica da su logovi prikupljeni alatom koji se koristi u cijeloj industriji.",
+      "Fotokopija ispisa logova potpisana od strane menadžera.",
+      "Dokumentovan chain of custody i podudarne hash vrijednosti zabilježene pri prikupljanju i pri svakoj provjeri."
+    ],
+    "answer": 3,
+    "explain": "Integritet i autentičnost dokaza dokazuju lanac nadzora i hash vrijednosti od trenutka akvizicije. Izjava i potpisana kopija su slabiji (testimonial / secondary), a prihvaćen alat govori o pouzdanosti metode, ne o tome da dokaz nije kasnije mijenjan."
+  },
+  {
+    "obj": "7.1",
+    "q": "Organizacija postavi server sa nazivom „payroll-backup“ na izolovanom segmentu da bi pratila napadače koji su već unutar mreže. Kako se ovo kvalifikuje?",
+    "options": [
+      "Entrapment, pa su prikupljeni dokazi neprihvatljivi.",
+      "Enticement, što je generalno dozvoljeno i dokazi mogu biti upotrebljivi.",
+      "Exigent circumstances, pa nije potrebna pravna procjena.",
+      "Nezakonit nadzor zaposlenih, jer server ne prikazuje banner."
+    ],
+    "answer": 1,
+    "explain": "Privlačenje napadača koji već ima namjeru (honeypot sa zanimljivim imenom) je enticement i generalno je dozvoljeno. Entrapment bi bilo navođenje osobe bez namjere da počini djelo. Pravna služba ipak treba da odobri program honeypota."
+  },
+  {
+    "obj": "7.1",
+    "q": "Forenzičar mora zaplijeniti pametni telefon osumnjičenog zaposlenog koji je otključan. Koji korak je NAJBOLJI da se sačuvaju dokazi?",
+    "options": [
+      "Ugasiti telefon da se spriječi izmjena podataka.",
+      "Povezati ga na korporativni Wi-Fi radi brže sinhronizacije u MDM.",
+      "Izolovati ga od mreže (npr. Faraday kesa), ostaviti uključenog i dokumentovati stanje.",
+      "Izvaditi SIM i memorijsku karticu i odmah ih analizirati na svom računaru."
+    ],
+    "answer": 2,
+    "explain": "Izolacija od mreže sprečava daljinsko brisanje, a gašenje otključanog uređaja može učiniti šifrovane podatke nedostupnim. Analiza originala na običnom računaru narušava integritet i chain of custody."
+  },
+  {
+    "obj": "7.1",
+    "q": "Koja osobina forenzičkog izvještaja je NAJVAŽNIJA da bi ga sud prihvatio i da bi ga drugi vještak mogao provjeriti?",
+    "options": [
+      "Da sadrži mišljenje istražitelja o krivici osumnjičenog.",
+      "Da opisuje metode, alate, verzije i hash vrijednosti tako da je postupak ponovljiv.",
+      "Da je kratak i bez priloga.",
+      "Da je napisan isključivo tehničkim jezikom."
+    ],
+    "answer": 1,
+    "explain": "Izvještaj mora biti činjeničan i ponovljiv: drugi istražitelj istom metodom mora dobiti isti rezultat. Mišljenje o krivici nije posao fact witnessa, a izvještaj mora biti razumljiv publici, sa tehničkim detaljima u prilozima."
+  },
+  {
+    "obj": "7.2",
+    "q": "SOC prima hiljade alarma dnevno i analitičari propuštaju stvarne incidente. Koja je NAJBOLJA prva mjera?",
+    "options": [
+      "Isključiti pravila koja generišu najviše alarma.",
+      "Zaposliti dodatne analitičare za svaku smjenu.",
+      "Prebaciti sve IDS senzore u IPS režim.",
+      "Sprovesti tuning zasnovan na riziku: baseline, prioritizacija po kritičnosti imovine i korelacija u SIEM-u."
+    ],
+    "answer": 3,
+    "explain": "Zamor od alarma rješava se podešavanjem i prioritizacijom zasnovanom na riziku, uz kontrolu promjena pravila. Isključivanje pravila stvara lažne negative, novi ljudi ne rješavaju uzrok, a IPS sa lošim pravilima blokira legitiman saobraćaj."
+  },
+  {
+    "obj": "7.2",
+    "q": "Koji ishod detekcije predstavlja NAJVEĆI rizik za organizaciju?",
+    "options": [
+      "False positive",
+      "True negative",
+      "False negative",
+      "True positive"
+    ],
+    "answer": 2,
+    "explain": "False negative (Type II) znači da je napad u toku, a sistem ćuti. False positive troši vrijeme i može prekinuti poslovanje, ali ne skriva napad."
+  },
+  {
+    "obj": "7.2",
+    "q": "Organizacija želi da otkrije zaposlene koji šalju osjetljive dokumente na lične USB uređaje i lične e-mail naloge iz pregledača. Koje rješenje to NAJBOLJE pokriva?",
+    "options": [
+      "Endpoint DLP uz prethodno klasifikovane i označene podatke",
+      "Network IDS na perimetru",
+      "Storage DLP koji skenira file share-ove",
+      "Full-disk enkripcija na laptopima"
+    ],
+    "answer": 0,
+    "explain": "Endpoint DLP vidi data in use na uređaju (USB, upload iz pregledača, clipboard), a radi tek kada su podaci klasifikovani. Storage DLP otkriva gdje su podaci u mirovanju, NIDS ne razumije sadržaj dokumenata, a FDE ne sprečava curenje."
+  },
+  {
+    "obj": "7.2",
+    "q": "Tim sumnja da je napadač već unutar mreže i da zaobilazi postojeća SIEM pravila. Koja aktivnost je NAJPRIKLADNIJA?",
+    "options": [
+      "Pretplata na dodatni komercijalni threat feed",
+      "Threat hunting vođen hipotezom i mapiran na MITRE ATT&CK tehnike",
+      "Godišnji penetracioni test",
+      "Povećanje retencije logova sa 90 na 365 dana"
+    ],
+    "answer": 1,
+    "explain": "Threat hunting je proaktivna potraga za prijetnjom koja je zaobišla postojeće detekcije. Feed daje IoC-e za poznato, pentest ne traži postojećeg napadača, a duža retencija pomaže istrazi, ali sama ne otkriva ništa."
+  },
+  {
+    "obj": "7.2",
+    "q": "Šta je PRIMARNA vrijednost SIEM-a u odnosu na pregled logova na svakom sistemu pojedinačno?",
+    "options": [
+      "Šifrovanje logova u mirovanju",
+      "Automatska izolacija kompromitovanih hostova",
+      "Korelacija događaja iz više izvora radi otkrivanja obrazaca koje nijedan izvor ne pokazuje sam",
+      "Zamjena potrebe za sinhronizacijom vremena"
+    ],
+    "answer": 2,
+    "explain": "Ključna funkcija SIEM-a je agregacija, normalizacija i korelacija. Automatska izolacija je domen SOAR/EDR, a korelacija upravo zahtijeva tačno vrijeme (NTP)."
+  },
+  {
+    "obj": "7.2",
+    "q": "Organizacija uvodi SOAR. Koji pristup je NAJBOLJI za početak?",
+    "options": [
+      "Odmah automatski blokirati svaki IP iz threat feeda na svim firewallima.",
+      "Zamijeniti SIEM SOAR platformom.",
+      "Dozvoliti svakom analitičaru da piše i pušta playbookove bez revizije.",
+      "Prvo automatizovati obogaćivanje alarma i otvaranje tiketa, a akcije koje utiču na produkciju uvoditi postepeno uz ljudsko odobrenje."
+    ],
+    "answer": 3,
+    "explain": "SOAR se uvodi postepeno: niskorizične akcije prvo, akcije sa uticajem na poslovanje uz odobrenje i kroz change management. SOAR ne zamjenjuje SIEM, a nekontrolisano blokiranje i playbookovi bez revizije stvaraju operativni rizik."
+  },
+  {
+    "obj": "7.2",
+    "q": "Administratori imaju puna prava na serverima. Koja kontrola NAJBOLJE osigurava da logovi mogu poslužiti kao dokaz o njihovim aktivnostima?",
+    "options": [
+      "Lokalno čuvanje logova sa dužom retencijom",
+      "Obavezna obuka administratora o etici",
+      "Clipping levels na svim serverima",
+      "Centralizovano slanje logova u WORM skladište kojim administratori servera ne upravljaju"
+    ],
+    "answer": 3,
+    "explain": "Centralizacija u nepromjenljivo skladište pod drugom upravom (SoD) sprečava da administrator izmijeni ili obriše trag. Lokalni logovi su pod njegovom kontrolom, obuka je administrativna, a clipping levels samo smanjuju obim."
+  },
+  {
+    "obj": "7.3",
+    "q": "Alat za drift detection pokaže da se konfiguracija produkcionog servera razlikuje od odobrenog baseline-a, a nema odobrenog zahtjeva za promjenu. Šta je NAJBOLJI sljedeći korak?",
+    "options": [
+      "Tretirati odstupanje kao mogući incident, istražiti uzrok i vratiti konfiguraciju kroz kontrolisani proces.",
+      "Ažurirati baseline tako da odgovara trenutnom stanju.",
+      "Ručno vratiti postavke na serveru i zatvoriti alarm.",
+      "Ignorisati odstupanje ako server radi normalno."
+    ],
+    "answer": 0,
+    "explain": "Neovlašćena promjena može biti znak kompromitacije ili zaobilaženja procesa. Prvo se istražuje, pa se stanje vraća kontrolisano i dokumentuje. Prihvatanje drifta kao novog baseline-a ili tiho vraćanje briše trag."
+  },
+  {
+    "obj": "7.3",
+    "q": "Koja je PRIMARNA sigurnosna korist provisioniranja svih servera iz ojačanog golden imagea pomoću automatizacije (IaC)?",
+    "options": [
+      "Eliminiše potrebu za patch managementom.",
+      "Smanjuje troškove licenci.",
+      "Svaki sistem počinje iz poznatog, odobrenog i ponovljivog stanja, uz manje ljudskih grešaka.",
+      "Zamjenjuje change management proces."
+    ],
+    "answer": 2,
+    "explain": "Provisioning iz baseline-a i automatizacija daju konzistentnost i ponovljivost. Image i dalje treba održavati (zakrpe), a izmjene templatea idu kroz change management."
+  },
+  {
+    "obj": "7.3",
+    "q": "U kom odnosu su configuration management i change management?",
+    "options": [
+      "Isti su proces sa dva naziva.",
+      "Change management odlučuje da li i kako se promjena odobrava, a configuration management održava dokumentovano i provjerljivo stanje konfiguracija.",
+      "Configuration management odobrava promjene, a change management vodi CMDB.",
+      "Change management važi samo za softver, a configuration management samo za hardver."
+    ],
+    "answer": 1,
+    "explain": "Change management upravlja odlukom o promjeni (zahtjev, procjena, odobrenje), a CM identifikuje konfiguracione stavke, vodi baseline, status i audit. Oba važe za sve vrste sistema."
+  },
+  {
+    "obj": "7.4",
+    "q": "Računovođa jedini zna proces plaćanja dobavljačima i već tri godine ne koristi godišnji odmor. Koja kontrola NAJBOLJE otkriva moguću prevaru?",
+    "options": [
+      "Separation of duties pri kreiranju dobavljača",
+      "Need-to-know",
+      "Dodatni nadzor kamerom u kancelariji",
+      "Mandatory vacation uz obavljanje posla od strane druge osobe"
+    ],
+    "answer": 3,
+    "explain": "Mandatory vacation (i job rotation) su detektivne kontrole: zamjena otkriva prikrivene radnje. SoD je preventivna i ne otkriva ono što je već urađeno, a need-to-know i kamere ne adresiraju ovaj rizik."
+  },
+  {
+    "obj": "7.4",
+    "q": "Analitičar ima clearance „Top Secret“. Zašto ipak ne može čitati sve „Top Secret“ dosijee?",
+    "options": [
+      "Zbog principa need-to-know: pristup ima samo podacima potrebnim za njegov zadatak.",
+      "Zbog separation of duties.",
+      "Zato što least privilege ograničava nivo clearancea.",
+      "Zbog job rotation politike."
+    ],
+    "answer": 0,
+    "explain": "Clearance govori smije li osoba uopšte pristupiti nivou klasifikacije, a need-to-know ograničava pristup na konkretne podatke potrebne za posao. Least privilege se odnosi na prava i akcije."
+  },
+  {
+    "obj": "7.4",
+    "q": "Koja mjera NAJBOLJE smanjuje rizik zloupotrebe domenskih administratorskih naloga?",
+    "options": [
+      "Duže i složenije lozinke koje se mijenjaju svakih 30 dana",
+      "Just-in-time dodjela privilegija iz vaulta, uz snimanje sesija i pregled od strane osobe koja nije administrator",
+      "Davanje administratorskih prava svim članovima IT tima radi redundanse",
+      "Godišnja obuka administratora"
+    ],
+    "answer": 1,
+    "explain": "PAM principi: privilegija samo kada treba (JIT), tajne u vaultu sa rotacijom, nadzor sesija i nezavisan pregled (SoD). Lozinke i obuka pomažu, ali ne ograničavaju trajno stojeće privilegije; širenje prava povećava rizik."
+  },
+  {
+    "obj": "7.4",
+    "q": "Developer ima mogućnost da sam napiše kod, odobri pull request i deployuje u produkciju. Koji princip je narušen?",
+    "options": [
+      "Need-to-know",
+      "Job rotation",
+      "Separation of duties",
+      "Defense in depth"
+    ],
+    "answer": 2,
+    "explain": "Jedna osoba kontroliše cijeli kritičan proces, pa može uvesti i prikriti zlonamjernu izmjenu – to je kršenje SoD-a. Rješenje je obavezan review druge osobe i odvojeno odobrenje deploya."
+  },
+  {
+    "obj": "7.5",
+    "q": "Organizacija povlači SSD diskove sa podacima klasifikovanim kao povjerljivi i prodaje ih spoljnom preprodavcu. Koja metoda je NAJPRIKLADNIJA?",
+    "options": [
+      "Degaussing",
+      "Brzo formatiranje",
+      "Jednokratno prepisivanje nulama",
+      "Cryptographic erase ili ugrađena sanitize komanda, uz verifikaciju (purge po NIST SP 800-88)"
+    ],
+    "answer": 3,
+    "explain": "Za SSD koji napušta organizaciju potreban je purge: crypto erase ili sanitize komanda, pa verifikacija. Degaussing ne djeluje na flash memoriju, formatiranje nije sanitizacija, a prepisivanje nije pouzdano zbog wear levelinga."
+  },
+  {
+    "obj": "7.5",
+    "q": "Koja kontrola štiti podatke u stanju „in use“?",
+    "options": [
+      "TLS 1.3",
+      "Confidential computing (TEE / secure enclave)",
+      "Full-disk enkripcija",
+      "Šifrovane backup trake"
+    ],
+    "answer": 1,
+    "explain": "Data in use su podaci u memoriji tokom obrade; TEE ih izoluje i od privilegovanog softvera hosta. TLS štiti in transit, a FDE i šifrovani backup at rest."
+  },
+  {
+    "obj": "7.5",
+    "q": "Backup trake sa ličnim podacima kurir svakodnevno prevozi u offsite trezor. Koja kombinacija kontrola je NAJBOLJA?",
+    "options": [
+      "Enkripcija traka sa ključevima čuvanim odvojeno, zapečaćeni kontejneri i evidencija predaje (chain of custody)",
+      "Označavanje traka nazivom sistema i datumom radi lakšeg pronalaženja",
+      "Prevoz u ličnom vozilu administratora radi manjeg broja učesnika",
+      "Brisanje traka nakon dolaska u trezor i čuvanje samo indeksa"
+    ],
+    "answer": 0,
+    "explain": "Medij u transportu se štiti enkripcijom (ključ odvojeno), fizičkim pečatima i evidencijom ko je kada preuzeo medij. Previše opisne oznake otkrivaju sadržaj, lično vozilo nije kontrolisan transport, a brisanje poništava svrhu backupa."
+  },
+  {
+    "obj": "7.5",
+    "q": "Politika zahtijeva čuvanje finansijskih zapisa 10 godina. Šta je NAJVEĆI rizik koji program arhiviranja mora adresirati?",
+    "options": [
+      "Da medij i format arhive postanu nečitljivi prije isteka retencije, pa se arhiva periodično testira i migrira",
+      "Da arhiva zauzima previše prostora u primarnom data centru",
+      "Da se arhivski podaci ne mogu indeksirati u SIEM-u",
+      "Da arhivu niko ne pregleda svakodnevno"
+    ],
+    "answer": 0,
+    "explain": "Dugoročno arhiviranje mora osigurati da podaci ostanu dostupni i čitljivi do kraja retencije: zastarjeli mediji, formati i ključevi su glavni rizik, pa se restore testira, a mediji migriraju. Ostale opcije su sporedne."
+  },
+  {
+    "obj": "7.1",
+    "type": "order",
+    "q": "Poredaj korake forenzičkog postupanja sa diskom kompromitovane radne stanice, od prvog do posljednjeg.",
+    "options": [
+      "Analiza na radnoj kopiji i izrada vremenske linije",
+      "Dokumentovanje scene i označavanje dokaza uz upis u chain of custody",
+      "Izvještaj sa opisom metoda, alata i hash vrijednosti",
+      "Bit-stream akvizicija preko write blockera",
+      "Heširanje originala i kopije i zapečaćivanje originala"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "Prvo identifikacija i dokumentovanje (chain of custody počinje odmah), zatim akvizicija preko write blockera, pa hash i očuvanje originala. Analiza se radi samo na kopiji, a izvještaj je posljednji."
+  },
+  {
+    "obj": "7.2",
+    "type": "match",
+    "q": "Upari opis sa alatom ili aktivnošću.",
+    "options": [
+      "Baseline ponašanja korisnika i servisnih naloga i otkrivanje odstupanja",
+      "Playbookovi koji automatski obogaćuju alarm i otvaraju tiket",
+      "Proaktivna potraga za napadačem koji je zaobišao postojeće alarme",
+      "Kontrola sadržaja koji napušta organizaciju na osnovu oznaka klasifikacije",
+      "Agregacija i korelacija logova iz više izvora"
+    ],
+    "targets": [
+      "SIEM",
+      "DLP",
+      "IPS",
+      "UEBA",
+      "SOAR",
+      "Threat hunting"
+    ],
+    "answer": [
+      3,
+      4,
+      5,
+      1,
+      0
+    ],
+    "explain": "UEBA modeluje ponašanje, SOAR automatizuje odgovor, threat hunting je proaktivan i vođen hipotezom, DLP kontroliše izlaz osjetljivih podataka, a SIEM korelira logove. IPS je distraktor."
+  },
+  {
+    "obj": "7.2",
+    "q": "Analitičar pravi vremensku liniju incidenta iz SIEM-a. Po zapisu sa app01, admin sesija je nastala oko 7 minuta PRIJE prvog kontakta napadača sa firewallom. Šta je NAJVJEROVATNIJI uzrok i odgovarajuća kontrola?",
+    "snippet": "# izvori u SIEM-u, sortirano po vremenu prijema\nfw01   2026-10-27T14:02:11+00:00  DENY  tcp 203.0.113.9:51544 -> 10.0.1.20:22\nfw01   2026-10-27T14:02:19+00:00  ALLOW tcp 203.0.113.9:51560 -> 10.0.1.20:443\nweb01  2026-10-27T16:02:20+02:00  POST /login 200 src=203.0.113.9 user=admin\napp01  Oct 27 13:55:23            INFO admin session created src=203.0.113.9\ndb01   2026-10-27T14:09:58+00:00  LOGIN OK user=app_rw from 10.0.1.20",
+    "lang": "log",
+    "options": [
+      "Sat na app01 nije sinhronizovan i bilježi vrijeme bez vremenske zone; potrebni su NTP na svim izvorima i normalizovani UTC timestampovi",
+      "Vrijeme na web01 je pomjereno za dva sata, pa log web01 nije upotrebljiv kao dokaz",
+      "Napadač je izmijenio logove na fw01 da prikrije prvi pristup",
+      "Sesija je nastala prije napada, pa je riječ o insajderu koji je napadaču otvorio pristup"
+    ],
+    "answer": 0,
+    "explain": "Zapis web01 ima offset +02:00, pa je 16:02:20+02:00 isto što i 14:02:20 UTC i uredno se uklapa odmah poslije ALLOW na fw01. app01 jedini nema godinu ni vremensku zonu, a sesija za isti izvor 203.0.113.9 pada prije bilo kakvog kontakta: to je klasičan znak neusklađenog sata. Bez NTP-a i normalizacije vremena korelacija i dokazna vrijednost logova su ugroženi. Za izmjenu logova ili insajdera nema dokaza; pogrešan zaključak bi nastao upravo zbog loše vremenske sinhronizacije."
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "title": "Oporavak, DR, BC i fizička sigurnost",
+  "summary": "Strategije oporavka (backup, immutable i offsite kopije, HA, RAID, cold/warm/hot lokacije), DR procesi i metrike (RTO/RPO/MTD, MTTR/MTBF), testiranje DRP-a, BC vježbe, fizička sigurnost i bezbjednost osoblja.",
+  "minutes": 90,
+  "domain": 7,
+  "objectives": [
+    "7.10",
+    "7.11",
+    "7.12",
+    "7.13",
+    "7.14",
+    "7.15"
+  ],
+  "title_en": "Recovery, DR, BC and Physical Security",
+  "summary_en": "Recovery strategies (backup, immutable and offsite copies, HA, RAID, cold/warm/hot sites), DR processes and metrics (RTO/RPO/MTD, MTTR/MTBF), DRP testing, BC exercises, physical security, and personnel safety and security."
+}

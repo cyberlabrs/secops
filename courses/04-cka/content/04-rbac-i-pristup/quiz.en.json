@@ -1,0 +1,269 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Task: ServiceAccount deployer in namespace ci must create and update Deployments, only in namespace ci. The role deploy-manager (a Role in ci) already exists. Which command is correct?",
+    "options": [
+      "kubectl create rolebinding deployer-rb -n ci --role=deploy-manager --serviceaccount=ci:deployer",
+      "kubectl create rolebinding deployer-rb -n ci --role=deploy-manager --serviceaccount=deployer",
+      "kubectl create clusterrolebinding deployer-rb --role=deploy-manager --serviceaccount=ci:deployer",
+      "kubectl create rolebinding deployer-rb -n ci --role=deploy-manager --user=deployer"
+    ],
+    "answer": 0,
+    "explain": "--serviceaccount requires the namespace:name format, and a RoleBinding in ci grants permissions only in ci. Without the namespace kubectl rejects the flag, a ClusterRoleBinding cannot reference a Role, and --user=deployer binds the user deployer, not the ServiceAccount."
+  },
+  {
+    "obj": "1.1",
+    "q": "User jana runs `kubectl get pods -n dev` and it works, but `kubectl logs web-7d9f -n dev` returns: pods \"web-7d9f\" is forbidden: User \"jana\" cannot get resource \"pods/log\". What must be added to her Role?",
+    "options": [
+      "the watch verb on the pods resource",
+      "the pods/log resource with the get verb",
+      "the pods/exec resource with the create verb",
+      "the logs verb on the pods resource"
+    ],
+    "answer": 1,
+    "explain": "kubectl logs reads the pods/log subresource with the get verb; permission on pods does not include it. pods/exec is for kubectl exec, and there is no logs verb."
+  },
+  {
+    "obj": "1.1",
+    "q": "You created a ClusterRoleBinding that binds ClusterRole view to group ops. Now you need to bind the same group to ClusterRole edit. Trying `kubectl edit clusterrolebinding ops-view` and changing roleRef.name to edit fails. Why?",
+    "options": [
+      "Groups can only be bound with a RoleBinding",
+      "ClusterRole edit is aggregated and cannot be used in a binding",
+      "roleRef is immutable; the binding must be deleted and recreated",
+      "You need kubectl patch instead of kubectl edit"
+    ],
+    "answer": 2,
+    "explain": "roleRef cannot be changed after creation, regardless of the tool (edit, patch, apply). Aggregated roles are used in bindings normally, and groups can also be bound with a ClusterRoleBinding."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which command checks whether ServiceAccount monitor from namespace observability is allowed to list Nodes?",
+    "options": [
+      "kubectl auth can-i list nodes --as=monitor -n observability",
+      "kubectl auth can-i list nodes --as=serviceaccount:observability:monitor",
+      "kubectl auth can-i list nodes --serviceaccount=observability:monitor",
+      "kubectl auth can-i list nodes --as=system:serviceaccount:observability:monitor"
+    ],
+    "answer": 3,
+    "explain": "A ServiceAccount's username is system:serviceaccount:<ns>:<name>. --as=monitor checks a regular user monitor, the prefix without system: is wrong, and auth can-i has no --serviceaccount flag."
+  },
+  {
+    "obj": "1.1",
+    "q": "In namespace team-a there is a RoleBinding that binds ClusterRole edit to user marko. What can marko do?",
+    "options": [
+      "Modify most namespaced objects only in namespace team-a",
+      "Modify most namespaced objects in all namespaces, because the role is a ClusterRole",
+      "Nothing, because a RoleBinding can only reference a Role",
+      "Modify objects in team-a and read Nodes, because edit contains cluster-scoped rules"
+    ],
+    "answer": 0,
+    "explain": "A ClusterRole bound with a RoleBinding grants its rules only in the binding's namespace. All namespaces would require a ClusterRoleBinding, and cluster-scoped resources (Node) cannot be granted with a RoleBinding."
+  },
+  {
+    "obj": "1.1",
+    "q": "A Role contains: apiGroups [\"\"], resources [\"configmaps\"], resourceNames [\"app-config\"], verbs [\"get\",\"list\"]. The user runs `kubectl get configmaps -n dev` and gets Forbidden, while `kubectl get configmap app-config -n dev` works. Why?",
+    "options": [
+      "configmaps belong to the v1 API group, not \"\"",
+      "list with resourceNames is allowed only if the request has the field selector metadata.name=app-config",
+      "resourceNames applies only to ClusterRoles",
+      "the list verb also requires watch"
+    ],
+    "answer": 1,
+    "explain": "A rule with resourceNames covers list only if the client filters by name (--field-selector metadata.name=app-config); a plain list of all ConfigMaps is denied. The core group is written as \"\", and resourceNames also works in a Role."
+  },
+  {
+    "obj": "1.1",
+    "q": "You created a CSR object for user jana. `kubectl get csr jana` shows CONDITION Pending. What is the next step?",
+    "options": [
+      "kubectl get csr jana -o jsonpath='{.status.certificate}' | base64 -d > jana.crt",
+      "kubectl config set-credentials jana --client-key=jana.key --client-certificate=jana.csr",
+      "kubectl certificate approve jana",
+      "openssl x509 -req -in jana.csr -CA /etc/kubernetes/pki/ca.crt -out jana.crt"
+    ],
+    "answer": 2,
+    "explain": "Until the CSR is approved, status.certificate is empty, so retrieving it gives nothing. A CSR file is not a certificate, and signing manually with openssl bypasses the CSR API the task asks for (and needs the CA key)."
+  },
+  {
+    "obj": "1.1",
+    "q": "A CSR manifest for a user certificate has `signerName: kubernetes.io/kube-apiserver-client` and `usages: [\"digital signature\", \"key encipherment\", \"server auth\"]`. After approval no certificate is issued. What is wrong?",
+    "options": [
+      "signerName should be kubernetes.io/kubelet-serving",
+      "expirationSeconds is missing and it is required",
+      "The key must be ECDSA, not RSA",
+      "usages must contain client auth; server auth is not allowed for this signer"
+    ],
+    "answer": 3,
+    "explain": "The kube-apiserver-client signer allows only digital signature, key encipherment and client auth, and client auth is required. kubelet-serving is for kubelet serving certificates, and expirationSeconds is optional."
+  },
+  {
+    "obj": "1.1",
+    "q": "Why is it dangerous to issue a user a certificate with the subject /CN=ana/O=system:masters?",
+    "options": [
+      "The system:masters group is bound to cluster-admin and those permissions cannot be revoked by deleting an RBAC binding",
+      "The API server rejects a certificate with an O field as invalid",
+      "ana would become a ServiceAccount in the kube-system namespace",
+      "Such a certificate is valid only for the kubelet, so ana cannot use kubectl"
+    ],
+    "answer": 0,
+    "explain": "The O field becomes a group; system:masters has full access and bypasses RBAC checks, so the only remedy is revoking the certificate or letting it expire. The O field is the normal way to assign groups, and a certificate does not create a ServiceAccount."
+  },
+  {
+    "obj": "1.1",
+    "q": "A Pod in namespace ci uses ServiceAccount builder. A RoleBinding in ci has subjects: kind ServiceAccount, name builder, namespace default. The application gets forbidden. What is the cause?",
+    "options": [
+      "A ServiceAccount cannot be used as a RoleBinding subject",
+      "subjects[].namespace points to default, so the binding applies to SA default:builder, not ci:builder",
+      "The Pod must have automountServiceAccountToken: false",
+      "The RoleBinding must be in namespace default"
+    ],
+    "answer": 1,
+    "explain": "A ServiceAccount is identified by namespace and name; here the non-existent default:builder is bound. Disabling automount would take the token away from the application, and the binding is correctly placed in ci."
+  },
+  {
+    "obj": "1.1",
+    "q": "ServiceAccount web has automountServiceAccountToken: false, and the Pod using it has spec.automountServiceAccountToken: true. What happens?",
+    "options": [
+      "The token is not mounted, because the ServiceAccount setting is stricter",
+      "The Pod is rejected in the admission phase because of the conflict",
+      "The token is mounted, because the field in the Pod spec takes precedence",
+      "Only ca.crt is mounted, without the token"
+    ],
+    "answer": 2,
+    "explain": "When the value is set on both the SA and the Pod, the Pod spec decides. There is no conflict and no partial mount."
+  },
+  {
+    "obj": "1.1",
+    "q": "You need a token for ServiceAccount ci-bot (namespace ci) valid for 2 hours, for a test from the terminal. The cluster is v1.35. Which command is correct?",
+    "options": [
+      "kubectl get secret -n ci -o jsonpath='{.items[0].data.token}' | base64 -d",
+      "kubectl create token ci-bot -n ci --expiration=2h",
+      "kubectl create secret token ci-bot -n ci --duration=2h",
+      "kubectl create token ci-bot -n ci --duration=2h"
+    ],
+    "answer": 3,
+    "explain": "kubectl create token uses the TokenRequest API, and the lifetime is set with the --duration flag. Since v1.24 an SA has no automatic Secret with a token, the --expiration flag does not exist, and neither does a create secret token subcommand."
+  },
+  {
+    "obj": "1.1",
+    "q": "Which two statements about the aggregated ClusterRole monitoring with aggregationRule.clusterRoleSelectors (matchLabels rbac.kurs.local/aggregate-to-monitoring: \"true\") are true? (Choose TWO.)",
+    "options": [
+      "You add rules by creating a new ClusterRole with the label rbac.kurs.local/aggregate-to-monitoring: \"true\"",
+      "Rules added manually to the rules of role monitoring stay permanently",
+      "The control plane automatically fills in the rules of role monitoring",
+      "An aggregated role can only be bound with a ClusterRoleBinding",
+      "Aggregation also works with Role objects in a namespace"
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "The controller collects rules from ClusterRoles with the matching label and overwrites the rules of the aggregated role, so manual changes disappear. An aggregated role can also be bound with a RoleBinding (e.g. edit), and aggregation works only with ClusterRoles."
+  },
+  {
+    "obj": "1.1",
+    "q": "A developer needs to run `kubectl exec` into Pods in namespace dev. What is the minimum they need in a Role?",
+    "options": [
+      "get on pods and create on pods/exec",
+      "update on pods",
+      "exec on pods",
+      "get on pods/exec and patch on pods"
+    ],
+    "answer": 0,
+    "explain": "kubectl exec first fetches the Pod (get pods) and then does a POST to the pods/exec subresource, which is the create verb. There is no exec verb, and update/patch on pods does not grant exec."
+  },
+  {
+    "obj": "1.1",
+    "q": "In /etc/kubernetes/manifests/kube-apiserver.yaml you added `--enable-admission-plugins=NodeRestriction,PodNodeSelector`. What happens to the plugins enabled by default (e.g. ServiceAccount, ResourceQuota)?",
+    "options": [
+      "They are disabled, because the list replaces the default one",
+      "They stay enabled; the flag adds plugins to the default list",
+      "They stay enabled only if they are also listed in --admission-control-config-file",
+      "kube-apiserver does not start because the list must be given in full"
+    ],
+    "answer": 1,
+    "explain": "--enable-admission-plugins adds plugins on top of the defaults; disabling is done with --disable-admission-plugins. The config file is for configuring individual plugins, not for enabling the defaults."
+  },
+  {
+    "obj": "1.1",
+    "type": "order",
+    "q": "Put the steps for adding user jana via the CSR API and using it in a kubeconfig in order.",
+    "options": [
+      "kubectl certificate approve jana",
+      "openssl genrsa -out jana.key 3072 and openssl req -new -key jana.key -subj \"/CN=jana/O=dev\" -out jana.csr",
+      "kubectl config set-credentials jana --client-key=jana.key --client-certificate=jana.crt --embed-certs=true",
+      "kubectl apply a CertificateSigningRequest with the base64 CSR, signerName kubernetes.io/kube-apiserver-client and usages client auth",
+      "kubectl get csr jana -o jsonpath='{.status.certificate}' | base64 -d > jana.crt",
+      "kubectl config set-context jana --cluster=kubernetes --user=jana"
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      4,
+      2,
+      5
+    ],
+    "explain": "First the key and CSR locally, then the CSR object in the cluster, approval, retrieving the certificate from status.certificate, then the credentials, and finally the context that ties them to the cluster."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Match each error message or symptom with its most likely cause.",
+    "options": [
+      "error: You must be logged in to the server (Unauthorized)",
+      "User \"jana\" cannot list resource \"deployments\" in API group \"apps\" in the namespace \"prod\"",
+      "The CSR is Approved, but status.certificate is empty",
+      "kubectl apply of an existing ClusterRoleBinding with a new roleRef.name returns an error: cannot change roleRef"
+    ],
+    "targets": [
+      "roleRef is immutable",
+      "Wrong usages or signerName, so the signer does not issue a certificate",
+      "The certificate or token was not accepted (expired or signed by a different CA)",
+      "There is no binding for prod or the role lacks apiGroups apps",
+      "The NodeRestriction admission controller rejects the request"
+    ],
+    "answer": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "explain": "401 is an authentication problem, a 403 with a full description is RBAC (a missing binding or rule), a CSR without a certificate after approval points to a signer that does not accept the request, and roleRef cannot be changed. NodeRestriction concerns kubelets."
+  },
+  {
+    "obj": "1.1",
+    "q": "You want to quickly see all permissions of user jana in namespace dev. Which command?",
+    "options": [
+      "kubectl describe user jana -n dev",
+      "kubectl get rolebindings -n dev --user=jana",
+      "kubectl auth whoami --as=jana -n dev",
+      "kubectl auth can-i --list --as=jana -n dev"
+    ],
+    "answer": 3,
+    "explain": "auth can-i --list prints all allowed resources and verbs for the subject in the namespace. There is no User object, get has no --user filter, and auth whoami only shows the identity."
+  },
+  {
+    "obj": "1.1",
+    "q": "On a kubeadm cluster someone removed NodeRestriction from the kube-apiserver manifest. What is the risk?",
+    "options": [
+      "Pods no longer get a ServiceAccount token",
+      "A compromised kubelet on one node can modify other Node objects and Pods on other nodes",
+      "kube-scheduler can no longer schedule Pods",
+      "RBAC stops applying to users"
+    ],
+    "answer": 1,
+    "explain": "NodeRestriction limits a kubelet to its own Node object and the Pods bound to its node. Tokens are injected by the ServiceAccount admission plugin, and RBAC is authorization and does not depend on this plugin."
+  },
+  {
+    "obj": "1.1",
+    "type": "spot",
+    "q": "The ServiceAccount ci-deployer in the staging namespace should read and update Deployments in staging, but kubectl auth can-i update deployments -n staging --as=system:serviceaccount:staging:ci-deployer returns no. Click the lines with a mistake.",
+    "lang": "yaml",
+    "snippet": "apiVersion: rbac.authorization.k8s.io/v1\nkind: Role\nmetadata: {name: deployer, namespace: staging}\nrules:\n- apiGroups: [\"\"]\n  resources: [\"deployments\"]\n  verbs: [\"get\", \"list\", \"update\", \"patch\"]\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind: RoleBinding\nmetadata: {name: deployer-ci, namespace: staging}\nsubjects:\n- {kind: ServiceAccount, name: ci-deployer, namespace: default}\nroleRef: {kind: Role, name: deployer, apiGroup: rbac.authorization.k8s.io}",
+    "answer": [
+      4,
+      12
+    ],
+    "explain": "Line 5: Deployments are in the apps API group, while \"\" is the core group (pods, services, secrets), so the rule doesn't cover deployments; use apiGroups: [\"apps\"]. Line 13: the subject is the ci-deployer ServiceAccount from the default namespace, not staging, so the binding applies to the wrong account; use namespace: staging. Imperatively: kubectl create role ... --verb=get,list,update,patch --resource=deployments.apps."
+  }
+]

@@ -1,0 +1,223 @@
+[
+  {
+    "obj": "2.1",
+    "q": "A new Wazuh agent in another network cannot enroll with the manager, while existing agents send events normally. Which port on the manager do you check in the firewall first?",
+    "options": [
+      "1515/TCP (wazuh-authd, agent enrollment)",
+      "1514/TCP (wazuh-remoted)",
+      "9200/TCP (indexer)",
+      "55000/TCP (REST API)"
+    ],
+    "answer": 0,
+    "explain": "Enrollment goes through wazuh-authd on 1515/TCP. 1514 is for sending events after enrollment and works for existing agents. 9200 is the indexer and 55000 the manager API; the agent does not use them for enrollment."
+  },
+  {
+    "obj": "2.1",
+    "q": "The dashboard does not show an SSH brute force alert, but in /var/ossec/logs/alerts/alerts.json on the manager you see a line with rule.id 5763. Where is the problem?",
+    "options": [
+      "In the sshd rules, because 5763 does not exist",
+      "Between the manager and the indexer (Filebeat, indexer or index pattern), not in the rules",
+      "The agent is not sending auth.log",
+      "log_alert_level is set to 12"
+    ],
+    "answer": 1,
+    "explain": "If the alert is in alerts.json, the decoders and rules did their job and the event arrived. What remains is the part of the flow behind the manager: Filebeat, the indexer and the display. If log_alert_level were 12, a level 10 alert would not have been written at all."
+  },
+  {
+    "obj": "2.1",
+    "q": "In an alert you see \"agent\": {\"id\": \"000\", \"name\": \"lab\"}. What does that mean?",
+    "options": [
+      "The agent is not enrolled and has a temporary ID",
+      "The event arrived via syslog port 514",
+      "The event originates from the manager itself (its local modules and logs)",
+      "The agent is disconnected and its ID was reset"
+    ],
+    "answer": 2,
+    "explain": "ID 000 is reserved for the manager, which reads logs and runs FIM and SCA for itself. Enrolled agents get IDs starting at 001. Syslog sources have their own location, but they don't change the agent ID to a nonexistent one."
+  },
+  {
+    "obj": "2.1",
+    "q": "You want an SSH login by user root from an IP address outside the VPN to be level 12, while the built-in rule 5715 is level 3. What is the correct approach?",
+    "options": [
+      "Change the level in /var/ossec/ruleset/rules/0095-sshd_rules.xml",
+      "Set log_alert_level to 3",
+      "Disable 5715 with rule_exclude",
+      "Write a child rule in /var/ossec/etc/rules/local_rules.xml with if_sid 5715, a condition on the user and IP, and level 12"
+    ],
+    "answer": 3,
+    "explain": "The built-in ruleset is overwritten on upgrade and is not modified. A child rule in local_rules.xml (ID from 100000) narrows the case and raises the level only for it. log_alert_level is the logging threshold, and disabling 5715 would lose all successful logins."
+  },
+  {
+    "obj": "2.1",
+    "q": "In wazuh-logtest output for an auth.log line, Phase 2 does not show srcip, even though the IP address is in the message. Which processing phase did not do its job?",
+    "options": [
+      "Decoding: the decoder did not extract the field",
+      "Pre-decoding: the hostname was not recognized",
+      "Rule matching: no rule fired",
+      "Writing to alerts.json"
+    ],
+    "answer": 0,
+    "explain": "Fields like srcip are extracted by the decoder in Phase 2. Pre-decoding extracts only the header (time, host, program_name), and rules in Phase 3 work on what the decoder extracted. Without srcip, rules with same_source_ip cannot work."
+  },
+  {
+    "obj": "2.1",
+    "q": "You changed ossec.conf and local_rules.xml on a production manager. What do you do before restarting?",
+    "options": [
+      "Delete alerts.json so there are no old alerts",
+      "Check the configuration with /var/ossec/bin/wazuh-analysisd -t",
+      "Shut down all agents",
+      "Enable logall_json"
+    ],
+    "answer": 1,
+    "explain": "wazuh-analysisd -t tests the configuration and ruleset and reports errors without starting. Restarting with invalid XML stops analysis for all agents. Deleting alerts and shutting down agents don't help, and logall_json is the archive of all events."
+  },
+  {
+    "obj": "2.1",
+    "q": "During an investigation you need an auth.log event that did not fire any rule above level 3. Where can you find it in Wazuh?",
+    "options": [
+      "In alerts.json, with rule.level 0",
+      "In ossec.log",
+      "In /var/ossec/logs/archives/archives.json, but only if logall_json was enabled",
+      "In wazuh-db, because it stores all events"
+    ],
+    "answer": 2,
+    "explain": "alerts.json contains only alerts above the threshold. archives.json records all received events, but is disabled by default because it uses a lot of space. ossec.log is Wazuh's own log, and wazuh-db stores state, not all events."
+  },
+  {
+    "obj": "2.1",
+    "q": "Rule 5763 (brute force) has frequency=\"8\", timeframe=\"120\", if_matched_sid 5760 and same_source_ip. When does it fire?",
+    "options": [
+      "On every failed login",
+      "When 8 different IP addresses each have one failed login",
+      "When the same user has 8 successful logins",
+      "When 5760 fires 8 times from the same source IP address within 120 seconds"
+    ],
+    "answer": 3,
+    "explain": "frequency and timeframe count matches of the if_matched_sid rule (5760, failed password) within a time window, and same_source_ip requires them all to come from the same IP address. A distributed attack from many addresses is not caught by this rule."
+  },
+  {
+    "obj": "2.3",
+    "q": "You want to know immediately about every change to /root/.ssh/authorized_keys, including the content of the change. Which syscheck configuration gives you that?",
+    "options": [
+      "<directories realtime=\"yes\" report_changes=\"yes\">/root/.ssh</directories>",
+      "<frequency>60</frequency> with no additional attributes",
+      "<nodiff>/root/.ssh/authorized_keys</nodiff>",
+      "<directories>/root/.ssh/authorized_keys</directories> with realtime on the file"
+    ],
+    "answer": 0,
+    "explain": "realtime works on directories and reports a change immediately, and report_changes adds the diff. A scan every 60 seconds is expensive and not instantaneous, nodiff would hide the content, and realtime is not set on an individual file."
+  },
+  {
+    "obj": "2.3",
+    "q": "FIM alert 550 says /etc/ssh/sshd_config was changed, but you also need to know which user and process did it. What do you enable?",
+    "options": [
+      "report_changes",
+      "whodata (on Linux via auditd or eBPF)",
+      "check_all",
+      "alert_new_files"
+    ],
+    "answer": 1,
+    "explain": "whodata adds information about the user and process that made the change. report_changes gives a content diff, check_all checks file attributes, and alert_new_files reports new files."
+  },
+  {
+    "obj": "2.3",
+    "q": "FIM over /etc/ssl/private must report every change, but the content of private keys must not end up in alerts or in the indexer. What do you use?",
+    "options": [
+      "ignore for /etc/ssl/private",
+      "report_changes=\"yes\"",
+      "nodiff for that path (while monitoring the directory)",
+      "Disable FIM for /etc"
+    ],
+    "answer": 2,
+    "explain": "nodiff keeps the change alert but does not compute or send the diff. ignore would disable monitoring entirely, report_changes would send exactly the content, and turning off FIM for /etc loses the most important paths."
+  },
+  {
+    "obj": "2.3",
+    "q": "Every Ansible deploy produces dozens of FIM 550 alerts for /etc/nginx/. What is the best solution?",
+    "options": [
+      "Remove /etc from the syscheck configuration",
+      "Raise log_alert_level to 8",
+      "Set frequency to 7 days",
+      "A rule in local_rules.xml that silences (level 0) known paths during the deploy window, or correlation with the deploy event"
+    ],
+    "answer": 3,
+    "explain": "Targeted silencing preserves detection of changes outside a deploy, which is exactly what an attack looks like. Removing /etc, raising the global threshold or scanning less often also suppress real alerts."
+  },
+  {
+    "obj": "2.3",
+    "q": "Alert 19011 appeared in alerts.json for the check \"Ensure sshd PermitRootLogin is disabled\". What happened?",
+    "options": [
+      "The check went from passed to failed: someone weakened the configuration",
+      "The policy ran for the first time",
+      "The check went from failed to passed",
+      "The SCA module was disabled"
+    ],
+    "answer": 0,
+    "explain": "19011 reports a status change from passed to failed, meaning a correct configuration was broken. A change from failed to passed is 19010, and the scan summary comes from 19001–19005. Together with a FIM alert for sshd_config, this is a strong signal."
+  },
+  {
+    "obj": "2.3",
+    "q": "You are writing your own SCA check that root login is disabled. Which rule is the most reliable?",
+    "options": [
+      "'f:/etc/ssh/sshd_config -> r:PermitRootLogin'",
+      "'c:sshd -T -> r:^permitrootlogin\\s+no'",
+      "'p:sshd'",
+      "'d:/etc/ssh'"
+    ],
+    "answer": 1,
+    "explain": "sshd -T prints the effective configuration (including Include files and default values) in lowercase. A regex over sshd_config alone would also pass for PermitRootLogin yes or a commented-out line, and p: and d: only check the process and the directory."
+  },
+  {
+    "obj": "2.3",
+    "q": "In the lab you enabled the vulnerability-detection block, but there are no vulnerability findings at all, while FIM and SCA alerts are arriving. Why?",
+    "options": [
+      "Vulnerability detection works only on Windows",
+      "report_changes needs to be enabled",
+      "The module needs the CTI vulnerability feed and the indexer for state, and the lab has neither network access nor an indexer",
+      "SCA and vulnerability detection are mutually exclusive"
+    ],
+    "answer": 2,
+    "explain": "Since 4.8 the manager compares the syscollector inventory against the CTI feed and writes the state to the indexer. FIM and SCA run locally and produce alerts in alerts.json without those dependencies. The module also supports Linux, and report_changes is a FIM option."
+  },
+  {
+    "type": "match",
+    "obj": "2.1",
+    "q": "Match each Wazuh daemon with its role.",
+    "options": [
+      "wazuh-analysisd",
+      "wazuh-remoted",
+      "wazuh-authd",
+      "wazuh-modulesd"
+    ],
+    "targets": ["Enrollment of new agents on 1515", "Modules: SCA, syscollector, vulnerability detection", "Decoding and rules, writing alerts", "Communication with agents on 1514", "Web interface on 443"],
+    "answer": [2, 3, 0, 1],
+    "explain": "analysisd is the analysis core, remoted receives agent events, authd enrolls agents, and modulesd runs the modules. The web interface is the dashboard, a separate component, not a manager daemon."
+  },
+  {
+    "type": "order",
+    "obj": "2.1",
+    "q": "Order the steps an auth.log line on an agent goes through until it becomes visible in the dashboard.",
+    "options": [
+      "Filebeat ships the alert to the indexer",
+      "wazuh-analysisd decodes the event and applies the rules",
+      "logcollector on the agent reads the line and sends it to 1514",
+      "The alert is written to alerts.json on the manager"
+    ],
+    "answer": [2, 1, 3, 0],
+    "explain": "The agent reads and sends, the manager (remoted, then analysisd) decodes and applies rules, an alert above the threshold goes to alerts.json, and Filebeat forwards it to the indexer, which the dashboard displays."
+  },
+  {
+    "type": "match",
+    "obj": "2.3",
+    "q": "Match each question with the Wazuh capability that answers it.",
+    "options": [
+      "Did someone modify /etc/passwd, and who",
+      "Does the server configuration comply with the CIS Benchmark",
+      "Which installed packages have known CVEs",
+      "Were there 8 failed SSH logins from the same IP address"
+    ],
+    "targets": ["Log analysis: correlation rule 5763", "FIM with whodata", "Vulnerability detection", "SCA", "Active response"],
+    "answer": [1, 3, 2, 0],
+    "explain": "FIM with whodata tracks changes and their author, SCA checks configuration against a policy, vulnerability detection compares the inventory with the CVE feed, and brute force is a correlation rule over logs. Active response is a reaction, not a source of answers."
+  }
+]

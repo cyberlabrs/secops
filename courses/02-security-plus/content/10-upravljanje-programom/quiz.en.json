@@ -1,0 +1,411 @@
+[
+  {
+    "obj": "5.1",
+    "q": "A document says: \"All service accounts must use passwords of at least 24 characters, and encryption keys must be AES-256 and stored in KMS.\" Which GRC artifact is this MOST likely?",
+    "options": [
+      "Policy",
+      "Guideline",
+      "Standard",
+      "Procedure"
+    ],
+    "answer": 2,
+    "explain": "Specific, mandatory values (password length, algorithm) are a standard. A policy is more general (what and why), a procedure describes steps, and a guideline is only a recommendation."
+  },
+  {
+    "obj": "5.1",
+    "q": "The SOC team has a document with concrete steps for isolating a compromised EC2 instance: disk snapshot, security group change, IAM role removal. Some of the steps are launched automatically from SOAR. What is this document called?",
+    "options": [
+      "Runbook",
+      "Reference architecture",
+      "Acceptable use policy",
+      "Benchmark"
+    ],
+    "answer": 0,
+    "explain": "A runbook contains concrete operational steps for a specific situation and is often automated. A reference architecture is an architecture pattern, and a benchmark (e.g., CIS) is a recommended configuration."
+  },
+  {
+    "obj": "5.1",
+    "q": "An independent researcher found a vulnerability in a company's web application, but doesn't know whom to report it to and fears a lawsuit. Which policy would BEST solve this problem?",
+    "options": [
+      "Clean desk policy",
+      "Data disposal policy",
+      "Access control policy",
+      "Vulnerability disclosure policy"
+    ],
+    "answer": 3,
+    "explain": "A vulnerability disclosure policy defines the reporting channel, the rules, and protection (safe harbor) for researchers who report in good faith. The other policies don't deal with external vulnerability reports."
+  },
+  {
+    "obj": "5.2",
+    "q": "A web farm is worth €200,000. A successful ransomware attack would destroy 25% of its value and is expected once every four years. What is the ALE?",
+    "options": [
+      "€50,000",
+      "€12,500",
+      "€200,000",
+      "€4,000"
+    ],
+    "answer": 1,
+    "explain": "SLE = AV × EF = 200,000 × 0.25 = €50,000. The ARO for \"once every four years\" is 0.25, so ALE = SLE × ARO = 50,000 × 0.25 = €12,500. €50,000 is the SLE, not the annual loss."
+  },
+  {
+    "obj": "5.2",
+    "q": "A phishing incident costs the company €15,000 on average (SLE) and happens twice a year. New email protection would reduce the frequency to 0.5 times a year and costs €10,000 per year. Is the control cost-effective?",
+    "options": [
+      "Yes: the ALE drops from €30,000 to €7,500, and the €22,500 saving exceeds the €10,000 cost",
+      "No: the control costs more than a single incident",
+      "No: the ALE doesn't change because the SLE stays the same",
+      "Yes, but only if the risk is transferred to insurance"
+    ],
+    "answer": 0,
+    "explain": "ALE before = 15,000 × 2 = €30,000, after = 15,000 × 0.5 = €7,500. The €22,500 reduction exceeds the €10,000 annual cost, so the net benefit is €12,500. Comparing with a single incident (SLE) is wrong because the control's cost is compared with the annual loss."
+  },
+  {
+    "obj": "5.2",
+    "q": "A company buys a cyber insurance policy that covers forensics and customer notification costs after a data breach. Which risk treatment was applied?",
+    "options": [
+      "Avoiding",
+      "Accepting",
+      "Mitigating",
+      "Transferring"
+    ],
+    "answer": 3,
+    "explain": "Insurance shifts the financial burden to a third party, which is transfer. The likelihood of an incident doesn't decrease (that would be mitigating), and reputational damage stays with the company."
+  },
+  {
+    "obj": "5.2",
+    "q": "After introducing MFA, a WAF, and segmentation, the risk of portal compromise is still assessed as \"medium.\" Management previously defined that it accepts at most \"low\" risk for systems with customer data. What is CORRECT?",
+    "options": [
+      "The inherent risk is within appetite, so nothing is needed",
+      "The risk must be avoided by shutting down all systems",
+      "The residual risk exceeds the risk appetite, so additional controls or a formal management decision are needed",
+      "The risk was automatically transferred to the WAF vendor"
+    ],
+    "answer": 2,
+    "explain": "The risk that remains after controls is residual risk. Since it's above the appetite management defined, it needs further treatment or a formally escalated decision. Inherent risk is the risk before controls."
+  },
+  {
+    "obj": "5.2",
+    "q": "Before writing a DR plan, the team must determine which business functions are critical, what the financial and operational impact of their disruption is over time, and derive the RTO and RPO from that. Which activity does this?",
+    "options": [
+      "Penetration testing",
+      "Business impact analysis (BIA)",
+      "Gap analysis",
+      "Vendor assessment"
+    ],
+    "answer": 1,
+    "explain": "A BIA identifies critical functions and the impact of disruption and provides the recovery objectives (RTO, RPO). A gap analysis compares the current state with a framework, and a pen test looks for vulnerabilities."
+  },
+  {
+    "obj": "5.3",
+    "q": "The team knows exactly what it needs: 200 licenses of a specific EDR product with three years of support. It wants prices from three authorized distributors. Which document does it send?",
+    "options": [
+      "RFQ",
+      "RFI",
+      "RFP",
+      "MOU"
+    ],
+    "answer": 0,
+    "explain": "An RFQ asks for a price for an exactly defined product or service. An RFI is for early information gathering, and an RFP asks the vendor to propose a solution when the requirements aren't as precise."
+  },
+  {
+    "obj": "5.3",
+    "q": "After an incident at a SaaS vendor, the company wants to send its auditors to check the vendor's controls, but the vendor refuses. What should have been included in the contract to make this possible?",
+    "options": [
+      "An NDA",
+      "An availability SLO",
+      "An MOU on cooperation",
+      "A right to audit clause"
+    ],
+    "answer": 3,
+    "explain": "A right to audit clause contractually grants the right to audit the vendor's controls. An NDA protects confidentiality, an SLO defines a measurable service level, and an MOU is generally not legally binding."
+  },
+  {
+    "obj": "5.3",
+    "q": "A company hires an outside firm to penetration test its production environment. What MUST be agreed on and signed BEFORE testing begins?",
+    "options": [
+      "A vendor registry",
+      "Rules of engagement with scope, allowed techniques, time frame, and contacts",
+      "An expression of interest",
+      "Personnel behavior risk scoring"
+    ],
+    "answer": 1,
+    "explain": "Rules of engagement define what may be tested, how, and when, and provide legal authorization. Without them, a test can cause an outage or be illegal. A vendor registry is just an inventory of vendors."
+  },
+  {
+    "obj": "5.4",
+    "q": "The legal team expects a lawsuit from a former partner. The regular retention policy automatically deletes emails older than 12 months. What should be done IMMEDIATELY?",
+    "options": [
+      "Nothing, the retention policy takes precedence",
+      "Delete all emails about the partner",
+      "Place a legal hold on the relevant mailboxes and data",
+      "Encrypt all emails"
+    ],
+    "answer": 2,
+    "explain": "A legal hold stops the deletion of relevant data and takes precedence over the regular retention policy. Deleting data once a dispute can be anticipated may count as destruction of evidence."
+  },
+  {
+    "obj": "5.4",
+    "q": "A user claims their data in the system is inaccurate and asks that, until this is verified, their data be kept but not used for processing. Which right are they exercising?",
+    "options": [
+      "Right to be forgotten",
+      "Opt-in",
+      "Data ownership",
+      "Processing restrictions"
+    ],
+    "answer": 3,
+    "explain": "Restriction of processing means the data is kept but not processed until the dispute is resolved. The right to be forgotten would require deletion, and opt-in is giving consent."
+  },
+  {
+    "obj": "5.4",
+    "q": "A fintech company offering crypto wallets wants its operations staff to recognize suspicious transaction patterns and know their obligation to report to the authorities. Which compliance training is MOST relevant?",
+    "options": [
+      "AML/CTF",
+      "Anti-bribery",
+      "Clean desk",
+      "Removable media"
+    ],
+    "answer": 0,
+    "explain": "AML/CTF training teaches how to recognize money laundering and terrorism financing and the obligation to report suspicious transactions. Anti-bribery deals with bribery, and the rest are general security awareness topics."
+  },
+  {
+    "obj": "5.5",
+    "q": "At the start of an engagement, a pen tester reviews certificate transparency logs, public DNS records, and employees' LinkedIn profiles, without sending a single packet to the client's infrastructure. What activity is this?",
+    "options": [
+      "Active reconnaissance",
+      "Passive reconnaissance",
+      "Exploitation",
+      "Behavioral testing"
+    ],
+    "answer": 1,
+    "explain": "Gathering information from public sources without direct contact with the target is passive reconnaissance. Active would involve port scanning or enumerating the target's services."
+  },
+  {
+    "obj": "5.5",
+    "q": "The testers are given a regular user account on the VPN and a list of IP ranges, but no architecture documentation or source code. What type of penetration test is this?",
+    "options": [
+      "Known environment",
+      "Unknown environment",
+      "Partially known environment",
+      "Physical"
+    ],
+    "answer": 2,
+    "explain": "Partial information (an account, ranges) means partially known (gray box). Known would include full documentation and code, and unknown would provide nothing but the target."
+  },
+  {
+    "obj": "5.5",
+    "q": "An analyst describes an intrusion through four elements: the group behind the attack, the credential theft tool used, the IP addresses and domains the attack was run from, and the targeted organization. Which reference model is being used?",
+    "options": [
+      "Cyber Kill Chain",
+      "MITRE ATT&CK",
+      "NIST CSF",
+      "Diamond Model of Intrusion Analysis"
+    ],
+    "answer": 3,
+    "explain": "The Diamond Model describes an event through adversary, capability, infrastructure, and victim. The Kill Chain is a sequence of attack phases, and ATT&CK is a catalog of tactics and techniques."
+  },
+  {
+    "obj": "5.6",
+    "q": "An employee in procurement clicked a simulated phishing link and entered credentials for the second time this year. Which type of training is MOST appropriate as the next step?",
+    "options": [
+      "Corrective training, e.g., a short one-to-one session",
+      "Initial/onboarding training",
+      "None, just a disciplinary measure",
+      "A general company-wide lecture once a year"
+    ],
+    "answer": 0,
+    "explain": "Corrective training follows a mistake and targets the specific behavior, and one-to-one is an effective delivery method. Onboarding is for new employees, and an annual lecture doesn't address an individual's repeated mistake."
+  },
+  {
+    "obj": "5.6",
+    "q": "The CISO wants to measure whether the security awareness program actually changes employee behavior. Which TWO metrics are MOST useful? Choose TWO.",
+    "options": [
+      "The number of slides in the presentation",
+      "The simulated phishing report rate and the time to the first report",
+      "The click-rate trend in phishing simulations across several quarters",
+      "The number of employees who opened the LMS page"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "The rate and speed of reporting and the click trend over time measure actual behavior. The number of slides and opening the LMS page measure activity, not behavior change."
+  },
+  {
+    "obj": "5.3",
+    "type": "match",
+    "q": "Match each description with the type of agreement or document.",
+    "options": [
+      "Framework terms of cooperation (liability, payment) for all future projects with the vendor",
+      "Deliverables, deadlines, and price for a migration to Kubernetes under the existing framework agreement",
+      "The vendor guarantees a service level and gives a service credit if it isn't met",
+      "A target API availability of 99.9% per month",
+      "Two agencies write a statement of intent to cooperate, with no legal obligation",
+      "An obligation not to disclose confidential information from the negotiations"
+    ],
+    "targets": [
+      "SLO",
+      "MOU",
+      "SOW",
+      "NDA",
+      "MSA",
+      "SLA",
+      "MOA"
+    ],
+    "answer": [
+      4,
+      2,
+      5,
+      0,
+      1,
+      3
+    ],
+    "explain": "An MSA is the framework, an SOW is specific work under it, an SLA is a promised service level with consequences, an SLO is a specific measurable target, an MOU is a non-binding statement of intent, and an NDA is a confidentiality obligation. MOA isn't used: it's more formal than an MOU and defines responsibilities in detail."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Match each decision with the risk treatment.",
+    "options": [
+      "Shut down an outdated FTP service that nobody uses anymore",
+      "Introduce MFA for all administrator accounts",
+      "Buy cyber insurance for incident costs",
+      "The risk owner signs a 6-month exception because the control costs more than the expected loss",
+      "Put a WAF in front of the public application"
+    ],
+    "targets": [
+      "Transferring",
+      "Accepting",
+      "Mitigating",
+      "Avoiding"
+    ],
+    "answer": [
+      3,
+      2,
+      0,
+      1,
+      2
+    ],
+    "explain": "Stopping the activity that carries the risk is avoiding. MFA and a WAF reduce likelihood, so they're mitigating. Insurance transfers the financial burden (transferring). A formal exception is accepting."
+  },
+  {
+    "obj": "5.5",
+    "type": "order",
+    "q": "Order the phases of the Cyber Kill Chain model.",
+    "options": [
+      "Exploitation",
+      "Reconnaissance",
+      "Command and Control (C2)",
+      "Delivery",
+      "Actions on Objectives",
+      "Weaponization",
+      "Installation"
+    ],
+    "answer": [
+      1,
+      5,
+      3,
+      0,
+      6,
+      2,
+      4
+    ],
+    "explain": "The Lockheed Martin Kill Chain: Reconnaissance, Weaponization, Delivery, Exploitation, Installation, Command and Control, Actions on Objectives. The earlier the defense breaks the chain, the less the damage."
+  },
+  {
+    "obj": "5.1",
+    "q": "A document says: \"All laptops must use full disk encryption with AES-256.\" Which type of GRC artifact is it?",
+    "options": [
+      "Guideline",
+      "Standard",
+      "Procedure",
+      "Policy"
+    ],
+    "answer": 1,
+    "explain": "A standard prescribes a mandatory, measurable technical requirement. A policy sets a general goal, a procedure describes steps, and a guideline is a recommendation."
+  },
+  {
+    "obj": "5.1",
+    "q": "Match each document with its description.",
+    "type": "match",
+    "options": [
+      "What employees may and may not do with the company's IT resources",
+      "Rules for using personal phones for work email",
+      "How long data is kept and when it's deleted",
+      "How outside researchers report the vulnerabilities they find"
+    ],
+    "targets": [
+      "BYOD policy",
+      "Clean desk policy",
+      "Vulnerability disclosure policy",
+      "Acceptable use policy (AUP)",
+      "Data classification and retention policy"
+    ],
+    "answer": [
+      3,
+      0,
+      4,
+      2
+    ],
+    "explain": "The AUP covers acceptable use, BYOD covers personal devices, the retention policy covers retention periods, and the vulnerability disclosure policy covers the channel for reporting vulnerabilities. Clean desk is a distractor."
+  },
+  {
+    "obj": "5.4",
+    "q": "A company received a court order because a lawsuit is underway. What does the legal department ask IT to do with the emails and files of the people involved?",
+    "options": [
+      "Delete them according to the regular retention policy",
+      "Legal hold: suspend deletion and preserve the relevant data regardless of regular retention",
+      "Encrypt them and delete the key",
+      "Move them to a public bucket"
+    ],
+    "answer": 1,
+    "explain": "A legal hold overrides regular retention. Deleting data under a legal hold can have serious legal consequences."
+  },
+  {
+    "obj": "5.4",
+    "q": "A user asks the company to delete all of their personal data from the CRM and the marketing database. Which privacy right are they exercising?",
+    "options": [
+      "Opt-in",
+      "Right to be forgotten",
+      "Data correction",
+      "Processing restriction"
+    ],
+    "answer": 1,
+    "explain": "The right to erasure (right to be forgotten) requires removing the data, with exceptions such as legal retention obligations. Data correction is fixing data, and processing restriction limits processing without deletion."
+  },
+  {
+    "obj": "5.6",
+    "q": "A phishing simulation shows that 18% of employees in accounting click the link, while the company average is 4%. Which type of training is MOST appropriate?",
+    "options": [
+      "Initial/onboarding",
+      "Targeted training for accounting, focused on BEC and fake invoices",
+      "None, the result is acceptable",
+      "The same annual training for everyone, only longer"
+    ],
+    "answer": 1,
+    "explain": "Targeted training addresses a high-risk group and its typical threats. Accounting is the main target of BEC fraud."
+  },
+  {
+    "obj": "5.6",
+    "q": "Which metric BEST shows that the security awareness program is actually changing behavior?",
+    "options": [
+      "The number of presentations delivered",
+      "The percentage of employees who completed the LMS course",
+      "The trend in click rates in phishing simulations and in the REPORT rate for suspicious messages",
+      "The number of newsletters sent"
+    ],
+    "answer": 2,
+    "explain": "A completed course measures activity, not outcome. Fewer clicks and more reports show a change in behavior."
+  },
+  {
+    "obj": "5.6",
+    "q": "An employee at the airport is working on a laptop with a confidential proposal while passengers behind him look at the screen. Which training topic is MOST relevant?",
+    "options": [
+      "Removable media",
+      "Situational awareness and remote work (privacy filter, public networks)",
+      "Password managers",
+      "Anti-bribery"
+    ],
+    "answer": 1,
+    "explain": "Shoulder surfing in public places is covered by the situational awareness and remote work topic. A privacy filter and awareness of your surroundings are the basic measures."
+  }
+]

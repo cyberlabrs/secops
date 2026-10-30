@@ -1,0 +1,68 @@
+[
+  {
+    "q": "Kubernetes Secret ima vrijednost 'cGFzc3dvcmQxMjM='. Šta je tačno?",
+    "options": ["Vrijednost je šifrovana AES-om", "Vrijednost je samo Base64 kodirana i svako ko može čitati Secret je može dekodirati", "Vrijednost je hash lozinke", "Vrijednost se ne može pročitati bez KMS-a"],
+    "answer": 1,
+    "explain": "Base64 je kodiranje, a ne enkripcija. Zaštita zahtijeva RBAC nad Secret objektima, enkripciju etcd-a (KMS provider) ili eksterni secrets manager."
+  },
+  {
+    "q": "Zašto se HMAC koristi za potpisivanje webhookova umjesto običnog SHA-256 hash-a?",
+    "options": ["HMAC je brži", "Običan hash može izračunati svako; HMAC zahtijeva tajni ključ, pa dokazuje i ko je poslao poruku", "SHA-256 je probijen", "HMAC šifruje sadržaj"],
+    "answer": 1,
+    "explain": "HMAC daje integritet i autentičnost između strana koje dijele ključ. Ne daje povjerljivost: sadržaj ostaje čitljiv."
+  },
+  {
+    "q": "Koji algoritam je preporučen za hash lozinki?",
+    "options": ["MD5", "SHA-256", "Argon2id", "AES-256"],
+    "answer": 2,
+    "explain": "Argon2id je namjerno spor i memorijski zahtjevan, sa solju. SHA-256 je prebrz (milijarde pokušaja u sekundi na GPU), MD5 je probijen, a AES je enkripcija, ne hash."
+  },
+  {
+    "q": "Šta se desi ako se u AES-GCM-u isti nonce ponovi sa istim ključem?",
+    "options": ["Ništa posebno", "Gubi se povjerljivost (curi XOR otvorenih tekstova) i napadač može falsifikovati poruke", "Šifrovanje je sporije", "Ključ se automatski rotira"],
+    "answer": 1,
+    "explain": "Ponovljen nonce u GCM-u je jedna od najopasnijih grešaka: ruši i povjerljivost i autentikaciju. Zato se koriste slučajni 96-bitni nonce-ovi uz ograničen broj poruka po ključu, ili brojač."
+  },
+  {
+    "q": "Ana želi poslati Marku poruku koju samo on može pročitati. Kojim ključem je šifruje?",
+    "options": ["Svojim privatnim", "Svojim javnim", "Markovim javnim", "Markovim privatnim"],
+    "answer": 2,
+    "explain": "Enkripcija ide javnim ključem primaoca, a dešifruje samo njegov privatni ključ. Potpis je obratno: potpisuje se svojim privatnim, a provjerava javnim."
+  },
+  {
+    "q": "Šta je envelope enkripcija?",
+    "options": ["Šifrovanje emaila", "Podaci se šifruju data key-em (DEK), a DEK se šifruje master ključem (KEK) u KMS-u", "Dvostruko šifrovanje istim ključem", "Enkripcija samo zaglavlja"],
+    "answer": 1,
+    "explain": "Tako rade S3 SSE-KMS, EBS i mnogi drugi servisi. Master ključ nikad ne napušta KMS, a svako dešifrovanje DEK-a je logovano i kontrolisano IAM-om."
+  },
+  {
+    "q": "Koje algoritme bi dovoljno jak kvantni računar ugrozio? (više odgovora)",
+    "options": ["RSA", "ECDSA / ECDH", "AES-256", "SHA-384"],
+    "answer": [0, 1],
+    "explain": "Shorov algoritam probija probleme na kojima počivaju RSA i ECC. Groverov algoritam samo prepolovljava efektivnu snagu simetričnih šifri i hash funkcija, pa AES-256 i SHA-384 ostaju upotrebljivi."
+  },
+  {
+    "q": "Koji NIST standard definiše post-kvantni mehanizam za razmjenu ključeva (ML-KEM, ranije Kyber)?",
+    "options": ["FIPS 197", "FIPS 203", "FIPS 140-3", "SP 800-63B"],
+    "answer": 1,
+    "explain": "FIPS 203 je ML-KEM, FIPS 204 ML-DSA (potpisi), FIPS 205 SLH-DSA (hash-based potpisi). FIPS 197 je AES, a FIPS 140-3 standard za kriptografske module."
+  },
+  {
+    "q": "Šta je napad 'harvest now, decrypt later'?",
+    "options": ["Krađa backupa", "Snimanje šifrovanog saobraćaja danas radi dešifrovanja kad kvantni računari postanu dostupni", "Brute force lozinki", "Ransomware"],
+    "answer": 1,
+    "explain": "Zato se razmjena ključeva (koja štiti povjerljivost) migrira na PQC prije potpisa. Podaci sa dugim rokom tajnosti su ugroženi već danas."
+  },
+  {
+    "q": "Koji AES mod NE treba koristiti jer isti blokovi otvorenog teksta daju iste blokove šifrata?",
+    "options": ["GCM", "ECB", "CTR", "ChaCha20-Poly1305 (nije AES mod)"],
+    "answer": 1,
+    "explain": "ECB otkriva obrasce u podacima. Koristi AEAD konstrukcije: AES-GCM ili ChaCha20-Poly1305."
+  },
+  {
+    "q": "Kako se generiše token za reset lozinke u Pythonu?",
+    "options": ["random.randint()", "secrets.token_urlsafe(32)", "time.time() pretvoren u hex", "hash korisničkog imena"],
+    "answer": 1,
+    "explain": "Modul secrets koristi CSPRNG iz operativnog sistema. random je predvidiv, a vrijeme i hash imena su lako pogodivi."
+  }
+]

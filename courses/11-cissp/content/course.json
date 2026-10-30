@@ -1,0 +1,399 @@
+{
+  "code": "CISSP",
+  "badge": "CISSP",
+  "order": 11,
+  "title": "ISC2 CISSP: Certified Information Systems Security Professional",
+  "subtitle": "Trening za CISSP po ISC2 outlineu od 15. 4. 2027 (8 domena, 59 ciljeva; razlike u odnosu na outline iz 2024. su navedene): upravljanje sigurnošću i rizikom, imovina, arhitektura i kriptografija, mreže, IAM, testiranje, operacije i razvoj softvera, sa pitanjima u ISC2 stilu i CAT simulacijom.",
+  "lab": {
+    "image": "kurs-devsecops-lab:1",
+    "caps": []
+  },
+  "exam": {
+    "size": 125,
+    "minutes": 180,
+    "pass": 700,
+    "scaleMin": 0,
+    "scaleMax": 1000,
+    "note": "Pravi CISSP (engleski) je CAT: 100–150 pitanja, 3 sata, prolaz 700/1000. Outline iz 2024. važi do 14. 4. 2027, a od 15. 4. 2027 ovaj (ista struktura, druge težine domena). Za titulu treba 5 godina plaćenog iskustva u barem 2 domene (diploma ili odobren certifikat skida 1 godinu); bez toga postaješ Associate of ISC2.",
+    "domains": [
+      {
+        "n": 1,
+        "name": "Security Governance and Risk Management",
+        "weight": 13.6
+      },
+      {
+        "n": 2,
+        "name": "Asset Security",
+        "weight": 12
+      },
+      {
+        "n": 3,
+        "name": "Security Architecture and Engineering",
+        "weight": 12.8
+      },
+      {
+        "n": 4,
+        "name": "Communication and Network Security",
+        "weight": 12.8
+      },
+      {
+        "n": 5,
+        "name": "Identity and Access Management (IAM)",
+        "weight": 13.6
+      },
+      {
+        "n": 6,
+        "name": "Security Assessment and Testing",
+        "weight": 11.2
+      },
+      {
+        "n": 7,
+        "name": "Security Operations",
+        "weight": 12.8
+      },
+      {
+        "n": 8,
+        "name": "Software Development Security",
+        "weight": 11.2
+      }
+    ],
+    "note_en": "The real CISSP (English) is a CAT exam: 100–150 questions, 3 hours, passing score 700/1000. The 2024 outline is valid until April 14, 2027, and this one applies from April 15, 2027 (same structure, different domain weights). The credential requires 5 years of paid work experience in at least 2 domains (a degree or an approved certification waives 1 year); without it you become an Associate of ISC2."
+  },
+  "objectives": [
+    {
+      "id": "1.1",
+      "en": "Understand, adhere to, and promote professional ethics",
+      "bs": "Profesionalna etika"
+    },
+    {
+      "id": "1.2",
+      "en": "Understand and apply security concepts",
+      "bs": "Sigurnosni koncepti"
+    },
+    {
+      "id": "1.3",
+      "en": "Evaluate, apply, and sustain security governance principles",
+      "bs": "Principi upravljanja sigurnošću (governance)"
+    },
+    {
+      "id": "1.4",
+      "en": "Understand legal, regulatory, and compliance issues that pertain to information security in a holistic context",
+      "bs": "Pravni, regulatorni i compliance zahtjevi"
+    },
+    {
+      "id": "1.5",
+      "en": "Understand requirements for investigation types (i.e., administrative, criminal, civil, regulatory)",
+      "bs": "Vrste istraga"
+    },
+    {
+      "id": "1.6",
+      "en": "Develop, document, and implement security policy, standards, procedures, and guidelines",
+      "bs": "Politike, standardi, procedure i smjernice"
+    },
+    {
+      "id": "1.7",
+      "en": "Identify, analyze, assess, prioritize, and implement Business Continuity (BC) requirements",
+      "bs": "Zahtjevi kontinuiteta poslovanja (BC)"
+    },
+    {
+      "id": "1.8",
+      "en": "Contribute to and enforce personnel security policies and procedures",
+      "bs": "Sigurnost kadrova"
+    },
+    {
+      "id": "1.9",
+      "en": "Understand and apply risk management concepts",
+      "bs": "Upravljanje rizikom"
+    },
+    {
+      "id": "1.10",
+      "en": "Understand and apply threat modeling concepts and methodologies",
+      "bs": "Modelovanje prijetnji"
+    },
+    {
+      "id": "1.11",
+      "en": "Apply Supply Chain Risk Management (SCRM) concepts",
+      "bs": "Upravljanje rizikom lanca snabdijevanja (SCRM)"
+    },
+    {
+      "id": "1.12",
+      "en": "Establish, maintain, and measure a security awareness, education, and training program",
+      "bs": "Program svijesti, edukacije i obuke"
+    },
+    {
+      "id": "2.1",
+      "en": "Identify and classify information and assets",
+      "bs": "Identifikacija i klasifikacija informacija i imovine"
+    },
+    {
+      "id": "2.2",
+      "en": "Establish information and asset handling requirements",
+      "bs": "Zahtjevi za rukovanje informacijama i imovinom"
+    },
+    {
+      "id": "2.3",
+      "en": "Provision information and assets securely",
+      "bs": "Sigurno dodjeljivanje informacija i imovine"
+    },
+    {
+      "id": "2.4",
+      "en": "Manage data lifecycle",
+      "bs": "Životni ciklus podataka"
+    },
+    {
+      "id": "2.5",
+      "en": "Ensure appropriate asset management (e.g., End of Life (EOL), End of Support (EOS))",
+      "bs": "Upravljanje imovinom (EOL, EOS)"
+    },
+    {
+      "id": "2.6",
+      "en": "Determine data security controls and compliance requirements",
+      "bs": "Kontrole sigurnosti podataka i compliance"
+    },
+    {
+      "id": "3.1",
+      "en": "Research, implement, and manage engineering processes using secure design principles",
+      "bs": "Inženjerski procesi i principi sigurnog dizajna"
+    },
+    {
+      "id": "3.2",
+      "en": "Understand the fundamental concepts of security models (e.g., Biba, Star, Bell-LaPadula)",
+      "bs": "Modeli sigurnosti (Biba, Star, Bell-LaPadula)"
+    },
+    {
+      "id": "3.3",
+      "en": "Select controls based upon systems security requirements",
+      "bs": "Izbor kontrola prema sigurnosnim zahtjevima sistema"
+    },
+    {
+      "id": "3.4",
+      "en": "Understand security capabilities of information systems (e.g., memory protection, Trusted Platform Module (TPM), Hardware Security Module (HSM), encryption/decryption)",
+      "bs": "Sigurnosne mogućnosti informacionih sistema (TPM, HSM…)"
+    },
+    {
+      "id": "3.5",
+      "en": "Assess and mitigate the vulnerabilities of security architectures, designs, and solution elements",
+      "bs": "Ranjivosti arhitektura, dizajna i elemenata rješenja"
+    },
+    {
+      "id": "3.6",
+      "en": "Select and determine cryptographic solutions",
+      "bs": "Izbor kriptografskih rješenja"
+    },
+    {
+      "id": "3.7",
+      "en": "Understand methods of cryptanalytic attacks",
+      "bs": "Metode kriptoanalitičkih napada"
+    },
+    {
+      "id": "3.8",
+      "en": "Apply security principles to site and facility design",
+      "bs": "Sigurnosni principi u dizajnu lokacija i objekata"
+    },
+    {
+      "id": "3.9",
+      "en": "Design site and facility security controls",
+      "bs": "Kontrole sigurnosti lokacija i objekata"
+    },
+    {
+      "id": "3.10",
+      "en": "Manage the information system lifecycle",
+      "bs": "Životni ciklus informacionog sistema"
+    },
+    {
+      "id": "4.1",
+      "en": "Apply secure design principles in network architectures",
+      "bs": "Principi sigurnog dizajna mrežnih arhitektura"
+    },
+    {
+      "id": "4.2",
+      "en": "Secure network components",
+      "bs": "Sigurnost mrežnih komponenti"
+    },
+    {
+      "id": "4.3",
+      "en": "Implement secure communication channels according to design",
+      "bs": "Sigurni komunikacioni kanali"
+    },
+    {
+      "id": "5.1",
+      "en": "Manage physical and logical access to assets (e.g., provision, control, review, revoke)",
+      "bs": "Upravljanje fizičkim i logičkim pristupom"
+    },
+    {
+      "id": "5.2",
+      "en": "Design identification and authentication strategy (e.g., people, devices, and services)",
+      "bs": "Strategija identifikacije i autentikacije"
+    },
+    {
+      "id": "5.3",
+      "en": "Federated identity with a third-party service",
+      "bs": "Federisani identitet sa trećom stranom"
+    },
+    {
+      "id": "5.4",
+      "en": "Implement and manage authorization mechanisms",
+      "bs": "Mehanizmi autorizacije"
+    },
+    {
+      "id": "5.5",
+      "en": "Manage the identity and access provisioning lifecycle",
+      "bs": "Životni ciklus identiteta i dodjele pristupa"
+    },
+    {
+      "id": "5.6",
+      "en": "Implement authentication and authorization systems",
+      "bs": "Sistemi autentikacije i autorizacije"
+    },
+    {
+      "id": "6.1",
+      "en": "Design and validate assessment, test, and audit strategies",
+      "bs": "Strategije procjene, testiranja i audita"
+    },
+    {
+      "id": "6.2",
+      "en": "Conduct security controls testing",
+      "bs": "Testiranje sigurnosnih kontrola"
+    },
+    {
+      "id": "6.3",
+      "en": "Collect security process data (e.g., technical, administrative)",
+      "bs": "Prikupljanje podataka o sigurnosnim procesima"
+    },
+    {
+      "id": "6.4",
+      "en": "Analyze test/audit output and generate report",
+      "bs": "Analiza rezultata testova/audita i izvještaj"
+    },
+    {
+      "id": "6.5",
+      "en": "Conduct or facilitate security audits",
+      "bs": "Sigurnosni auditi"
+    },
+    {
+      "id": "7.1",
+      "en": "Understand and comply with investigations",
+      "bs": "Istrage"
+    },
+    {
+      "id": "7.2",
+      "en": "Conduct logging and monitoring activities",
+      "bs": "Logovanje i monitoring"
+    },
+    {
+      "id": "7.3",
+      "en": "Perform Configuration Management (CM) (e.g., provisioning, baselining, automation)",
+      "bs": "Upravljanje konfiguracijom (CM)"
+    },
+    {
+      "id": "7.4",
+      "en": "Apply foundational security operations concepts (e.g., Defense in Depth (DiD))",
+      "bs": "Osnovni koncepti sigurnosnih operacija (DiD)"
+    },
+    {
+      "id": "7.5",
+      "en": "Apply resource protection",
+      "bs": "Zaštita resursa"
+    },
+    {
+      "id": "7.6",
+      "en": "Conduct incident management",
+      "bs": "Upravljanje incidentima"
+    },
+    {
+      "id": "7.7",
+      "en": "Operate and maintain detection and preventative measures",
+      "bs": "Mjere detekcije i prevencije"
+    },
+    {
+      "id": "7.8",
+      "en": "Implement and support patch and vulnerability based management",
+      "bs": "Upravljanje zakrpama i ranjivostima"
+    },
+    {
+      "id": "7.9",
+      "en": "Understand and participate in change management processes",
+      "bs": "Upravljanje promjenama"
+    },
+    {
+      "id": "7.10",
+      "en": "Implement recovery strategies",
+      "bs": "Strategije oporavka"
+    },
+    {
+      "id": "7.11",
+      "en": "Implement Disaster Recovery (DR) processes",
+      "bs": "Procesi oporavka od katastrofe (DR)"
+    },
+    {
+      "id": "7.12",
+      "en": "Test disaster recovery plans (DRP)",
+      "bs": "Testiranje DR planova"
+    },
+    {
+      "id": "7.13",
+      "en": "Participate in Business Continuity (BC) planning exercises",
+      "bs": "Vježbe kontinuiteta poslovanja (BC)"
+    },
+    {
+      "id": "7.14",
+      "en": "Implement and manage physical security",
+      "bs": "Fizička sigurnost"
+    },
+    {
+      "id": "7.15",
+      "en": "Address personnel safety and security concerns",
+      "bs": "Sigurnost i bezbjednost osoblja"
+    },
+    {
+      "id": "8.1",
+      "en": "Understand and integrate security in the Software Development Life Cycle (SDLC)",
+      "bs": "Sigurnost u SDLC-u"
+    },
+    {
+      "id": "8.2",
+      "en": "Identify and apply security controls in software development ecosystems",
+      "bs": "Kontrole u ekosistemima razvoja softvera"
+    },
+    {
+      "id": "8.3",
+      "en": "Assess the effectiveness of software security",
+      "bs": "Procjena efikasnosti sigurnosti softvera"
+    },
+    {
+      "id": "8.4",
+      "en": "Assess security impact of acquired software",
+      "bs": "Sigurnosni uticaj nabavljenog softvera"
+    },
+    {
+      "id": "8.5",
+      "en": "Define and apply secure coding guidelines and standards",
+      "bs": "Smjernice i standardi sigurnog kodiranja"
+    }
+  ],
+  "sources": [
+    {
+      "title": "CISSP Exam Outline (od 15. 4. 2027)",
+      "url": "https://www.isc2.org/certifications/cissp/cissp-certification-exam-outline",
+      "title_en": "CISSP Exam Outline (effective April 15, 2027)"
+    },
+    {
+      "title": "ISC2 Code of Ethics",
+      "url": "https://www.isc2.org/ethics"
+    },
+    {
+      "title": "NIST SP 800-37 (RMF)",
+      "url": "https://csrc.nist.gov/pubs/sp/800/37/r2/final"
+    },
+    {
+      "title": "NIST SP 800-53 Rev. 5",
+      "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+    },
+    {
+      "title": "NIST CSF 2.0",
+      "url": "https://www.nist.gov/cyberframework"
+    }
+  ],
+  "title_en": "ISC2 CISSP: Certified Information Systems Security Professional",
+  "subtitle_en": "Training for the CISSP based on the ISC2 outline effective April 15, 2027 (8 domains, 59 objectives; differences from the 2024 outline are noted): security and risk management, asset security, architecture and cryptography, networks, IAM, testing, operations, and software development, with ISC2-style questions and a CAT simulation."
+}

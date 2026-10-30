@@ -1,0 +1,411 @@
+[
+  {
+    "obj": "5.1",
+    "q": "Dokument kaže: „Svi servisni nalozi moraju koristiti lozinke od najmanje 24 znaka, a ključevi za enkripciju moraju biti AES-256 i čuvani u KMS-u.“ Koji GRC artefakt je ovo NAJVJEROVATNIJE?",
+    "options": [
+      "Policy",
+      "Guideline",
+      "Standard",
+      "Procedure"
+    ],
+    "answer": 2,
+    "explain": "Konkretne, obavezne vrijednosti (dužina lozinke, algoritam) su standard. Politika je opštija (šta i zašto), procedura opisuje korake, a smjernica je samo preporuka."
+  },
+  {
+    "obj": "5.1",
+    "q": "SOC tim ima dokument sa konkretnim koracima za izolaciju kompromitovane EC2 instance: snapshot diska, promjena security grupe, uklanjanje IAM uloge. Dio koraka se automatski pokreće iz SOAR-a. Kako se ovaj dokument zove?",
+    "options": [
+      "Runbook",
+      "Reference architecture",
+      "Acceptable use policy",
+      "Benchmark"
+    ],
+    "answer": 0,
+    "explain": "Runbook sadrži konkretne operativne korake za određenu situaciju i često se automatizuje. Reference architecture je arhitekturni obrazac, a benchmark (npr. CIS) je preporučena konfiguracija."
+  },
+  {
+    "obj": "5.1",
+    "q": "Nezavisni istraživač je pronašao ranjivost u web aplikaciji firme, ali ne zna kome da je prijavi i boji se tužbe. Koja politika bi NAJBOLJE riješila ovaj problem?",
+    "options": [
+      "Clean desk policy",
+      "Data disposal policy",
+      "Access control policy",
+      "Vulnerability disclosure policy"
+    ],
+    "answer": 3,
+    "explain": "Vulnerability disclosure politika definiše kanal za prijavu, pravila i zaštitu (safe harbor) za istraživače koji prijavljuju u dobroj vjeri. Ostale politike se ne bave spoljnim prijavama ranjivosti."
+  },
+  {
+    "obj": "5.2",
+    "q": "Web farma vrijedi 200.000 €. Uspješan ransomware napad bi uništio 25% njene vrijednosti, a očekuje se jednom u četiri godine. Koliki je ALE?",
+    "options": [
+      "50.000 €",
+      "12.500 €",
+      "200.000 €",
+      "4.000 €"
+    ],
+    "answer": 1,
+    "explain": "SLE = AV × EF = 200.000 × 0,25 = 50.000 €. ARO za „jednom u četiri godine“ je 0,25, pa je ALE = SLE × ARO = 50.000 × 0,25 = 12.500 €. 50.000 € je SLE, a ne godišnji gubitak."
+  },
+  {
+    "obj": "5.2",
+    "q": "Phishing incident košta firmu u prosjeku 15.000 € (SLE) i dešava se dva puta godišnje. Nova e-mail zaštita bi smanjila učestalost na 0,5 puta godišnje i košta 10.000 € godišnje. Da li je kontrola isplativa?",
+    "options": [
+      "Da: ALE pada sa 30.000 € na 7.500 €, ušteda od 22.500 € je veća od troška od 10.000 €",
+      "Ne: kontrola košta više od jednog incidenta",
+      "Ne: ALE se ne mijenja jer SLE ostaje isti",
+      "Da, ali samo ako se rizik prenese na osiguranje"
+    ],
+    "answer": 0,
+    "explain": "ALE prije = 15.000 × 2 = 30.000 €, poslije = 15.000 × 0,5 = 7.500 €. Smanjenje od 22.500 € premašuje godišnji trošak od 10.000 €, pa je neto korist 12.500 €. Poređenje sa jednim incidentom (SLE) je pogrešno jer se trošak kontrole poredi sa godišnjim gubitkom."
+  },
+  {
+    "obj": "5.2",
+    "q": "Kompanija kupuje polisu cyber osiguranja koja pokriva troškove forenzike i obavještavanja klijenata nakon curenja podataka. Koji tretman rizika je primijenjen?",
+    "options": [
+      "Avoiding",
+      "Accepting",
+      "Mitigating",
+      "Transferring"
+    ],
+    "answer": 3,
+    "explain": "Osiguranje prebacuje finansijski teret na treću stranu, što je transfer. Vjerovatnoća incidenta se ne smanjuje (to bi bilo mitigating), a reputacijska šteta ostaje na kompaniji."
+  },
+  {
+    "obj": "5.2",
+    "q": "Nakon uvođenja MFA, WAF-a i segmentacije, rizik kompromitacije portala je i dalje procijenjen kao „srednji“. Uprava je ranije definisala da prihvata najviše „nizak“ rizik za sisteme sa podacima klijenata. Šta je TAČNO?",
+    "options": [
+      "Inherent risk je unutar apetita, pa nije potrebno ništa",
+      "Rizik je potrebno izbjeći gašenjem svih sistema",
+      "Residual risk premašuje risk appetite, pa su potrebne dodatne kontrole ili formalna odluka uprave",
+      "Rizik je automatski prenesen na dobavljača WAF-a"
+    ],
+    "answer": 2,
+    "explain": "Rizik koji ostaje nakon kontrola je residual risk. Pošto je iznad apetita koji je uprava definisala, treba dodatno tretirati ili formalno eskalirati odluku. Inherent risk je rizik prije kontrola."
+  },
+  {
+    "obj": "5.2",
+    "q": "Prije pisanja DR plana, tim mora utvrditi koje poslovne funkcije su kritične, kakav je finansijski i operativni uticaj njihovog prekida kroz vrijeme i iz toga izvesti RTO i RPO. Koja aktivnost to radi?",
+    "options": [
+      "Penetration testing",
+      "Business impact analysis (BIA)",
+      "Gap analysis",
+      "Vendor assessment"
+    ],
+    "answer": 1,
+    "explain": "BIA identifikuje kritične funkcije i uticaj prekida i daje ciljeve oporavka (RTO, RPO). Gap analysis poredi stanje sa okvirom, a pen test traži ranjivosti."
+  },
+  {
+    "obj": "5.3",
+    "q": "Tim tačno zna šta treba: 200 licenci određenog EDR proizvoda sa trogodišnjom podrškom. Želi da dobije cijene od tri ovlaštena distributera. Koji dokument šalje?",
+    "options": [
+      "RFQ",
+      "RFI",
+      "RFP",
+      "MOU"
+    ],
+    "answer": 0,
+    "explain": "RFQ traži cijenu za tačno definisan proizvod ili uslugu. RFI služi za rano prikupljanje informacija, a RFP traži od dobavljača da predloži rješenje kad zahtjevi nisu toliko precizni."
+  },
+  {
+    "obj": "5.3",
+    "q": "Nakon incidenta kod SaaS dobavljača, kompanija želi da pošalje svoje revizore da provjere njegove kontrole, ali dobavljač odbija. Šta je trebalo uključiti u ugovor da bi to bilo moguće?",
+    "options": [
+      "NDA",
+      "SLO za dostupnost",
+      "MOU o saradnji",
+      "Right to audit klauzulu"
+    ],
+    "answer": 3,
+    "explain": "Right to audit klauzula ugovorno daje pravo na reviziju kontrola dobavljača. NDA štiti povjerljivost, SLO definiše mjerljiv nivo usluge, a MOU uglavnom nije pravno obavezujući."
+  },
+  {
+    "obj": "5.3",
+    "q": "Kompanija angažuje spoljnu firmu za penetraciono testiranje produkcijskog okruženja. Šta MORA biti dogovoreno i potpisano PRIJE početka testiranja?",
+    "options": [
+      "Vendor registry",
+      "Rules of engagement sa opsegom, dozvoljenim tehnikama, vremenskim okvirom i kontaktima",
+      "Expression of interest",
+      "Personnel behavior risk scoring"
+    ],
+    "answer": 1,
+    "explain": "Rules of engagement definišu šta se smije testirati, kako i kada, i daju pravno ovlaštenje. Bez njih test može izazvati prekid rada ili biti nezakonit. Vendor registry je samo inventar dobavljača."
+  },
+  {
+    "obj": "5.4",
+    "q": "Pravni tim očekuje tužbu bivšeg partnera. Redovna retention politika automatski briše e-mailove starije od 12 mjeseci. Šta treba ODMAH uraditi?",
+    "options": [
+      "Ništa, retention politika ima prednost",
+      "Obrisati sve e-mailove o partneru",
+      "Postaviti legal hold na relevantne sandučiće i podatke",
+      "Šifrovati sve e-mailove"
+    ],
+    "answer": 2,
+    "explain": "Legal hold zaustavlja brisanje relevantnih podataka i ima prednost nad redovnom retention politikom. Brisanje podataka nakon što se spor može očekivati može biti uništavanje dokaza."
+  },
+  {
+    "obj": "5.4",
+    "q": "Korisnik tvrdi da su njegovi podaci u sistemu netačni i traži da se, dok se to ne provjeri, njegovi podaci čuvaju, ali ne koriste za obradu. Koje pravo koristi?",
+    "options": [
+      "Right to be forgotten",
+      "Opt-in",
+      "Data ownership",
+      "Processing restrictions"
+    ],
+    "answer": 3,
+    "explain": "Ograničenje obrade znači da se podaci čuvaju, ali se ne obrađuju dok se spor ne riješi. Right to be forgotten bi tražio brisanje, a opt-in je davanje pristanka."
+  },
+  {
+    "obj": "5.4",
+    "q": "Fintech kompanija koja nudi kripto novčanike želi da zaposleni u operacijama prepoznaju sumnjive obrasce transakcija i znaju obavezu prijave nadležnim organima. Koja compliance obuka je NAJRELEVANTNIJA?",
+    "options": [
+      "AML/CTF",
+      "Anti-bribery",
+      "Clean desk",
+      "Removable media"
+    ],
+    "answer": 0,
+    "explain": "AML/CTF obuka uči prepoznavanje pranja novca i finansiranja terorizma i obavezu prijave sumnjivih transakcija. Anti-bribery se bavi mitom, a ostalo su opšte teme sigurnosne svijesti."
+  },
+  {
+    "obj": "5.5",
+    "q": "Pen tester na početku angažmana pregleda certificate transparency logove, javne DNS zapise i LinkedIn profile zaposlenih, bez slanja ijednog paketa ka infrastrukturi klijenta. Koja aktivnost je ovo?",
+    "options": [
+      "Active reconnaissance",
+      "Passive reconnaissance",
+      "Exploitation",
+      "Behavioral testing"
+    ],
+    "answer": 1,
+    "explain": "Prikupljanje informacija iz javnih izvora bez direktnog kontakta sa ciljem je pasivna rekognoscija. Aktivna bi uključivala skeniranje portova ili enumeraciju servisa cilja."
+  },
+  {
+    "obj": "5.5",
+    "q": "Testerima je dat običan korisnički nalog na VPN-u i lista IP opsega, ali ne i dokumentacija arhitekture ni izvorni kod. Koja vrsta penetracionog testa je u pitanju?",
+    "options": [
+      "Known environment",
+      "Unknown environment",
+      "Partially known environment",
+      "Physical"
+    ],
+    "answer": 2,
+    "explain": "Djelimične informacije (nalog, opsezi) znače partially known (gray box). Known bi uključivao punu dokumentaciju i kod, a unknown ne bi davao ništa osim cilja."
+  },
+  {
+    "obj": "5.5",
+    "q": "Analitičar opisuje upad kroz četiri elementa: grupa koja stoji iza napada, korišteni alat za krađu kredencijala, IP adrese i domeni sa kojih je napad vođen, i napadnuta organizacija. Koji referentni model koristi?",
+    "options": [
+      "Cyber Kill Chain",
+      "MITRE ATT&CK",
+      "NIST CSF",
+      "Diamond Model of Intrusion Analysis"
+    ],
+    "answer": 3,
+    "explain": "Diamond Model opisuje događaj kroz adversary, capability, infrastructure i victim. Kill Chain je niz faza napada, a ATT&CK katalog taktika i tehnika."
+  },
+  {
+    "obj": "5.6",
+    "q": "Zaposleni u nabavci je drugi put ove godine kliknuo na simulirani phishing link i unio kredencijale. Koji tip obuke je NAJPRIKLADNIJI kao sljedeći korak?",
+    "options": [
+      "Corrective training, npr. kratka obuka jedan-na-jedan",
+      "Initial/onboarding training",
+      "Nikakva, samo disciplinska mjera",
+      "Opšte predavanje za cijelu kompaniju jednom godišnje"
+    ],
+    "answer": 0,
+    "explain": "Corrective obuka slijedi nakon greške i cilja konkretno ponašanje, a one-to-one je efikasan način isporuke. Onboarding je za nove zaposlene, a godišnje predavanje ne adresira ponovljenu grešku pojedinca."
+  },
+  {
+    "obj": "5.6",
+    "q": "CISO želi da izmjeri da li program sigurnosne svijesti zaista mijenja ponašanje zaposlenih. Koje DVIJE metrike su NAJKORISNIJE? Izaberi DVA.",
+    "options": [
+      "Broj slajdova u prezentaciji",
+      "Stopa prijava simuliranog phishinga i vrijeme do prve prijave",
+      "Trend stope klikova u phishing simulacijama kroz više kvartala",
+      "Broj zaposlenih koji su otvorili LMS stranicu"
+    ],
+    "answer": [
+      1,
+      2
+    ],
+    "explain": "Stopa i brzina prijava te trend klikova kroz vrijeme mjere stvarno ponašanje. Broj slajdova i otvaranje LMS stranice mjere aktivnost, ne promjenu ponašanja."
+  },
+  {
+    "obj": "5.3",
+    "type": "match",
+    "q": "Upari opis sa vrstom ugovora ili dokumenta.",
+    "options": [
+      "Okvirni uslovi saradnje (odgovornost, plaćanje) za sve buduće projekte sa dobavljačem",
+      "Isporuke, rokovi i cijena za migraciju na Kubernetes pod postojećim okvirnim ugovorom",
+      "Dobavljač garantuje nivo usluge i daje kredit na računu ako ga ne ispuni",
+      "Ciljna dostupnost API-ja od 99,9% mjesečno",
+      "Dvije agencije pišu izjavu o namjeri da sarađuju, bez pravne obaveze",
+      "Obaveza da se povjerljive informacije iz pregovora ne otkrivaju"
+    ],
+    "targets": [
+      "SLO",
+      "MOU",
+      "SOW",
+      "NDA",
+      "MSA",
+      "SLA",
+      "MOA"
+    ],
+    "answer": [
+      4,
+      2,
+      5,
+      0,
+      1,
+      3
+    ],
+    "explain": "MSA je okvir, SOW konkretan posao pod njim, SLA obećani nivo usluge sa posljedicama, SLO konkretan mjerljiv cilj, MOU neobavezujuća izjava o namjeri, NDA obaveza povjerljivosti. MOA nije iskorišten: on je formalniji od MOU-a i detaljno definiše odgovornosti."
+  },
+  {
+    "obj": "5.2",
+    "type": "match",
+    "q": "Upari odluku sa tretmanom rizika.",
+    "options": [
+      "Ugasiti zastarjeli FTP servis koji niko više ne koristi",
+      "Uvesti MFA za sve administratorske naloge",
+      "Kupiti cyber osiguranje za troškove incidenta",
+      "Vlasnik rizika potpisuje izuzetak na 6 mjeseci jer je kontrola skuplja od očekivanog gubitka",
+      "Uvesti WAF ispred javne aplikacije"
+    ],
+    "targets": [
+      "Transferring",
+      "Accepting",
+      "Mitigating",
+      "Avoiding"
+    ],
+    "answer": [
+      3,
+      2,
+      0,
+      1,
+      2
+    ],
+    "explain": "Gašenje aktivnosti koja nosi rizik je avoiding. MFA i WAF smanjuju vjerovatnoću, pa su mitigating. Osiguranje prenosi finansijski teret (transferring). Formalni izuzetak je accepting."
+  },
+  {
+    "obj": "5.5",
+    "type": "order",
+    "q": "Poredaj faze Cyber Kill Chain modela redom.",
+    "options": [
+      "Exploitation",
+      "Reconnaissance",
+      "Command and Control (C2)",
+      "Delivery",
+      "Actions on Objectives",
+      "Weaponization",
+      "Installation"
+    ],
+    "answer": [
+      1,
+      5,
+      3,
+      0,
+      6,
+      2,
+      4
+    ],
+    "explain": "Lockheed Martin Kill Chain: Reconnaissance, Weaponization, Delivery, Exploitation, Installation, Command and Control, Actions on Objectives. Što ranije odbrana prekine lanac, to manja šteta."
+  },
+  {
+    "obj": "5.1",
+    "q": "Dokument kaže: „Svi laptopovi moraju koristiti enkripciju cijelog diska sa AES-256.“ Kojoj vrsti GRC artefakta pripada?",
+    "options": [
+      "Guideline",
+      "Standard",
+      "Procedure",
+      "Policy"
+    ],
+    "answer": 1,
+    "explain": "Standard propisuje obavezan, mjerljiv tehnički zahtjev. Politika postavlja opšti cilj, procedura opisuje korake, a guideline je preporuka."
+  },
+  {
+    "obj": "5.1",
+    "q": "Upari dokument sa opisom.",
+    "type": "match",
+    "options": [
+      "Šta zaposleni smiju i ne smiju raditi sa firminim IT resursima",
+      "Pravila za korištenje ličnih telefona za poslovni email",
+      "Kako dugo se čuvaju podaci i kada se brišu",
+      "Kako vanjski istraživači prijavljuju pronađene ranjivosti"
+    ],
+    "targets": [
+      "BYOD policy",
+      "Clean desk policy",
+      "Vulnerability disclosure policy",
+      "Acceptable use policy (AUP)",
+      "Data classification and retention policy"
+    ],
+    "answer": [
+      3,
+      0,
+      4,
+      2
+    ],
+    "explain": "AUP pokriva prihvatljivu upotrebu, BYOD lične uređaje, retention politika rokove čuvanja, a vulnerability disclosure policy kanal za prijavu ranjivosti. Clean desk je distraktor."
+  },
+  {
+    "obj": "5.4",
+    "q": "Firma je dobila sudski nalog jer je u toku tužba. Šta pravna služba traži od IT-a u vezi sa emailovima i fajlovima uključenih osoba?",
+    "options": [
+      "Da ih obriše po redovnoj politici retencije",
+      "Legal hold: obustavu brisanja i čuvanje relevantnih podataka bez obzira na redovnu retenciju",
+      "Da ih šifruje i obriše ključ",
+      "Da ih preseli u javni bucket"
+    ],
+    "answer": 1,
+    "explain": "Legal hold nadjačava redovnu retenciju. Brisanje podataka pod legal holdom može imati teške pravne posljedice."
+  },
+  {
+    "obj": "5.4",
+    "q": "Korisnik traži da firma obriše sve njegove lične podatke iz CRM-a i marketinške baze. Koje pravo iz privatnosti koristi?",
+    "options": [
+      "Opt-in",
+      "Right to be forgotten",
+      "Data correction",
+      "Processing restriction"
+    ],
+    "answer": 1,
+    "explain": "Pravo na brisanje (right to be forgotten) traži uklanjanje podataka, uz izuzetke kao što su zakonske obaveze čuvanja. Data correction je ispravka, a processing restriction ograničava obradu bez brisanja."
+  },
+  {
+    "obj": "5.6",
+    "q": "Phishing simulacija pokazuje da 18% zaposlenih u računovodstvu klikne na link, dok je prosjek firme 4%. Koja vrsta obuke je NAJPRIKLADNIJA?",
+    "options": [
+      "Initial/onboarding",
+      "Targeted obuka za računovodstvo, fokusirana na BEC i lažne fakture",
+      "Nijedna, rezultat je prihvatljiv",
+      "Ista godišnja obuka za sve, ali duža"
+    ],
+    "answer": 1,
+    "explain": "Ciljana (targeted) obuka adresira rizičnu grupu i njihove tipične prijetnje. Računovodstvo je glavna meta BEC prevara."
+  },
+  {
+    "obj": "5.6",
+    "q": "Koja metrika NAJBOLJE pokazuje da program sigurnosne svijesti stvarno mijenja ponašanje?",
+    "options": [
+      "Broj održanih prezentacija",
+      "Procenat zaposlenih koji su završili LMS kurs",
+      "Trend stope klikova u phishing simulacijama i stope PRIJAVE sumnjivih poruka",
+      "Broj poslanih newslettera"
+    ],
+    "answer": 2,
+    "explain": "Završen kurs mjeri aktivnost, a ne ishod. Manje klikova i više prijava pokazuju promjenu ponašanja."
+  },
+  {
+    "obj": "5.6",
+    "q": "Zaposleni na aerodromu radi na laptopu sa povjerljivom ponudom dok putnici iza njega gledaju ekran. Koja tema obuke je NAJRELEVANTNIJA?",
+    "options": [
+      "Removable media",
+      "Situational awareness i rad na daljinu (privacy filter, javne mreže)",
+      "Password manageri",
+      "Anti-bribery"
+    ],
+    "answer": 1,
+    "explain": "Shoulder surfing na javnim mjestima pokriva tema situacione svijesti i rada na daljinu. Privacy filter i svijest o okolini su osnovne mjere."
+  }
+]

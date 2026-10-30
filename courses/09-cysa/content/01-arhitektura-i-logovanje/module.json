@@ -1,0 +1,11 @@
+{
+  "title": "Arhitektura, identitet i logovanje",
+  "title_en": "Architecture, Identity and Logging",
+  "summary": "Logovanje iz ugla analitičara (ingestion, konfiguracija, integritet, NTP, retencija), kritični fajlovi i procesi Windowsa i Linuxa, kontejneri i cloud native, ZTNA i SASE, PAM i upravljanje tajnama, enkripcija i OT/ICS/SCADA.",
+  "summary_en": "Logging from the analyst's perspective (ingestion, configuration, integrity, NTP, retention), critical Windows and Linux files and processes, containers and cloud native, ZTNA and SASE, PAM and secrets management, encryption and OT/ICS/SCADA.",
+  "minutes": 75,
+  "domain": 1,
+  "objectives": [
+    "1.1"
+  ]
+}

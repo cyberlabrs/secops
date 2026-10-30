@@ -1,0 +1,225 @@
+[
+  {
+    "obj": "1.7",
+    "q": "Čvor node01 je u stanju NotReady. Nakon `ssh node01`, `systemctl status kubelet` pokazuje `inactive (dead)` i `disabled`, a u `journalctl -u kubelet` nema grešaka, samo poruka o zaustavljanju. Koja komanda rješava problem i preživljava restart čvora?",
+    "options": [
+      "systemctl enable --now kubelet",
+      "kubectl uncordon node01",
+      "systemctl restart containerd",
+      "kubeadm join --skip-phases=preflight"
+    ],
+    "answer": 0,
+    "explain": "Kubelet je zaustavljen i isključen, pa `enable --now` ga i pokreće i uključuje pri boot-u. `uncordon` samo skida oznaku unschedulable i ne pokreće kubelet; restart containerd-a ne pokreće kubelet."
+  },
+  {
+    "obj": "1.7",
+    "q": "Zadatak traži static Pod `web-static` na čvoru node01. Na node01 u `/var/lib/kubelet/config.yaml` piše `staticPodPath: /etc/kubelet.d`. Gdje stavljaš manifest?",
+    "options": [
+      "/etc/kubernetes/manifests/web-static.yaml na node01",
+      "/etc/kubelet.d/web-static.yaml na node01",
+      "/etc/kubernetes/manifests/web-static.yaml na controlplane",
+      "Dovoljno je `kubectl apply -f web-static.yaml` sa `spec.nodeName: node01`"
+    ],
+    "answer": 1,
+    "explain": "Kubelet čita static Pods samo iz direktorija u `staticPodPath` na svom čvoru. `/etc/kubernetes/manifests` je samo kubeadm podrazumijevana vrijednost; `kubectl apply` sa `nodeName` pravi običan Pod koji ide kroz API, a ne static Pod."
+  },
+  {
+    "obj": "1.7",
+    "q": "U `kube-system` vidiš Pod `nginx-static-node01`. Pokreneš `kubectl delete pod nginx-static-node01` i nakon nekoliko sekundi Pod je ponovo tu. Kako ga trajno uklanjaš?",
+    "options": [
+      "kubectl delete pod nginx-static-node01 --force --grace-period=0",
+      "kubectl drain node01 --ignore-daemonsets",
+      "Obrišeš ili pomjeriš njegov manifest iz staticPodPath direktorija na node01",
+      "kubectl delete deployment nginx-static"
+    ],
+    "answer": 2,
+    "explain": "To je mirror Pod static Poda; kubelet ga vraća dok god fajl postoji u staticPodPath. Force delete i drain djeluju na API objekt, a nema Deploymenta koji ga posjeduje."
+  },
+  {
+    "obj": "1.7",
+    "q": "Nakon izmjene `/etc/kubernetes/manifests/kube-apiserver.yaml` kubectl javlja `The connection to the server 192.168.1.10:6443 was refused`. Koji je najbrži način da vidiš grešku API servera?",
+    "options": [
+      "kubectl logs -n kube-system kube-apiserver-controlplane",
+      "kubectl describe pod -n kube-system kube-apiserver-controlplane",
+      "journalctl -u kube-apiserver",
+      "crictl ps -a | grep kube-apiserver, pa crictl logs <container-id>"
+    ],
+    "answer": 3,
+    "explain": "Bez API servera kubectl ne radi, pa logove čitaš direktno preko CRI-ja sa `crictl`. kube-apiserver kod kubeadm-a nije systemd servis, nego static Pod, pa `journalctl -u kube-apiserver` nema šta da pokaže."
+  },
+  {
+    "obj": "1.7",
+    "q": "Na node01 Pod stalno pada i odmah nestaje iz `crictl ps`. Kojom komandom vidiš i kontejnere koji su izašli?",
+    "options": [
+      "crictl ps -a",
+      "crictl pods --state exited",
+      "crictl images -a",
+      "ctr containers list"
+    ],
+    "answer": 0,
+    "explain": "`crictl ps` bez `-a` prikazuje samo pokrenute kontejnere. `crictl pods` prikazuje sandboxove a ne kontejnere, a `ctr` bez `-n k8s.io` gleda pogrešan containerd namespace."
+  },
+  {
+    "obj": "1.7",
+    "q": "Novi worker čvor je NotReady. `kubectl describe node` pokazuje `NetworkReady=false` i poruku da CNI plugin nije inicijalizovan. Šta prvo provjeravaš na čvoru?",
+    "options": [
+      "Da li postoji /etc/kubernetes/manifests/kube-proxy.yaml",
+      "Da li u /etc/cni/net.d/ postoji konfiguracija i da li CNI DaemonSet Pod radi na tom čvoru",
+      "Da li je /etc/crictl.yaml podešen",
+      "Da li je CoreDNS Deployment skaliran na 2 replike"
+    ],
+    "answer": 1,
+    "explain": "Runtime javlja NetworkReady=false kad u /etc/cni/net.d/ nema važeće konfiguracije, a nju obično upisuje CNI DaemonSet. kube-proxy je DaemonSet a ne static Pod, crictl.yaml služi samo CLI alatu, a CoreDNS ne utiče na stanje čvora."
+  },
+  {
+    "obj": "1.7",
+    "q": "Pod visi u ContainerCreating sa događajem `failed to setup network for sandbox ... failed to find plugin \"portmap\" in path [/opt/cni/bin]`. Šta je uzrok?",
+    "options": [
+      "U /etc/cni/net.d/ nema nijednog konfiguracionog fajla",
+      "kube-proxy nije pokrenut na tom čvoru",
+      "Binarni plugin portmap nedostaje u /opt/cni/bin/ iako ga konfiguracija navodi",
+      "Service CIDR se preklapa sa Pod CIDR-om"
+    ],
+    "answer": 2,
+    "explain": "Konfiguracija postoji (inače bi greška bila da CNI nije inicijalizovan), ali u /opt/cni/bin/ fali izvršni fajl naveden u conflist-u. kube-proxy i CIDR-ovi ne utiču na kreiranje mreže sandboxa."
+  },
+  {
+    "obj": "1.7",
+    "q": "U `/etc/cni/net.d/` na čvoru postoje fajlovi `10-kindnet.conflist` i `87-podman-bridge.conflist`. Koju konfiguraciju koristi container runtime?",
+    "options": [
+      "Obje, spojene po redoslijedu",
+      "87-podman-bridge.conflist, jer je posljednji izmijenjen",
+      "Nijednu, jer smije postojati samo jedan fajl",
+      "10-kindnet.conflist, jer se uzima prvi fajl po leksičkom redoslijedu"
+    ],
+    "answer": 3,
+    "explain": "Runtime čita prvu konfiguraciju po abecednom redu imena, zato CNI-jevi koriste numeričke prefikse. Fajlovi se ne spajaju i vrijeme izmjene nije bitno."
+  },
+  {
+    "obj": "1.7",
+    "q": "StorageClass ima `provisioner: ebs.csi.aws.com`, PVC je Pending, a događaj kaže da se čeka eksterni provisioner. Koja komanda najbrže potvrđuje da je CSI driver uopšte registrovan u klasteru?",
+    "options": [
+      "kubectl get csidrivers",
+      "kubectl get crd | grep storage",
+      "ls /opt/cni/bin/",
+      "crictl images | grep ebs"
+    ],
+    "answer": 0,
+    "explain": "CSIDriver objekt registruje driver u klasteru, a `kubectl get csinodes` pokazuje gdje je node plugin dostupan. /opt/cni/bin je za mrežne plugine, a prisustvo image-a ne znači da driver radi."
+  },
+  {
+    "obj": "1.7",
+    "q": "Upari komponentu sa načinom na koji radi u kubeadm klasteru.",
+    "type": "match",
+    "options": ["kubelet", "kube-scheduler", "kube-proxy", "CoreDNS"],
+    "targets": [
+      "Deployment u kube-system",
+      "systemd servis na svakom čvoru",
+      "DaemonSet u kube-system",
+      "static Pod iz /etc/kubernetes/manifests",
+      "CronJob u kube-system"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "kubelet je systemd servis jer on pokreće sve ostalo; scheduler je static Pod kontrolne ravni; kube-proxy kubeadm instalira kao DaemonSet, a CoreDNS kao Deployment. Nijedna komponenta nije CronJob."
+  },
+  {
+    "obj": "1.7",
+    "q": "Upari interfejs sa lokacijom ili objektom koji provjeravaš kad on ne radi.",
+    "type": "match",
+    "options": ["CRI", "CNI", "CSI"],
+    "targets": [
+      "/etc/cni/net.d/ i /opt/cni/bin/",
+      "kubectl get csidrivers,csinodes",
+      "/etc/kubernetes/admin.conf",
+      "/run/containerd/containerd.sock i /etc/crictl.yaml"
+    ],
+    "answer": [3, 0, 1],
+    "explain": "CRI je socket runtime-a koji koriste kubelet i crictl; CNI ima konfiguraciju i binarne plugine na čvoru; CSI driveri se registruju kao CSIDriver i CSINode objekti. admin.conf je kubeconfig administratora."
+  },
+  {
+    "obj": "1.2",
+    "q": "`kubeadm join` na novom čvoru pada u preflight fazi sa `[ERROR FileContent--proc-sys-net-ipv4-ip_forward]: contents are not set to 1`. Koja popravka je ispravna i trajna?",
+    "options": [
+      "modprobe br_netfilter",
+      "Dodaš `net.ipv4.ip_forward = 1` u /etc/sysctl.d/k8s.conf i pokreneš `sysctl --system`",
+      "kubeadm join ... --ignore-preflight-errors=all",
+      "echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables"
+    ],
+    "answer": 1,
+    "explain": "Fajl u /etc/sysctl.d/ čuva podešavanje nakon restarta, a `sysctl --system` ga odmah primjenjuje. br_netfilter i bridge-nf-call-iptables su druga podešavanja, a ignorisanje preflight grešaka ostavlja čvor bez rutiranja Pod saobraćaja."
+  },
+  {
+    "obj": "1.2",
+    "q": "Kubelet na novom čvoru ne startuje, a u `journalctl -u kubelet` piše da swap nije podržan. Zadatak traži da kubelet radi bez izmjene kubelet konfiguracije. Šta radiš?",
+    "options": [
+      "Postaviš `failSwapOn: false` u /var/lib/kubelet/config.yaml",
+      "Postaviš `swapBehavior: LimitedSwap`",
+      "swapoff -a i zakomentarišeš swap liniju u /etc/fstab, pa restartuješ kubelet",
+      "systemctl mask swap.target bez restarta kubeleta"
+    ],
+    "answer": 2,
+    "explain": "Isključivanje swapa (i trajno kroz /etc/fstab) zadovoljava podrazumijevani `failSwapOn: true`. Opcije sa failSwapOn i swapBehavior mijenjaju kubelet konfiguraciju, što zadatak zabranjuje, a samo maskiranje bez swapoff-a ne gasi već aktivan swap."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na čvoru sa cgroup v2 i containerd 2.x kubelet koristi `cgroupDriver: systemd`. Koje podešavanje u /etc/containerd/config.toml usklađuje runtime?",
+    "options": [
+      "`sandbox_image = \"registry.k8s.io/pause:3.10\"`",
+      "`snapshotter = \"overlayfs\"`",
+      "`disable_apparmor = true`",
+      "`SystemdCgroup = true` u sekciji runtimes.runc.options CRI runtime plugina"
+    ],
+    "answer": 3,
+    "explain": "runc dobija systemd cgroup driver preko `SystemdCgroup = true` pod `[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]` (containerd 2.x). Sandbox image, snapshotter i AppArmor nemaju veze sa cgroup driverom."
+  },
+  {
+    "obj": "1.2",
+    "q": "Nakon `cat /etc/sysctl.d/k8s.conf` (sadrži net.bridge.bridge-nf-call-iptables = 1) i `sysctl --system`, dobijaš grešku `cannot stat /proc/sys/net/bridge/bridge-nf-call-iptables: No such file or directory`. Šta nedostaje?",
+    "options": [
+      "Kernel modul br_netfilter nije učitan",
+      "Paket iptables nije instaliran",
+      "Kernel modul overlay nije učitan",
+      "Potreban je restart containerd-a"
+    ],
+    "answer": 0,
+    "explain": "Ključevi net.bridge.* postoje tek kad je br_netfilter učitan (`modprobe br_netfilter`, trajno u /etc/modules-load.d/). Modul overlay služi za overlayfs, a paket iptables i containerd ne prave te sysctl ključeve."
+  },
+  {
+    "obj": "1.2",
+    "q": "Poredaj korake pripreme novog Ubuntu čvora prije `kubeadm join`.",
+    "type": "order",
+    "options": [
+      "Instaliraj kubeadm, kubelet i kubectl sa pkgs.k8s.io i uradi apt-mark hold",
+      "Isključi swap (swapoff -a i /etc/fstab)",
+      "Učitaj module overlay i br_netfilter i postavi sysctl net.ipv4.ip_forward=1",
+      "Instaliraj containerd i postavi SystemdCgroup = true, pa restartuj containerd",
+      "Pokreni kubeadm join sa komandom iz `kubeadm token create --print-join-command`"
+    ],
+    "answer": [1, 2, 3, 0, 4],
+    "explain": "Prvo OS (swap, moduli, sysctl), zatim runtime, pa Kubernetes paketi, i tek na kraju join. Runtime mora raditi prije join-a jer preflight provjerava CRI socket."
+  },
+  {
+    "obj": "1.2",
+    "q": "Imaš kubeconfig sa kontekstima `prod` i `lab`. Zadatak kaže da radiš na klasteru `lab` u namespace-u `team-a` i da sve sljedeće komande podrazumijevano idu u taj namespace. Koja kombinacija to postiže?",
+    "options": [
+      "kubectl config set-cluster lab --namespace=team-a",
+      "export KUBECONFIG=lab; kubectl config set-context --namespace=team-a",
+      "kubectl config use-context lab && kubectl config set-context --current --namespace=team-a",
+      "kubectl config use-context team-a"
+    ],
+    "answer": 2,
+    "explain": "`use-context` mijenja aktivni kontekst, a `set-context --current --namespace` upisuje podrazumijevani namespace u njega. Namespace je dio konteksta, ne klastera, a `team-a` nije ime konteksta."
+  },
+  {
+    "obj": "1.2",
+    "q": "Na controlplane čvoru `kubectl get nodes` javlja da je server localhost:8080 odbio konekciju, iako klaster radi. U home direktoriju korisnika nema ~/.kube/config. Šta je najbrže rješenje?",
+    "options": [
+      "systemctl restart kubelet",
+      "export KUBECONFIG=/etc/kubernetes/admin.conf",
+      "kubeadm init phase kubeconfig kubelet",
+      "kubectl config use-context kubernetes-admin@kubernetes"
+    ],
+    "answer": 1,
+    "explain": "Bez kubeconfiga kubectl pokušava localhost:8080; admin.conf sadrži adresu API servera i administratorske kredencijale. Kubelet radi normalno, phase kubeconfig kubelet pravi kubelet.conf, a use-context ne pomaže kad kubeconfig ne postoji."
+  }
+]

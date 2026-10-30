@@ -1,0 +1,279 @@
+[
+  {
+    "obj": "6.1",
+    "q": "A European company uses a US cloud provider in the Frankfurt region. Management asks whether US authorities can demand its data from the provider. What is the MOST accurate answer?",
+    "options": [
+      "No, because the data is physically in the EU and is subject only to GDPR.",
+      "They can, because the CLOUD Act targets data under the control of a US provider regardless of location; the risk is mitigated through the contract and encryption with company-controlled keys.",
+      "They can only if the company has a subsidiary in the US.",
+      "No, because the EU-US Data Privacy Framework prohibits such requests."
+    ],
+    "answer": 1,
+    "explain": "The CLOUD Act applies to a provider under US jurisdiction, regardless of where the data is. GDPR Art. 48 creates a conflict but does not eliminate the risk. The contract (challenging requests, transparency) and customer-controlled keys are practical measures. The DPF governs commercial transfers and does not prohibit government requests."
+  },
+  {
+    "obj": "6.1",
+    "q": "A security manager discovers that a data preservation request from a US lawsuit could conflict with an erasure obligation under GDPR. What should be done FIRST?",
+    "options": [
+      "Delete the data because GDPR takes precedence.",
+      "Retain the data indefinitely because the court takes precedence.",
+      "Consult legal counsel to determine the applicable obligations and their priority.",
+      "Move the data to a third country without those obligations."
+    ],
+    "answer": 2,
+    "explain": "A conflict of laws requires legal interpretation. The security professional identifies and escalates the risk, and legal counsel determines how to proceed. Unilateral deletion or relocation may be unlawful."
+  },
+  {
+    "obj": "6.1",
+    "q": "Which ISO/IEC standard provides guidelines for the identification, collection, acquisition, and preservation of digital evidence?",
+    "options": [
+      "ISO/IEC 27037",
+      "ISO/IEC 27042",
+      "ISO/IEC 27050",
+      "ISO/IEC 27018"
+    ],
+    "answer": 0,
+    "explain": "27037 covers the initial handling of evidence. 27042 is analysis and interpretation, 27050 eDiscovery, and 27018 the protection of PII in the public cloud."
+  },
+  {
+    "obj": "6.1",
+    "q": "A forensic team wants to prove that its cloud log analysis tool is reliable and produces accurate results before the findings are presented in court. Which standard is MOST relevant?",
+    "options": [
+      "ISO/IEC 27037",
+      "ISO/IEC 27043",
+      "ISO/IEC 27050-3",
+      "ISO/IEC 27041"
+    ],
+    "answer": 3,
+    "explain": "27041 addresses assuring the suitability and adequacy of investigative methods, i.e., validation of methods and tools. 27043 is the umbrella investigation process, 27037 evidence handling, and 27050-3 eDiscovery practice."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company has received a letter from an attorney announcing a lawsuit. The relevant data is in a SaaS collaboration platform with a policy of deletion after 180 days. What is the BEST first step?",
+    "options": [
+      "Apply a legal hold in the SaaS platform to the relevant custodians and locations.",
+      "Export all company data to local storage.",
+      "Wait for the court to issue a preservation order.",
+      "Change the retention policy for the entire company to indefinite."
+    ],
+    "answer": 0,
+    "explain": "The duty to preserve arises when litigation is reasonably anticipated. A targeted legal hold is the preservation phase in the EDRM. A mass export and indefinite retention violate minimization and create new risks, and waiting for an order is too late."
+  },
+  {
+    "obj": "6.1",
+    "q": "Which part of ISO/IEC 27050 deals with preparing systems and infrastructure BEFORE an eDiscovery request arrives?",
+    "options": [
+      "27050-1",
+      "27050-2",
+      "27050-4",
+      "27050-3"
+    ],
+    "answer": 2,
+    "explain": "27050-4 is technical readiness. Part 1 is the overview and concepts, part 2 governance and management, part 3 the code of practice for performing eDiscovery."
+  },
+  {
+    "obj": "6.1",
+    "q": "An EU bank is selecting a cloud provider for a critical function. Which EU act MOST directly mandates contractual provisions with ICT third parties and oversight of critical ICT providers?",
+    "options": [
+      "The NIS2 Directive",
+      "DORA",
+      "The EU AI Act",
+      "eIDAS 2"
+    ],
+    "answer": 1,
+    "explain": "DORA (Regulation 2022/2554), applicable since 17 January 2025, mandates for the financial sector ICT third-party risk management, mandatory contractual provisions, and EU oversight of critical ICT providers. NIS2 is the general cybersecurity framework, and for financial entities DORA is lex specialis."
+  },
+  {
+    "obj": "6.1",
+    "q": "What is the GREATEST cloud-specific legal risk when a provider uses subcontractors in multiple countries?",
+    "options": [
+      "Higher application latency.",
+      "Higher licensing costs.",
+      "More difficult SIEM integration.",
+      "Data may be processed in jurisdictions the customer has not assessed, which may violate legal obligations on location and transfer."
+    ],
+    "answer": 3,
+    "explain": "Subcontractors in other countries change the legal framework of processing and may mean an unlawful transfer of personal data. This is mitigated through the contract (subprocessor list, right to object, flow-down) and due diligence. The other options are not legal risks."
+  },
+  {
+    "obj": "6.1",
+    "q": "A company wants to be able to switch more easily from one cloud provider to another in the future without high exit fees. Which EU regulation is MOST relevant to this?",
+    "options": [
+      "EU Data Act",
+      "GDPR",
+      "Cyber Resilience Act",
+      "NIS2"
+    ],
+    "answer": 0,
+    "explain": "The EU Data Act (applicable since 12 September 2025) contains rules on switching between data processing service providers and the gradual abolition of switching charges. GDPR has a right to portability of personal data for individuals, but does not govern a company switching between cloud providers."
+  },
+  {
+    "obj": "6.1",
+    "q": "Which of the following is a contractual rather than a legal obligation in most countries?",
+    "options": [
+      "HIPAA Security Rule",
+      "Breach notification under GDPR Art. 33",
+      "PCI DSS",
+      "SOX internal control requirements"
+    ],
+    "answer": 2,
+    "explain": "PCI DSS is an industry standard that merchants and processors accept by contract with the card brands and banks. HIPAA, GDPR, and SOX are laws."
+  },
+  {
+    "obj": "6.2",
+    "q": "An EU organization uses IP addresses and cookie identifiers for analytics. Marketing claims these are not personal data because there are no names. What is CORRECT?",
+    "options": [
+      "Marketing is right, because personal data under GDPR must include a name.",
+      "They are personal data only if retained for more than 30 days.",
+      "They are personal data only if transferred outside the EU.",
+      "Online identifiers can be personal data because they relate to an identifiable person."
+    ],
+    "answer": 3,
+    "explain": "GDPR defines personal data as any information relating to an identified or identifiable person and explicitly mentions online identifiers. The definition is broader than the typical US definition of PII."
+  },
+  {
+    "obj": "6.2",
+    "q": "A US hospital wants to store ePHI with a cloud provider. What must be signed BEFORE the data is transferred?",
+    "options": [
+      "A Data Processing Agreement under GDPR Art. 28",
+      "A Business Associate Agreement (BAA)",
+      "A non-disclosure agreement with each of the provider's employees",
+      "Standard Contractual Clauses"
+    ],
+    "answer": 1,
+    "explain": "Under HIPAA, a provider that creates, receives, maintains, or transmits ePHI is a business associate and must sign a BAA. The DPA and SCCs are GDPR instruments."
+  },
+  {
+    "obj": "6.2",
+    "q": "A merchant processes payment card data of EU customers. How are the protection obligations for this data BEST classified?",
+    "options": [
+      "Only contractual, under PCI DSS.",
+      "Only regulated, under GDPR.",
+      "Both regulated (GDPR, because it is personal data) and contractual (PCI DSS, toward the card brands).",
+      "Neither, if the data is tokenized at the provider."
+    ],
+    "answer": 2,
+    "explain": "The same data can be subject to both law and contract. The name and card number of an EU person are personal data under GDPR and cardholder data under PCI DSS. Tokenization reduces scope but does not automatically remove the obligations."
+  },
+  {
+    "obj": "6.2",
+    "q": "A US university is planning a cloud system for student grades and records. Which US law is MOST directly applicable?",
+    "options": [
+      "FERPA",
+      "HIPAA",
+      "GLBA",
+      "COPPA"
+    ],
+    "answer": 0,
+    "explain": "FERPA protects educational records at institutions receiving federal funds. HIPAA is healthcare, GLBA finance, and COPPA children under 13 online."
+  },
+  {
+    "obj": "6.2",
+    "q": "Under India's Digital Personal Data Protection Act, which role corresponds to the controller under GDPR?",
+    "options": [
+      "Data Principal",
+      "Consent Manager",
+      "Data Protection Board",
+      "Data Fiduciary"
+    ],
+    "answer": 3,
+    "explain": "The Data Fiduciary determines the purpose and means of processing (≈ controller), the Data Principal is the person the data relates to, the Consent Manager manages consents, and the Data Protection Board is the supervisory authority."
+  },
+  {
+    "obj": "6.2",
+    "q": "A Canadian private-sector company collects customers' personal data. Which law and approach are MOST accurate?",
+    "options": [
+      "FERPA, focused on educational records.",
+      "PIPEDA, based on ten fair information principles, including accountability and consent.",
+      "GDPR, because Canada has no law of its own.",
+      "HIPAA, because it covers all personal data in North America."
+    ],
+    "answer": 1,
+    "explain": "PIPEDA applies to the private sector in commercial activities and is based on ten principles. Canada has its own law; GDPR may apply only additionally, if the company targets persons in the EU."
+  },
+  {
+    "obj": "6.2",
+    "q": "A public cloud provider wants to show customers that it protects the PII it processes on their behalf (as a PII processor). Which standard is MOST appropriate?",
+    "options": [
+      "ISO/IEC 27017",
+      "ISO/IEC 27037",
+      "ISO/IEC 27018",
+      "ISO/IEC 27050"
+    ],
+    "answer": 2,
+    "explain": "ISO/IEC 27018 is the code of practice for the protection of PII in the public cloud when the provider acts as a processor. 27017 is general cloud security controls, 27037 forensics, 27050 eDiscovery."
+  },
+  {
+    "obj": "6.2",
+    "q": "A company plans to move a system that processes employees' biometric data to the cloud. What should be done FIRST?",
+    "options": [
+      "Enable encryption of all data at rest.",
+      "Conduct a privacy impact assessment (DPIA) before processing begins.",
+      "Sign an SLA with the provider.",
+      "Appoint a new CISO."
+    ],
+    "answer": 1,
+    "explain": "Biometrics for identification is a special category, so the processing is likely high risk and a DPIA is mandatory before it begins. The DPIA determines which controls (including encryption) and contractual obligations are needed."
+  },
+  {
+    "obj": "6.2",
+    "q": "Which GAPP principle MOST directly covers the requirement that personal data be retained only as long as necessary and then securely destroyed?",
+    "options": [
+      "Use, retention and disposal",
+      "Notice",
+      "Quality",
+      "Monitoring and enforcement"
+    ],
+    "answer": 0,
+    "explain": "The use, retention and disposal principle limits use to the stated purposes, retention to the necessary period, and requires secure disposal. Notice is notification, quality is accuracy, and monitoring and enforcement is compliance oversight."
+  },
+  {
+    "obj": "6.2",
+    "q": "An EU company wants to transfer personal data to a US SaaS provider that is NOT certified under the EU-US Data Privacy Framework. Which mechanism is MOST appropriate?",
+    "options": [
+      "None, transfer to the US is prohibited.",
+      "The provider's verbal assurance that it will comply with GDPR.",
+      "The transfer is permitted without additional measures because the provider is a large company.",
+      "Standard Contractual Clauses (SCCs) with a transfer impact assessment (TIA) and supplementary measures as needed."
+    ],
+    "answer": 3,
+    "explain": "Without adequacy (the DPF applies only to certified organizations), the transfer relies on appropriate safeguards under Art. 46, most often SCCs, and after Schrems II also a TIA and supplementary measures such as encryption."
+  },
+  {
+    "obj": "6.1",
+    "type": "order",
+    "q": "Order the phases of the EDRM eDiscovery model from early to late.",
+    "options": [
+      "Review",
+      "Preservation",
+      "Production",
+      "Identification",
+      "Collection",
+      "Processing"
+    ],
+    "answer": [3, 1, 4, 5, 0, 2],
+    "explain": "After information governance come identification of ESI and custodians, preservation (legal hold), collection, processing (deduplication, filtering), review, analysis, production, and presentation."
+  },
+  {
+    "obj": "6.2",
+    "type": "match",
+    "q": "Match the law with its main focus.",
+    "options": [
+      "Educational records of students in the US",
+      "The private sector in Canada, ten fair information principles",
+      "Health data held by covered entities and business associates",
+      "Digital personal data in India, the roles of Data Fiduciary and Data Principal",
+      "Personal data in the EU, extraterritorial application and fines up to 4% of turnover"
+    ],
+    "targets": [
+      "GDPR",
+      "HIPAA",
+      "FERPA",
+      "GLBA",
+      "PIPEDA",
+      "DPDP Act"
+    ],
+    "answer": [2, 4, 1, 5, 0],
+    "explain": "FERPA protects educational records, PIPEDA the Canadian private sector, HIPAA health data, the DPDP Act Indian digital personal data, and GDPR personal data in the EU. GLBA (US financial institutions) is a distractor."
+  }
+]

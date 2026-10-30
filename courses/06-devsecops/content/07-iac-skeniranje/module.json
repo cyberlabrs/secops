@@ -1,0 +1,11 @@
+{
+  "title": "Skeniranje IaC-a",
+  "summary": "Checkov i Trivy misconfig nad Terraformom i manifestima u pipelineu: pragovi, baseline, vlastite provjere (YAML, Python, Rego) i obrazložena izuzeća sa rokom.",
+  "minutes": 60,
+  "domain": 4,
+  "objectives": [
+    "4.1"
+  ],
+  "title_en": "IaC scanning",
+  "summary_en": "Checkov and Trivy misconfig over Terraform and manifests in the pipeline: thresholds, baselines, custom checks (YAML, Python, Rego) and justified suppressions with an expiry."
+}

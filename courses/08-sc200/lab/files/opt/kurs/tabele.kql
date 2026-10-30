@@ -1,0 +1,4 @@
+.load /opt/kurs/data/StormEvents.csv StormEvents
+.load /opt/kurs/data/SecurityEvent.csv SecurityEvent
+.load /opt/kurs/data/DeviceProcessEvents.csv DeviceProcessEvents
+.load /opt/kurs/data/AzureFirewall.csv AzureFirewall

@@ -1,0 +1,14 @@
+#!/bin/bash
+# Izvršava KQL nad tabelama scenarija: svaki CSV u $KQL_DATA (podrazumijevano /root/data) je tabela
+# sa imenom fajla (SigninLogs.csv -> SigninLogs).
+# Upotreba: kql upit.kql             upite u istom fajlu odvoji praznim redom
+#           kql -c 'SigninLogs | count'
+# U fajlu: .save /root/rezultat.csv snima rezultat prethodnog upita.
+d=${KQL_DATA:-/root/data}
+t=$(mktemp); trap 'rm -f "$t"' EXIT
+{ for f in "$d"/*.csv; do [ -f "$f" ] && echo ".load $f $(basename "$f" .csv)"; done; echo; echo ".echo ===KURS==="; echo; } > "$t"
+if [ "$1" = "-c" ]; then shift; printf '%s\n' "$*" >> "$t"
+elif [ -f "$1" ]; then cat "$1" >> "$t"
+else sed -n '2,6p' "$0"; exit 2; fi
+/opt/lokql/lokql run -f "$t" 2>&1 | awk 'f; /^===KURS===$/ {f=1}'
+exit ${PIPESTATUS[0]}

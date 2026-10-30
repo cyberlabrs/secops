@@ -1,0 +1,22 @@
+# Job #4805 (test) | pipeline #1931 | main | 2026-10-12T11:58:41Z | https://gitlab.kvadrat.ba/izvjestaji/izvjestaji-servis/-/jobs/4805
+Running with gitlab-runner 17.4.0 (b92ee590)
+  on kvadrat-shared-runner-02 t3_Xk9pQw, system ID: s_6b1f2e9a7c3d
+Preparing the "docker" executor
+Using Docker executor with image python:3.12-slim ...
+Pulling docker image python:3.12-slim ...
+Using docker image sha256:4f1c2e8d9a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d for python:3.12-slim
+Preparing environment
+Running on runner-t3xk9pqw-project-57-concurrent-0 via kvadrat-ci-02...
+Getting source from Git repository
+Fetching changes with git depth set to 20...
+Initialized empty Git repository in /builds/izvjestaji/izvjestaji-servis/.git/
+Created fresh repository.
+Checking out bcf32b33 as detached HEAD (ref is main)...
+Skipping Git submodules setup
+Executing "step_script" stage of the job script
+$ pip install -q -r requirements.txt
+$ pytest -q
+.                                                                        [100%]
+1 passed in 1.84s
+Cleaning up project directory and file based variables
+Job succeeded

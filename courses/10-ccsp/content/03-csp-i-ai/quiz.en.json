@@ -1,0 +1,290 @@
+[
+  {
+    "obj": "1.5",
+    "q": "A company is starting to select an IaaS provider for a new platform that will process cardholder data and personal data of EU citizens. What should the security manager do FIRST?",
+    "options": [
+      "Request SOC 2 Type II reports from the three largest providers",
+      "Compare the providers' prices and SLAs",
+      "Define evaluation criteria based on business, regulatory and security requirements",
+      "Run a penetration test on trial accounts at each provider"
+    ],
+    "answer": 2,
+    "explain": "Verification against criteria requires that the criteria exist. Only once the requirements are defined (PCI DSS, GDPR, data location) does it make sense to collect and evaluate evidence such as a SOC 2."
+  },
+  {
+    "obj": "1.5",
+    "q": "A risk manager is evaluating a SaaS provider and wants evidence that the provider's controls are not only well designed, but also operated effectively over the past 12 months. Which document fits BEST?",
+    "options": [
+      "A SOC 2 Type II report",
+      "A SOC 2 Type I report",
+      "A SOC 3 report",
+      "A completed CAIQ questionnaire in the CSA STAR registry"
+    ],
+    "answer": 0,
+    "explain": "Type II tests the operating effectiveness of controls over a period. Type I evaluates design at a single point in time, SOC 3 is a public summary without test details, and the CAIQ is a self-assessment."
+  },
+  {
+    "obj": "1.5",
+    "q": "A SaaS provider's SOC 2 report states that the IaaS provider it runs on is excluded using the carve-out method. What does this mean for the customer?",
+    "options": [
+      "The IaaS provider's controls were tested as part of this report",
+      "The SaaS provider was not allowed to exclude a subservice organization, so the report is invalid",
+      "The customer does not need to worry about the IaaS layer because it is the SaaS provider's responsibility",
+      "The report does not cover the IaaS provider's controls, so the customer should obtain and evaluate that provider's report as well"
+    ],
+    "answer": 3,
+    "explain": "Carve-out excludes a subservice organization's controls from the scope. For a complete picture the customer must obtain evidence of that subservice organization's controls (fourth party), e.g., its SOC 2."
+  },
+  {
+    "obj": "1.5",
+    "q": "The provider's SOC 2 report contains a Complementary User Entity Controls section stating that the user must enable MFA and periodically review access. What does this BEST describe?",
+    "options": [
+      "Recommendations the customer can ignore if it uses SSO",
+      "Controls the customer must implement for the provider's controls to achieve their objectives",
+      "Exceptions the auditor found at the provider",
+      "Additional services the provider charges for"
+    ],
+    "answer": 1,
+    "explain": "CUECs are customer obligations without which the control objectives are not achieved. If the customer does not implement them, reliance on the provider's report is not justified."
+  },
+  {
+    "obj": "1.5",
+    "q": "Which level of the CSA STAR program includes an independent third-party assessment, e.g., through STAR Certification with ISO 27001 or STAR Attestation with SOC 2?",
+    "options": [
+      "Level 1",
+      "Level 3",
+      "Level 2",
+      "Level 0"
+    ],
+    "answer": 2,
+    "explain": "Level 1 is a self-assessment (CAIQ), Level 2 is a third-party audit (Certification or Attestation), and Level 3 is continuous monitoring. Level 0 does not exist."
+  },
+  {
+    "obj": "1.5",
+    "q": "The provider's SOC 2 report covers a period that ended five months ago, and the new report has not yet been issued. The contract is being signed now. What is BEST to request?",
+    "options": [
+      "A bridge (gap) letter in which the provider confirms there have been no significant changes to controls since the end of the period",
+      "Postpone signing until the new report is released",
+      "The right for the customer to audit the data center itself",
+      "A SOC 3 report for the same period"
+    ],
+    "answer": 0,
+    "explain": "A bridge letter covers the time gap between the end of the report period and the time of the evaluation. Postponement and a physical audit are disproportionate, and a SOC 3 covers the same old period with less detail."
+  },
+  {
+    "obj": "1.5",
+    "q": "An agency requires that the HSM protecting master keys automatically destroy the key material upon an attempt to physically open the enclosure. Which minimum FIPS 140 level meets this?",
+    "options": [
+      "Level 1",
+      "Level 2",
+      "Level 4",
+      "Level 3"
+    ],
+    "answer": 3,
+    "explain": "Level 3 introduces tamper-resistance and response (zeroization) upon an attempt at unauthorized access. Level 2 requires only tamper-evidence, and Level 4 adds protection against environmental attacks, which is more than the minimum."
+  },
+  {
+    "obj": "1.5",
+    "q": "Two firewall products have Common Criteria certification: one at EAL2, the other at EAL4. Which statement is MOST accurate?",
+    "options": [
+      "The EAL4 product is twice as secure as the EAL2 product",
+      "EAL4 indicates a deeper and more rigorous evaluation against the Security Target, but does not guarantee that the product has more security functions",
+      "The EAL2 product is not suitable for any use in the cloud",
+      "The EAL level applies to all future versions of the product"
+    ],
+    "answer": 1,
+    "explain": "The EAL measures the depth of evaluation of the claims in the Security Target, not absolute security. The certificate applies to the evaluated version and configuration (TOE), so new versions require re-evaluation or certificate maintenance."
+  },
+  {
+    "obj": "1.5",
+    "q": "In Common Criteria terminology, what is the vendor-independent document that defines security requirements for a class of products such as network devices called?",
+    "options": [
+      "Protection Profile",
+      "Security Target",
+      "Target of Evaluation",
+      "Statement of Applicability"
+    ],
+    "answer": 0,
+    "explain": "A Protection Profile is a set of requirements for a class of products. A Security Target is the vendor's claim for a specific product, the TOE is the evaluated product itself, and the SoA belongs to ISO 27001."
+  },
+  {
+    "obj": "1.5",
+    "q": "An organization plans to procure a cryptographic module for a new system in 2026. One vendor offers a module with a valid FIPS 140-2 certificate and another with a FIPS 140-3 certificate. What is the BEST recommendation?",
+    "options": [
+      "Choose FIPS 140-2 because the exam outline lists that standard",
+      "Both are equally acceptable in the long term",
+      "Choose the module with FIPS 140-3 validation because FIPS 140-2 certificates move to the historical list in September 2026",
+      "FIPS validation does not matter if the provider has ISO 27001"
+    ],
+    "answer": 2,
+    "explain": "FIPS 140-3 has replaced 140-2; the remaining 140-2 certificates move to the CMVP historical list on September 21, 2026. ISO 27001 certifies a management system, not a cryptographic module."
+  },
+  {
+    "obj": "1.5",
+    "q": "A provider has completed the CAIQ and published it in the CSA STAR registry, but has no independent audit. The customer processes highly sensitive data. How should this evidence be treated?",
+    "options": [
+      "As the equivalent of an ISO 27001 certificate",
+      "As sufficient evidence because it is based on the CCM",
+      "As evidence that automatically satisfies the GDPR",
+      "As a useful starting description of controls, but without independent confirmation; for high risk, additional evidence or controls are needed"
+    ],
+    "answer": 3,
+    "explain": "The CAIQ (STAR Level 1) is a self-assessment: it provides transparency, but not independent verification. For high risk you should seek a third-party audit, contractual guarantees or compensating controls."
+  },
+  {
+    "obj": "1.6",
+    "q": "The SOC receives thousands of alerts daily from the cloud environment and fails to detect a compromised account behaving unusually (sign-ins at odd hours and mass data downloads). Which technology BEST addresses this problem?",
+    "options": [
+      "ML-based User and Entity Behavior Analytics",
+      "Additional rules with signatures of known attacks",
+      "More analysts on the night shift",
+      "Longer log retention"
+    ],
+    "answer": 0,
+    "explain": "UEBA learns the normal behavior of users and entities and detects deviations that signatures do not see. More people and longer log retention do not solve the problem of recognizing anomalies at large scale."
+  },
+  {
+    "obj": "1.6",
+    "q": "After a few months, an ML fraud detection model begins missing more and more cases. The investigation shows that data for retraining came from a source the attacker could write to. Which threat is MOST LIKELY?",
+    "options": [
+      "Model inversion",
+      "Data poisoning",
+      "Prompt injection",
+      "Membership inference"
+    ],
+    "answer": 1,
+    "explain": "Injecting malicious data into the training set is data poisoning. Model inversion and membership inference extract information from the model, and prompt injection attacks an LLM through its input."
+  },
+  {
+    "obj": "1.6",
+    "q": "Which control BEST supports verification of the data sources used to train a security ML model?",
+    "options": [
+      "Increasing the size of the training set from public sources",
+      "Retraining the model more often",
+      "Recording the provenance and transformations of the data (provenance/lineage) along with hashing and signing the datasets",
+      "Encrypting the model at rest"
+    ],
+    "answer": 2,
+    "explain": "Verification means confirming where the data comes from and that it has not been altered: provenance/lineage and integrity (hash, signature). More public data can increase risk, and encrypting the model says nothing about data quality."
+  },
+  {
+    "obj": "1.6",
+    "q": "Analysts spend most of their time on repetitive steps: checking IP address reputation, looking up account owners and opening tickets. What is the BEST solution?",
+    "options": [
+      "A new SIEM with more log sources",
+      "Outsourcing the entire SOC",
+      "Reducing the number of detection rules",
+      "SOAR with playbooks that automate enrichment and case creation"
+    ],
+    "answer": 3,
+    "explain": "SOAR orchestrates tools and automates repeatable steps through playbooks, which reduces MTTR. A SIEM collects and correlates, but does not automate the response; reducing rules increases the risk of missed detections."
+  },
+  {
+    "obj": "1.6",
+    "q": "A team is designing a SOAR playbook for a suspected compromised production database. Which design is BEST?",
+    "options": [
+      "Automatic enrichment and evidence collection, with isolation of the production database only upon an analyst's approval",
+      "Fully automatic shutdown of the database as soon as an alert of any severity arrives",
+      "Only sending an email to an analyst, without automation",
+      "Automatically deleting the database and restoring from backup"
+    ],
+    "answer": 0,
+    "explain": "Neutral actions are automated, while actions with a large business impact keep a human-in-the-loop because of possible false positives. A fully manual approach loses the benefits of SOAR, and destructive automatic actions are risky."
+  },
+  {
+    "obj": "1.6",
+    "q": "A model for screening job candidates, trained on historical hiring decisions, systematically gives lower scores to one group of candidates. Which ethical concern is FOREMOST?",
+    "options": [
+      "Explainability",
+      "Intellectual property",
+      "Bias and fairness",
+      "Model drift"
+    ],
+    "answer": 2,
+    "explain": "The model has inherited bias from historical data, which is a fairness problem (bias). Explainability is a related topic, but here the primary problem is the discriminatory outcome."
+  },
+  {
+    "obj": "1.6",
+    "q": "A bank in the EU plans for an AI system to automatically reject loan applications without human involvement. What is BEST to do before releasing it to production?",
+    "options": [
+      "Test the model's accuracy on historical data",
+      "Assess compliance (a DPIA under the GDPR, classification as a high-risk system under the EU AI Act) and ensure human oversight and the right to contest the decision",
+      "Move the model to the provider's managed AI service so that responsibility passes to the provider",
+      "Encrypt all client data"
+    ],
+    "answer": 1,
+    "explain": "Credit scoring is a high-risk use under the AI Act, and GDPR Art. 22 restricts solely automated decisions with significant effects. Responsibility for use does not pass to the provider, and accuracy and encryption do not address the regulatory requirements."
+  },
+  {
+    "obj": "1.6",
+    "q": "Which four functions form the core of the NIST AI Risk Management Framework?",
+    "options": [
+      "Identify, Protect, Detect, Respond",
+      "Plan, Do, Check, Act",
+      "Assess, Authorize, Monitor, Retire",
+      "Govern, Map, Measure, Manage"
+    ],
+    "answer": 3,
+    "explain": "The NIST AI RMF uses Govern, Map, Measure and Manage. Identify/Protect/Detect/Respond is the NIST CSF, PDCA is the management system cycle (ISO), and the third option is made up."
+  },
+  {
+    "obj": "1.6",
+    "q": "An organization wants to certify its AI management system, with a structure similar to ISO 27001. Which standard is MOST APPROPRIATE?",
+    "options": [
+      "ISO/IEC 27017",
+      "ISO/IEC 42001",
+      "ISO/IEC 23894",
+      "ISO 22301"
+    ],
+    "answer": 1,
+    "explain": "ISO/IEC 42001 defines an AI management system (AIMS) and is certifiable. ISO/IEC 23894 provides guidance on AI risks without certification, 27017 relates to cloud controls, and 22301 to continuity."
+  },
+  {
+    "obj": "1.5",
+    "type": "match",
+    "q": "Match the risk manager's need with the evidence that BEST meets it.",
+    "options": [
+      "A public summary of controls for marketing material and initial conversations.",
+      "Detailed confirmation that security and availability controls operated for 12 months.",
+      "Confirmation that the cryptographic module in the HSM is validated.",
+      "Insight into which Annex A controls are included in the certified ISMS.",
+      "A standardized questionnaire about controls mapped to the CCM."
+    ],
+    "targets": [
+      "FIPS 140-3 certificate",
+      "CAIQ",
+      "SOC 2 Type II",
+      "SOC 3",
+      "Statement of Applicability (ISO 27001)",
+      "Common Criteria EAL4"
+    ],
+    "answer": [
+      3,
+      2,
+      0,
+      4,
+      1
+    ],
+    "explain": "SOC 3 is a public summary, SOC 2 Type II tests effectiveness over a period, FIPS 140-3 validates cryptographic modules, the SoA shows the coverage of ISO 27001 controls, and the CAIQ is the CSA questionnaire mapped to the CCM. Common Criteria is a distractor."
+  },
+  {
+    "obj": "1.6",
+    "type": "order",
+    "q": "Order the steps of a SOAR playbook for a compromised access key in the cloud from first to last.",
+    "options": [
+      "The analyst decides on escalation and communication and closes the case with lessons learned",
+      "Automatically deactivate the key and revoke active sessions",
+      "Receive the alert from the threat detection service",
+      "Automatically collect evidence (API call logs) and open a case for the analyst",
+      "Enrich the alert: key owner, source IP addresses, reputation"
+    ],
+    "answer": [
+      2,
+      4,
+      1,
+      3,
+      0
+    ],
+    "explain": "The playbook starts with the alert, then enriches the context, then stops the damage (deactivating the key), collects evidence and opens a case, and the human decision and lessons learned come at the end."
+  }
+]

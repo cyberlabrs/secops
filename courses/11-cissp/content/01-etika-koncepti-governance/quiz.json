@@ -1,0 +1,298 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Tokom angažmana klijent od CISSP konsultanta traži da iz konačnog izvještaja ukloni kritičnu ranjivost u softveru medicinskih uređaja koji se koriste u bolnicama, jer bi nalaz ugrozio prodaju. Šta konsultant treba da uradi?",
+    "options": [
+      "Ukloniti nalaz, jer kanon o službi principalima obavezuje na lojalnost klijentu",
+      "Odbiti izmjenu izvještaja, insistirati na koordinisanom otkrivanju i eskalirati, jer zaštita društva ima prednost nad interesom principala",
+      "Odmah javno objaviti detalje ranjivosti na društvenim mrežama da bi se zaštitili pacijenti",
+      "Premjestiti nalaz u prilog izvještaja označen kao povjerljiv i ne pominjati ga u sažetku"
+    ],
+    "answer": 1,
+    "explain": "Kanoni su poredani po prioritetu: zaštita društva (1) i pošteno, zakonito postupanje (2) imaju prednost nad službom principalima (3). Prikrivanje je neetično, ali ni samovoljno javno objavljivanje nije ispravno: ide se kroz interne kanale i koordinisano otkrivanje."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koji redoslijed kanona ISC2 Code of Professional Ethics je ispravan, od najvišeg prioriteta?",
+    "options": [
+      "Služba principalima; zaštita društva; časno i zakonito postupanje; unapređenje struke",
+      "Časno i zakonito postupanje; zaštita društva; unapređenje struke; služba principalima",
+      "Unapređenje struke; služba principalima; zaštita društva; časno i zakonito postupanje",
+      "Zaštita društva i infrastrukture; časno, pošteno, pravedno i zakonito postupanje; savjesna i kompetentna služba principalima; unapređenje i zaštita struke"
+    ],
+    "answer": 3,
+    "explain": "Kanoni su: 1) Protect society, the common good, necessary public trust and confidence, and the infrastructure; 2) Act honorably, honestly, justly, responsibly, and legally; 3) Provide diligent and competent service to principals; 4) Advance and protect the profession."
+  },
+  {
+    "obj": "1.1",
+    "q": "Poslodavac želi podnijeti pritužbu ISC2 zbog toga što je njegov ugovorni konsultant, CISSP, nesavjesno obavio posao. Na koji kanon se pritužba NAJVJEROVATNIJE odnosi i ko je može podnijeti?",
+    "options": [
+      "Kanon 3; pritužbu može podnijeti principal, odnosno poslodavac ili klijent",
+      "Kanon 1; pritužbu može podnijeti samo državni organ",
+      "Kanon 4; pritužbu može podnijeti bilo koji član javnosti",
+      "Kanon 2; pritužbu može podnijeti samo drugi certifikovani član ISC2"
+    ],
+    "answer": 0,
+    "explain": "Nesavjesna i nekompetentna usluga krši kanon 3 (diligent and competent service to principals), a pritužbu po tom kanonu podnose principali. Za kanone 1 i 2 pritužbu može podnijeti bilo ko pogođen, a za kanon 4 drugi profesionalci."
+  },
+  {
+    "obj": "1.1",
+    "q": "Poslovna jedinica želi uvesti generativni AI asistenta koji će analizirati zahtjeve klijenata za kredit. Šta CISO treba PRVO osigurati?",
+    "options": [
+      "Da tim za razvoj izabere model sa najvećom tačnošću na javnim benchmark testovima",
+      "Da se uvođenje zabrani dok tehnologija ne sazri",
+      "Da postoje politika prihvatljive upotrebe AI, procjena rizika i uticaja na privatnost, imenovan vlasnik i ljudski nadzor nad odlukama sa pravnim posljedicama",
+      "Da se model pokrene u izolovanoj mreži kako napadači ne bi mogli pristupiti"
+    ],
+    "answer": 2,
+    "explain": "Etika u AI je upravljačko pitanje: odluke o kreditu imaju pravne posljedice po pojedince, pa se traže pravičnost, transparentnost, odgovornost i ljudski nadzor, uz politiku i procjenu rizika. Ostali odgovori su uži tehnički ili ekstremni."
+  },
+  {
+    "obj": "1.1",
+    "q": "Testiranje pokazuje da AI model za filtriranje biografija sistematski daje niže ocjene kandidatima iz određene starosne grupe. Koji etički princip AI je PRVENSTVENO narušen?",
+    "options": [
+      "Availability",
+      "Explainability",
+      "Fairness (pravičnost, odsustvo pristrasnosti)",
+      "Non-repudiation"
+    ],
+    "answer": 2,
+    "explain": "Sistematsko nepovoljno tretiranje grupe je pristrasnost (bias) i krši princip pravičnosti. Objašnjivost pomaže da se problem otkrije, ali nije narušeni princip."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koji element je NAJVAŽNIJI da bi organizacioni kodeks etike bio efikasan?",
+    "options": [
+      "Vidljiva podrška i lični primjer najvišeg rukovodstva (tone at the top), uz kanal za prijavu i dosljedne posljedice",
+      "Objavljivanje kodeksa na javnoj web stranici",
+      "Prevod kodeksa na sve jezike kojima govore zaposleni",
+      "Godišnja nagrada za najetičnijeg zaposlenog"
+    ],
+    "answer": 0,
+    "explain": "Bez podrške i primjera uprave kodeks je samo dokument. Kanal za prijavu sa zaštitom uzbunjivača i dosljedno sprovođenje čine ga stvarnim. Ostale mjere pomažu, ali nisu ključne."
+  },
+  {
+    "obj": "1.1",
+    "q": "Tokom ovlašćenog penetracionog testa CISSP nailazi na dokaze o mogućoj pronevjeri u finansijskoj službi, što je van dogovorenog obima. Šta je NAJBOLJE uraditi?",
+    "options": [
+      "Nastaviti istragu da bi se prikupili potpuni dokazi prije prijave",
+      "Kopirati sumnjive fajlove na lični disk kao osiguranje",
+      "Ignorisati nalaz jer je van obima ugovora",
+      "Prekinuti dalji rad na tom dijelu, dokumentovati šta je viđeno i prijaviti kontakt osobi klijenta prema dogovorenim pravilima angažmana"
+    ],
+    "answer": 3,
+    "explain": "Rad van obima je neovlašćen, a ignorisanje nalaza krši dužnost prema principalu. Ispravno je stati, dokumentovati i prijaviti kroz dogovoreni kanal, ostavljajući istragu ovlašćenima."
+  },
+  {
+    "obj": "1.1",
+    "q": "Prema RFC 1087 „Ethics and the Internet“, koja aktivnost se smatra neetičnom?",
+    "options": [
+      "Objavljivanje istraživanja o ranjivostima uz koordinaciju sa proizvođačem",
+      "Svjesno trošenje resursa (ljudi, kapaciteta, računara) kroz namjerne radnje",
+      "Šifrovanje privatne komunikacije",
+      "Korištenje open-source softvera u komercijalnom proizvodu u skladu sa licencom"
+    ],
+    "answer": 1,
+    "explain": "RFC 1087 kao neetično navodi neovlašćen pristup, ometanje namjeravane upotrebe interneta, rasipanje resursa, uništavanje integriteta informacija i ugrožavanje privatnosti korisnika."
+  },
+  {
+    "obj": "1.2",
+    "q": "Banka želi da klijent ne može kasnije osporiti da je odobrio međunarodni transfer. Koja kontrola to NAJBOLJE obezbjeđuje?",
+    "options": [
+      "Digitalni potpis transakcije privatnim ključem klijenta uz pouzdan vremenski žig",
+      "HMAC izračunat sa ključem koji dijele banka i klijent",
+      "TLS 1.3 između aplikacije i servera",
+      "SHA-256 heš transakcije sačuvan u bazi"
+    ],
+    "answer": 0,
+    "explain": "Non-repudiation traži da samo pošiljalac može proizvesti dokaz: to omogućava privatni ključ. HMAC koristi dijeljeni ključ pa ga može izračunati i banka; TLS štiti kanal, a heš samo integritet."
+  },
+  {
+    "obj": "1.2",
+    "q": "Napadač je presreo PDF fakturu u prenosu i promijenio broj računa primaoca. Koja dva svojstva su PRVENSTVENO narušena?",
+    "options": [
+      "Confidentiality i availability",
+      "Availability i non-repudiation",
+      "Integrity i authenticity",
+      "Confidentiality i privacy"
+    ],
+    "answer": 2,
+    "explain": "Izmjena sadržaja je narušavanje integriteta, a primalac više ne dobija izvornu fakturu od stvarnog pošiljaoca, pa je narušena i autentičnost."
+  },
+  {
+    "obj": "1.2",
+    "q": "Šta je suprotnost CIA trijade u ISC2 terminologiji?",
+    "options": [
+      "AAA: Authentication, Authorization, Accounting",
+      "DAD: Disclosure, Alteration, Destruction/Denial",
+      "STRIDE",
+      "IAAA: Identification, Authentication, Authorization, Accountability"
+    ],
+    "answer": 1,
+    "explain": "DAD modeluje ishode napada: otkrivanje (protiv povjerljivosti), izmjena (protiv integriteta) i uništenje ili uskraćivanje (protiv dostupnosti)."
+  },
+  {
+    "obj": "1.2",
+    "q": "Vlasnik sistema za doziranje lijekova u intenzivnoj njezi pita koje svojstvo treba prioritizovati. Koji odgovor je NAJBOLJI?",
+    "options": [
+      "Confidentiality, jer su zdravstveni podaci zaštićeni zakonom",
+      "Non-repudiation, jer je potrebna odgovornost ljekara",
+      "Sva svojstva podjednako, jer su jednako važna u svakom sistemu",
+      "Integrity i availability, jer pogrešna ili nedostupna informacija o dozi direktno ugrožava život"
+    ],
+    "answer": 3,
+    "explain": "Ljudski život je prioritet. U kliničkom sistemu za doziranje tačnost i dostupnost podataka imaju direktan uticaj na bezbjednost pacijenta; povjerljivost je važna, ali sekundarna u ovom kontekstu."
+  },
+  {
+    "obj": "1.2",
+    "q": "Organizacija koristi zajednički administratorski nalog za sve inženjere. Nakon brisanja logova ne može se utvrditi ko je napravio izmjenu. Koji koncept je PRVENSTVENO onemogućen?",
+    "options": [
+      "Availability",
+      "Least privilege",
+      "Abstraction",
+      "Accountability"
+    ],
+    "answer": 3,
+    "explain": "Accountability zahtijeva jedinstvene identitete i pouzdan audit trag da bi se radnja povezala sa pojedincem. Dijeljeni nalog to onemogućava bez obzira na ostale kontrole."
+  },
+  {
+    "obj": "1.2",
+    "q": "Analitičar ima odgovarajući nivo bezbjednosne provjere (clearance) za dokumente označene kao Secret, ali mu je pristup dosijeu jedne operacije odbijen. Koji princip je primijenjen?",
+    "options": [
+      "Need to know",
+      "Separation of duties",
+      "Defense in depth",
+      "Security through obscurity"
+    ],
+    "answer": 0,
+    "explain": "Need to know ograničava pristup na informacije potrebne za konkretan zadatak, čak i kada subjekat ima dovoljan nivo provjere."
+  },
+  {
+    "obj": "1.2",
+    "q": "Pri nestanku struje elektronske brave na izlazima iz zgrade moraju se otključati. Koji princip je primijenjen i zašto?",
+    "options": [
+      "Fail-secure, jer imovina mora ostati zaštićena",
+      "Fail-open za mrežne uređaje, jer dostupnost ima prednost",
+      "Fail-safe, jer bezbjednost ljudi ima prednost nad zaštitom imovine",
+      "Defense in depth, jer brave nisu jedina kontrola"
+    ],
+    "answer": 2,
+    "explain": "Fail-safe kontrola pri otkazu prelazi u stanje koje štiti ljude. Ljudski život je uvijek na prvom mjestu, pa se izlazi otključavaju."
+  },
+  {
+    "obj": "1.3",
+    "q": "Novi CISO dobio je zadatak da uspostavi program informacione sigurnosti u organizaciji koja ga do sada nije imala. Šta je PRVI korak?",
+    "options": [
+      "Kupiti SIEM i uspostaviti SOC",
+      "Obezbijediti podršku i mandat višeg rukovodstva i uskladiti program sa misijom i ciljevima organizacije",
+      "Sprovesti penetracioni test cijele infrastrukture",
+      "Napisati tehničke standarde za konfiguraciju servera"
+    ],
+    "answer": 1,
+    "explain": "Najvažniji faktor uspjeha programa je podrška uprave (top-down). Bez mandata i usklađivanja sa poslovnim ciljevima tehničke mjere nemaju prioritet ni budžet."
+  },
+  {
+    "obj": "1.3",
+    "q": "Organizacija kupuje manju kompaniju koja ima sopstvenu mrežu i nalog administratora. Koja aktivnost PRIJE potpisivanja ugovora NAJBOLJE predstavlja due diligence sa aspekta sigurnosti?",
+    "options": [
+      "Povezati mreže odmah nakon potpisivanja da bi se ubrzala integracija",
+      "Zamijeniti sve uređaje kupljene kompanije standardnom opremom",
+      "Procijeniti sigurnosno stanje, istoriju incidenata, usklađenost i ugovorne obaveze kompanije koja se kupuje",
+      "Otpustiti IT tim kupljene kompanije da bi se smanjio insajderski rizik"
+    ],
+    "answer": 2,
+    "explain": "Due diligence pri akviziciji znači saznati koje rizike nasljeđujemo prije odluke. Povezivanje mreža bez procjene može uvesti kompromitovane sisteme, a ostale opcije su ishitrene."
+  },
+  {
+    "obj": "1.3",
+    "q": "Ko u organizaciji snosi KRAJNJU odgovornost za zaštitu informacija?",
+    "options": [
+      "Viša uprava (senior management) i odbor direktora",
+      "CISO",
+      "Data custodian",
+      "Administrator sistema"
+    ],
+    "answer": 0,
+    "explain": "Uprava može delegirati sprovođenje, ali ne i odgovornost (accountability). CISO vodi program i savjetuje, custodian sprovodi kontrole."
+  },
+  {
+    "obj": "1.3",
+    "q": "Ko je odgovoran za određivanje klasifikacije skupa podataka o klijentima i odobravanje ko mu može pristupiti?",
+    "options": [
+      "Data custodian",
+      "Security administrator",
+      "Auditor",
+      "Data owner"
+    ],
+    "answer": 3,
+    "explain": "Vlasnik podataka (obično viši menadžer poslovne funkcije) klasifikuje podatke i odobrava pristup. Custodian sprovodi zaštitu po njegovim zahtjevima, a administrator dodjeljuje prava."
+  },
+  {
+    "obj": "1.3",
+    "q": "Uprava želi okvir koji će uskladiti IT investicije i procese sa poslovnim ciljevima i jasno razdvojiti governance od upravljanja. Koji okvir je NAJPRIKLADNIJI?",
+    "options": [
+      "PCI DSS",
+      "COBIT 2019",
+      "SABSA",
+      "NIST SP 800-53"
+    ],
+    "answer": 1,
+    "explain": "COBIT je okvir za governance i upravljanje IT-om, sa kaskadom ciljeva i razdvajanjem EDM (governance) od APO/BAI/DSS/MEA (management). SABSA je arhitektonski, 800-53 katalog kontrola, PCI DSS ugovorni standard za kartice."
+  },
+  {
+    "obj": "1.3",
+    "q": "Cloud provajder želi prodavati SaaS federalnim agencijama SAD. Koji program autorizacije mora proći?",
+    "options": [
+      "ISO/IEC 27001 certifikaciju",
+      "SOC 2 Type II",
+      "FedRAMP, zasnovan na NIST SP 800-53 kontrolama i procjeni 3PAO",
+      "PCI DSS ROC"
+    ],
+    "answer": 2,
+    "explain": "FedRAMP standardizuje procjenu i autorizaciju cloud usluga za federalnu vladu SAD, sa nivoima Low, Moderate i High izvedenim iz NIST SP 800-53."
+  },
+  {
+    "obj": "1.3",
+    "q": "Kompanija je procjenom rizika utvrdila da prodajni laptopi nisu šifrovani, ali godinu dana nije ništa preduzela. Nakon krađe laptopa sa podacima klijenata, šta će NAJVJEROVATNIJE biti utvrđeno?",
+    "options": [
+      "Da kompanija nije sprovela due care, iako je obavila due diligence",
+      "Da kompanija nije obavila due diligence",
+      "Da je rizik bio prihvaćen, pa nema odgovornosti",
+      "Da je odgovoran isključivo zaposleni kome je laptop ukraden"
+    ],
+    "answer": 0,
+    "explain": "Procjena rizika (saznanje) je due diligence. Nesprovođenje razumnih mjera nakon saznanja je propust due care, što može predstavljati nepažnju (negligence). Rizik nije formalno prihvaćen od vlasnika."
+  },
+  {
+    "obj": "1.3",
+    "type": "match",
+    "q": "Upari okvir sa njegovom primarnom namjenom.",
+    "options": [
+      "ISO/IEC 27001",
+      "SABSA",
+      "NIST CSF 2.0",
+      "PCI DSS"
+    ],
+    "targets": [
+      "Ugovorni industrijski standard za zaštitu podataka platnih kartica",
+      "Certifikabilni zahtjevi za sistem upravljanja informacionom sigurnošću",
+      "Sigurnosna arhitektura vođena poslovnim zahtjevima kroz slojeve",
+      "Dobrovoljni okvir sa funkcijama Govern, Identify, Protect, Detect, Respond, Recover"
+    ],
+    "answer": [1, 2, 3, 0],
+    "explain": "ISO 27001 definiše certifikabilan ISMS, SABSA je metodologija sigurnosne arhitekture sa sljedivošću do poslovnih zahtjeva, NIST CSF 2.0 ima šest funkcija sa novom Govern, a PCI DSS je ugovorni standard kartičnih kuća."
+  },
+  {
+    "obj": "1.3",
+    "type": "order",
+    "q": "Poredaj nivoe planiranja i usmjeravanja od najopštijeg i najdugoročnijeg do najkonkretnijeg.",
+    "options": [
+      "Taktički plan (projekti i nabavke za narednu godinu)",
+      "Misija organizacije",
+      "Operativni plan (zadaci, rokovi, odgovorne osobe)",
+      "Strateški plan (ciljevi za 3 do 5 godina)"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explain": "Misija je trajna svrha, strateški plan dugoročni pravac, taktički plan srednjoročni koraci, a operativni plan kratkoročni detalji izvršenja. Sigurnosni planovi prate istu hijerarhiju top-down."
+  }
+]

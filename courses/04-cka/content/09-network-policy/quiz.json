@@ -1,0 +1,250 @@
+[
+  {
+    "obj": "3.2",
+    "q": "U namespaceu backend ne postoji nijedna NetworkPolicy. Primijeniš politiku koja bira podove app=api, ima policyTypes: [Ingress] i dozvoljava ulaz samo od app=frontend. Šta se dešava sa podom app=worker u istom namespaceu?",
+    "options": [
+      "Pod app=worker i dalje prima sav saobraćaj, jer ga nijedna politika ne bira",
+      "Pod app=worker sada odbija sav ulazni saobraćaj, jer politika važi za cijeli namespace",
+      "Pod app=worker prima samo od app=frontend",
+      "Pod app=worker gubi i izlazni saobraćaj"
+    ],
+    "answer": 0,
+    "explain": "Izolacija važi samo za podove koje bira spec.podSelector politike. Pod koji nijedna politika ne bira ostaje neizolovan u oba smjera; politika ne utiče na ostatak namespacea."
+  },
+  {
+    "obj": "3.2",
+    "q": "Zadatak: dozvoli ulaz u podove app=db (namespace data) samo podovima app=api koji se nalaze u namespaceu prod. Koji from blok je ispravan?",
+    "options": [
+      "from: [ {namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: prod}}}, {podSelector: {matchLabels: {app: api}}} ]",
+      "from: [ {podSelector: {matchLabels: {app: api}}} ]",
+      "from: [ {namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: prod}}, podSelector: {matchLabels: {app: api}}} ]",
+      "from: [ {ipBlock: {cidr: 10.244.0.0/16}} ]"
+    ],
+    "answer": 2,
+    "explain": "Oba selektora u istoj stavci liste daju AND: podovi app=api u namespaceu prod. Dvije odvojene stavke daju OR (svi podovi iz prod ili app=api iz data), sam podSelector gleda samo namespace politike, a ipBlock za podove nije pouzdan i bio bi preširok."
+  },
+  {
+    "obj": "3.2",
+    "q": "Primijenio si politiku default-deny-egress (podSelector: {}, policyTypes: [Egress]) u namespaceu secure. Sada wget -T 2 http://web iz poda u tom namespaceu vraća 'bad address'. Šta nedostaje?",
+    "options": [
+      "Ingress politika za servis web",
+      "Egress pravilo prema kube-system (podovi k8s-app=kube-dns) na UDP i TCP port 53",
+      "Egress pravilo prema ClusterIP adresi servisa kube-dns sa ipBlock",
+      "Oznaka kubernetes.io/metadata.name na namespaceu secure"
+    ],
+    "answer": 1,
+    "explain": "'bad address' znači da DNS upit ne prolazi, a DNS je egress prema CoreDNS podovima na port 53 (UDP i TCP). Politika vidi IP poda nakon prevođenja ClusterIP-a, pa ipBlock na ClusterIP nije pouzdan, a oznaka namespacea već postoji automatski."
+  },
+  {
+    "obj": "3.2",
+    "q": "Klaster koristi samo Flannel kao CNI. Primijenio si default deny ingress politiku i kubectl get netpol je prikazuje, ali saobraćaj i dalje prolazi. Zašto?",
+    "options": [
+      "Politika mora imati i policyTypes: [Egress]",
+      "NetworkPolicy važi tek nakon restarta podova",
+      "kube-proxy mora biti u nftables modu",
+      "Flannel ne implementira NetworkPolicy, pa API čuva objekat ali ga niko ne primjenjuje"
+    ],
+    "answer": 3,
+    "explain": "Kubernetes samo čuva NetworkPolicy, a primjenjuje je CNI; Flannel to ne radi, pa nema greške ni efekta. Politike djeluju odmah na postojeće podove, a kube-proxy ne učestvuje u primjeni politika."
+  },
+  {
+    "obj": "3.2",
+    "q": "U namespaceu app postoje dvije politike za podove tier=db: jedna dozvoljava ulaz od tier=api na 5432, druga dozvoljava ulaz od svih podova iz namespacea monitoring na 9187. Pod tier=batch iz namespacea app pokušava port 5432. Šta se dešava?",
+    "options": [
+      "Blokirano, jer nijedna politika ne dozvoljava tier=batch",
+      "Dozvoljeno, jer druga politika poništava prvu",
+      "Dozvoljeno, jer politike važe samo za saobraćaj između namespacea",
+      "Blokirano samo ako je druga politika kreirana posljednja"
+    ],
+    "answer": 0,
+    "explain": "Politike su aditivne: dozvoljeno je ono što dozvoljava bar jedna, a tier=batch nije u nijednoj. Ne postoji redoslijed ni poništavanje, a politike važe i unutar namespacea."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pod api u namespaceu app je izolovan samo za Egress (dozvoljen mu je samo izlaz prema DNS-u). Pod db je izolovan za Ingress i dozvoljava ulaz od tier=api na 5432. Konekcija api → db:5432 ne radi. Šta treba dodati?",
+    "options": [
+      "Ingress pravilo na api koje dozvoljava odgovore od db",
+      "Egress pravilo na db prema api",
+      "Egress pravilo na api koje dozvoljava tier=db na portu 5432",
+      "Ništa, ingress pravilo na db je dovoljno"
+    ],
+    "answer": 2,
+    "explain": "Kad su obje strane izolovane, konekcija treba egress dozvolu na izvoru i ingress dozvolu na odredištu. Odgovori na dozvoljenu konekciju prolaze automatski, pa dodatna pravila za povratni smjer nisu potrebna."
+  },
+  {
+    "obj": "3.2",
+    "q": "Šta je razlika između ova dva fragmenta politike: (A) ingress: [{}] i (B) policyTypes: [Ingress] bez ingress ključa, oba sa podSelector: {}?",
+    "options": [
+      "Oba blokiraju sav ulaz",
+      "A dozvoljava sav ulaz u sve podove namespacea, B blokira sav ulaz",
+      "A blokira sav ulaz, B dozvoljava sav ulaz",
+      "Oba dozvoljavaju sav ulaz"
+    ],
+    "answer": 1,
+    "explain": "Prazno pravilo {} odgovara svakom izvoru i svakom portu, pa A dozvoljava sve. B izoluje podove za ulaz bez ijednog pravila, što je default deny ingress."
+  },
+  {
+    "obj": "3.2",
+    "q": "Politika treba da dozvoli ulaz na TCP portove od 30000 do 30100. Koji ports fragment je ispravan?",
+    "options": [
+      "ports: [{protocol: TCP, port: 30000-30100}]",
+      "ports: [{protocol: TCP, startPort: 30000, endPort: 30100}]",
+      "ports: [{protocol: TCP, port: high-ports, endPort: 30100}]",
+      "ports: [{protocol: TCP, port: 30000, endPort: 30100}]"
+    ],
+    "answer": 3,
+    "explain": "Opseg se zadaje numeričkim port i poljem endPort. Polje startPort ne postoji, port ne prihvata zapis sa crticom, a endPort ne radi sa imenovanim portom."
+  },
+  {
+    "obj": "3.2",
+    "q": "Testiraš politiku: kubectl -n app run t --rm -it --restart=Never --image=busybox:1.36 -- nc -zv -w 2 db 5432 vraća 'Connection refused'. Šta to govori?",
+    "options": [
+      "Politika blokira saobraćaj",
+      "DNS ne radi",
+      "Paket je stigao do poda, ali na portu 5432 niko ne sluša; problem nije u politici",
+      "Pod db nema oznaku tier=db"
+    ],
+    "answer": 2,
+    "explain": "Blokada politikom tipično izgleda kao timeout jer se paketi odbacuju, a 'Connection refused' znači da je odredište odgovorilo RST-om. Ime je razriješeno, inače bi nc javio grešku adrese."
+  },
+  {
+    "obj": "3.2",
+    "q": "Zadatak traži da politika u namespaceu payments dozvoli ulaz iz namespacea monitoring. Namespace monitoring nema dodatnih oznaka. Koji selektor koristiš bez mijenjanja namespacea?",
+    "options": [
+      "namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: monitoring}}",
+      "namespaceSelector: {matchLabels: {name: monitoring}}",
+      "podSelector: {matchLabels: {namespace: monitoring}}",
+      "namespaceSelector: {}"
+    ],
+    "answer": 0,
+    "explain": "API server svakom namespaceu automatski postavlja oznaku kubernetes.io/metadata.name sa njegovim imenom. Oznaka name ne postoji ako je neko nije dodao, podSelector ne bira namespace, a prazan namespaceSelector bira sve namespaceove."
+  },
+  {
+    "obj": "3.2",
+    "q": "Politika ima samo spec.podSelector i egress listu, bez polja policyTypes. Šta važi za podove koje bira?",
+    "options": [
+      "Izolovani su samo za Egress",
+      "Izolovani su i za Ingress i za Egress, jer se Ingress uvijek podrazumijeva, a Egress se dodaje zbog egress sekcije",
+      "Nisu izolovani ni u jednom smjeru dok se ne doda policyTypes",
+      "Politika se odbija pri apply zbog nedostatka policyTypes"
+    ],
+    "answer": 1,
+    "explain": "Bez policyTypes Kubernetes uvijek uključi Ingress i dodaje Egress ako postoje egress pravila. Zato ovakva politika nehotice izoluje i ulaz bez ijednog ingress pravila, pa je bolje policyTypes pisati eksplicitno."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pod web u namespaceu shop treba izlaz na internet (443), ali ne prema internim mrežama 10.0.0.0/8. Koji egress fragment to radi?",
+    "options": [
+      "to: [{ipBlock: {cidr: 10.0.0.0/8}}], ports: [{port: 443}]",
+      "to: [{namespaceSelector: {}}], ports: [{port: 443}]",
+      "to: [{podSelector: {}}], ports: [{port: 443}]",
+      "to: [{ipBlock: {cidr: 0.0.0.0/0, except: [10.0.0.0/8]}}], ports: [{protocol: TCP, port: 443}]"
+    ],
+    "answer": 3,
+    "explain": "ipBlock sa except dozvoljava sve adrese osim navedenih opsega. Prva opcija dozvoljava baš internu mrežu, a namespaceSelector i podSelector biraju podove u klasteru, ne internet."
+  },
+  {
+    "obj": "3.2",
+    "q": "Politika allow-frontend u namespaceu backend koristi from: [{podSelector: {matchLabels: {app: frontend}}}]. Podovi app=frontend su u namespaceu frontend i blokirani su. Zašto?",
+    "options": [
+      "Treba dodati ports listu",
+      "Treba promijeniti policyTypes na [Ingress, Egress]",
+      "podSelector bez namespaceSelector bira samo podove u namespaceu politike (backend)",
+      "Podovi frontend moraju imati egress politiku"
+    ],
+    "answer": 2,
+    "explain": "Sam podSelector nikad ne izlazi iz namespacea politike, pa treba dodati namespaceSelector za frontend u istu stavku. Izostavljeni ports znači sve portove, a egress politika na izvoru je potrebna samo ako je izvor izolovan za egress."
+  },
+  {
+    "obj": "3.2",
+    "q": "Kako najbrže provjeriš da li si u from listi napravio AND ili OR kombinaciju selektora?",
+    "options": [
+      "kubectl get netpol -o wide",
+      "kubectl describe netpol <ime> -n <ns>, gdje se vidi da li su NamespaceSelector i PodSelector u istom bloku",
+      "kubectl auth can-i --list",
+      "kubectl get netpol <ime> -o jsonpath='{.status}'"
+    ],
+    "answer": 1,
+    "explain": "describe ispisuje pravila čitljivo i grupiše selektore iste stavke zajedno. get -o wide ne prikazuje pravila, auth can-i je za RBAC, a NetworkPolicy nema korisno status polje za ovo."
+  },
+  {
+    "obj": "3.2",
+    "q": "Poredaj korake za zaključavanje namespacea secure tako da web podovi i dalje primaju saobraćaj od traefik namespacea na port 8080 i razrješavaju DNS.",
+    "type": "order",
+    "options": [
+      "Testiraj iz privremenog poda u namespaceu traefik (wget -T 2) i iz poda bez dozvole",
+      "Primijeni allow-dns (egress UDP/TCP 53 prema kube-system)",
+      "Pregledaj oznake podova i namespacea (kubectl get pods,ns --show-labels)",
+      "Primijeni default deny za Ingress i Egress",
+      "Primijeni politiku koja dozvoljava ingress od namespacea traefik na 8080"
+    ],
+    "answer": [2, 3, 1, 4, 0],
+    "explain": "Prvo moraš znati oznake da bi selektori bili tačni, zatim zatvaraš sve, vraćaš DNS i potrebni ingress, pa testiraš i dozvoljen i zabranjen slučaj. Testiranje na kraju potvrđuje i dozvolu i blokadu."
+  },
+  {
+    "obj": "3.2",
+    "q": "Upari fragment from liste sa skupom izvora koje dozvoljava (politika je u namespaceu data).",
+    "type": "match",
+    "options": [
+      "- podSelector: {matchLabels: {app: api}}",
+      "- namespaceSelector: {matchLabels: {team: blue}}",
+      "- namespaceSelector: {matchLabels: {team: blue}}\n  podSelector: {matchLabels: {app: api}}",
+      "- namespaceSelector: {}"
+    ],
+    "targets": [
+      "Svi podovi u svim namespaceima",
+      "Podovi app=api u namespaceu data",
+      "Podovi app=api samo u namespaceima sa oznakom team=blue",
+      "Svi podovi u namespaceima sa oznakom team=blue",
+      "Samo adrese van klastera"
+    ],
+    "answer": [1, 3, 2, 0],
+    "explain": "Sam podSelector gleda namespace politike, sam namespaceSelector bira sve podove u odabranim namespaceima, kombinacija u istoj stavci je presjek, a prazan namespaceSelector bira sve namespaceove. Adrese van klastera bira ipBlock."
+  },
+  {
+    "obj": "3.2",
+    "q": "Zadatak: u namespaceu secure podovi smiju slati saobraćaj samo prema DNS-u i prema podovima app=db u istom namespaceu na 5432 (Izaberi DVA fragmenta koja zajedno sa policyTypes: [Egress] i podSelector: {} ovo ostvaruju.)",
+    "options": [
+      "egress: - to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}}] ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]",
+      "egress: - to: [{podSelector: {matchLabels: {app: db}}}] ports: [{protocol: TCP, port: 5432}]",
+      "egress: - {}",
+      "ingress: - from: [{podSelector: {matchLabels: {app: db}}}]",
+      "egress: - to: [{ipBlock: {cidr: 0.0.0.0/0}}]"
+    ],
+    "answer": [0, 1],
+    "explain": "Potrebna su dva egress pravila: DNS prema kube-system na port 53 i app=db na 5432. Prazno pravilo i ipBlock 0.0.0.0/0 dozvoljavaju sav izlaz, a ingress pravilo ne utiče na egress."
+  },
+  {
+    "obj": "3.2",
+    "q": "Pod tier=api iz namespacea app ima dozvoljen ulaz u db na 5432 politikom db-from-api. Neko je dodao politiku open-db sa podSelector: {matchLabels: {tier: db}} i ingress: [{}]. Zadatak kaže da db mora primati samo od tier=api. Kako to popraviš?",
+    "options": [
+      "Obriši ili ispravi politiku open-db, jer politike su aditivne i ona dozvoljava sav ulaz",
+      "Dodaj u db-from-api još jednu stavku sa except",
+      "Postavi policyTypes: [Egress] u db-from-api",
+      "Promijeni redoslijed politika tako da db-from-api bude prva"
+    ],
+    "answer": 0,
+    "explain": "Pošto se dozvole sabiraju, politika sa ingress: [{}] otvara sav ulaz bez obzira na druge politike. Ne postoji redoslijed ni deny pravilo kojim bi druga politika to poništila, pa treba ukloniti uzrok."
+  },
+  {
+    "obj": "3.2",
+    "q": "Testiraš da li namespace frontend smije do servisa api.app:8080. Koja komanda daje pouzdan i brz test sa ispravnom oznakom app=web?",
+    "options": [
+      "kubectl -n app exec deploy/api -- wget -qO- http://api:8080",
+      "kubectl -n frontend run t --image=busybox:1.36 -- ping api.app",
+      "kubectl run t --rm -it --restart=Never --image=busybox:1.36 -- wget -qO- http://api.app:8080",
+      "kubectl -n frontend run t --rm -it --restart=Never --image=busybox:1.36 --labels=app=web -- wget -qO- -T 2 http://api.app:8080"
+    ],
+    "answer": 3,
+    "explain": "Test mora doći iz namespacea frontend, sa oznakom koju politika očekuje i uz timeout. exec iz samog api poda testira pogrešan izvor, ping na ClusterIP ne radi, a pod bez -n je u default namespaceu i bez oznake."
+  },
+  {
+    "obj": "3.2",
+    "type": "spot",
+    "q": "Podovi app=db u namespaceu shop treba da primaju saobraćaj SAMO od podova app=api iz istog namespacea, na TCP 5432. Klikni redove koji to kvare.",
+    "lang": "yaml",
+    "snippet": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: db-allow-api\n  namespace: shop\nspec:\n  podSelector:\n    matchLabels:\n      app: db\n  policyTypes: [\"Ingress\"]\n  ingress:\n  - from:\n    - namespaceSelector: {}\n    - podSelector:\n        matchLabels:\n          app: api\n    ports:\n    - {protocol: TCP, port: 5423}",
+    "answer": [12, 17],
+    "explain": "Red 13: namespaceSelector: {} je zaseban peer (ima svoju crticu), a peerovi u from listi se kombinuju sa OR, pa su dozvoljeni SVI podovi iz SVIH namespaceova. Taj red treba obrisati; podSelector bez namespaceSelectora već znači isti namespace kao politika. Red 18: port 5423 umjesto 5432, pa ni api podovi ne mogu do baze."
+  }
+]

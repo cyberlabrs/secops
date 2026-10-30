@@ -1,0 +1,12 @@
+{
+  "title": "Helm, Kustomize, CRD-ovi i operatori",
+  "summary": "Instalacija komponenti klastera Helmom 4 i Kustomizeom, struktura CRD-ova, operator pattern i RBAC koji operator treba.",
+  "minutes": 90,
+  "domain": 1,
+  "objectives": [
+    "1.6",
+    "1.8"
+  ],
+  "title_en": "Helm, Kustomize, CRDs and operators",
+  "summary_en": "Installing cluster components with Helm 4 and Kustomize, CRD structure, the operator pattern and the RBAC an operator needs."
+}

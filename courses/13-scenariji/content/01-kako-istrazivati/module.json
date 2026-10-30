@@ -1,0 +1,8 @@
+{
+  "title": "Kako istraživati incident: od alarma do izvještaja",
+  "summary": "Zajednički postupak za sva četiri scenarija: faze odgovora po NIST SP 800-61r3, pitanja za trijažu, vremenska linija u UTC-u, pivotiranje između izvora logova, rukovanje dokazima i pisanje izvještaja, uz pregled scenarija i kurseva na koje se oslanjaju.",
+  "minutes": 40,
+  "practice": true,
+  "title_en": "How to investigate an incident: from alert to report",
+  "summary_en": "The common procedure for all four scenarios: response phases according to NIST SP 800-61r3, triage questions, a timeline in UTC, pivoting between log sources, evidence handling and report writing, with an overview of the scenarios and the courses they build on."
+}

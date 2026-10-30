@@ -1,0 +1,12 @@
+{
+  "title": "Red teaming, evaluacija, monitoring i incidenti",
+  "summary": "AI red teaming i evaluacija kao proces (obim, pravila angažmana, OWASP i ATLAS mapiranje, regresioni testovi u CI-ju), telemetrija AI sistema sa OpenTelemetry gen_ai konvencijama, detekcija zloupotrebe i odgovor na AI incidente sa unaprijed pripremljenim polugama za obuzdavanje.",
+  "minutes": 60,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.2"
+  ],
+  "title_en": "Red teaming, evaluation, monitoring and incidents",
+  "summary_en": "AI red teaming and evaluation as a process (scope, rules of engagement, OWASP and ATLAS mapping, regression tests in CI), AI system telemetry with OpenTelemetry gen_ai conventions, abuse detection and AI incident response with containment levers prepared in advance."
+}

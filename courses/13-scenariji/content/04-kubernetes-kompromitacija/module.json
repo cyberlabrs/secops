@@ -1,0 +1,9 @@
+{
+  "title": "Scenarij 3: kompromitacija Kubernetes klastera",
+  "summary": "Log4Shell u javnoj prodavnici, shell u podu, ukradeni ServiceAccount token sa preširokim ClusterRoleBindingom, čitanje tajni, privilegovani pod sa hostPath / i rudar kriptovaluta. Istraga kroz Falco alarme, Trivy izvještaj i Kubernetes audit log, pa RBAC po principu najmanjih privilegija, NetworkPolicy, hardening Deploymenta, rotacija i izvještaj.",
+  "minutes": 90,
+  "domain": 3,
+  "objectives": ["3.1", "3.2", "3.3", "3.4"],
+  "title_en": "Scenario 3: Kubernetes cluster compromise",
+  "summary_en": "Log4Shell in a public web shop, a shell in a Pod, a stolen ServiceAccount token with an overly broad ClusterRoleBinding, reading Secrets, a privileged Pod with hostPath / and a cryptominer. Investigation through Falco alerts, a Trivy report and the Kubernetes audit log, followed by least-privilege RBAC, NetworkPolicy, Deployment hardening, rotation and the report."
+}

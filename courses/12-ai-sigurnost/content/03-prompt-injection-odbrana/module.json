@@ -1,0 +1,11 @@
+{
+  "title": "Odbrana od prompt injectiona",
+  "summary": "Odbrana od direktne i indirektne prompt injection kao arhitekturni problem: najmanje sposobnosti, razdvajanje privilegija i obrasci dizajna (dual LLM, plan-then-execute, action-selector), autorizacija poziva alata u kodu, ljudska potvrda, spotlighting, obrada ulaza, klasifikatori i monitoring.",
+  "minutes": 75,
+  "domain": 2,
+  "objectives": [
+    "2.1"
+  ],
+  "title_en": "Defending against prompt injection",
+  "summary_en": "Defending against direct and indirect prompt injection as an architectural problem: least capability, privilege separation and design patterns (dual LLM, plan-then-execute, action-selector), tool-call authorization in code, human confirmation, spotlighting, input handling, classifiers and monitoring."
+}

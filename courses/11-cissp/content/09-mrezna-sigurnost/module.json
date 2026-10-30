@@ -1,0 +1,13 @@
+{
+  "title": "Mrežna sigurnost",
+  "summary": "OSI/TCP-IP, IPv4/IPv6, IPSec/TLS/SSH, višeslojni i konvergirani protokoli, segmentacija i mikrosegmentacija, bežične i celularne mreže, SDN/SD-WAN/VPC, NAC, prenosni mediji i sigurni kanali (glas, video, udaljeni pristup, treće strane).",
+  "minutes": 100,
+  "domain": 4,
+  "objectives": [
+    "4.1",
+    "4.2",
+    "4.3"
+  ],
+  "title_en": "Network Security",
+  "summary_en": "OSI/TCP-IP, IPv4/IPv6, IPSec/TLS/SSH, multilayer and converged protocols, segmentation and microsegmentation, wireless and cellular networks, SDN/SD-WAN/VPC, NAC, transmission media and secure communication channels (voice, video, remote access, third parties)."
+}

@@ -1,0 +1,262 @@
+[
+  {
+    "obj": "2.3",
+    "q": "A customer support agent reads incoming email and has the tools get_order, reply_to_ticket and send_email(to, body). During a design review you ask what the worst outcome is if the model follows instructions from an email. Which change reduces that risk the most?",
+    "options": [
+      "Replace send_email with a reply_to_ticket(ticket_id, body) tool where the recipient is determined by code from the ticket, not by the model",
+      "Add a sentence to the system prompt saying the agent never sends email outside the company",
+      "Move the agent to a larger model that follows instructions better",
+      "Log all sent emails and review them once a week"
+    ],
+    "answer": 0,
+    "explain": "The parameter that determines the damage (the recipient) is derived by deterministic code from the context, so even a fully hijacked model can't send data to an arbitrary address. The prompt is not a security boundary, a larger model doesn't guarantee resistance to indirect prompt injection, and a weekly review is only after-the-fact detection."
+  },
+  {
+    "obj": "2.3",
+    "q": "A calendar-reading tool in an internal assistant uses a service account with access to all employees' calendars. Which LLM06 Excessive Agency root cause does this belong to, and what is the correct control?",
+    "options": [
+      "Excessive functionality; remove the calendar tool",
+      "Excessive autonomy; require approval for every calendar read",
+      "Excessive permissions; the tool should run with the logged-in user's delegated token and the narrowest scope",
+      "Misinformation; add fact-checking to the answer"
+    ],
+    "answer": 2,
+    "explain": "The tool is needed, but it has more permissions than the task requires: that is excessive permissions. The user's delegated token limits the agent to what the user is allowed to do. Approval for every read causes approval fatigue, and misinformation is a different risk (LLM09)."
+  },
+  {
+    "obj": "2.3",
+    "q": "A team is building a gateway that validates tool calls with a JSON Schema using additionalProperties: false. A developer suggests this is also enough for access control, because the schema checks that order_id has the form ORD-[0-9]{8}. What is the problem?",
+    "options": [
+      "JSON Schema doesn't support regular expressions",
+      "The schema checks the argument's shape, not whether this particular user may access that order; authorization must exist in code or in the downstream system",
+      "additionalProperties: false should be removed because it blocks legitimate calls",
+      "Validation should be done in the system prompt, not in the gateway"
+    ],
+    "answer": 1,
+    "explain": "Validation and authorization are different controls. A correctly formatted ID of someone else's order passes the schema; only a rights check (complete mediation) prevents access. JSON Schema supports pattern, a strict schema is desirable, and the prompt is not the place to enforce policy."
+  },
+  {
+    "obj": "2.3",
+    "q": "A finance agent asks for human approval before a payment. The dialog shows text written by the model: “Paying the supplier's invoice as agreed.” What is the main flaw of this approval?",
+    "options": [
+      "Approval should also be required for every invoice read",
+      "The model itself should give the approval with a second call",
+      "Payments must never be automated",
+      "The human approves the model's summary instead of the actual call arguments (IBAN, amount), so a compromised model can show a reassuring description for a different action"
+    ],
+    "answer": 3,
+    "explain": "Approval must show data derived from the actual call and be bound to it (e.g., a hash of the arguments). The model's summary is untrusted output and exploits human trust (ASI09). Approving reads leads to approval fatigue, and the model can't approve its own action."
+  },
+  {
+    "obj": "2.3",
+    "q": "After introducing approval for every tool call, analytics show that users approve 99.7% of requests, on average in under a second. What is the best next step?",
+    "options": [
+      "Classify tools by risk: reads within the user's rights go through automatically with logging, and approval stays for writing, sending, paying and deleting",
+      "Remove approvals because users don't read them anyway",
+      "Add a mandatory 10-second wait before the “Approve” button",
+      "Require approval twice for every call"
+    ],
+    "answer": 0,
+    "explain": "This is approval fatigue: too many approvals make each individual one worthless. Approval should be reserved for high-impact actions so that people actually read it. Removing it removes the control, and an artificial wait or double approval only increases the fatigue."
+  },
+  {
+    "obj": "2.3",
+    "q": "A data analysis agent generates and executes Python code. Which execution environment configuration best fits the ASI05 Unexpected Code Execution risk?",
+    "options": [
+      "Execution on the application host, but under a separate Linux user",
+      "An ephemeral container without network, secrets or Docker socket, with CPU, memory and time limits, destroyed after the task",
+      "A container with internet access so the agent can install packages as needed",
+      "Static analysis of the generated code with regular expressions before execution on the host"
+    ],
+    "answer": 1,
+    "explain": "Code written by the model is treated as code from an unknown author: isolation, no network or secrets, with limits and no persistence. A separate user on the host still sees the host, internet access enables exfiltration, and regex filters are easily bypassed and are not an isolation boundary."
+  },
+  {
+    "obj": "2.3",
+    "q": "An assistant saves “useful facts” from conversations and documents to long-term memory that all future sessions of the same team use. Which set of controls most directly addresses ASI06 Memory and Context Poisoning?",
+    "options": [
+      "Encrypting the memory at rest",
+      "A larger context window so memory isn't needed",
+      "Writing to memory as an action controlled by the gateway, provenance and trust level for every entry, per-user separation and entry expiry",
+      "Deleting the whole memory every day"
+    ],
+    "answer": 2,
+    "explain": "Memory poisoning is an integrity problem: content from an untrusted source becomes a permanent “fact.” Write control, provenance, isolation and expiry limit that. Encryption protects confidentiality, not integrity; a larger context doesn't solve the problem, and daily deletion destroys the feature."
+  },
+  {
+    "obj": "2.3",
+    "q": "A remote MCP server receives an access token from the MCP client and forwards the same token, unchanged, to a downstream SaaS API. The token was issued for the SaaS API, not for the MCP server. What do the MCP specification's security recommendations say?",
+    "options": [
+      "It's a recommended pattern because it reduces the number of tokens",
+      "It's allowed if TLS is used",
+      "It's allowed only for the stdio transport",
+      "That is token passthrough, which is forbidden: the server must not accept a token not issued for it and uses a separate token for the downstream API"
+    ],
+    "answer": 3,
+    "explain": "MCP servers MUST NOT accept tokens that weren't issued for them (audience check). Passthrough bypasses the downstream API's controls, breaks auditing and opens up a confused deputy. TLS protects the transport, not the token's semantics, and stdio doesn't use OAuth that way."
+  },
+  {
+    "obj": "2.3",
+    "q": "An MCP client running on a cloud server fetches URLs that the MCP server points it to during OAuth discovery. Which control from the MCP recommendations most directly prevents abuse of this behavior?",
+    "options": [
+      "Require HTTPS, block private, loopback and link-local ranges (including 169.254.169.254), check redirects and use an egress proxy",
+      "Increase the HTTP request timeout",
+      "Cache the metadata documents for 24 hours",
+      "Move all servers to the stdio transport"
+    ],
+    "answer": 0,
+    "explain": "This is an SSRF scenario: a malicious server steers the client to internal addresses and the metadata service. The recommendations call for HTTPS, blocking private ranges, redirect validation and an egress proxy. A timeout and caching don't change the destination, and remote servers can't move to stdio."
+  },
+  {
+    "obj": "2.3",
+    "q": "An IDE offers one-click installation of a local MCP server from a configuration on the web. What does the specification require of the MCP client before launching it?",
+    "options": [
+      "Nothing, because local servers are not exposed to the network",
+      "Only a check that the command is shorter than 200 characters",
+      "Showing the exact, full command that will be executed, a clear warning and explicit user consent, with a recommended sandbox with minimal privileges",
+      "Automatically launching it as root so the server has the necessary permissions"
+    ],
+    "answer": 2,
+    "explain": "A local server is code that runs with the user's rights. The specification requires showing the full command without truncation and explicit consent, and recommends a sandbox and restricted file and network access. Root is the opposite of least privilege."
+  },
+  {
+    "obj": "2.3",
+    "q": "An approved MCP server changed its tool descriptions in a new version. Clients update automatically. Which control would catch this before the model reads the new descriptions?",
+    "options": [
+      "A rate limit on the MCP server",
+      "Pinning the server version and the hash of the tool list in a central allowlist, with blocking and an alert on change",
+      "Relying on the readOnlyHint annotations the server publishes",
+      "Encrypting the connection between client and server"
+    ],
+    "answer": 1,
+    "explain": "Tool descriptions come from the server and the model reads them, so they are untrusted content and part of the supply chain (ASI04). Pinning and a hash of the descriptions require a new review on change. Annotations are hints the client treats as untrusted, and a rate limit or TLS doesn't see a content change."
+  },
+  {
+    "obj": "2.3",
+    "q": "On its first connection an MCP client requests all scopes from scopes_supported, including admin:*. What do the MCP scope minimization recommendations advise?",
+    "options": [
+      "Always request all scopes so the user doesn't have to consent again",
+      "Use a single omnibus scope for simpler auditing",
+      "Drop OAuth and use a static API key",
+      "Start with a minimal scope for low-risk operations and elevate it gradually (step-up) when a privileged operation requires it"
+    ],
+    "answer": 3,
+    "explain": "A progressive least-privilege model reduces the damage from a stolen token and makes auditing clearer. Omnibus and wildcard scopes are listed as common mistakes, and a static key removes the link to the user and expiry."
+  },
+  {
+    "obj": "2.3",
+    "q": "A planner agent delegates tasks to executors via an internal message queue. An executor accepts every message from the queue as a command. Which control addresses ASI07 Insecure Inter-Agent Communication?",
+    "options": [
+      "Sender authentication (mTLS or signed tokens), a message schema and an authorization check on the executor's side",
+      "A longer system prompt for the executor",
+      "A bigger message queue so nothing gets lost",
+      "The same service account for all agents for easier administration"
+    ],
+    "answer": 0,
+    "explain": "Messages between agents are input like any other: you need to know who sends them, whether they are well-formed and whether the sender may request that action. A shared service account erases the distinction between agents (ASI03), and the prompt and queue size are not integrity controls."
+  },
+  {
+    "obj": "2.4",
+    "q": "Because of a logic bug, a research agent entered a loop and made 40,000 model calls overnight. Each request had max_tokens 1000. Which control was missing?",
+    "options": [
+      "A smaller max_tokens per request",
+      "Caching model responses",
+      "A budget at the agent session level (maximum number of steps, tool calls, cost and time) and a hard spending limit at the provider",
+      "A larger context window"
+    ],
+    "answer": 2,
+    "explain": "max_tokens limits an individual response, but not the number of steps; thousands of small steps still add up to a large bill. A per-session budget breaks the loop, and the provider limit protects you even when the orchestrator fails. Caching and context don't stop the loop."
+  },
+  {
+    "obj": "2.4",
+    "q": "A public chatbot is under load: a small number of keys send maximally long inputs and request maximally long answers, so latency rises for everyone. What is this called in OWASP and ATLAS terminology?",
+    "options": [
+      "LLM01 Prompt Injection, AML.T0051",
+      "LLM10 Unbounded Consumption; in ATLAS Denial of AI Service (AML.T0029) and Cost Harvesting (AML.T0034)",
+      "LLM04 Data and Model Poisoning, AML.T0020",
+      "LLM07 System Prompt Leakage, AML.T0057"
+    ],
+    "answer": 1,
+    "explain": "Resource-intensive queries that degrade the service and raise cost are LLM10:2025. ATLAS covers them through Denial of AI Service and Cost Harvesting. The other pairs describe instruction manipulation, data poisoning and data leakage."
+  },
+  {
+    "obj": "2.4",
+    "q": "Which set of controls is most appropriate for a public LLM API as a defense against unbounded consumption?",
+    "options": [
+      "Only a WAF in front of the API",
+      "Only a monthly review of the provider's bill",
+      "Unlimited access for paying users and a strict limit for free ones",
+      "Input length limit and max_tokens, a rate limit and daily token quota per key, a timeout, a queue with an upper bound, a budget with an alert and a hard limit"
+    ],
+    "answer": 3,
+    "explain": "Unbounded consumption is controlled in layers: request, user, infrastructure and organization. A WAF doesn't understand the cost of inference, a monthly review is too late, and “unlimited” access for anyone is exactly the precondition for Denial of Wallet."
+  },
+  {
+    "obj": "2.4",
+    "q": "Monitoring shows that one API key has been sending a large number of varied queries at an even rhythm for three days and recording all the answers, within the allowed rate limit. What is a reasonable response?",
+    "options": [
+      "Ignore it because it's within the limit",
+      "Treat it as a possible attempt to copy the model through the API: alert, check the key owner and the terms of use, and if needed reduce the quota or block the key",
+      "Immediately delete the model and train a new one",
+      "Remove the rate limit to make the behavior easier to see"
+    ],
+    "answer": 1,
+    "explain": "OWASP LLM10 also lists API abuse for replicating the model. A rate limit is not the only control; patterns of systematic harvesting are a signal for investigation. Deleting the model is disproportionate, and removing the limit increases the damage."
+  },
+  {
+    "obj": "2.4",
+    "q": "The application has reached its daily token budget. What is the correct behavior?",
+    "options": [
+      "Predictable refusal: HTTP 429 with Retry-After and a message to the user, possibly a smaller model or cached answers; exceptions only through configuration with an owner and an expiry date",
+      "Automatically double the budget so users don't notice",
+      "Continue without limits for users with a VIP tag in the prompt",
+      "Return HTTP 500 without explanation"
+    ],
+    "answer": 0,
+    "explain": "Graceful degradation keeps availability and cost under control. An automatic increase cancels the budget, a tag in the prompt is not authorization (the model can “see” it in any text), and a 500 without explanation makes things harder for both users and support."
+  },
+  {
+    "obj": "2.3",
+    "type": "match",
+    "q": "Match the risk from the OWASP Top 10 for Agentic Applications with the control that most directly mitigates it.",
+    "options": [
+      "ASI03 Identity and Privilege Abuse",
+      "ASI05 Unexpected Code Execution",
+      "ASI08 Cascading Failures",
+      "ASI10 Rogue Agents",
+      "ASI04 Agentic Supply Chain Vulnerabilities"
+    ],
+    "targets": [
+      "An ephemeral sandbox without network or secrets",
+      "Allowlisting and pinning of MCP servers and tool descriptions",
+      "Behavior monitoring, agent inventory and a kill switch",
+      "Delegated short-lived tokens and an intersection of user and agent rights",
+      "Circuit breakers and limits between connected agents and tools"
+    ],
+    "answer": [3, 0, 4, 2, 1],
+    "explain": "Identity abuse is mitigated by narrow delegated tokens, code execution by a sandbox, cascading failures by circuit breakers and limits, rogue agents by monitoring and the ability to shut them down, and the supply chain by allowlisting and pinning components."
+  },
+  {
+    "obj": "2.3",
+    "type": "order",
+    "q": "Order the steps the policy gateway performs on a proposed tool call, from first to last.",
+    "options": [
+      "Execute the tool with a token added by the gateway and write the result to the log",
+      "Validate the arguments with a strict JSON Schema",
+      "Check whether the tool is on the allowlist for that agent (default: deny)",
+      "For a high-risk tool, wait for human approval bound to the hash of the arguments",
+      "Check the user's authorization over the resource and charge the call budget"
+    ],
+    "answer": [2, 1, 4, 3, 0],
+    "explain": "First everything that isn't allowed is rejected, then the shape of the arguments is checked, then the user's right over the specific resource and the budget. Human approval comes once the call is technically valid and permitted, and execution with a credential the model never sees comes last, with logging."
+  },
+  {
+    "obj": "2.3",
+    "type": "spot",
+    "q": "Policy gateway configuration for a support agent that reads customer tickets and email (untrusted content). Organization rule: default deny and human approval for high-risk actions. Mark the lines that violate the rule or give the agent excessive agency.",
+    "snippet": "# tool-policy.yaml - agent \"podrska\" (reads customer tickets and email)\nagent: podrska\ndefault: allow\ntools:\n  get_order:\n    risk: low\n    schema: schemas/get_order.json\n  reply_to_ticket:\n    risk: medium\n    schema: schemas/reply_to_ticket.json\n  issue_refund:\n    risk: high\n    schema: schemas/issue_refund.json\n    require_approval: false\n    max_amount_eur: 200\n  run_shell: { risk: high, command: [\"/bin/bash\", \"-c\"], schema: null }",
+    "lang": "yaml",
+    "answer": [2, 13, 15],
+    "explain": "Line 3: default: allow means any tool the model proposes is executed, even one not on the list; it must be default: deny (allowlist). Line 14: a refund is a high-risk action and the agent reads content written by attackers, so without require_approval: true a single injected instruction leads to a payout; an amount limit alone is not enough. Line 16: the run_shell tool gives the agent arbitrary command execution without a schema (Excessive Agency, LLM06); a support agent does not need such a tool, narrow tools with a schema are used instead of an open one. The order lookup and ticket reply tools have a schema and an appropriate risk level."
+  }
+]

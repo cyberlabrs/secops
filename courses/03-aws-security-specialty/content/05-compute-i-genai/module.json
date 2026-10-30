@@ -1,0 +1,11 @@
+{
+  "title": "Compute sigurnost i GenAI guardrails",
+  "summary": "Hardened AMI i container image, uloge za EC2/Lambda/ECS/EKS, Inspector i GuardDuty Runtime Monitoring, Patch Manager, Session Manager i IMDSv2, skeniranje u pipeline-u i zaštita GenAI aplikacija (OWASP Top 10 for LLM, Bedrock Guardrails).",
+  "minutes": 100,
+  "domain": 3,
+  "objectives": [
+    "3.2"
+  ],
+  "title_en": "Compute security and GenAI guardrails",
+  "summary_en": "Hardened AMIs and container images, roles for EC2/Lambda/ECS/EKS, Inspector and GuardDuty Runtime Monitoring, Patch Manager, Session Manager and IMDSv2, scanning in the pipeline, and protecting GenAI applications (OWASP Top 10 for LLM, Bedrock Guardrails)."
+}

@@ -1,0 +1,18 @@
+# slike koje labovi i vježbe koriste (bez interneta); dodatne slike se čitaju iz manifesta
+nginx:latest
+nginx:1.27
+nginx:1.28
+nginx:alpine
+busybox:latest
+busybox:1.36
+busybox:1.37
+httpd:latest
+httpd:alpine
+redis:latest
+redis:alpine
+alpine:latest
+postgres:17-alpine
+curlimages/curl:latest
+registry.k8s.io/pause:3.10
+registry.k8s.io/pause:3.10.1
+registry.k8s.io/kubectl:v1.35.0

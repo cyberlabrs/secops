@@ -1,0 +1,256 @@
+[
+  {
+    "obj": "2.2",
+    "q": "Imate Microsoft Defender for Endpoint. Uređaj WS-17 je onboardan i ima aktivnu C2 konekciju. Trebate spriječiti dalju mrežnu komunikaciju uređaja, a da analitičar i dalje može pokrenuti live response sesiju na njemu. Šta trebate uraditi?",
+    "options": [
+      "Pokrenuti Restrict app execution.",
+      "Pokrenuti Isolate device sa stranice uređaja.",
+      "Pokrenuti Contain device sa stranice uređaja.",
+      "Onemogućiti mrežni adapter preko Intune politike."
+    ],
+    "answer": 1,
+    "explain": "Isolate device prekida mrežnu komunikaciju, ali zadržava vezu sa Defender for Endpoint servisom, pa nadzor i live response rade dalje. Contain device se koristi za neupravljane uređaje (blokiraju ga ostali uređaji), Restrict app execution ne prekida mrežu, a gašenje adaptera prekida i vezu sa servisom."
+  },
+  {
+    "obj": "2.2",
+    "q": "Neupravljan (neonboardan) uređaj u mreži skenira i napada druge uređaje. Trebate spriječiti da onboardani uređaji komuniciraju sa njim. Šta trebate uraditi?",
+    "options": [
+      "Pokrenuti Isolate device za taj uređaj.",
+      "Pokrenuti live response sesiju i komandu isolate.",
+      "Pokrenuti Contain device za taj uređaj.",
+      "Dodati IP uređaja kao Allow indikator."
+    ],
+    "answer": 2,
+    "explain": "Contain device primjenjuje politiku na svim onboardanim uređajima koji blokiraju dolazni i odlazni saobraćaj prema contained uređaju, pa radi i kad uređaj nema agenta. Isolate i live response traže onboardan uređaj, a Allow indikator radi suprotno."
+  },
+  {
+    "obj": "2.2",
+    "q": "Korisnici finansija moraju zadržati Outlook i Microsoft Teams dok je njihov kompromitovan laptop izolovan. Šta trebate koristiti?",
+    "options": [
+      "Selective isolation.",
+      "Restrict app execution.",
+      "Contain user.",
+      "Full isolation sa isključenjem uređaja iz device grupe."
+    ],
+    "answer": 0,
+    "explain": "Selective isolation omogućava da Outlook i Teams (i definisana isključenja procesa i odredišta) ostanu dostupni dok je ostala mrežna komunikacija blokirana. Restrict app execution ne izoluje mrežu, a contain user blokira korisnika na drugim uređajima."
+  },
+  {
+    "obj": "2.2",
+    "q": "Na Windows serveru je pokrenut nepoznat alat, a izolacija bi prekinula kritičan poslovni proces. Trebate spriječiti pokretanje bilo kojeg programa koji nije potpisan od Microsofta. Šta trebate uraditi?",
+    "options": [
+      "Run antivirus scan (full).",
+      "Collect investigation package.",
+      "Add Indicator sa akcijom Block za hash alata.",
+      "Restrict app execution."
+    ],
+    "answer": 3,
+    "explain": "Restrict app execution primjenjuje code integrity politiku koja dozvoljava samo fajlove potpisane Microsoftovim certifikatom. Indikator blokira samo jedan poznati hash, a scan i investigation package ne sprječavaju pokretanje."
+  },
+  {
+    "obj": "2.2",
+    "q": "Trebate na 25 uređaja utvrditi koje auto-start unose i zakazane zadatke je napadač ostavio, sa NAJMANJE interaktivnog rada. Šta trebate uraditi?",
+    "options": [
+      "Otvoriti live response na svakom uređaju i pokrenuti persistence.",
+      "Pokrenuti Collect investigation package za uređaje i pregledati foldere Autoruns i Scheduled tasks.",
+      "Pokrenuti full antivirus scan na svim uređajima.",
+      "Izvesti device timeline za svaki uređaj za zadnjih 30 dana."
+    ],
+    "answer": 1,
+    "explain": "Investigation package se prikuplja bez interaktivne sesije i sadrži Autoruns (ASEP registry ključevi) i Scheduled tasks. Live response je interaktivan i ograničen na jednu sesiju po uređaju, scan ne daje listu perzistencije, a izvoz timelinea ide najviše 7 dana."
+  },
+  {
+    "obj": "2.2",
+    "q": "Prikupili ste investigation package. Trebate provjeriti da li je svaka stavka uspješno prikupljena i koje su komande pale. Koji fajl otvarate?",
+    "options": [
+      "SystemInformation.txt",
+      "MpCmdRunLog.txt",
+      "CollectionSummaryReport.xls",
+      "ActiveNetConnections.txt"
+    ],
+    "answer": 2,
+    "explain": "CollectionSummaryReport.xls sadrži listu prikupljenih stavki, komandu, status izvršavanja i kod greške. Ostali fajlovi su konkretni podaci (sistem, Defender AV log, mrežne konekcije)."
+  },
+  {
+    "obj": "2.2",
+    "q": "Analitičar u live response sesiji kuca run Prikupi.ps1 i dobija grešku da skripta ne postoji, iako je fajl na njegovom računaru. Šta treba uraditi?",
+    "options": [
+      "Uključiti Live Response for Servers.",
+      "Kopirati skriptu putfile komandom direktno sa svog računara.",
+      "Pokrenuti skriptu sa getfile komandom.",
+      "Uploadovati skriptu u live response biblioteku, pa je pokrenuti run komandom."
+    ],
+    "answer": 3,
+    "explain": "run i putfile rade samo sa fajlovima iz live response biblioteke (upload iz sesije ili preko Library management stranice). getfile preuzima fajl sa uređaja, a postavka za servere nema veze sa ovom greškom."
+  },
+  {
+    "obj": "2.2",
+    "q": "Organizacija koristi interne nepotpisane PowerShell skripte za prikupljanje dokaza kroz live response. Skripte su u biblioteci, ali se ne izvršavaju. Šta trebate uključiti u Advanced features?",
+    "options": [
+      "Live Response unsigned script execution.",
+      "Live Response for Servers.",
+      "Automated investigation.",
+      "Allow or block file."
+    ],
+    "answer": 0,
+    "explain": "Provjera potpisa važi za PowerShell skripte; nepotpisane se mogu pokretati tek kada se uključi Live Response unsigned script execution (uz veći rizik). Ostale postavke ne utiču na potpis skripti."
+  },
+  {
+    "obj": "2.2",
+    "q": "Dva analitičara pokušavaju istovremeno otvoriti live response sesiju na istom uređaju. Drugi dobija grešku. Koji je razlog?",
+    "options": [
+      "Korisnik može imati najviše jednu sesiju.",
+      "Tenant je dostigao limit od 5 sesija.",
+      "Uređaj može biti samo u jednoj live response sesiji u isto vrijeme.",
+      "Drugi analitičar nema dozvolu za basic komande."
+    ],
+    "answer": 2,
+    "explain": "Uređaj može biti samo u jednoj sesiji odjednom. Korisnik može imati do pet istovremenih sesija, a tenant do 50. Nedostatak dozvole bi se pojavio i kad nijedna sesija nije otvorena."
+  },
+  {
+    "obj": "2.2",
+    "q": "U live response sesiji trebate preuzeti fajl od 2 GB, a u međuvremenu nastaviti sa drugim komandama. Koju komandu koristite?",
+    "options": [
+      "getfile \"C:\\Temp\\dump.bin\" &",
+      "putfile dump.bin",
+      "fileinfo \"C:\\Temp\\dump.bin\" -output json",
+      "collect \"C:\\Temp\\dump.bin\""
+    ],
+    "answer": 0,
+    "explain": "getfile sa & na kraju pokreće preuzimanje u pozadini (do 3 GB), a fg <command ID> ga vraća u prvi plan. putfile stavlja fajl na uređaj, fileinfo daje samo informacije, a collect pravi forenzički paket na macOS/Linuxu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Analitičar je u live responseu pokrenuo remediate za pogrešan fajl. Na Windows uređaju trebate vratiti entitet. Koja komanda?",
+    "options": [
+      "release",
+      "status",
+      "analyze",
+      "undo"
+    ],
+    "answer": 3,
+    "explain": "undo vraća entitet koji je remedijovan (Windows). release vraća uređaj iz izolacije (macOS), status pokazuje stanje komande, a analyze daje verdikt incrimination enginea."
+  },
+  {
+    "obj": "2.2",
+    "q": "Forenzički tim traži izvoz svih događaja sa device timelinea za period od 14 dana. Šta je tačno?",
+    "options": [
+      "Izvoz timelinea podržava najviše 30 dana u jednom fajlu.",
+      "Izvoz timelinea podržava najviše 7 dana po izvozu, pa trebate dva izvoza ili advanced hunting upit.",
+      "Timeline se ne može izvesti; morate koristiti investigation package.",
+      "Izvoz je moguć samo za flagovane događaje."
+    ],
+    "answer": 1,
+    "explain": "Detaljni izvoz timelinea ide za trenutni dan ili raspon do 7 dana. Za 14 dana trebate dva izvoza ili upit u advanced huntingu. Flagovani događaji se mogu filtrirati, ali izvoz nije ograničen na njih."
+  },
+  {
+    "obj": "2.2",
+    "q": "Tokom istrage u device timelineu označili ste deset ključnih događaja i želite izvještaj koji sadrži samo njih. Šta radite?",
+    "options": [
+      "Uključite filter Flagged events i izvezete timeline.",
+      "Pokrenete Hunt for related events za svaki događaj.",
+      "Prebacite filter na Techniques.",
+      "Kreirate custom detection rule."
+    ],
+    "answer": 0,
+    "explain": "Flag events služi upravo za izdvajanje važnih događaja; filter Flagged events prikazuje samo njih i mogu se izvesti. Techniques filter prikazuje MITRE tehnike, a hunting i custom detekcija ne prave izvještaj."
+  },
+  {
+    "obj": "2.2",
+    "q": "Zlonamjeran fajl je otkriven na jednom uređaju, a stranica fajla pokazuje da postoji na još 40 uređaja. Trebate ukloniti postojeće kopije i spriječiti buduće pokretanje u organizaciji. Koje DVIJE akcije trebate izvršiti? (Izaberi DVA.)",
+    "options": [
+      "Stop and Quarantine File sa stranice fajla.",
+      "Live response sesija i remediate na svakom uređaju.",
+      "Add Indicator sa akcijom Block and remediate za hash fajla.",
+      "Run antivirus scan na prvom uređaju.",
+      "Deep analysis fajla."
+    ],
+    "answer": [0, 2],
+    "explain": "Stop and Quarantine File zaustavlja procese i stavlja fajl u karantin na svim uređajima gdje je viđen, a indikator sa blokiranjem sprječava ponovno pokretanje. Live response na 40 uređaja je previše posla, scan jednog uređaja ne rješava ostale, a Deep analysis samo daje izvještaj."
+  },
+  {
+    "obj": "2.2",
+    "q": "Automatska istraga je za incident označila tri fajla kao Malicious sa statusom Pending approval. Gdje možete odobriti remedijaciju? (Izaberi DVA.)",
+    "options": [
+      "U tabu Evidence and Response na stranici incidenta.",
+      "U Advanced features postavkama.",
+      "U Action center, tab Pending.",
+      "U device timelineu, filter Techniques.",
+      "U Microsoft Purview portalu."
+    ],
+    "answer": [0, 2],
+    "explain": "Akcije koje čekaju odobrenje odobravaju se u tabu Evidence and Response incidenta ili u Action center > Pending. Advanced features je konfiguracija, timeline je prikaz događaja, a Purview nema ove akcije."
+  },
+  {
+    "obj": "2.2",
+    "q": "U redu incidenata vidite incident sa tagom Attack Disruption. Gdje provjeravate da li je containment korisnika i dalje aktivan ili je već skinut?",
+    "options": [
+      "U device timelineu kontaminiranog uređaja.",
+      "U tabu Activities incidenta, kolona Policy status.",
+      "U advanced huntingu, tabela DeviceInfo.",
+      "U Microsoft Entra admin centru, Sign-in logs."
+    ],
+    "answer": 1,
+    "explain": "Kolona Policy status u tabu Activities (filter Performed by: AttackDisruption) pokazuje trenutno stanje politike: Active, Inactive, Not applicable ili No status. Action center bilježi prošle akcije, a ostale opcije ne prikazuju stanje containmenta."
+  },
+  {
+    "obj": "2.2",
+    "q": "Attack disruption je onemogućio nalog direktora finansija i on ne može raditi. Šta trebate uraditi PRVO?",
+    "options": [
+      "Odmah izabrati Enable user iz Action centera.",
+      "Dodati korisnika u isključenja attack disruptiona.",
+      "Istražiti incident i otkloniti prijetnju (reset lozinke, revoke sesija, uklanjanje perzistencije), pa tek onda omogućiti nalog.",
+      "Isključiti automatic attack disruption za tenant."
+    ],
+    "answer": 2,
+    "explain": "Disruption zaustavlja napadača, ali ga ne uklanja. Vraćanje imovine prije istrage i remedijacije vraća napadaču pristup. Isključenja i gašenje funkcije ne rješavaju trenutni incident i smanjuju zaštitu."
+  },
+  {
+    "obj": "2.2",
+    "q": "Trebate KQL upit koji daje pregled svih akcija automatic attack disruptiona u organizaciji za zadnjih 30 dana. Koju tabelu koristite?",
+    "options": [
+      "DeviceProcessEvents",
+      "AlertEvidence",
+      "IdentityLogonEvents",
+      "DisruptionAndResponseEvents"
+    ],
+    "answer": 3,
+    "explain": "DisruptionAndResponseEvents daje objedinjen pregled automatskih akcija (isti podaci kao tab Activities, ali za cijelu organizaciju). DeviceEvents sa ActionType ContainedDevice/ContainedUser bilježi samo blokirane pokušaje, ne same akcije."
+  },
+  {
+    "obj": "2.2",
+    "type": "order",
+    "q": "Poredaj korake odgovora na alarm na onboardanom uređaju sa aktivnom C2 konekcijom, od prvog do posljednjeg.",
+    "options": [
+      "Release from isolation i full antivirus scan.",
+      "Isolate device.",
+      "Pregledati device timeline i process tree oko vremena alarma.",
+      "Collect investigation package i live response (persistence, getfile, remediate).",
+      "Klasifikovati i zatvoriti incident."
+    ],
+    "answer": [2, 1, 3, 0, 4],
+    "explain": "Prvo se brzo razumije šta se desilo (timeline), zatim se uređaj izoluje da napadač izgubi kontrolu. Dok je izolovan, prikupljaju se dokazi i uklanja perzistencija (live response radi i u izolaciji). Tek nakon čišćenja uređaj se vraća u mrežu i skenira, a incident se klasifikuje na kraju."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Upari zahtjev analitičara sa akcijom u Defender for Endpointu koja ga NAJBOLJE ispunjava.",
+    "options": [
+      "Neupravljan uređaj napada druge uređaje u mreži.",
+      "Treba stanje 30 uređaja (procesi, servisi, SMB sesije) bez interaktivnog rada.",
+      "Treba preuzeti jedan konkretan fajl i pokrenuti skriptu na uređaju.",
+      "Na serveru se smiju pokretati samo Microsoft-potpisani programi.",
+      "Treba izvještaj o ponašanju sumnjivog fajla u sandboxu."
+    ],
+    "targets": [
+      "Live response",
+      "Collect investigation package",
+      "Deep analysis",
+      "Contain device",
+      "Restrict app execution",
+      "Run antivirus scan"
+    ],
+    "answer": [3, 1, 0, 4, 2],
+    "explain": "Neupravljan uređaj se zadržava sa Contain device, stanje mnogo uređaja bez interakcije daje investigation package, pojedinačni fajl i skripta su live response, samo Microsoft-potpisani programi su Restrict app execution, a sandbox izvještaj je Deep analysis. Antivirus scan ne odgovara nijednom zahtjevu."
+  }
+]

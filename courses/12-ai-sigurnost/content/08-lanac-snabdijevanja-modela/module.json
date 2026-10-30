@@ -1,0 +1,11 @@
+{
+  "title": "Lanac snabdijevanja modela",
+  "summary": "Zašto je pickle izvršavanje koda, prelazak na safetensors, skeniranje modela i njegova ograničenja, pinovanje, potpisivanje (OpenSSF Model Signing, cosign) i AI-BOM u CycloneDX-u.",
+  "minutes": 75,
+  "domain": 4,
+  "objectives": [
+    "4.1"
+  ],
+  "title_en": "Model supply chain",
+  "summary_en": "Why pickle means code execution, moving to safetensors, model scanning and its limits, pinning, signing (OpenSSF Model Signing, cosign) and an AI-BOM in CycloneDX."
+}

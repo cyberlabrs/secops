@@ -1,0 +1,243 @@
+[
+  {
+    "obj": "2.1",
+    "q": "Developer je 12. 10. commitovao AWS ključ, a 13. 10. ga je uklonio novim commitom. Šta je prvi ispravan korak kad to otkriješ?",
+    "options": [
+      "Ništa: ključ je uklonjen iz koda, a repo je interni",
+      "Prepisati istoriju sa git filter-repo i force push, pa je ključ uklonjen",
+      "Odmah deaktivirati (rotirati) ključ u IAM-u, pa istražiti njegovu upotrebu u CloudTrailu",
+      "Napraviti projekat privatnim i sačekati da se pojavi alarm"
+    ],
+    "answer": 2,
+    "explain": "Ključ ostaje u istoriji, klonovima, forkovima i CI logovima. Jedino rješenje je rotacija: deaktivacija starog ključa (i istraga njegove upotrebe od prvog izlaganja). Prepisivanje istorije je kozmetika poslije rotacije."
+  },
+  {
+    "obj": "2.1",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "$ pip install -q -r requirements.txt\n$ echo \"debug okruženja:\" && env | sort\ndebug okruženja:\nAWS_ACCESS_KEY_ID=AKIA4NQXR7ZK2LWB5HTM\nAWS_DEFAULT_REGION=eu-central-1\nAWS_SECRET_ACCESS_KEY=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\nCI_JOB_ID=4812\nCI_JOB_TOKEN=[MASKED]\nCI_PROJECT_VISIBILITY=public\nCI_REGISTRY_PASSWORD=[MASKED]\n$ python -m app.export --datum 2026-10-11\n24817 redova\nJob succeeded",
+    "q": "Isječak javnog loga CI joba 4812. Koji redovi otkrivaju tajne koje treba rotirati?",
+    "answer": [
+      3,
+      5
+    ],
+    "explain": "Redovi sa AWS_ACCESS_KEY_ID i AWS_SECRET_ACCESS_KEY ispisuju par ključeva u čistom tekstu, jer CI varijable nisu bile maskirane, a debug korak je pokrenuo env. CI_JOB_TOKEN i CI_REGISTRY_PASSWORD su maskirani. CI_PROJECT_VISIBILITY=public objašnjava zašto je log bio javan, ali nije tajna."
+  },
+  {
+    "obj": "2.1",
+    "q": "`git log -S AKIA4NQXR7ZK2LWB5HTM --oneline` vraća dva commita: 347a894 („Očisti konfiguraciju“) i bcf32b3 („Brzi fix“). Šta to znači za vremensku liniju?",
+    "options": [
+      "347a894 je uveo ključ jer je prvi u ispisu",
+      "bcf32b3 je uveo ključ (stariji commit), 347a894 ga je uklonio; izloženost počinje od bcf32b3",
+      "Ključ je dodan dva puta, pa postoje dva različita ključa",
+      "-S traži samo commitove koji su obrisali niz, pa je ključ i dalje u kodu"
+    ],
+    "answer": 1,
+    "explain": "Pickaxe (-S) prikazuje commitove u kojima se broj pojavljivanja niza promijenio: dodavanje i uklanjanje. git log ispisuje najnovije prvo, pa je uvođenje drugi red (ili prvi uz --reverse). Period izloženosti počinje od commita koji je ključ dodao."
+  },
+  {
+    "obj": "2.1",
+    "lang": "bash",
+    "snippet": "$ cd izvjestaji-servis\n$ grep -rn AKIA .\n./tests/test_export.py:5:TEST_KEY = \"AKIAIOSFODNN7EXAMPLE\"\n$ gitleaks dir .\nINF scanned ~3034 bytes (3.03 KB) in 11ms\nINF no leaks found\n$ git log --oneline | wc -l\n6",
+    "q": "Analitičar zaključuje da u repou nema tajni. Zašto je zaključak pogrešan?",
+    "options": [
+      "gitleaks dir radi samo nad .env fajlovima",
+      "gitleaks ne prepoznaje AWS ključeve, treba trufflehog",
+      "AKIAIOSFODNN7EXAMPLE je pravi ključ koji je gitleaks propustio",
+      "gitleaks dir skenira samo trenutne fajlove; ključ uklonjen kasnijim commitom nalazi se samo sa gitleaks git (cijela istorija)"
+    ],
+    "answer": 3,
+    "explain": "Mod dir (ranije --no-git) gleda radni direktorij. Tajna izbrisana u kasnijem commitu i dalje je u istoriji, pa je nalazi gitleaks git. AKIAIOSFODNN7EXAMPLE je primjer iz AWS dokumentacije, koji gitleaks namjerno ignoriše."
+  },
+  {
+    "obj": "2.2",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "2026-10-19T02:15:20Z  svc-izvjestaji  GetAccountAuthorizationDetails  -\n2026-10-19T02:16:55Z  svc-izvjestaji  GetObject                       AccessDenied\n2026-10-19T02:19:12Z  svc-izvjestaji  CreatePolicyVersion             v3, setAsDefault\n2026-10-19T02:20:03Z  svc-izvjestaji  CreateUser                      aws-support-sync\n2026-10-19T02:20:15Z  svc-izvjestaji  AttachUserPolicy                AdministratorAccess\n2026-10-19T02:20:31Z  svc-izvjestaji  CreateAccessKey                 aws-support-sync -> AKIA...6PQA\n2026-10-19T02:20:48Z  svc-izvjestaji  CreateLoginProfile              aws-support-sync\n2026-10-19T02:21:30Z  svc-izvjestaji  CreateAccessKey                 jenkins-legacy -> AKIA...YVCE\n2026-10-19T02:23:05Z  svc-izvjestaji  GetObject                       baza/kupci-full-2026-10.csv.gz\n2026-10-19T02:41:10Z  aws-support-sync  GetCallerIdentity             -",
+    "q": "Koji redovi pokazuju da napadač pravi NOVE kredencijale za povratak u nalog (perzistencija preko kredencijala)?",
+    "answer": [
+      5,
+      6,
+      7
+    ],
+    "explain": "CreateAccessKey za aws-support-sync, CreateLoginProfile (lozinka za konzolu) i CreateAccessKey za postojećeg jenkins-legacy su novi kredencijali (T1098.001). CreateUser i AttachUserPolicy su takođe perzistencija i eskalacija, ali sami ne daju kredencijal; CreatePolicyVersion je eskalacija."
+  },
+  {
+    "obj": "2.2",
+    "lang": "json",
+    "snippet": "{\n  \"eventTime\": \"2026-10-19T02:19:12Z\",\n  \"eventSource\": \"iam.amazonaws.com\",\n  \"eventName\": \"CreatePolicyVersion\",\n  \"userIdentity\": { \"type\": \"IAMUser\", \"userName\": \"svc-izvjestaji\",\n                    \"accessKeyId\": \"AKIA4NQXR7ZK2LWB5HTM\" },\n  \"sourceIPAddress\": \"203.0.113.45\",\n  \"requestParameters\": {\n    \"policyArn\": \"arn:aws:iam::111122223333:policy/izvjestaji-s3-export\",\n    \"policyDocument\": \"{\\\"Version\\\":\\\"2012-10-17\\\",\\\"Statement\\\":[{\\\"Effect\\\":\\\"Allow\\\",\n                        \\\"Action\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}]}\",\n    \"setAsDefault\": true\n  },\n  \"responseElements\": { \"policyVersion\": { \"versionId\": \"v3\", \"isDefaultVersion\": true } }\n}",
+    "q": "Šta je napadač postigao ovim pozivom?",
+    "options": [
+      "Napravio je novu politiku koju tek treba zakačiti sa AttachUserPolicy",
+      "Promijenio je trust policy role izvjestaji-s3-export",
+      "Pokušao je izmjenu, ali bez SetDefaultPolicyVersion promjena ne važi",
+      "Napravio je novu podrazumijevanu verziju politike zakačene za svog korisnika i time dobio Allow * nad svim resursima"
+    ],
+    "answer": 3,
+    "explain": "Uz setAsDefault: true nova verzija (v3) odmah postaje važeća, bez SetDefaultPolicyVersion. Pošto je politika već zakačena za svc-izvjestaji, korisnik je istog trenutka dobio administratorska prava. Zato iam:CreatePolicyVersion nad vlastitom politikom znači eskalaciju."
+  },
+  {
+    "obj": "2.2",
+    "q": "Zašto je `sts:GetCallerIdentity` kao prvi poziv sa nove IP adrese jak indikator ukradenog ključa?",
+    "options": [
+      "CloudTrail bilježi GetCallerIdentity samo za napadače",
+      "Napadač njime provjerava da li ključ radi i kome pripada; legitimni servisi ga rijetko zovu, i nikad sa nove adrese",
+      "Taj poziv uvijek zahtijeva administratorska prava",
+      "GetCallerIdentity mijenja ključ i pravi novu sesiju"
+    ],
+    "answer": 1,
+    "explain": "GetCallerIdentity ne treba nikakva prava i vraća nalog, ARN i ID korisnika. Zato je prvi korak svakog alata koji testira pronađeni ključ. U kombinaciji sa novom IP adresom i novim User-Agentom to je klasičan potpis."
+  },
+  {
+    "obj": "2.2",
+    "type": "multi",
+    "q": "Isti ključ koriste i legitimni servis i napadač. Koji podaci iz CloudTraila pomažu da razdvojiš njihove pozive? (izaberi sve tačne)",
+    "options": [
+      "recipientAccountId",
+      "sourceIPAddress (poznata adresa servera naspram nove)",
+      "obrazac poziva: servis svake noći radi isti GetObject/PutObject, napadač enumeriše IAM i dobija AccessDenied",
+      "userAgent (Boto3 servisa naspram AWS CLI sa md/distrib#kali)",
+      "userIdentity.accessKeyId"
+    ],
+    "answer": [
+      1,
+      2,
+      3
+    ],
+    "explain": "accessKeyId i recipientAccountId su isti za obje strane, jer je ključ isti. Razlikuju se adresa, alat (User-Agent) i ponašanje: servis ima stalan raspored i uske pozive, a napadač pita ko je, enumeriše i pogađa granice ključa."
+  },
+  {
+    "obj": "2.2",
+    "type": "match",
+    "q": "Spoji CloudTrail poziv sa ATT&CK tehnikom.",
+    "options": [
+      "GetAccountAuthorizationDetails",
+      "CreateUser",
+      "CreateAccessKey za drugog korisnika",
+      "GetObject nad bazom kupaca",
+      "StopLogging"
+    ],
+    "targets": [
+      "T1530 Data from Cloud Storage",
+      "T1087.004 Account Discovery: Cloud Account",
+      "T1685.002 Disable or Modify Cloud Log",
+      "T1136.003 Create Account: Cloud Account",
+      "T1098.001 Additional Cloud Credentials"
+    ],
+    "answer": [
+      1,
+      3,
+      4,
+      0,
+      2
+    ],
+    "explain": "Enumeracija IAM-a je otkrivanje naloga, novi korisnik je Create Account, dodatni ključ je Additional Cloud Credentials, čitanje iz S3 je Data from Cloud Storage, a gašenje traila je Disable or Modify Cloud Log (ranije T1562.008)."
+  },
+  {
+    "obj": "2.3",
+    "q": "Za bucket kvadrat-kupci-prod S3 data events NISU uključeni. Šta možeš tvrditi u procjeni štete?",
+    "options": [
+      "Pročitani su samo objekti koji se pojavljuju u ListBuckets",
+      "Podaci nisu pročitani, jer u CloudTrailu nema GetObject događaja",
+      "Ne može se utvrditi koji su objekti pročitani; pošto je napadač imao prava, mora se pretpostaviti da su podaci mogli biti preuzeti",
+      "Dovoljno je pogledati GetBucketAcl događaje"
+    ],
+    "answer": 2,
+    "explain": "Management events ne bilježe GetObject. Bez data events (ili S3 server access logova) ne možeš dokazati ni da podaci jesu ni da nisu pročitani. Pravna procjena tada polazi od toga da je pristup bio moguć."
+  },
+  {
+    "obj": "2.3",
+    "type": "spot",
+    "lang": "log",
+    "snippet": "eventTime             sourceIPAddress  identity            key                              errorCode\n2026-10-19T01:00:21Z  192.0.2.50       svc-izvjestaji      exports/dnevni/2026-10-18.csv    -\n2026-10-19T02:05:44Z  10.20.3.14       kupci-api-ecs-task  profili/154822.json              -\n2026-10-19T02:16:55Z  203.0.113.45     svc-izvjestaji      baza/kupci-full-2026-10.csv.gz   AccessDenied\n2026-10-19T02:23:05Z  203.0.113.45     svc-izvjestaji      baza/kupci-full-2026-10.csv.gz   -\n2026-10-19T02:25:12Z  10.20.3.14       kupci-api-ecs-task  profili/187310.json              -\n2026-10-19T02:41:56Z  198.51.100.23    aws-support-sync    baza/adrese-isporuke.csv.gz      -\n2026-10-19T02:43:21Z  198.51.100.23    aws-support-sync    exports/dnevni/2026-10-18.csv    -\n2026-10-19T08:30:02Z  10.20.3.14       kupci-api-ecs-task  profili/120077.json              -",
+    "q": "Napadač koristi 203.0.113.45 i 198.51.100.23. Koji redovi su USPJEŠNA čitanja koja ulaze u listu procurjelih objekata?",
+    "answer": [
+      4,
+      6,
+      7
+    ],
+    "explain": "Uspješna čitanja napadača su redovi sa 203.0.113.45 bez greške i oba reda sa 198.51.100.23. Red sa AccessDenied je pokušaj, ne curenje. Isti objekat exports/dnevni/2026-10-18.csv u 01:00 legitimno čita server izvještaja (192.0.2.50); u listu ulazi zbog čitanja u 02:43. Čitanja kupci-api role su normalan rad aplikacije."
+  },
+  {
+    "obj": "2.3",
+    "type": "multi",
+    "q": "Šta spada u procjenu štete (obim i uticaj) za ovaj incident? (izaberi sve tačne)",
+    "options": [
+      "broj legitimnih GetObject poziva aplikacije kupci-api",
+      "lista objekata koje je napadač uspješno pročitao, po bucketu",
+      "količina preuzetih podataka (bytesTransferredOut) i period izloženosti ključa",
+      "odbijeni StopLogging, upisan kao uspješno gašenje logova",
+      "klasifikacija podataka (lični podaci kupaca, tokeni kartica, finansije) i iz nje obaveze prijave"
+    ],
+    "answer": [
+      1,
+      2,
+      4
+    ],
+    "explain": "Obim čine tačni objekti, količina i period; uticaj zavisi od vrste podataka (GDPR prijava u 72 sata, PCI DSS za tokene kartica). Legitimni pozivi nisu šteta, a odbijen StopLogging treba navesti kao pokušaj, ne kao gašenje."
+  },
+  {
+    "obj": "2.4",
+    "q": "Napadač je napravio drugi access ključ za postojećeg korisnika jenkins-legacy, čiji prvi ključ koristi produkcijski build. Šta je ispravno obuzdavanje?",
+    "options": [
+      "Ne dirati jenkins-legacy, jer ga napadač nije napravio",
+      "Zakačiti Deny * na jenkins-legacy",
+      "Deaktivirati samo ključ koji je napravio napadač, legitimni ključ ostaviti i planirati prelazak Jenkinsa na rolu",
+      "Obrisati korisnika jenkins-legacy sa oba ključa"
+    ],
+    "answer": 2,
+    "explain": "Deny * ili brisanje korisnika srušili bi build i deploy. Napadačev ključ (AKIA...YVCE) se precizno deaktivira, a legitimni ostaje dok se servis ne prebaci na privremene kredencijale. Ignorisanje ostavlja napadaču put nazad."
+  },
+  {
+    "obj": "2.4",
+    "type": "order",
+    "q": "Poredaj korake obuzdavanja i iskorjenjivanja ovog incidenta.",
+    "options": [
+      "Obrisati aws-support-sync i napadačeve ključeve, poslije čuvanja dokaza",
+      "Deaktivirati procurjeli i oba napadačeva ključa (Inactive)",
+      "Zakačiti inline Deny * politiku na svc-izvjestaji i aws-support-sync",
+      "Obrisati login profil aws-support-sync i vratiti politiku na v2",
+      "Pretražiti cijeli nalog i sve regije za ostale tragove (role, Lambda, key pairovi)"
+    ],
+    "answer": [
+      2,
+      1,
+      3,
+      4,
+      0
+    ],
+    "explain": "Deny * prvo, jer odmah blokira sve kredencijale tih korisnika, i one koje još nisi našao. Zatim deaktivacija ključeva (reverzibilno), uklanjanje login profila i eskalirane verzije politike, pa hunting za ostale tragove. Brisanje je posljednje, kad su dokazi sačuvani."
+  },
+  {
+    "obj": "2.4",
+    "lang": "yaml",
+    "snippet": "title: AWS CloudTrail zaustavljen ili obrisan\nstatus: test\nlogsource:\n  product: aws\n  service: cloudtrail\ndetection:\n  selection:\n    eventSource: cloudtrail.amazonaws.com\n  filter_ok:\n    errorCode: AccessDenied\n  condition: selection and not filter_ok\nlevel: high",
+    "q": "Šta nije u redu sa ovim Sigma pravilom za gašenje CloudTraila?",
+    "options": [
+      "level: high nije dozvoljen za AWS pravila",
+      "logsource za CloudTrail mora biti product: cloudtrail",
+      "Sigma ne podržava filtere sa not u uslovu",
+      "Hvata svaki poziv ka CloudTrailu (DescribeTrails, LookupEvents…) i izbacuje baš odbijene pokušaje StopLogging/DeleteTrail"
+    ],
+    "answer": 3,
+    "explain": "Bez eventName filtera pravilo alarmira na svako čitanje konfiguracije i istragu SOC-a. Filter za AccessDenied uklanja upravo slučaj iz ovog incidenta: odbijen pokušaj gašenja logova znači da neko već ima ozbiljne kredencijale. Ispravno: eventName StopLogging ili DeleteTrail, bez filtera grešaka."
+  },
+  {
+    "obj": "2.4",
+    "type": "multi",
+    "q": "Koje kontrole bi spriječile ovaj incident ili ga otkrile u roku od nekoliko minuta? (izaberi sve tačne)",
+    "options": [
+      "isključivanje GuardDuty nalaza niske važnosti da ne prave šum",
+      "alarm (Sigma/EventBridge) na CreatePolicyVersion sa setAsDefault, CreateUser i CreateAccessKey za drugog korisnika",
+      "gitleaks u pre-commit hooku i CI-ju, uz maskirane CI varijable",
+      "prepisivanje git istorije svaki mjesec",
+      "IAM role i OIDC za CI i servis umjesto statičnih ključeva"
+    ],
+    "answer": [
+      1,
+      2,
+      4
+    ],
+    "explain": "Skeniranje tajni i maskiranje sprečavaju curenje, privremeni kredencijali uklanjaju ono što bi moglo procuriti, a alarmi na IAM izmjene skraćuju vrijeme do otkrivanja sa šest sati na minute. Prepisivanje istorije ne pomaže kad je ključ već kopiran, a nalaz PenTest:IAMUser/KaliLinux niske važnosti bio je prvi znak napada."
+  }
+]

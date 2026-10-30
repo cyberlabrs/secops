@@ -1,0 +1,12 @@
+{
+  "title": "Podaci u prenosu i u mirovanju",
+  "summary": "TLS na ELB-u i CloudFrontu, privatan pristup (PrivateLink, VPC endpointi, Client VPN, Verified Access), enkripcija između čvorova (EMR, EKS, SageMaker AI, Nitro), KMS vs CloudHSM i S3 enkripcija, integritet (Object Lock, Vault Lock, code signing), lifecycle i backup sa zaštitom od ransomwarea.",
+  "minutes": 130,
+  "domain": 5,
+  "objectives": [
+    "5.1",
+    "5.2"
+  ],
+  "title_en": "Data in transit and at rest",
+  "summary_en": "TLS on ELB and CloudFront, private access (PrivateLink, VPC endpoints, Client VPN, Verified Access), inter-node encryption (EMR, EKS, SageMaker AI, Nitro), KMS vs CloudHSM and S3 encryption, integrity (Object Lock, Vault Lock, code signing), lifecycle, and backup with ransomware protection."
+}

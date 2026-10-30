@@ -1,0 +1,55 @@
+{
+  "code": "CS0-004",
+  "badge": "CySA+",
+  "order": 9,
+  "title": "CompTIA CySA+ (CS0-004)",
+  "title_en": "CompTIA CySA+ (CS0-004)",
+  "subtitle": "Trening za CompTIA Cybersecurity Analyst V4 (CS0-004, od 23. 6. 2026): sigurnosne operacije, upravljanje ranjivostima, odgovor na incidente i izvještavanje, sa PBQ pitanjima i labovima za skeniranje, prioritizaciju ranjivosti (CVSS, EPSS, KEV), analizu mrežnog saobraćaja i metrike.",
+  "subtitle_en": "Training for CompTIA Cybersecurity Analyst V4 (CS0-004, from June 23, 2026): security operations, vulnerability management, incident response and reporting, with PBQs and labs for scanning, vulnerability prioritization (CVSS, EPSS, KEV), network traffic analysis and metrics.",
+  "lab": {
+    "image": "kurs-cysa-lab:1",
+    "caps": ["NET_ADMIN", "NET_RAW"],
+    "memoryMB": 1536,
+    "setupTimeout": 120
+  },
+  "exam": {
+    "size": 85,
+    "minutes": 165,
+    "pass": 750,
+    "scaleMin": 100,
+    "scaleMax": 900,
+    "note": "Pravi CS0-004 ima najviše 85 pitanja (višestruki izbor i performance-based pitanja), 165 minuta, prolaz 750 na skali 100–900. Certifikat važi 3 godine (CE program).",
+    "note_en": "The real CS0-004 has a maximum of 85 questions (multiple-choice and performance-based questions), 165 minutes, and a passing score of 750 on a 100–900 scale. The certification is valid for 3 years (CE program).",
+    "domains": [
+      { "n": 1, "name": "Security Operations", "weight": 34 },
+      { "n": 2, "name": "Vulnerability Management", "weight": 26 },
+      { "n": 3, "name": "Incident Response and Management", "weight": 24 },
+      { "n": 4, "name": "Reporting and Communication", "weight": 16 }
+    ]
+  },
+  "objectives": [
+    { "id": "1.1", "en": "Explain system and network architecture concepts in security operations", "bs": "Arhitektura sistema i mreže u sigurnosnim operacijama" },
+    { "id": "1.2", "en": "Analyze indicators of potential malicious activity", "bs": "Analiza indikatora moguće zlonamjerne aktivnosti" },
+    { "id": "1.3", "en": "Use tools to determine malicious activity", "bs": "Alati za utvrđivanje zlonamjerne aktivnosti" },
+    { "id": "1.4", "en": "Explain threat intelligence and threat-hunting concepts", "bs": "Threat intelligence i threat hunting" },
+    { "id": "1.5", "en": "Describe efficiency and process improvement in security operations", "bs": "Efikasnost i unapređenje procesa u sigurnosnim operacijama" },
+    { "id": "1.6", "en": "Summarize concepts related to the use of AI in security operations", "bs": "Upotreba AI-ja u sigurnosnim operacijama" },
+    { "id": "2.1", "en": "Implement the appropriate vulnerability scanning method", "bs": "Odgovarajuća metoda skeniranja ranjivosti" },
+    { "id": "2.2", "en": "Analyze output from vulnerability assessment tools", "bs": "Analiza izlaza alata za procjenu ranjivosti" },
+    { "id": "2.3", "en": "Prioritize and mitigate vulnerabilities", "bs": "Prioritizacija i ublažavanje ranjivosti" },
+    { "id": "2.4", "en": "Explain concepts related to control types, risks, and vulnerability management", "bs": "Tipovi kontrola, rizik i upravljanje ranjivostima" },
+    { "id": "3.1", "en": "Summarize concepts related to attack methodology frameworks", "bs": "Okviri metodologije napada" },
+    { "id": "3.2", "en": "Outline the incident response process", "bs": "Proces odgovora na incidente" },
+    { "id": "3.3", "en": "Implement incident response techniques", "bs": "Tehnike odgovora na incidente" },
+    { "id": "4.1", "en": "Explain vulnerability management reporting and communication", "bs": "Izvještavanje i komunikacija o ranjivostima" },
+    { "id": "4.2", "en": "Describe security operations, incident response reporting, and communication", "bs": "Izvještavanje i komunikacija o sigurnosnim operacijama i incidentima" }
+  ],
+  "sources": [
+    { "title": "CompTIA CySA+ V4 (CS0-004)", "url": "https://www.comptia.org/en/certifications/cybersecurity-analyst/v4/" },
+    { "title": "FIRST CVSS v4.0", "url": "https://www.first.org/cvss/v4-0/" },
+    { "title": "FIRST EPSS", "url": "https://www.first.org/epss/" },
+    { "title": "CISA Known Exploited Vulnerabilities", "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog" },
+    { "title": "MITRE ATT&CK", "url": "https://attack.mitre.org" },
+    { "title": "NIST SP 800-61r3", "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final" }
+  ]
+}

@@ -1,0 +1,255 @@
+[
+  {
+    "obj": "6.1",
+    "q": "Zadatak: promijeni output podrazumijevanog Falco pravila 'Terminal shell in container' u formatu vrijeme,korisnik,ime kontejnera. Gdje i kako to radiš?",
+    "options": [
+      "U /etc/falco/falco_rules.local.yaml: isto ime pravila, output: %evt.time,%user.name,%container.name, uz override: {output: replace}",
+      "Izmijeniš output direktno u /etc/falco/falco_rules.yaml",
+      "U /etc/falco/falco.yaml postaviš json_output: true i output_format",
+      "U /etc/falco/falco_rules.local.yaml napišeš pravilo sa append: true i novim outputom"
+    ],
+    "answer": 0,
+    "explain": "Lokalne izmjene idu u falco_rules.local.yaml, koji se učitava poslije, a output se zamjenjuje sa override replace. falco_rules.yaml se prepisuje pri ažuriranju, falco.yaml ne mijenja tekst pojedinačnog pravila, a stari append bi dodao tekst umjesto da ga zamijeni."
+  },
+  {
+    "obj": "6.1",
+    "q": "U falco_rules.local.yaml dodaš: '- rule: Terminal shell in container / condition: and not k8s.ns.name = dev / override: {condition: append}'. Šta je efekat?",
+    "options": [
+      "Pravilo se okida samo u namespaceu dev",
+      "Pravilo prestaje da se okida za shell u namespaceu dev",
+      "Falco javlja grešku jer condition ne smije počinjati sa and",
+      "Uslov originalnog pravila se zamjenjuje sa 'not k8s.ns.name = dev'"
+    ],
+    "answer": 1,
+    "explain": "condition: append lijepi tekst na kraj postojećeg uslova, pa nastaje '<original> and not k8s.ns.name = dev'. Zato dodatak počinje sa and; zamjenu bi dao replace."
+  },
+  {
+    "obj": "6.1",
+    "q": "Napisao si pravilo sa condition: open_read and container and fd.name = /etc/shadow. Pokrećeš kubectl exec u Pod koji radi na node01 i čitaš /etc/shadow, ali journalctl -u falco na controlplaneu ne pokazuje ništa. Šta je najvjerovatnije?",
+    "options": [
+      "open_read ne pokriva openat",
+      "fd.name ne sadrži punu putanju",
+      "Falco vidi samo syscalle na svom čvoru; alarm je u journalu na node01",
+      "Pravila iz falco_rules.local.yaml se učitavaju tek nakon reboota"
+    ],
+    "answer": 2,
+    "explain": "Svaki Falco proces posmatra kernel svog čvora, pa se alarm traži sa ssh node01 journalctl -u falco. open_read pokriva open/openat, fd.name je puna putanja, a izmjene pravila se učitavaju reloadom ili restartom servisa."
+  },
+  {
+    "obj": "6.1",
+    "q": "Nakon izmjene falco_rules.local.yaml, systemctl status falco pokazuje 'failed'. Koja komanda ti najbrže kaže zašto?",
+    "options": [
+      "kubectl -n falco logs ds/falco",
+      "cat /var/log/falco/alerts.log",
+      "crictl logs falco",
+      "journalctl -u falco -n 50"
+    ],
+    "answer": 3,
+    "explain": "Falco u labu radi kao systemd servis, pa greške učitavanja pravila (YAML, nepoznato polje ili macro) idu u njegov journal. Nije DaemonSet ni kontejner, a fajl sa alarmima ne sadrži greške pokretanja."
+  },
+  {
+    "obj": "6.1",
+    "q": "Zadatak traži da Falco alarme upisuje u /var/log/falco/alerts.log u JSON formatu. Koja kombinacija u /etc/falco/falco.yaml to radi?",
+    "options": [
+      "json_output: true i file_output: {enabled: true, filename: /var/log/falco/alerts.log}",
+      "file_output: {enabled: true, format: json, filename: /var/log/falco/alerts.log}",
+      "stdout_output: {enabled: true, filename: /var/log/falco/alerts.log, json: true}",
+      "output: json i rules_files: [/var/log/falco/alerts.log]"
+    ],
+    "answer": 0,
+    "explain": "json_output je globalni ključ koji prebacuje sve izlaze u JSON, a file_output sa enabled i filename piše u fajl. file_output nema ključ format, stdout nema filename, a rules_files je lista fajlova sa pravilima."
+  },
+  {
+    "obj": "6.2",
+    "q": "Koje Falco polje u outputu ti direktno daje ime Poda u kojem se desio događaj?",
+    "options": [
+      "container.name",
+      "k8s.pod.name",
+      "proc.pname",
+      "container.image.repository"
+    ],
+    "answer": 1,
+    "explain": "k8s.pod.name je ime Poda, a uz njega ide k8s.ns.name. container.name je ime kontejnera u Podu, proc.pname ime roditeljskog procesa, a image.repository slika."
+  },
+  {
+    "obj": "6.2",
+    "q": "Želiš alarm kad se u bilo kojem kontejneru pokrene apt-get, yum ili apk. Koji uslov je ispravan?",
+    "options": [
+      "open_write and container and fd.name in (apt-get, yum, apk)",
+      "evt.type = connect and container and proc.name in (apt-get, yum, apk)",
+      "spawned_process and container and proc.name in (apt-get, yum, apk)",
+      "spawned_process and not container and proc.cmdline contains install"
+    ],
+    "answer": 2,
+    "explain": "Pokretanje programa je spawned_process, a ime programa je proc.name. fd.name je putanja fajla ili konekcija, connect hvata mrežu, a 'not container' bi gledao procese na hostu."
+  },
+  {
+    "obj": "6.2",
+    "q": "Pravilo za shell u kontejneru ima uslov '... and proc.tty != 0'. Napadač pokrene kubectl exec web -- sh -c 'id; cat /etc/passwd' (bez -it). Šta se dešava?",
+    "options": [
+      "Alarm se okida jer je pokrenut sh",
+      "Alarm se okida dva puta, za id i cat",
+      "Falco blokira komandu",
+      "Alarm se ne okida jer proces nema terminal"
+    ],
+    "answer": 3,
+    "explain": "Bez -t kubectl exec ne alocira TTY, pa je proc.tty 0 i uslov nije ispunjen. Zato pravila za neinteraktivne shellove ne smiju zavisiti od TTY. Falco ionako samo detektuje i nikad ne blokira."
+  },
+  {
+    "obj": "6.2",
+    "q": "Koje DVIJE aktivnosti u kontejneru bi pravilo sa uslovom 'open_write and container and fd.name startswith /etc/' prijavilo? (Izaberi DVA.)",
+    "options": [
+      "echo 'x:x:0:0::/root:/bin/sh' >> /etc/passwd",
+      "cat /etc/shadow",
+      "Kreiranje fajla /etc/cron.d/backdoor",
+      "Pisanje u /tmp/payload",
+      "Pokretanje /etc/init.d/nginx"
+    ],
+    "answer": [0, 2],
+    "explain": "Oba otvaraju fajl ispod /etc za upis. cat samo čita (open_read), /tmp nije ispod /etc, a pokretanje skripte je execve, ne otvaranje za upis."
+  },
+  {
+    "obj": "6.3",
+    "q": "Falco alarm sadrži samo container.id=4f1a2b3c4d5e, bez imena Poda. Na kom čvoru i kojom komandom nalaziš Pod?",
+    "options": [
+      "Na čvoru gdje je Falco javio alarm: crictl ps --id 4f1a2b3c4d5e, pa crictl inspect za oznake io.kubernetes.pod.name i namespace",
+      "Na bilo kom čvoru: kubectl get pods -A | grep 4f1a2b3c4d5e",
+      "Na controlplaneu: docker ps | grep 4f1a2b3c4d5e",
+      "kubectl describe node | grep 4f1a2b3c4d5e"
+    ],
+    "answer": 0,
+    "explain": "crictl na čvoru gdje kontejner radi prihvata skraćeni ID i inspect pokazuje oznake Poda. kubectl get pods ne ispisuje ID kontejnera, klaster koristi containerd bez Dockera, a describe node ne navodi kontejnere."
+  },
+  {
+    "obj": "6.3",
+    "q": "ss -tlnp na node01 pokazuje proces nc (pid=48213) koji sluša na portu 6666. Kako najbrže utvrđuješ u kojem je kontejneru?",
+    "options": [
+      "kubectl get pods -A -o wide | grep 6666",
+      "cat /proc/48213/cgroup, pa ID kontejnera iz putanje potražiš sa crictl ps",
+      "strace -p 48213 i čitaš ime Poda iz izlaza",
+      "netstat -an | grep 6666"
+    ],
+    "answer": 1,
+    "explain": "cgroup putanja procesa sadrži ID kontejnera, a crictl ps ga mapira na Pod. kubectl ne zna za portove koje proces otvori sam, strace prikazuje syscalle, a netstat bez -p ne daje PID."
+  },
+  {
+    "obj": "6.3",
+    "q": "Pod web-7d9c5-abcde u prod je kompromitovan. Želiš da odmah prekineš njegov mrežni saobraćaj, ali da ga sačuvaš za forenziku. Šta radiš?",
+    "options": [
+      "kubectl -n prod delete pod web-7d9c5-abcde --grace-period=0 --force",
+      "kubectl -n prod scale deploy web --replicas=0",
+      "Dodaš oznaku quarantine=true i NetworkPolicy koja bira tu oznaku sa policyTypes [Ingress, Egress] bez pravila",
+      "kubectl cordon node01"
+    ],
+    "answer": 2,
+    "explain": "Politika sa oba tipa i bez pravila izoluje Pod u oba smjera, a Pod ostaje za pregled. Brisanje i skaliranje uništavaju dokaze, a cordon samo sprečava nove Podove na čvoru."
+  },
+  {
+    "obj": "6.3",
+    "q": "Nakon izolacije Poda želiš da ga Service više ne bira i da ReplicaSet napravi zdravu zamjenu, a da kompromitovani Pod ostane. Šta radiš?",
+    "options": [
+      "kubectl annotate pod X kubernetes.io/quarantine=true",
+      "kubectl -n prod delete rs <ime>",
+      "kubectl -n prod patch deploy web -p '{\"spec\":{\"paused\":true}}'",
+      "kubectl -n prod label pod X app- (ukloniš oznaku koju koriste Service i ReplicaSet)"
+    ],
+    "answer": 3,
+    "explain": "Bez oznake app Pod ne odgovara selektoru Servicea ni ReplicaSeta: izlazi iz endpointa, a ReplicaSet pravi novi Pod. Anotacija ne utiče na selektore, brisanje ReplicaSeta briše i Pod, a pauziranje ne mijenja postojeće Podove."
+  },
+  {
+    "obj": "6.3",
+    "type": "match",
+    "q": "Upari aktivnost napadača sa MITRE ATT&CK taktikom.",
+    "options": [
+      "kubectl exec -it web -- bash",
+      "cat /var/run/secrets/kubernetes.io/serviceaccount/token",
+      "Upis CronJoba koji svakih 5 minuta pokreće reverse shell",
+      "Pokretanje kripto rudara koji troši CPU čvora"
+    ],
+    "targets": [
+      "Impact",
+      "Persistence",
+      "Execution",
+      "Credential Access",
+      "Initial Access"
+    ],
+    "answer": [2, 3, 1, 0],
+    "explain": "exec u kontejner je Execution, krađa SA tokena Credential Access, CronJob koji se vraća je Persistence, a rudar koji troši resurse Impact. Initial Access je prvi ulaz (npr. ranjiva aplikacija), što ovdje nije ponuđeno."
+  },
+  {
+    "obj": "6.3",
+    "type": "order",
+    "q": "Poredaj korake istrage nakon Falco alarma 'Shell u kontejneru'.",
+    "options": [
+      "Izoluj Pod karantin NetworkPolicyjem",
+      "Na čvoru mapiraj container.id na Pod i PID (crictl ps, crictl inspect)",
+      "Pročitaj alarm u journalctl -u falco na čvoru gdje je nastao",
+      "Ukloni Pod ili skaliraj Deployment na 0 i popravi uzrok",
+      "Pregledaj proces: /proc/<pid>/cmdline, ss -tnp, ls -l /proc/<pid>/fd"
+    ],
+    "answer": [2, 1, 4, 0, 3],
+    "explain": "Od alarma ideš ka identifikaciji (container.id → Pod i PID), pa pregledaš proces dok još radi, izoluješ Pod da zaustaviš širenje, i tek na kraju uklanjaš i popravljaš uzrok."
+  },
+  {
+    "obj": "6.4",
+    "q": "Deployment web treba da ima root FS samo za čitanje. Dodao si readOnlyRootFilesystem: true u spec.template.spec.securityContext i kubectl apply javlja grešku unknown field. Gdje polje pripada?",
+    "options": [
+      "spec.template.spec.containers[].securityContext.readOnlyRootFilesystem",
+      "spec.template.metadata.annotations",
+      "spec.securityContext.readOnlyRootFilesystem na nivou Deploymenta",
+      "spec.template.spec.volumes[].readOnly"
+    ],
+    "answer": 0,
+    "explain": "readOnlyRootFilesystem je u SecurityContext kontejnera, ne u PodSecurityContext. Deployment nema svoj securityContext, a readOnly kod volumena se odnosi na mount, ne na root FS."
+  },
+  {
+    "obj": "6.4",
+    "q": "Nakon readOnlyRootFilesystem: true nginx Pod je u CrashLoopBackOff, a kubectl logs kaže: mkdir() \"/var/cache/nginx/client_temp\" failed (30: Read-only file system). Kako to ispravno rješavaš?",
+    "options": [
+      "Vratiš readOnlyRootFilesystem na false",
+      "Dodaš emptyDir volumen montiran na /var/cache/nginx (i ostale putanje koje nginx piše, npr. /var/run)",
+      "Dodaš privileged: true",
+      "Postaviš runAsUser: 0"
+    ],
+    "answer": 1,
+    "explain": "emptyDir daje upisiv direktorij samo tamo gdje aplikacija mora pisati, a root FS ostaje read-only. Vraćanje na false ili privileged poništavaju cilj, a root korisnik i dalje ne može pisati u read-only FS."
+  },
+  {
+    "obj": "6.4",
+    "q": "Postavio si immutable: true na ConfigMap app-config. Sada treba promijeniti LOG_LEVEL. Šta radiš?",
+    "options": [
+      "kubectl edit cm app-config i promijeniš vrijednost",
+      "kubectl patch cm app-config -p '{\"immutable\":false}' pa izmijeniš",
+      "Obrišeš ConfigMap, napraviš novi sa izmjenom i restartuješ Podove koji ga koriste",
+      "kubectl replace --force nije dozvoljen, pa je ConfigMap trajno zaključan"
+    ],
+    "answer": 2,
+    "explain": "Kod immutable ConfigMapa data se ne može mijenjati, a immutable se ne može vratiti na false. Jedini put je brisanje i ponovno kreiranje (što replace --force upravo radi), uz restart Podova."
+  },
+  {
+    "obj": "6.4",
+    "q": "Slika aplikacije sadrži /bin/sh, a ne smiješ mijenjati sliku. Root FS nije read-only. Koji trik uklanja shell odmah po startu kontejnera?",
+    "options": [
+      "securityContext.capabilities.drop: [ALL]",
+      "readinessProbe sa httpGet na /bin/sh",
+      "command: [\"rm\", \"/bin/sh\"] u spec.containers",
+      "startupProbe sa exec: command: [\"rm\", \"-f\", \"/bin/sh\", \"/bin/bash\"]"
+    ],
+    "answer": 3,
+    "explain": "startupProbe se izvršava u kontejneru nakon starta aplikacije; rm -f vraća 0 pa probe uspije, a shell nestane. Promjena command bi zamijenila aplikaciju, drop capabilities ne briše fajlove, a httpGet probe ne izvršava ništa u kontejneru."
+  },
+  {
+    "obj": "6.3",
+    "q": "Na osnovu ovih Falco alarma iz istog Poda, koji opis napada je najtačniji?",
+    "snippet": "09:41:03.512: Notice A shell was spawned in a container (user=root pod=web-7d9c5-abcde ns=prod cmd=bash)\n09:41:37.090: Warning Sensitive file opened for reading (user=root pod=web-7d9c5-abcde file=/etc/shadow)\n09:42:10.774: Notice Unexpected connection to K8s API Server (pod=web-7d9c5-abcde cmd=curl -sk)\n09:42:58.301: Critical Drop and execute new binary (pod=web-7d9c5-abcde exe=/tmp/kworkerd)\n09:43:05.601: Warning Outbound connection to port 3333 (pod=web-7d9c5-abcde dst=45.9.148.21:3333)\n09:43:06.002: Warning Outbound connection to port 3333 (pod=web-7d9c5-abcde dst=45.9.148.21:3333)",
+    "lang": "log",
+    "options": [
+      "Interaktivni pristup kontejneru, čitanje kredencijala i izviđanje API servera, zatim pokretanje ubačenog binarnog fajla koji se javlja na mining pool: kriptominer",
+      "Redovan rolling update: novi binarni fajl je dio nove verzije slike, pa su alarmi očekivani",
+      "Bijeg iz kontejnera na čvor, jer je /etc/shadow pročitan sa hosta",
+      "Napad nije uspio: alarmi su nivoa Notice, Warning i Critical, što znači da ih je Falco blokirao"
+    ],
+    "answer": 0,
+    "explain": "Redoslijed daje faze: execution (shell), credential access (/etc/shadow unutar kontejnera), discovery (poziv API servera), pa execution binarnog fajla koji nije u slici i veze na port 3333, tipičan za mining poolove (impact: resource hijacking). Fajl u /tmp nije dio slike, pa nije rolling update; alarm nosi pod, dakle čitan je fajl kontejnera; a Falco samo detektuje i ne blokira ništa, bez obzira na prioritet. Sljedeći korak je izolacija Poda (deny NetworkPolicy), istraga, pa brisanje."
+  }
+]

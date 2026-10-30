@@ -1,0 +1,280 @@
+[
+  {
+    "obj": "1.1",
+    "q": "Imate Microsoft Defender XDR. Tim za servere treba dobiti email kada se uređaj iz device grupe Servers izoluje, bilo ručno ili automatski, i kada izolacija ne uspije. Šta trebate konfigurisati?",
+    "options": [
+      "Notification rule u tabu Incidents sa severity High.",
+      "Alert tuning pravilo sa akcijom Resolve alert.",
+      "Notification rule u tabu Actions sa Action source manual i automated, device group scope Servers i statusima completed i failed.",
+      "Automation rule u Sentinelu sa akcijom Add tags."
+    ],
+    "answer": 2,
+    "explain": "Tab Actions u Email notifications šalje obavještenja o response akcijama, sa izborom izvora (manual/automated), akcija, device grupa i statusa. Tab Incidents je za incidente, a alert tuning i automation rules ne šalju email."
+  },
+  {
+    "obj": "1.1",
+    "q": "Koja permisija je potrebna da biste konfigurisali email notifikacije u Microsoft Defender XDR kada koristite Defender RBAC?",
+    "options": [
+      "Manage security settings",
+      "Security Reader",
+      "Live response (advanced)",
+      "Microsoft Sentinel Responder"
+    ],
+    "answer": 0,
+    "explain": "Za email notifikacije treba Manage security settings (u osnovnom modelu Security Administrator ili više). Sa RBAC-om korisnik upravlja samo notifikacijama za device grupe kojima ima pristup."
+  },
+  {
+    "obj": "1.1",
+    "q": "Interni backup alat svake noći okida isti Defender for Endpoint alarm. Alarm ne smije praviti incident, ali događaji moraju ostati dostupni u AlertInfo i AlertEvidence za hunting. Šta trebate uraditi?",
+    "options": [
+      "Dodati fajl alata kao Allow indikator.",
+      "Kreirati alert tuning pravilo sa akcijom Hide alert i uslovom na proces alata.",
+      "Isključiti advanced feature Automatically resolve alerts.",
+      "Kreirati custom detection pravilo koje isključuje alat."
+    ],
+    "answer": 1,
+    "explain": "Hide alert (samo za MDE alarme) potiskuje alarm i sprečava incident, a alarm ostaje u AlertInfo i AlertEvidence. Allow indikator mijenja ponašanje zaštite, a custom detection ne utiče na ugrađene alarme."
+  },
+  {
+    "obj": "1.1",
+    "q": "Alert tuning pravilo ne potiskuje alarme koje generiše vaše custom detection pravilo. Šta je uzrok?",
+    "options": [
+      "Pravilo ima više od 200 uslova.",
+      "Akcija Resolve alert radi samo za Defender for Office 365.",
+      "Custom detection mora imati frekvenciju Continuous (NRT).",
+      "Alert tuning se ne primjenjuje na alarme iz custom detection pravila; šum treba riješiti u upitu."
+    ],
+    "answer": 3,
+    "explain": "Dokumentacija navodi da alert tuning nije kompatibilan sa custom detekcijama; njih treba fino podesiti u samom upitu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Organizacija ima regionalne SOC timove koji vide samo device grupe svoje regije. Trebaju moći preuzeti incidente bez da alarmi iz drugih regija budu spojeni u isti incident. Šta trebate uključiti?",
+    "options": [
+      "Advanced feature Restrict correlation to within scoped device groups.",
+      "Alert tuning sa akcijom Set as behavior.",
+      "Automation level No automated response za sve grupe.",
+      "Email notifikacije po device grupi."
+    ],
+    "answer": 0,
+    "explain": "Restrict correlation to within scoped device groups sprečava spajanje alarma iz različitih device grupa u jedan incident, pa lokalni SOC može raditi na svom incidentu. Globalni SOC tada vidi više manjih incidenata."
+  },
+  {
+    "obj": "1.1",
+    "q": "Analitičari mogu pokrenuti live response na radnim stanicama, ali ne i na Windows Server uređajima. Šta trebate uključiti?",
+    "options": [
+      "Tamper protection",
+      "Live response unsigned script execution",
+      "Live response for servers",
+      "EDR in block mode"
+    ],
+    "answer": 2,
+    "explain": "Live response za servere je zaseban advanced feature. Unsigned script execution omogućava nepotpisane skripte, ali ne uključuje live response na serverima."
+  },
+  {
+    "obj": "1.1",
+    "q": "Želite blokirati izvršavanje određenog fajla po SHA-256 hashu na svim uređajima kroz Indicators u Defender for Endpointu. Opcija nije dostupna. Šta trebate provjeriti?",
+    "options": [
+      "Da je uključen Device discovery.",
+      "Da je uključen advanced feature Allow or block file, sa Defender Antivirusom kao aktivnim AV-om i cloud-based protection.",
+      "Da je uključen Custom network indicators.",
+      "Da device grupa ima automation level Full."
+    ],
+    "answer": 1,
+    "explain": "Blokiranje fajlova traži advanced feature Allow or block file, a preduslovi su Defender Antivirus kao aktivni AV i cloud-based protection. Custom network indicators je za IP, domen i URL."
+  },
+  {
+    "obj": "1.1",
+    "q": "Kreirali ste custom data collection pravilo za tabelu DeviceCustomScriptEvents sa scopeom na ručno dodani tag Finance-Servers. Nakon dva sata nema nijednog eventa. Šta je NAJVJEROVATNIJI uzrok?",
+    "options": [
+      "Pravilo se deployuje do 24 sata.",
+      "Custom data collection radi samo na Linuxu.",
+      "DeviceCustomScriptEvents nije podržana tabela.",
+      "Custom data collection podržava samo dynamic tags iz Asset Rule Management."
+    ],
+    "answer": 3,
+    "explain": "Ručni (statički) tagovi nisu podržani; treba dynamic tag pravilo u Asset Rule Management koje se izvršilo bar jednom. Deploy traje 20 minuta do 1 sat, a podržani su Windows 10/11 i Server 2019+."
+  },
+  {
+    "obj": "1.1",
+    "q": "Gdje se upisuju podaci iz Defender for Endpoint custom data collection pravila?",
+    "options": [
+      "U povezani Microsoft Sentinel workspace, u tabele DeviceCustom*.",
+      "Samo u advanced hunting Defender XDR-a, 30 dana.",
+      "U Azure Storage account definisan u pravilu.",
+      "U tabelu DeviceEvents sa ActionType Custom."
+    ],
+    "answer": 0,
+    "explain": "Custom data collection šalje dodatne evente u povezani Sentinel workspace (DeviceCustomProcessEvents, DeviceCustomFileEvents, DeviceCustomNetworkEvents, DeviceCustomScriptEvents, DeviceCustomImageLoadEvents) i taj unos se naplaćuje prema Sentinel cijenama."
+  },
+  {
+    "obj": "1.1",
+    "q": "Trebate uvesti ASR pravilo Block all Office applications from creating child processes bez prekidanja poslovnih makroa. Šta trebate uraditi PRVO?",
+    "options": [
+      "Postaviti pravilo u Block i čekati prijave korisnika.",
+      "Postaviti pravilo u Audit i analizirati DeviceEvents gdje ActionType počinje sa Asr.",
+      "Dodati sve Office foldere u ASR exclusions.",
+      "Postaviti pravilo u Warn na svim uređajima."
+    ],
+    "answer": 1,
+    "explain": "Audit bilježi šta bi bilo blokirano bez uticaja na korisnike. Nakon analize dodaju se ciljane exclusions i pravilo se prebacuje u Block. Isključivanje svih Office foldera poništava zaštitu."
+  },
+  {
+    "obj": "1.1",
+    "q": "Remediation akcija nad fajlom u C:\\Windows\\System32 čeka odobrenje, a ista akcija nad fajlom u Downloads folderu je izvršena automatski. Koji automation level ima device grupa?",
+    "options": [
+      "Full - remediate threats automatically",
+      "Semi - require approval for all folders",
+      "Semi - require approval for core folders remediation",
+      "No automated response"
+    ],
+    "answer": 2,
+    "explain": "Core folders nivo traži odobrenje samo za sistemske foldere (npr. \\windows\\*), a ostalo radi automatski. All folders bi tražio odobrenje i za Downloads."
+  },
+  {
+    "obj": "1.1",
+    "q": "Serveri za proizvodnju moraju zahtijevati odobrenje za svaku remediation akciju, a radne stanice trebaju ostati potpuno automatizovane. Šta trebate uraditi?",
+    "options": [
+      "Promijeniti automation level grupe Ungrouped devices (default) na Semi - require approval for all folders.",
+      "Isključiti automatic attack disruption za cijeli tenant.",
+      "Dodati servere u alert tuning sa akcijom Resolve alert.",
+      "Kreirati device grupu za servere sa Semi - require approval for all folders i rankom iznad grupe radnih stanica."
+    ],
+    "answer": 3,
+    "explain": "Automation level se postavlja po device grupi. Uređaj pripada grupi sa najvišim rankom čija pravila zadovoljava, pa serverska grupa treba viši rank. Promjena default grupe bi pogodila i radne stanice."
+  },
+  {
+    "obj": "1.1",
+    "q": "Prema promjeni koja je stupila na snagu 1. septembra 2026, šta se desilo sa automated investigation and response (AIR) u Defender for Endpointu?",
+    "options": [
+      "AIR više ne radi kao zasebno iskustvo istrage i ne može se pokretati ručno; sposobnosti su dio podrazumijevane AV zaštite, a za istragu na zahtjev preporučuje se full antivirus scan.",
+      "AIR je premješten u Microsoft Sentinel playbookove.",
+      "AIR je ukinut i za Defender for Office 365.",
+      "AIR se sada pokreće samo iz custom detection pravila."
+    ],
+    "answer": 0,
+    "explain": "Od 1. 9. 2026. AIR u MDE nije zaseban niti ručno pokretljiv; radi automatski kroz AV zaštitu. Integracije koje su ručno pokretale AIR treba prilagoditi. AIR za Defender for Office 365 ostaje."
+  },
+  {
+    "obj": "1.1",
+    "q": "Automatic attack disruption nikad ne smije onemogućiti nalog emergency-admin, dok sve ostalo treba ostati automatsko. Šta trebate konfigurisati?",
+    "options": [
+      "Postaviti sve device grupe na No automated response.",
+      "Otvoriti support zahtjev Attack disruption opt-out.",
+      "Dodati user exclusion u Settings > Microsoft Defender XDR > Automated response > Identities.",
+      "Dodati nalog u IP exclusions."
+    ],
+    "answer": 2,
+    "explain": "User exclusion sprečava automatsko gašenje samo tog naloga. Opt-out i No automated response bi isključili zaštitu šire nego što treba, a IP exclusions se odnose na adrese, ne naloge."
+  },
+  {
+    "obj": "1.1",
+    "q": "U Sentinelu automation rule ne može odabrati playbook jer je playbook siv u listi. Šta trebate uraditi?",
+    "options": [
+      "Dodijeliti analitičaru ulogu Logic App Contributor.",
+      "Promijeniti trigger playbooka na Microsoft Sentinel entity.",
+      "Dodijeliti analitičaru ulogu Microsoft Sentinel Playbook Operator.",
+      "Preko Manage playbook permissions dodijeliti Sentinel servisnom nalogu ulogu Microsoft Sentinel Automation Contributor na resource grupi playbooka."
+    ],
+    "answer": 3,
+    "explain": "Automation rules pokreću playbookove preko Sentinel servisnog naloga koji treba Microsoft Sentinel Automation Contributor na resource grupi playbooka. Za tu dodjelu korisnik treba Owner na toj resource grupi."
+  },
+  {
+    "obj": "1.1",
+    "q": "Imate dva automation rule-a sa triggerom When incident is created: Rule A (order 1) mijenja severity sa Medium na Low, Rule B (order 2) dodaje tag samo za incidente sa severity Medium ili višim. Nastaje incident severity Medium na koji se odnose oba pravila. Šta se dešava?",
+    "options": [
+      "Oba pravila se izvršavaju paralelno, pa se tag dodaje.",
+      "Rule B ne dodaje tag, jer vidi incident nakon što ga je Rule A promijenio u Low.",
+      "Rule B se izvršava prvi jer ima veći broj.",
+      "Rule B dodaje tag, jer uslovi se uvijek evaluiraju nad originalnim stanjem."
+    ],
+    "answer": 1,
+    "explain": "Automation rules se izvršavaju sekvencijalno po order broju, a kasnije pravilo evaluira trenutno stanje incidenta nakon prethodnih pravila."
+  },
+  {
+    "obj": "1.1",
+    "q": "Tokom penetracionog testa od 3. do 7. novembra incidenti sa IP adrese 10.10.5.20 trebaju se automatski zatvoriti kao benign positive, a nakon testa pravilo ne smije više raditi. Koja DVA podešavanja automation rule-a trebate koristiti? (Izaberi DVA.)",
+    "options": [
+      "Akciju Change status → Closed sa razlogom Benign Positive.",
+      "Akciju Run playbook sa Logic Appom koji zatvara incident.",
+      "Expiration date 7. novembar.",
+      "Trigger When alert is created.",
+      "Uslov Incident provider equals Microsoft Sentinel."
+    ],
+    "answer": [
+      0,
+      2
+    ],
+    "explain": "Zatvaranje sa razlogom je ugrađena akcija automation rule-a, a expiration date automatski isključuje pravilo. Playbook nije potreban, a uslov Incident provider je uklonjen u Defender portalu."
+  },
+  {
+    "obj": "1.1",
+    "type": "order",
+    "q": "Poredaj korake da automation rule pokrene novi playbook koji otvara ticket u ServiceNow za svaki novi incident, od prvog do posljednjeg.",
+    "options": [
+      "Kreirati automation rule sa triggerom When incident is created i akcijom Run playbook.",
+      "Kreirati Logic App playbook sa triggerom Microsoft Sentinel incident i ServiceNow konekcijom.",
+      "Kreirati testni incident i provjeriti da je ticket otvoren.",
+      "Preko Manage playbook permissions dodijeliti Sentinelu Microsoft Sentinel Automation Contributor na resource grupi playbooka."
+    ],
+    "answer": [
+      1,
+      3,
+      0,
+      2
+    ],
+    "explain": "Prvo nastaje playbook sa incident triggerom, zatim Sentinel dobija dozvolu da ga pokreće, pa automation rule veže playbook za nove incidente, i na kraju se tok testira."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari zahtjev sa alatom koji ga NAJBOLJE ispunjava.",
+    "options": [
+      "Automatski dodijeliti sve incidente iz pravila Brute force analitičaru Ani.",
+      "Obogatiti incident WHOIS podacima iz vanjskog API-ja.",
+      "Spriječiti da Defender for Endpoint alarm za poznati admin alat pravi incident.",
+      "Pri aktivnom ransomware napadu automatski containovati kompromitovani nalog.",
+      "Dobiti email kada se objavi novi threat analytics izvještaj."
+    ],
+    "targets": [
+      "Sentinel playbook",
+      "Automatic attack disruption",
+      "Sentinel automation rule",
+      "Email notifications (Threat analytics)",
+      "Alert tuning",
+      "ASR pravilo"
+    ],
+    "answer": [
+      2,
+      0,
+      4,
+      1,
+      3
+    ],
+    "explain": "Dodjela ownera je ugrađena akcija automation rule-a, poziv vanjskog API-ja traži playbook, potiskivanje poznatog alarma radi alert tuning, containment u toku napada radi attack disruption, a obavještenja o izvještajima tab Threat analytics."
+  },
+  {
+    "obj": "1.1",
+    "type": "match",
+    "q": "Upari Sentinel ulogu sa njenom svrhom.",
+    "options": [
+      "Microsoft Sentinel Automation Contributor",
+      "Microsoft Sentinel Playbook Operator",
+      "Microsoft Sentinel Responder",
+      "Microsoft Sentinel Contributor"
+    ],
+    "targets": [
+      "Ručno pokretanje playbooka",
+      "Vezivanje playbooka za analytics ili automation rule",
+      "Omogućava automation rules (Sentinel servisnom nalogu) da pokreću playbookove",
+      "Pristup incidentu radi ručnog pokretanja, bez samog pokretanja playbooka"
+    ],
+    "answer": [
+      2,
+      0,
+      3,
+      1
+    ],
+    "explain": "Automation Contributor je za servisni nalog i automation rules, Playbook Operator za ručno pokretanje, Responder za rad sa incidentima (ali ne pokreće playbook), a Contributor za vezivanje playbooka za pravila."
+  }
+]
